@@ -1,0 +1,70 @@
+name: Deploy n8n Water Meter Workflow
+
+on:
+  workflow_dispatch:
+    inputs:
+      workflow_file:
+        description: "Workflow JSON file to deploy"
+        required: true
+        default: "workflows/water-meter-submission.json"
+      workflow_id:
+        description: "n8n workflow ID"
+        required: true
+        default: "ZMRAkwLhZ5pHQp5w"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Validate workflow JSON
+        run: |
+          set -euo pipefail
+          test -n "${N8N_BASE_URL}"
+          test -n "${N8N_API_KEY}"
+          test -f "${WORKFLOW_FILE}"
+
+          jq -e '.nodes and .connections and .name' "${WORKFLOW_FILE}" >/dev/null
+
+          ATTACHMENTS="$(jq -r '.nodes[] | select(.name == "SMTP error alert") | .parameters.options.attachments' "${WORKFLOW_FILE}")"
+          if [ "${ATTACHMENTS}" != "={{ Object.keys(\$binary || {}).join(',') }}" ]; then
+            echo "Unexpected SMTP attachment expression: ${ATTACHMENTS}" >&2
+            exit 1
+          fi
+        env:
+          N8N_BASE_URL: ${{ secrets.N8N_BASE_URL }}
+          N8N_API_KEY: ${{ secrets.N8N_API_KEY }}
+          WORKFLOW_FILE: ${{ inputs.workflow_file }}
+
+      - name: Build n8n API payload
+        run: |
+          set -euo pipefail
+          jq '{name, nodes, connections, settings} + (if has("staticData") then {staticData} else {} end)' "${WORKFLOW_FILE}" > /tmp/n8n-workflow-payload.json
+          jq -e '.nodes | length > 0' /tmp/n8n-workflow-payload.json >/dev/null
+        env:
+          WORKFLOW_FILE: ${{ inputs.workflow_file }}
+
+      - name: Update n8n workflow
+        run: |
+          set -euo pipefail
+          curl --fail-with-body -X PUT "${N8N_BASE_URL%/}/api/v1/workflows/${WORKFLOW_ID}" \
+            -H "X-N8N-API-KEY: ${N8N_API_KEY}" \
+            -H "Content-Type: application/json" \
+            --data-binary @/tmp/n8n-workflow-payload.json
+        env:
+          N8N_BASE_URL: ${{ secrets.N8N_BASE_URL }}
+          N8N_API_KEY: ${{ secrets.N8N_API_KEY }}
+          WORKFLOW_ID: ${{ inputs.workflow_id }}
+
+      - name: Ensure n8n workflow is active
+        run: |
+          set -euo pipefail
+          curl --fail-with-body -X POST "${N8N_BASE_URL%/}/api/v1/workflows/${WORKFLOW_ID}/activate" \
+            -H "X-N8N-API-KEY: ${N8N_API_KEY}"
+        env:
+          N8N_BASE_URL: ${{ secrets.N8N_BASE_URL }}
+          N8N_API_KEY: ${{ secrets.N8N_API_KEY }}
+          WORKFLOW_ID: ${{ inputs.workflow_id }}
