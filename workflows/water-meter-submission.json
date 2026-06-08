@@ -1,0 +1,1392 @@
+{
+  "id": "ZMRAkwLhZ5pHQp5w",
+  "name": "Water meter submission",
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Europe/Tallinn",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": true,
+    "binaryMode": "separate"
+  },
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Water meter submission\nOCR: **OCR cold/hot OpenAI** HTTP nodes → credential **OpenAi account**. Code node cannot hold OpenAI creds.",
+        "height": 140,
+        "width": 520,
+        "color": 5
+      },
+      "id": "0d416257-d2e2-4a4b-b649-5b10252678b4",
+      "name": "Sticky Note 306c5a5e",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        3024,
+        688
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "water-meter-submission",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "3ed113ca-d9fe-45fd-bad1-0fdcc1344d3f",
+      "name": "Water meter Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        416
+      ],
+      "webhookId": "0d106217-7c74-49d6-8338-c87e4144c5fc"
+    },
+    {
+      "parameters": {
+        "jsCode": "var j = $input.first().json.body || $input.first().json;\n\nfunction slug(s) {\n  return String(s || '')\n    .normalize('NFKD')\n    .replace(/[\\u0300-\\u036f]/g, '')\n    .replace(/[^a-zA-Z0-9]+/g, '_')\n    .replace(/^_+|_+$/g, '')\n    .slice(0, 80);\n}\n\nfunction numOrNull(v) {\n  if (v == null || v === '') return null;\n  var n = Number(v);\n  return Number.isFinite(n) ? Math.round(n * 1000) / 1000 : null;\n}\n\nvar address = String(j.address || '').trim();\nvar apartment = String(j.apartment || '').trim();\nvar typedCold = numOrNull(j.cold_water);\nvar typedHot = numOrNull(j.hot_water);\n\nreturn [{\n  json: {\n    address: address,\n    apartment: apartment,\n    cold_water: typedCold,\n    hot_water: typedHot,\n    typed_cold: typedCold,\n    typed_hot: typedHot,\n    cold_photo: j.cold_photo || null,\n    hot_photo: j.hot_photo || null,\n    timestamp: j.timestamp || new Date().toISOString(),\n    lookup_key: 'wm:' + slug(address) + ':' + slug(apartment),\n    address_slug: slug(address),\n    year_month: (function () {\n      var d = new Date();\n      var m = d.getMonth() + 1;\n      return d.getFullYear() + '-' + (m < 10 ? '0' : '') + m;\n    })(),\n    reading_warnings: []\n  }\n}];"
+      },
+      "id": "cd8634b8-7a03-4e2a-b8d2-bfc8afb7a0d8",
+      "name": "Normalize input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        416
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "propertyName": "registry",
+        "key": "={{ $json.lookup_key }}",
+        "keyType": "string",
+        "options": {
+          "dotNotation": true
+        }
+      },
+      "id": "2b39607f-c2fc-41ea-b861-87d6ff984e75",
+      "name": "Redis lookup apartment",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        448,
+        336
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {
+          "clashHandling": {
+            "values": {
+              "resolveClash": "preferInput1"
+            }
+          }
+        }
+      },
+      "id": "c896ba46-da4a-47e9-ba31-f5a4a4c744e6",
+      "name": "Merge row + registry",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        672,
+        416
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "var row = $input.first().json;\n\nvar prompt =\n  'This is a photo of a water meter display. ' +\n  'Return ONLY a JSON object with one key \"reading_m3\": the total meter reading in cubic metres as a number (use a dot for decimals, max 3 decimal places). ' +\n  'If unreadable, return {\"reading_m3\":null}. No other text.';\n\nfunction buildBody(base64, label) {\n  if (!base64 || String(base64).trim() === '') return null;\n  return {\n    model: 'gpt-4o-mini',\n    temperature: 0,\n    max_tokens: 80,\n    messages: [\n      {\n        role: 'user',\n        content: [\n          { type: 'text', text: prompt + ' (' + label + ')' },\n          {\n            type: 'image_url',\n            image_url: { url: 'data:image/jpeg;base64,' + String(base64).trim() }\n          }\n        ]\n      }\n    ]\n  };\n}\n\nreturn [\n  {\n    json: Object.assign({}, row, {\n      cold_openai_request: buildBody(row.cold_photo, 'cold water'),\n      hot_openai_request: buildBody(row.hot_photo, 'hot water')\n    })\n  }\n];"
+      },
+      "id": "174acc5c-7b6f-4d84-81ba-f224c8d5d3cc",
+      "name": "Build OCR bodies",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        896,
+        416
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "cold",
+              "leftValue": "={{ $json.cold_openai_request != null }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              },
+              "rightValue": ""
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "c4ee8c3a-2cee-471e-a32d-798d95d2e567",
+      "name": "OCR cold photo?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1120,
+        416
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "authentication": "predefinedCredentialType",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.cold_openai_request) }}",
+        "options": {}
+      },
+      "id": "8d20f599-7826-4ed9-b7c8-1c484e69d949",
+      "name": "OCR cold OpenAI",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1344,
+        336
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "var src = $('Build OCR bodies').first().json;\n\nreturn [{ json: src }];"
+      },
+      "id": "ced6caab-c825-4826-a82a-a0489e4dc96c",
+      "name": "Restore OCR row",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1568,
+        336
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "hot",
+              "leftValue": "={{ $json.hot_openai_request != null }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              },
+              "rightValue": ""
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "637c1a0c-8c63-4e82-9552-6c9842e78a57",
+      "name": "OCR hot photo?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1792,
+        416
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "authentication": "predefinedCredentialType",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.hot_openai_request) }}",
+        "options": {}
+      },
+      "id": "2d64a2df-ed90-4d85-b92b-aff53bb6e0c7",
+      "name": "OCR hot OpenAI",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2016,
+        336
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "var row = $('Build OCR bodies').first().json;\nvar warnings = Array.isArray(row.reading_warnings) ? row.reading_warnings.slice() : [];\n\nfunction parseReadingText(text) {\n  if (!text) return null;\n  var m = String(text).replace(/\\s+/g, ' ').match(/\\d+[.,]?\\d*/);\n  if (!m) return null;\n  var n = Number(m[0].replace(',', '.'));\n  if (!Number.isFinite(n) || n < 0) return null;\n  return Math.round(n * 1000) / 1000;\n}\n\nfunction readingsDiffer(a, b) {\n  if (a == null || b == null) return false;\n  return Math.abs(Number(a) - Number(b)) > 0.001;\n}\n\nfunction parseOpenAiNode(nodeName) {\n  try {\n    var res = $(nodeName).first().json;\n    var content = res && res.choices && res.choices[0] && res.choices[0].message && res.choices[0].message.content;\n    if (!content) return null;\n    try {\n      var jsonMatch = String(content).match(/\\{[\\s\\S]*\\}/);\n      if (jsonMatch) {\n        var parsed = JSON.parse(jsonMatch[0]);\n        if (parsed.reading_m3 != null) return parseReadingText(String(parsed.reading_m3));\n      }\n    } catch (e1) {}\n    return parseReadingText(content);\n  } catch (e2) {\n    return null;\n  }\n}\n\nfunction openAiError(nodeName) {\n  try {\n    var res = $(nodeName).first().json;\n    if (res && res.error) return String(res.error.message || res.error);\n  } catch (e) {}\n  return null;\n}\n\nvar ocrCold = row.cold_openai_request ? parseOpenAiNode('OCR cold OpenAI') : null;\nvar ocrHot = row.hot_openai_request ? parseOpenAiNode('OCR hot OpenAI') : null;\nvar ocrError = openAiError('OCR cold OpenAI') || openAiError('OCR hot OpenAI') || null;\n\nvar cold = row.typed_cold;\nvar hot = row.typed_hot;\n\nif (row.typed_cold == null && ocrCold != null) {\n  cold = ocrCold;\n} else if (row.typed_cold != null && ocrCold != null && readingsDiffer(row.typed_cold, ocrCold)) {\n  warnings.push(\n    'Külmavee foto näitas teist näitu (foto: ' +\n      ocrCold +\n      ' m³, sisestatud: ' +\n      row.typed_cold +\n      ' m³). Salvestasime sisestatud väärtuse.'\n  );\n}\n\nif (row.typed_hot == null && ocrHot != null) {\n  hot = ocrHot;\n} else if (row.typed_hot != null && ocrHot != null && readingsDiffer(row.typed_hot, ocrHot)) {\n  warnings.push(\n    'Soe vee foto näitas teist näitu (foto: ' +\n      ocrHot +\n      ' m³, sisestatud: ' +\n      row.typed_hot +\n      ' m³). Salvestasime sisestatud väärtuse.'\n  );\n}\n\nvar hadPhoto = Boolean(row.cold_photo || row.hot_photo);\nif (hadPhoto && cold == null && hot == null) {\n  if (ocrError) {\n    warnings.push('Fotolt näitu ei õnnestunud tuvastada (OpenAI: ' + ocrError + ').');\n  } else {\n    warnings.push('Fotolt näitu ei õnnestunud tuvastada. Sisestage näit käsitsi või tehke selgem foto.');\n  }\n}\n\nreturn [\n  {\n    json: Object.assign({}, row, {\n      cold_water: cold,\n      hot_water: hot,\n      ocr_cold: ocrCold,\n      ocr_hot: ocrHot,\n      ocr_error: ocrError,\n      reading_warnings: warnings\n    })\n  }\n];"
+      },
+      "id": "3492f80e-9d44-49c4-a3e3-063a754ded0b",
+      "name": "OCR photos + merge readings",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2240,
+        416
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "var row = $input.first().json;\nvar reg = row.registry;\nif (typeof reg === 'string') {\n  try { reg = JSON.parse(reg); } catch (e) { reg = null; }\n}\nif (!reg || !reg.cold_meter_id) {\n  return [{\n    json: Object.assign({}, row, {\n      found: false,\n      validation_ok: false,\n      response_status: 'error',\n      response_message: 'Address or apartment not serviced by this company.'\n    })\n  }];\n}\n\nvar cold = row.cold_water == null ? null : Number(row.cold_water);\nvar hot = row.hot_water == null ? null : Number(row.hot_water);\nvar warnings = Array.isArray(row.reading_warnings) ? row.reading_warnings : [];\n\nif (cold == null && hot == null) {\n  return [{\n    json: Object.assign({}, row, {\n      found: true,\n      registry: reg,\n      validation_ok: false,\n      response_status: 'error',\n      response_message: 'Sisestage vähemalt ühe arvesti näit või lisage loetav foto.'\n    })\n  }];\n}\n\nif (cold != null && !isNaN(cold) && cold < Number(reg.cold_last_reading)) {\n  return [{\n    json: Object.assign({}, row, {\n      found: true,\n      registry: reg,\n      validation_ok: false,\n      response_status: 'error',\n      response_message:\n        'Cold water reading cannot be lower than the previous reading. Please check and try again.'\n    })\n  }];\n}\nif (hot != null && !isNaN(hot) && hot < Number(reg.hot_last_reading)) {\n  return [{\n    json: Object.assign({}, row, {\n      found: true,\n      registry: reg,\n      validation_ok: false,\n      response_status: 'error',\n      response_message:\n        'Hot water reading cannot be lower than the previous reading. Please check and try again.'\n    })\n  }];\n}\n\nvar okMsg = 'Andmed on edukalt töödeldud.';\nif (warnings.length) okMsg += ' ' + warnings.join(' ');\n\nreturn [{\n  json: Object.assign({}, row, {\n    found: true,\n    registry: reg,\n    validation_ok: true,\n    response_status: 'success',\n    response_message: okMsg,\n    reading_warnings: warnings\n  })\n}];"
+      },
+      "id": "7980d9a1-4e12-4eed-9c4e-14111f2538f0",
+      "name": "Parse registry + validate",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2464,
+        416
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "found",
+              "leftValue": "={{ $json.found === true }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              },
+              "rightValue": ""
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "0814b626-dacf-4f5e-9552-1b1088152a94",
+      "name": "Apartment found?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2688,
+        416
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "ok",
+              "leftValue": "={{ $json.validation_ok === true }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              },
+              "rightValue": ""
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "06542200-564a-4fb8-bfbb-18f164151c80",
+      "name": "Validation OK?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2912,
+        224
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "wm-alert-email",
+              "name": "wm_alert_email",
+              "type": "string",
+              "value": "Aleksandr@arhangelski.com"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "d85548fa-8def-422d-abc7-9d7c70050095",
+      "name": "WM alert settings",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3136,
+        624
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "var row = $input.first().json;\nvar r = row.registry;\nvar items = [];\nvar t = row.timestamp;\n\nif (row.cold_water != null && !isNaN(Number(row.cold_water))) {\n  items.push({\n    meter_id: String(r.cold_meter_id),\n    client_id: String(r.client_id),\n    value: Number(row.cold_water),\n    value_type: 'reading',\n    time: t\n  });\n}\nif (row.hot_water != null && !isNaN(Number(row.hot_water))) {\n  items.push({\n    meter_id: String(r.hot_meter_id),\n    client_id: String(r.client_id),\n    value: Number(row.hot_water),\n    value_type: 'reading',\n    time: t\n  });\n}\n\nvar apt = String(row.apartment || '').replace(/[^a-zA-Z0-9]/g, '');\nreturn [{\n  json: Object.assign({}, row, {\n    korto_body: items,\n    ftp_cold_name: row.year_month + '_' + row.address_slug + '_' + apt + '_cold.jpg',\n    ftp_hot_name: row.year_month + '_' + row.address_slug + '_' + apt + '_hot.jpg',\n    ftp_dir: '/water-meters/' + row.year_month\n  })\n}];"
+      },
+      "id": "f59e4480-5aa5-424d-901f-abb6363f57ac",
+      "name": "Build Korto + FTP names",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3136,
+        176
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://dev.pro.korto.ee/api/readings",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.korto_body) }}",
+        "options": {}
+      },
+      "id": "c90acffa-ac5c-40b6-ac74-cadc4229d3ba",
+      "name": "Korto API push",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3360,
+        176
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "var src = $('Build Korto + FTP names').first().json;\nvar res = $input.first().json;\nvar err = res && res.error;\nvar kortoOk = !err;\nvar errMsg = '';\n\nif (err) {\n  errMsg = String(err.message || err);\n  try {\n    var m = errMsg.match(/\\{[\\s\\S]*\\}/);\n    if (m) {\n      var body = m[0].replace(/\\\\\\\"/g, '\"');\n      var parsed = JSON.parse(body);\n      if (parsed.errors && parsed.errors.length) {\n        errMsg = parsed.errors.map(String).join('; ');\n      }\n    }\n  } catch (e1) {}\n}\n\nreturn [{\n  json: Object.assign({}, src, {\n    korto_ok: kortoOk,\n    korto_error: kortoOk ? null : errMsg,\n    korto_response: kortoOk ? res : null\n  })\n}];"
+      },
+      "id": "fb56b135-dfdc-4604-8065-1137978fe73a",
+      "name": "Restore after Korto",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3584,
+        176
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "ok",
+              "leftValue": "={{ $json.korto_ok === true }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              },
+              "rightValue": ""
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "cffb1699-0743-42f7-a2bd-c59f3f2f2c37",
+      "name": "Korto OK?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        3808,
+        176
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "cold",
+              "leftValue": "={{ String($json.cold_photo || '').trim() !== '' }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              },
+              "rightValue": ""
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "afa5c040-a36e-4fee-8345-183330e12e78",
+      "name": "Cold photo?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        4032,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "var row = $input.first().json;\nvar alertEmail = 'Aleksandr@arhangelski.com';\nvar errMsg = String(row.korto_error || 'Korto API push failed.');\nvar userMsg = 'Andmeid ei õnnestunud salvestada. Palun proovige hiljem uuesti.';\n\nvar lines = [\n  'Veearvestite vorm — Korto API viga',\n  '',\n  'Viga: ' + errMsg,\n  'Aadress: ' + String(row.address || ''),\n  'Korter: ' + String(row.apartment || ''),\n  'Redis võti: ' + String(row.lookup_key || ''),\n  'Külm vesi (m³): ' + (row.cold_water != null ? row.cold_water : '-'),\n  'Soe vesi (m³): ' + (row.hot_water != null ? row.hot_water : '-'),\n  'Elaniku e-post: ' + (row.registry && row.registry.resident_email ? row.registry.resident_email : '-'),\n  'Aeg: ' + String(row.timestamp || '')\n];\n\nreturn [{\n  json: Object.assign({}, row, {\n    wm_alert_email: alertEmail,\n    smtp_error_subject:\n      '[Compath WM] Korto API viga — ' + String(row.address || '').slice(0, 60),\n    smtp_error_text: lines.join('\\n'),\n    response_message: userMsg,\n    response_status: 'error'\n  })\n}];"
+      },
+      "id": "6ceeef19-e6dd-43cc-9ccb-6eb3e4069d52",
+      "name": "Prepare Korto error notify",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5376,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "var row = $input.first().json;\nif (!row.wm_alert_email) {\n  row = $('Prepare error notify').first().json;\n}\n\nvar item = { json: row, binary: {} };\n\nvar apt = String(row.apartment || '').replace(/[^a-zA-Z0-9]/g, '') || 'na';\nvar slug = String(row.address_slug || 'address').slice(0, 80);\nvar ts = String(row.timestamp || '').replace(/[:.]/g, '-').slice(0, 19);\nvar stem = slug + '_apt' + apt + '_' + ts;\n\nfunction attach(key, base64, label) {\n  if (!base64 || String(base64).trim() === '') return;\n  item.binary[key] = {\n    data: String(base64).trim(),\n    mimeType: 'image/jpeg',\n    fileExtension: 'jpg',\n    fileName: stem + '_' + label + '.jpg'\n  };\n}\n\nattach('cold_attachment', row.cold_photo, 'cold');\nattach('hot_attachment', row.hot_photo, 'hot');\n\nreturn [item];"
+      },
+      "id": "48dac276-4341-4bae-b413-48e61fba3c42",
+      "name": "Error email attachments",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5600,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "cold_photo",
+        "options": {
+          "fileName": "={{ $json.ftp_cold_name }}",
+          "mimeType": "image/jpeg"
+        }
+      },
+      "id": "8cc6ecb2-5e78-4c42-ae00-6899807dfcf3",
+      "name": "Cold photo to binary",
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        4256,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "upload",
+        "path": "={{ $json.ftp_dir + '/' + $json.ftp_cold_name }}",
+        "options": {}
+      },
+      "id": "74976fbf-e34b-4378-bb81-8223c8761d7b",
+      "name": "FTP upload cold",
+      "type": "n8n-nodes-base.ftp",
+      "typeVersion": 1,
+      "position": [
+        4480,
+        0
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "hot",
+              "leftValue": "={{ String($json.hot_photo || '').trim() !== '' }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              },
+              "rightValue": ""
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "873d953f-81a9-4984-b62b-6f54773b731b",
+      "name": "Hot photo?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        4704,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "hot_photo",
+        "options": {
+          "fileName": "={{ $json.ftp_hot_name }}",
+          "mimeType": "image/jpeg"
+        }
+      },
+      "id": "a8164b67-584e-4eb1-ac44-5dfa64ddae78",
+      "name": "Hot photo to binary",
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        4928,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "upload",
+        "path": "={{ $json.ftp_dir + '/' + $json.ftp_hot_name }}",
+        "options": {}
+      },
+      "id": "efd23c1a-1a54-4b3f-aa0d-9eae57c22561",
+      "name": "FTP upload hot",
+      "type": "n8n-nodes-base.ftp",
+      "typeVersion": 1,
+      "position": [
+        5152,
+        0
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "fromEmail": "noreply@naidud.compath.ee",
+        "toEmail": "={{ $json.registry.resident_email }}",
+        "subject": "Veearvestite näidud on vastu võetud",
+        "emailFormat": "text",
+        "text": "={{ 'Aadress: ' + $json.address + '\\nKorter: ' + $json.apartment + '\\nKülm vesi: ' + ($json.cold_water != null ? $json.cold_water : '-') + '\\nSoe vesi: ' + ($json.hot_water != null ? $json.hot_water : '-') + '\\nAeg: ' + $json.timestamp }}",
+        "options": {}
+      },
+      "id": "241935e1-5b18-46ef-95ab-94c5b7d21914",
+      "name": "SMTP receipt",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        5376,
+        80
+      ],
+      "webhookId": "d7f9416b-11be-4804-9dc2-df6b12b244e6",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { status: \"success\", message: String($json.response_message || \"Data processed successfully.\"), warnings: $json.reading_warnings || [] } }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "b7e430d9-d413-4399-b94f-dcd45431b2ef",
+      "name": "Respond success",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        5600,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "function randomToken() {\n  var chars = 'abcdefghijklmnopqrstuvwxyz0123456789';\n  var out = '';\n  for (var i = 0; i < 32; i++) {\n    out += chars.charAt(Math.floor(Math.random() * chars.length));\n  }\n  return out;\n}\n\nvar row = $input.first().json;\n\nvar isUnknown = row.found !== true;\nvar errMsg = String(row.response_message || 'Request failed.');\nvar apt = String(row.apartment || '').replace(/[^a-zA-Z0-9]/g, '') || 'na';\nvar slug = String(row.address_slug || 'address').slice(0, 80);\nvar ts = String(row.timestamp || new Date().toISOString()).replace(/[:.]/g, '-').slice(0, 19);\nvar fileStem = slug + '_apt' + apt + '_' + ts;\nvar alertEmail = String(row.wm_alert_email || 'Aleksandr@arhangelski.com').trim() || 'Aleksandr@arhangelski.com';\n\nvar lines = [\n  'Veearvestite vorm — viga',\n  '',\n  'Veateade (kasutajale näidatud): ' + errMsg,\n  'Aadress: ' + String(row.address || ''),\n  'Korter: ' + String(row.apartment || ''),\n  'Redis võti: ' + String(row.lookup_key || ''),\n  'Külm vesi (m³): ' + (row.cold_water != null ? row.cold_water : '-'),\n  'Soe vesi (m³): ' + (row.hot_water != null ? row.hot_water : '-'),\n  'OCR külm: ' + (row.ocr_cold != null ? row.ocr_cold : '-'),\n  'OCR soe: ' + (row.ocr_hot != null ? row.ocr_hot : '-'),\n  'Aeg: ' + String(row.timestamp || ''),\n  'Tüüp: ' + (isUnknown ? 'registreerimata klient' : 'valideerimise viga')\n];\n\nvar confirmToken = null;\nvar confirmUrl = null;\nvar pendingRedisKey = null;\nvar pendingRedisValue = null;\n\nif (isUnknown) {\n  confirmToken = randomToken();\n  pendingRedisKey = 'wm:pending:' + confirmToken;\n  pendingRedisValue = JSON.stringify({\n    lookup_key: String(row.lookup_key || ''),\n    address: String(row.address || ''),\n    apartment: String(row.apartment || ''),\n    cold_water: row.cold_water != null ? Number(row.cold_water) : null,\n    hot_water: row.hot_water != null ? Number(row.hot_water) : null,\n    timestamp: String(row.timestamp || ''),\n    created_at: new Date().toISOString()\n  });\n  confirmUrl =\n    'https://n8n.dbtmuuga.ee/form/wm-register-address?token=' + encodeURIComponent(confirmToken);\n  lines.push('');\n  lines.push('Registreeri aadress Redis registrisse (kinnituse vorm n8n-is):');\n  lines.push(confirmUrl);\n}\n\nreturn [{\n  json: Object.assign({}, row, {\n    wm_alert_email: alertEmail,\n    error_unknown_customer: isUnknown,\n    confirm_token: confirmToken,\n    confirm_url: confirmUrl,\n    pending_redis_key: pendingRedisKey,\n    pending_redis_value: pendingRedisValue,\n    ftp_unknown_dir: '/unknown customers',\n    ftp_unknown_cold_path: isUnknown && row.cold_photo\n      ? '/unknown customers/' + fileStem + '_cold.jpg'\n      : null,\n    ftp_unknown_hot_path: isUnknown && row.hot_photo\n      ? '/unknown customers/' + fileStem + '_hot.jpg'\n      : null,\n    smtp_error_subject:\n      (isUnknown ? '[Compath WM] Registreerimata aadress' : '[Compath WM] Valideerimise viga') +\n      ' — ' +\n      String(row.address || '').slice(0, 60),\n    smtp_error_text: lines.join('\\n')\n  })\n}];"
+      },
+      "id": "959eed6b-5910-4a09-8996-8633cbb7ccf4",
+      "name": "Prepare error notify",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3360,
+        624
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "unk",
+              "leftValue": "={{ $json.error_unknown_customer === true }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              },
+              "rightValue": ""
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "df0aa6fe-5d08-4924-b385-1b0878229951",
+      "name": "Unknown customer?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        3584,
+        624
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "set",
+        "key": "={{ $json.pending_redis_key }}",
+        "value": "={{ $json.pending_redis_value }}"
+      },
+      "id": "50bf1a9b-e068-43ed-b6e5-5ec3e423fd9f",
+      "name": "Redis save pending",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        3808,
+        560
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "cold",
+              "leftValue": "={{ String($json.cold_photo || '').trim() !== '' }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              },
+              "rightValue": ""
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "2c2dcf2a-f0cb-4697-a9a9-246a59bea525",
+      "name": "Error path cold photo?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        4032,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "cold_photo",
+        "options": {
+          "fileName": "={{ $('Prepare error notify').first().json.ftp_unknown_cold_path.split(\"/\").pop() }}",
+          "mimeType": "image/jpeg"
+        }
+      },
+      "id": "62db5ff5-5be9-423b-a47b-209b1fe6f522",
+      "name": "Error cold photo to binary",
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        4256,
+        464
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "upload",
+        "path": "={{ $('Prepare error notify').first().json.ftp_unknown_cold_path }}",
+        "options": {}
+      },
+      "id": "efb2a834-55eb-4b55-8cb2-1230644b2f87",
+      "name": "FTP unknown cold",
+      "type": "n8n-nodes-base.ftp",
+      "typeVersion": 1,
+      "position": [
+        4480,
+        464
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "var src = $('Prepare error notify').first().json;\n\nreturn [{ json: src }];"
+      },
+      "id": "fa068132-f1ac-49a3-ae42-a91e03141eb6",
+      "name": "Restore error payload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4704,
+        464
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "hot",
+              "leftValue": "={{ String($json.hot_photo || '').trim() !== '' }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              },
+              "rightValue": ""
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "df2c6a6d-c645-409f-b169-17b512fdb54f",
+      "name": "Error path hot photo?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        4928,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "hot_photo",
+        "options": {
+          "fileName": "={{ $('Prepare error notify').first().json.ftp_unknown_hot_path.split(\"/\").pop() }}",
+          "mimeType": "image/jpeg"
+        }
+      },
+      "id": "f8229dad-83a6-47ec-b803-bfd0d68923ae",
+      "name": "Error hot photo to binary",
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        5152,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "upload",
+        "path": "={{ $('Prepare error notify').first().json.ftp_unknown_hot_path }}",
+        "options": {}
+      },
+      "id": "dc4f51b9-2ae7-4fa5-bb46-4ee8ce6ad713",
+      "name": "FTP unknown hot",
+      "type": "n8n-nodes-base.ftp",
+      "typeVersion": 1,
+      "position": [
+        5376,
+        480
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "fromEmail": "noreply@naidud.compath.ee",
+        "toEmail": "={{ $json.wm_alert_email }}",
+        "subject": "={{ $json.smtp_error_subject }}",
+        "emailFormat": "text",
+        "text": "={{ $json.smtp_error_text }}",
+        "options": {
+          "attachments": "={{ Object.keys($binary || {}).join(',') }}"
+        }
+      },
+      "id": "e9e0978a-8808-46b3-ba60-dccd9e46a438",
+      "name": "SMTP error alert",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        5824,
+        560
+      ],
+      "webhookId": "0a9b1f7c-fb21-46df-8dcb-4bba99d60b93",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { status: \"error\", message: String($json.response_message || \"Request failed.\") } }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "bf919e34-2acc-455b-80ab-17b9cc366e94",
+      "name": "Respond error",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        6048,
+        560
+      ]
+    }
+  ],
+  "connections": {
+    "Water meter Webhook": {
+      "main": [
+        [
+          {
+            "node": "Normalize input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize input": {
+      "main": [
+        [
+          {
+            "node": "Redis lookup apartment",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge row + registry",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis lookup apartment": {
+      "main": [
+        [
+          {
+            "node": "Merge row + registry",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge row + registry": {
+      "main": [
+        [
+          {
+            "node": "Build OCR bodies",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build OCR bodies": {
+      "main": [
+        [
+          {
+            "node": "OCR cold photo?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OCR cold photo?": {
+      "main": [
+        [
+          {
+            "node": "OCR cold OpenAI",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "OCR hot photo?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OCR cold OpenAI": {
+      "main": [
+        [
+          {
+            "node": "Restore OCR row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Restore OCR row": {
+      "main": [
+        [
+          {
+            "node": "OCR hot photo?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OCR hot photo?": {
+      "main": [
+        [
+          {
+            "node": "OCR hot OpenAI",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "OCR photos + merge readings",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OCR hot OpenAI": {
+      "main": [
+        [
+          {
+            "node": "OCR photos + merge readings",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OCR photos + merge readings": {
+      "main": [
+        [
+          {
+            "node": "Parse registry + validate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse registry + validate": {
+      "main": [
+        [
+          {
+            "node": "Apartment found?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Apartment found?": {
+      "main": [
+        [
+          {
+            "node": "Validation OK?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "WM alert settings",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validation OK?": {
+      "main": [
+        [
+          {
+            "node": "Build Korto + FTP names",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "WM alert settings",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WM alert settings": {
+      "main": [
+        [
+          {
+            "node": "Prepare error notify",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Korto + FTP names": {
+      "main": [
+        [
+          {
+            "node": "Korto API push",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Korto API push": {
+      "main": [
+        [
+          {
+            "node": "Restore after Korto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Restore after Korto": {
+      "main": [
+        [
+          {
+            "node": "Korto OK?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Korto OK?": {
+      "main": [
+        [
+          {
+            "node": "Cold photo?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Korto error notify",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cold photo?": {
+      "main": [
+        [
+          {
+            "node": "Cold photo to binary",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Hot photo?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Korto error notify": {
+      "main": [
+        [
+          {
+            "node": "Error email attachments",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error email attachments": {
+      "main": [
+        [
+          {
+            "node": "SMTP error alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cold photo to binary": {
+      "main": [
+        [
+          {
+            "node": "FTP upload cold",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "FTP upload cold": {
+      "main": [
+        [
+          {
+            "node": "Hot photo?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hot photo?": {
+      "main": [
+        [
+          {
+            "node": "Hot photo to binary",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "SMTP receipt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hot photo to binary": {
+      "main": [
+        [
+          {
+            "node": "FTP upload hot",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "FTP upload hot": {
+      "main": [
+        [
+          {
+            "node": "SMTP receipt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SMTP receipt": {
+      "main": [
+        [
+          {
+            "node": "Respond success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare error notify": {
+      "main": [
+        [
+          {
+            "node": "Unknown customer?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Unknown customer?": {
+      "main": [
+        [
+          {
+            "node": "Redis save pending",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error email attachments",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis save pending": {
+      "main": [
+        [
+          {
+            "node": "Error path cold photo?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error path cold photo?": {
+      "main": [
+        [
+          {
+            "node": "Error cold photo to binary",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error path hot photo?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error cold photo to binary": {
+      "main": [
+        [
+          {
+            "node": "FTP unknown cold",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "FTP unknown cold": {
+      "main": [
+        [
+          {
+            "node": "Restore error payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Restore error payload": {
+      "main": [
+        [
+          {
+            "node": "Error path hot photo?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error path hot photo?": {
+      "main": [
+        [
+          {
+            "node": "Error hot photo to binary",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error email attachments",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error hot photo to binary": {
+      "main": [
+        [
+          {
+            "node": "FTP unknown hot",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "FTP unknown hot": {
+      "main": [
+        [
+          {
+            "node": "Error email attachments",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SMTP error alert": {
+      "main": [
+        [
+          {
+            "node": "Respond error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "description": "Public form webhook: Redis apartment lookup, validate readings, Korto API, FTP photos, SMTP receipt."
+}
