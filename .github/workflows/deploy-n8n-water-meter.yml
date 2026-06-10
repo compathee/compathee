@@ -12,6 +12,9 @@ on:
         required: true
         default: "ZMRAkwLhZ5pHQp5w"
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -42,8 +45,35 @@ jobs:
       - name: Build n8n API payload
         run: |
           set -euo pipefail
-          jq '{name, nodes, connections, settings} + (if has("staticData") then {staticData} else {} end)' "${WORKFLOW_FILE}" > /tmp/n8n-workflow-payload.json
+          jq '
+            {
+              name,
+              nodes,
+              connections,
+              settings: (
+                (.settings // {})
+                | with_entries(
+                    select(
+                      .key as $key
+                      | [
+                          "executionOrder",
+                          "timezone",
+                          "saveDataErrorExecution",
+                          "saveDataSuccessExecution",
+                          "saveExecutionProgress",
+                          "saveManualExecutions",
+                          "executionTimeout",
+                          "errorWorkflow"
+                        ]
+                      | index($key)
+                    )
+                  )
+              )
+            }
+            + (if has("staticData") then {staticData} else {} end)
+          ' "${WORKFLOW_FILE}" > /tmp/n8n-workflow-payload.json
           jq -e '.nodes | length > 0' /tmp/n8n-workflow-payload.json >/dev/null
+          jq -e '(.settings | keys - ["executionOrder", "timezone", "saveDataErrorExecution", "saveDataSuccessExecution", "saveExecutionProgress", "saveManualExecutions", "executionTimeout", "errorWorkflow"]) == []' /tmp/n8n-workflow-payload.json >/dev/null
         env:
           WORKFLOW_FILE: ${{ inputs.workflow_file }}
 
