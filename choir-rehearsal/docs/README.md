@@ -1,24 +1,26 @@
 # Документация Choir Rehearsal
 
+Публичный сайт продукта: **[rehearsal.compath.ee](https://rehearsal.compath.ee)**
+
 ## Файлы
 
 | Файл | Назначение |
 |------|------------|
-| [product-page.html](product-page.html) | Готовая HTML-страница продукта (описание, цены, установка, changelog) |
-| [product-page.md](product-page.md) | Тот же контент в Markdown — для копирования в WordPress |
+| [product-page.html](product-page.html) | Готовая HTML-страница — загрузить на поддомен |
+| [product-page.md](product-page.md) | Markdown-копия для WordPress |
 
-## Публикация на сайте
+## Публикация на rehearsal.compath.ee
 
-### Вариант A — отдельная HTML-страница
+1. Создайте поддомен `rehearsal.compath.ee` у хостинг-провайдера.
+2. Загрузите `product-page.html` как `index.html` в корень поддомена.
+3. Проверьте: https://rehearsal.compath.ee/
+4. В плагине URL уже задан: `CHOIR_REHEARSAL_DOCS_URL` → `https://rehearsal.compath.ee/`
 
-1. Загрузите `product-page.html` на хостинг (например `https://veneta.ee/choir-rehearsal/`).
-2. Добавьте ссылку в меню сайта.
+### Альтернатива — WordPress на поддомене
 
-### Вариант B — страница WordPress
-
-1. Создайте новую страницу (например «Choir Rehearsal»).
-2. Скопируйте содержимое из `product-page.md` или вставьте HTML через блок «Произвольный HTML».
-3. Укажите URL страницы в настройках плагина (константа `CHOIR_REHEARSAL_DOCS_URL`) или обновите ссылку в Settings.
+1. Установите WordPress на `rehearsal.compath.ee`.
+2. Создайте страницу «Главная» с содержимым из `product-page.md` или HTML-блоком.
+3. Настройки → Чтение → статическая главная.
 
 ## Обновление changelog
 
@@ -27,3 +29,4 @@
 - `product-page.html` — секция `#changelog` и версию в hero
 - `product-page.md` — секция «История изменений»
 - `readme.txt` — официальный changelog плагина
+- Загрузите обновлённый `index.html` на поддомен
