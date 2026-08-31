@@ -139,7 +139,7 @@ final class Choir_Rehearsal_Updater {
 			'name'          => $remote['name'],
 			'slug'          => 'choir-rehearsal',
 			'version'       => $remote['version'],
-			'author'        => '<a href="https://rehearsal.compath.ee">Cappella Veneta</a>',
+			'author'        => '<a href="https://compath.ee">Compath OÜ</a>',
 			'homepage'      => $remote['homepage'],
 			'download_link' => $remote['download_url'],
 			'requires'      => $remote['requires'],

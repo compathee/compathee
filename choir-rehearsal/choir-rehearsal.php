@@ -6,7 +6,8 @@
  * Version:           0.3.9
  * Requires at least: 6.4
  * Requires PHP:      8.0
- * Author:            Cappella Veneta
+ * Author:            Compath OÜ
+ * Author URI:        https://compath.ee
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       choir-rehearsal

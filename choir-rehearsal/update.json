@@ -4,6 +4,8 @@
   "version": "0.3.9",
   "download_url": "https://github.com/compathee/compathee/releases/download/choir-rehearsal-v0.3.9/choir-rehearsal.zip",
   "homepage": "https://rehearsal.compath.ee",
+  "author": "Compath OÜ",
+  "author_homepage": "https://compath.ee",
   "requires": "6.4",
   "tested": "6.9",
   "requires_php": "8.0",

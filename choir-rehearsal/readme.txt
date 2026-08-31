@@ -1,5 +1,5 @@
 === Choir Rehearsal ===
-Contributors: compathee
+Contributors: compath
 Tags: choir, audio, rehearsal, voice parts, music
 Requires at least: 6.4
 Tested up to: 6.9

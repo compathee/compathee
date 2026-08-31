@@ -26,6 +26,9 @@ Choir Rehearsal помогает хору учить новые произвед
 
 **Требования:** WordPress 6.4+, PHP 8.0+
 
+**Владелец и разработчик:** Compath OÜ, Tallinn, Estonia  
+Первый заказчик — [Cappella Veneta](https://veneta.ee)
+
 ---
 
 ## Заказ и подписка
@@ -124,5 +127,7 @@ Choir Rehearsal помогает хору учить новые произвед
 ---
 
 **Контакты:** [rehearsal.compath.ee](https://rehearsal.compath.ee) · [compath.ee](https://compath.ee) · [GitHub](https://github.com/compathee/compathee) · order@compath.ee
+
+© Compath OÜ, Tallinn, Estonia
 
 Лицензия GPL-2.0-or-later
