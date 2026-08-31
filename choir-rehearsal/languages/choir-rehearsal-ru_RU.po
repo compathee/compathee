@@ -255,3 +255,24 @@ msgstr "Редактировать"
 
 msgid "Edit song"
 msgstr "Редактировать песню"
+
+msgid "Rehearsal page"
+msgstr "Страница репетиций"
+
+msgid "— Select —"
+msgstr "— Выберите —"
+
+msgid "WordPress page that shows the song list. Must contain the [choir_rehearsal] shortcode. You can add this page to your site menu under Appearance → Menus."
+msgstr "Страница WordPress со списком песен. Должна содержать шорткод [choir_rehearsal]. Её можно добавить в меню сайта: Внешний вид → Меню."
+
+msgid "Refresh permalinks"
+msgstr "Обновить постоянные ссылки"
+
+msgid "Permalinks refreshed and rehearsal page verified."
+msgstr "Постоянные ссылки обновлены, страница репетиций проверена."
+
+msgid "Edit rehearsal page"
+msgstr "Редактировать страницу репетиций"
+
+msgid "Appearance → Menus"
+msgstr "Внешний вид → Меню"

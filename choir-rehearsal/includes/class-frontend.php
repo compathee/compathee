@@ -19,13 +19,17 @@ final class Choir_Rehearsal_Frontend {
 
 	public static function template_include( string $template ): string {
 		if ( Choir_Rehearsal_Access::should_show_login() ) {
+			if ( Choir_Rehearsal_Pages::is_library_page() ) {
+				return $template;
+			}
+
+			global $post;
+			if ( $post instanceof WP_Post && has_shortcode( $post->post_content, 'choir_rehearsal' ) ) {
+				return $template;
+			}
+
 			$login = CHOIR_REHEARSAL_PATH . 'templates/login.php';
 			return file_exists( $login ) ? $login : $template;
-		}
-
-		if ( is_post_type_archive( Choir_Rehearsal_Post_Types::SONG ) ) {
-			$custom = CHOIR_REHEARSAL_PATH . 'templates/archive-choir_song.php';
-			return file_exists( $custom ) ? $custom : $template;
 		}
 
 		if ( is_singular( Choir_Rehearsal_Post_Types::SONG ) ) {
@@ -103,7 +107,11 @@ final class Choir_Rehearsal_Frontend {
 			return true;
 		}
 
-		if ( is_singular( Choir_Rehearsal_Post_Types::SONG ) || is_post_type_archive( Choir_Rehearsal_Post_Types::SONG ) ) {
+		if ( Choir_Rehearsal_Pages::is_library_page() ) {
+			return true;
+		}
+
+		if ( is_singular( Choir_Rehearsal_Post_Types::SONG ) ) {
 			return true;
 		}
 
@@ -277,7 +285,7 @@ final class Choir_Rehearsal_Frontend {
 		$can_manage = Choir_Rehearsal_Access::can_manage();
 		?>
 		<div class="choir-rehearsal-single" data-song-id="<?php echo esc_attr( (string) $song->ID ); ?>">
-			<p class="choir-back-link"><a href="<?php echo esc_url( get_post_type_archive_link( Choir_Rehearsal_Post_Types::SONG ) ); ?>">&larr; <?php esc_html_e( 'All songs', 'choir-rehearsal' ); ?></a></p>
+			<p class="choir-back-link"><a href="<?php echo esc_url( Choir_Rehearsal_Pages::get_library_url() ); ?>">&larr; <?php esc_html_e( 'All songs', 'choir-rehearsal' ); ?></a></p>
 			<div class="choir-song-header">
 				<h1 class="choir-rehearsal-title"><?php echo esc_html( get_the_title( $song ) ); ?></h1>
 				<?php if ( $can_manage ) : ?>

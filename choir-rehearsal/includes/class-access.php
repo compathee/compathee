@@ -28,7 +28,7 @@ final class Choir_Rehearsal_Access {
 			return true;
 		}
 
-		if ( is_post_type_archive( Choir_Rehearsal_Post_Types::SONG ) ) {
+		if ( Choir_Rehearsal_Pages::is_library_page() ) {
 			return true;
 		}
 
@@ -113,7 +113,7 @@ final class Choir_Rehearsal_Access {
 
 		wp_logout();
 
-		$redirect = get_post_type_archive_link( Choir_Rehearsal_Post_Types::SONG ) ?: home_url( '/rehearsal/' );
+		$redirect = Choir_Rehearsal_Pages::get_library_url();
 		wp_safe_redirect( $redirect );
 		exit;
 	}
@@ -145,8 +145,8 @@ final class Choir_Rehearsal_Access {
 			}
 		}
 
-		$archive = get_post_type_archive_link( Choir_Rehearsal_Post_Types::SONG );
-		return is_string( $archive ) && '' !== $archive ? $archive : home_url( '/rehearsal/' );
+		$archive = Choir_Rehearsal_Pages::get_library_url();
+		return $archive;
 	}
 
 	public static function get_current_rehearsal_url(): string {
@@ -157,11 +157,8 @@ final class Choir_Rehearsal_Access {
 			}
 		}
 
-		if ( is_post_type_archive( Choir_Rehearsal_Post_Types::SONG ) ) {
-			$archive = get_post_type_archive_link( Choir_Rehearsal_Post_Types::SONG );
-			if ( is_string( $archive ) && '' !== $archive ) {
-				return $archive;
-			}
+		if ( Choir_Rehearsal_Pages::is_library_page() ) {
+			return Choir_Rehearsal_Pages::get_library_url();
 		}
 
 		global $wp;
@@ -175,7 +172,7 @@ final class Choir_Rehearsal_Access {
 		}
 
 		if ( $user instanceof WP_User && $user->exists() ) {
-			return get_post_type_archive_link( Choir_Rehearsal_Post_Types::SONG ) ?: home_url( '/rehearsal/' );
+			return Choir_Rehearsal_Pages::get_library_url();
 		}
 
 		return $redirect_to;

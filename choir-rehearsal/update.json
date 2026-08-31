@@ -1,8 +1,8 @@
 {
   "name": "Choir Rehearsal",
   "slug": "choir-rehearsal",
-  "version": "0.2.3",
-  "download_url": "https://github.com/compathee/compathee/releases/download/choir-rehearsal-v0.2.3/choir-rehearsal.zip",
+  "version": "0.2.4",
+  "download_url": "https://github.com/compathee/compathee/releases/download/choir-rehearsal-v0.2.4/choir-rehearsal.zip",
   "homepage": "https://veneta.ee",
   "requires": "6.4",
   "tested": "6.9",
@@ -10,6 +10,6 @@
   "last_updated": "2026-08-31",
   "sections": {
     "description": "Private rehearsal library for choirs: songs, voice parts, audio tracks, PDF scores, and a sticky player.",
-    "changelog": "<h4>0.2.3</h4><ul><li>Fix GitHub update check (repo URL encoding)</li></ul><h4>0.2.2</h4><ul><li>Frontend login screen on rehearsal pages</li><li>Role-based toolbar for editors and singers</li></ul>"
+    "changelog": "<h4>0.2.4</h4><ul><li>Rehearsal library uses a standard WordPress page at /rehearsal/</li><li>Auto-create page with shortcode and refresh permalinks on upgrade</li></ul>"
   }
 }

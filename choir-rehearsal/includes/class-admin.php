@@ -43,16 +43,38 @@ final class Choir_Rehearsal_Admin {
 			)
 		);
 
+		Choir_Rehearsal_Pages::register_settings();
 		Choir_Rehearsal_Updater::register_settings();
 	}
 
 	public static function render_settings_page(): void {
+		if ( isset( $_GET['choir_rewrites_flushed'] ) ) {
+			echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Permalinks refreshed and rehearsal page verified.', 'choir-rehearsal' ) . '</p></div>';
+		}
+
+		$library_page_id = Choir_Rehearsal_Pages::get_page_id();
 		?>
 		<div class="wrap">
 			<h1><?php esc_html_e( 'Choir Rehearsal Settings', 'choir-rehearsal' ); ?></h1>
 			<form method="post" action="options.php">
 				<?php settings_fields( 'choir_rehearsal_settings' ); ?>
 				<table class="form-table" role="presentation">
+					<tr>
+						<th scope="row"><?php esc_html_e( 'Rehearsal page', 'choir-rehearsal' ); ?></th>
+						<td>
+							<?php
+							wp_dropdown_pages(
+								array(
+									'name'              => Choir_Rehearsal_Pages::OPTION_PAGE_ID,
+									'selected'          => $library_page_id,
+									'show_option_none'  => __( '— Select —', 'choir-rehearsal' ),
+									'option_none_value' => '0',
+								)
+							);
+							?>
+							<p class="description"><?php esc_html_e( 'WordPress page that shows the song list. Must contain the [choir_rehearsal] shortcode. You can add this page to your site menu under Appearance → Menus.', 'choir-rehearsal' ); ?></p>
+						</td>
+					</tr>
 					<tr>
 						<th scope="row"><?php esc_html_e( 'Require login', 'choir-rehearsal' ); ?></th>
 						<td>
@@ -90,16 +112,26 @@ final class Choir_Rehearsal_Admin {
 				<a class="button button-secondary" href="<?php echo esc_url( Choir_Rehearsal_Updater::get_check_updates_url() ); ?>">
 					<?php esc_html_e( 'Check for updates now', 'choir-rehearsal' ); ?>
 				</a>
+				<a class="button button-secondary" href="<?php echo esc_url( Choir_Rehearsal_Pages::get_flush_rewrites_url() ); ?>">
+					<?php esc_html_e( 'Refresh permalinks', 'choir-rehearsal' ); ?>
+				</a>
 			</p>
 			<p>
 				<?php
 				printf(
-					/* translators: %s: archive URL */
+					/* translators: %s: library page URL */
 					esc_html__( 'Song list URL: %s', 'choir-rehearsal' ),
-					'<code>' . esc_html( (string) get_post_type_archive_link( Choir_Rehearsal_Post_Types::SONG ) ) . '</code>'
+					'<code>' . esc_html( Choir_Rehearsal_Pages::get_library_url() ) . '</code>'
 				);
 				?>
 			</p>
+			<?php if ( $library_page_id > 0 ) : ?>
+				<p>
+					<a href="<?php echo esc_url( get_edit_post_link( $library_page_id, 'raw' ) ?: '' ); ?>"><?php esc_html_e( 'Edit rehearsal page', 'choir-rehearsal' ); ?></a>
+					|
+					<a href="<?php echo esc_url( admin_url( 'nav-menus.php' ) ); ?>"><?php esc_html_e( 'Appearance → Menus', 'choir-rehearsal' ); ?></a>
+				</p>
+			<?php endif; ?>
 		</div>
 		<?php
 	}
