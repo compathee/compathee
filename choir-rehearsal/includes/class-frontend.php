@@ -11,6 +11,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 final class Choir_Rehearsal_Frontend {
 
+	private static bool $shortcode_rendered = false;
+
 	public static function register(): void {
 		add_filter( 'template_include', array( self::class, 'template_include' ) );
 		add_shortcode( 'choir_rehearsal', array( self::class, 'render_archive_shortcode' ) );
@@ -120,6 +122,12 @@ final class Choir_Rehearsal_Frontend {
 	}
 
 	public static function render_archive_shortcode(): string {
+		if ( self::$shortcode_rendered ) {
+			return '';
+		}
+
+		self::$shortcode_rendered = true;
+
 		ob_start();
 
 		if ( Choir_Rehearsal_Access::should_show_login() ) {

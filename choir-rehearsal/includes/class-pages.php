@@ -44,7 +44,10 @@ final class Choir_Rehearsal_Pages {
 			return;
 		}
 
-		self::ensure_library_page();
+		$page_id = self::ensure_library_page();
+		if ( $page_id > 0 ) {
+			self::normalize_page_content( $page_id );
+		}
 
 		if ( function_exists( 'flush_rewrite_rules' ) ) {
 			flush_rewrite_rules( false );
@@ -112,21 +115,46 @@ final class Choir_Rehearsal_Pages {
 	}
 
 	private static function ensure_page_has_shortcode( int $page_id ): void {
+		self::normalize_page_content( $page_id );
+	}
+
+	public static function page_has_shortcode( string $content ): bool {
+		if ( has_shortcode( $content, 'choir_rehearsal' ) ) {
+			return true;
+		}
+
+		return false !== stripos( $content, '[choir_rehearsal' );
+	}
+
+	public static function normalize_page_content( int $page_id ): void {
 		$post = get_post( $page_id );
 		if ( ! $post instanceof WP_Post ) {
 			return;
 		}
 
-		if ( has_shortcode( $post->post_content, 'choir_rehearsal' ) ) {
+		$content     = (string) $post->post_content;
+		$shortcodes  = self::count_shortcodes( $content );
+		$has_one     = 1 === $shortcodes && self::page_has_shortcode( $content );
+		$only_markup = '' === trim( wp_strip_all_tags( $content ) ) && self::page_has_shortcode( $content );
+
+		if ( $has_one || ( $only_markup && $shortcodes >= 1 ) ) {
 			return;
 		}
 
 		wp_update_post(
 			array(
 				'ID'           => $page_id,
-				'post_content' => trim( $post->post_content . "\n\n[choir_rehearsal]" ),
+				'post_content' => "[choir_rehearsal]\n",
 			)
 		);
+	}
+
+	private static function count_shortcodes( string $content ): int {
+		if ( ! preg_match_all( '/\[choir_rehearsal(?:\s|\]|\/)/i', $content, $matches ) ) {
+			return 0;
+		}
+
+		return count( $matches[0] );
 	}
 
 	public static function get_page_id(): int {
@@ -173,6 +201,10 @@ final class Choir_Rehearsal_Pages {
 		check_admin_referer( 'choir_rehearsal_flush_rewrites' );
 
 		self::ensure_library_page();
+		$page_id = self::get_page_id();
+		if ( $page_id > 0 ) {
+			self::normalize_page_content( $page_id );
+		}
 		flush_rewrite_rules( false );
 
 		wp_safe_redirect( admin_url( 'edit.php?post_type=choir_song&page=choir-rehearsal-settings&choir_rewrites_flushed=1' ) );
