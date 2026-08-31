@@ -65,8 +65,8 @@ final class Choir_Rehearsal_Admin {
 					<tr>
 						<th scope="row"><?php esc_html_e( 'Update JSON URL', 'choir-rehearsal' ); ?></th>
 						<td>
-							<input type="url" class="regular-text" name="choir_rehearsal_update_json_url" value="<?php echo esc_attr( (string) get_option( 'choir_rehearsal_update_json_url', '' ) ); ?>" placeholder="https://example.com/updates/choir-rehearsal.json" />
-							<p class="description"><?php esc_html_e( 'Optional. If empty, the plugin checks GitHub Releases.', 'choir-rehearsal' ); ?></p>
+							<input type="url" class="regular-text" name="choir_rehearsal_update_json_url" value="<?php echo esc_attr( (string) get_option( 'choir_rehearsal_update_json_url', '' ) ); ?>" placeholder="https://raw.githubusercontent.com/compathee/compathee/main/choir-rehearsal/update.json" />
+							<p class="description"><?php esc_html_e( 'Optional. If empty, the plugin checks GitHub Releases. Fallback JSON: choir-rehearsal/update.json in the repository.', 'choir-rehearsal' ); ?></p>
 						</td>
 					</tr>
 					<tr>
@@ -86,6 +86,11 @@ final class Choir_Rehearsal_Admin {
 				</table>
 				<?php submit_button(); ?>
 			</form>
+			<p>
+				<a class="button button-secondary" href="<?php echo esc_url( Choir_Rehearsal_Updater::get_check_updates_url() ); ?>">
+					<?php esc_html_e( 'Check for updates now', 'choir-rehearsal' ); ?>
+				</a>
+			</p>
 			<p>
 				<?php
 				printf(

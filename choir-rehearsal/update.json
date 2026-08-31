@@ -10,6 +10,6 @@
   "last_updated": "2026-08-31",
   "sections": {
     "description": "Private rehearsal library for choirs: songs, voice parts, audio tracks, PDF scores, and a sticky player.",
-    "changelog": "<h4>0.2.3</h4><ul><li>Fix GitHub update check (repo URL encoding)</li></ul><h4>0.2.2</h4><ul><li>Frontend login screen on rehearsal pages</li><li>Role-based toolbar for editors and singers</li></ul><h4>0.2.1</h4><ul><li>WordPress-native updates via GitHub Releases or custom JSON URL</li></ul><h4>0.2.0</h4><ul><li>PDF sheet music attachment and page viewer</li></ul>"
+    "changelog": "<h4>0.2.3</h4><ul><li>Fix GitHub update check (repo URL encoding)</li></ul><h4>0.2.2</h4><ul><li>Frontend login screen on rehearsal pages</li><li>Role-based toolbar for editors and singers</li></ul>"
   }
 }
