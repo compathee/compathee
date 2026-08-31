@@ -204,3 +204,54 @@ msgstr "Вперёд"
 
 msgid "Voice tracks"
 msgstr "Треки по голосам"
+
+msgid "Security check failed. Please try again."
+msgstr "Ошибка проверки безопасности. Попробуйте снова."
+
+msgid "Please enter your username and password."
+msgstr "Введите имя пользователя и пароль."
+
+msgid "Sign in with your WordPress account to access songs, sheet music, and voice tracks."
+msgstr "Войдите через учётную запись WordPress, чтобы открыть песни, ноты и треки по голосам."
+
+msgid "Username or email"
+msgstr "Имя пользователя или email"
+
+msgid "Password"
+msgstr "Пароль"
+
+msgid "Remember me"
+msgstr "Запомнить меня"
+
+msgid "Sign in"
+msgstr "Войти"
+
+msgid "Forgot your password?"
+msgstr "Забыли пароль?"
+
+msgid "Signed in as"
+msgstr "Вы вошли как"
+
+msgid "Editor"
+msgstr "Редактор"
+
+msgid "Singer"
+msgstr "Певец"
+
+msgid "Add song"
+msgstr "Добавить песню"
+
+msgid "Manage library"
+msgstr "Управление библиотекой"
+
+msgid "Sign out"
+msgstr "Выйти"
+
+msgid "Add the first song"
+msgstr "Добавить первую песню"
+
+msgid "Edit"
+msgstr "Редактировать"
+
+msgid "Edit song"
+msgstr "Редактировать песню"

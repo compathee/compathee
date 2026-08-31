@@ -4,7 +4,7 @@ Tags: choir, audio, rehearsal, voice parts, music
 Requires at least: 6.4
 Tested up to: 6.9
 Requires PHP: 8.0
-Stable tag: 0.2.1
+Stable tag: 0.2.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -42,6 +42,10 @@ By default only logged-in users can view `/rehearsal/`. Change this under **Choi
 Yes. Use the shortcode `[choir_rehearsal]`.
 
 == Changelog ==
+
+= 0.2.2 =
+* Frontend login screen on rehearsal pages instead of redirect to wp-login.php
+* Role-based toolbar: editors manage songs, singers view and listen only
 
 = 0.2.1 =
 * WordPress-native plugin updates via GitHub Releases or custom JSON URL

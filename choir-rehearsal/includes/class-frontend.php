@@ -18,6 +18,11 @@ final class Choir_Rehearsal_Frontend {
 	}
 
 	public static function template_include( string $template ): string {
+		if ( Choir_Rehearsal_Access::should_show_login() ) {
+			$login = CHOIR_REHEARSAL_PATH . 'templates/login.php';
+			return file_exists( $login ) ? $login : $template;
+		}
+
 		if ( is_post_type_archive( Choir_Rehearsal_Post_Types::SONG ) ) {
 			$custom = CHOIR_REHEARSAL_PATH . 'templates/archive-choir_song.php';
 			return file_exists( $custom ) ? $custom : $template;
@@ -42,6 +47,11 @@ final class Choir_Rehearsal_Frontend {
 			array(),
 			CHOIR_REHEARSAL_VERSION
 		);
+
+		if ( Choir_Rehearsal_Access::should_show_login() ) {
+			return;
+		}
+
 		wp_enqueue_script(
 			'choir-rehearsal-player',
 			CHOIR_REHEARSAL_URL . 'public/js/player.js',
@@ -89,6 +99,10 @@ final class Choir_Rehearsal_Frontend {
 	}
 
 	private static function should_enqueue(): bool {
+		if ( Choir_Rehearsal_Access::should_show_login() ) {
+			return true;
+		}
+
 		if ( is_singular( Choir_Rehearsal_Post_Types::SONG ) || is_post_type_archive( Choir_Rehearsal_Post_Types::SONG ) ) {
 			return true;
 		}
@@ -99,8 +113,108 @@ final class Choir_Rehearsal_Frontend {
 
 	public static function render_archive_shortcode(): string {
 		ob_start();
-		self::render_song_list();
+
+		if ( Choir_Rehearsal_Access::should_show_login() ) {
+			self::render_login_form();
+		} else {
+			self::render_user_bar();
+			self::render_song_list();
+		}
+
 		return (string) ob_get_clean();
+	}
+
+	public static function render_login_form(): void {
+		$error      = Choir_Rehearsal_Access::get_login_error();
+		$redirect   = Choir_Rehearsal_Access::get_requested_redirect_url();
+		?>
+		<div class="choir-rehearsal-login">
+			<div class="choir-rehearsal-login__card">
+				<h1 class="choir-rehearsal-title"><?php esc_html_e( 'Rehearsal Library', 'choir-rehearsal' ); ?></h1>
+				<p class="choir-rehearsal-login__intro">
+					<?php esc_html_e( 'Sign in with your WordPress account to access songs, sheet music, and voice tracks.', 'choir-rehearsal' ); ?>
+				</p>
+
+				<?php if ( '' !== $error ) : ?>
+					<div class="choir-rehearsal-login__error" role="alert">
+						<?php echo esc_html( $error ); ?>
+					</div>
+				<?php endif; ?>
+
+				<form class="choir-rehearsal-login__form" method="post" action="<?php echo esc_url( Choir_Rehearsal_Access::get_current_rehearsal_url() ); ?>">
+					<?php wp_nonce_field( 'choir_rehearsal_login', 'choir_rehearsal_login_nonce' ); ?>
+					<input type="hidden" name="choir_rehearsal_login" value="1" />
+					<input type="hidden" name="redirect_to" value="<?php echo esc_url( $redirect ); ?>" />
+
+					<p class="choir-rehearsal-login__field">
+						<label for="choir-user-login"><?php esc_html_e( 'Username or email', 'choir-rehearsal' ); ?></label>
+						<input type="text" name="log" id="choir-user-login" autocomplete="username" required />
+					</p>
+
+					<p class="choir-rehearsal-login__field">
+						<label for="choir-user-pass"><?php esc_html_e( 'Password', 'choir-rehearsal' ); ?></label>
+						<input type="password" name="pwd" id="choir-user-pass" autocomplete="current-password" required />
+					</p>
+
+					<p class="choir-rehearsal-login__remember">
+						<label>
+							<input type="checkbox" name="rememberme" value="forever" />
+							<?php esc_html_e( 'Remember me', 'choir-rehearsal' ); ?>
+						</label>
+					</p>
+
+					<p class="choir-rehearsal-login__submit">
+						<button type="submit" class="choir-rehearsal-login__button"><?php esc_html_e( 'Sign in', 'choir-rehearsal' ); ?></button>
+					</p>
+				</form>
+
+				<p class="choir-rehearsal-login__help">
+					<a href="<?php echo esc_url( wp_lostpassword_url( $redirect ) ); ?>">
+						<?php esc_html_e( 'Forgot your password?', 'choir-rehearsal' ); ?>
+					</a>
+				</p>
+			</div>
+		</div>
+		<?php
+	}
+
+	public static function render_user_bar(): void {
+		if ( ! is_user_logged_in() ) {
+			return;
+		}
+
+		$user = wp_get_current_user();
+		if ( ! $user instanceof WP_User || ! $user->exists() ) {
+			return;
+		}
+
+		$can_manage = Choir_Rehearsal_Access::can_manage();
+		?>
+		<div class="choir-user-bar">
+			<div class="choir-user-bar__identity">
+				<span class="choir-user-bar__label"><?php esc_html_e( 'Signed in as', 'choir-rehearsal' ); ?></span>
+				<strong class="choir-user-bar__name"><?php echo esc_html( $user->display_name ); ?></strong>
+				<?php if ( $can_manage ) : ?>
+					<span class="choir-user-bar__role"><?php esc_html_e( 'Editor', 'choir-rehearsal' ); ?></span>
+				<?php else : ?>
+					<span class="choir-user-bar__role"><?php esc_html_e( 'Singer', 'choir-rehearsal' ); ?></span>
+				<?php endif; ?>
+			</div>
+			<div class="choir-user-bar__actions">
+				<?php if ( $can_manage ) : ?>
+					<a class="choir-user-bar__link" href="<?php echo esc_url( admin_url( 'post-new.php?post_type=' . Choir_Rehearsal_Post_Types::SONG ) ); ?>">
+						<?php esc_html_e( 'Add song', 'choir-rehearsal' ); ?>
+					</a>
+					<a class="choir-user-bar__link" href="<?php echo esc_url( admin_url( 'edit.php?post_type=' . Choir_Rehearsal_Post_Types::SONG ) ); ?>">
+						<?php esc_html_e( 'Manage library', 'choir-rehearsal' ); ?>
+					</a>
+				<?php endif; ?>
+				<a class="choir-user-bar__link choir-user-bar__link--muted" href="<?php echo esc_url( Choir_Rehearsal_Access::get_logout_url() ); ?>">
+					<?php esc_html_e( 'Sign out', 'choir-rehearsal' ); ?>
+				</a>
+			</div>
+		</div>
+		<?php
 	}
 
 	public static function render_song_list(): void {
@@ -113,27 +227,42 @@ final class Choir_Rehearsal_Frontend {
 				'post_status'    => 'publish',
 			)
 		);
+		$can_manage = Choir_Rehearsal_Access::can_manage();
 		?>
 		<div class="choir-rehearsal-archive">
 			<h1 class="choir-rehearsal-title"><?php esc_html_e( 'Rehearsal Library', 'choir-rehearsal' ); ?></h1>
 			<?php if ( empty( $songs ) ) : ?>
 				<p><?php esc_html_e( 'No songs yet.', 'choir-rehearsal' ); ?></p>
+				<?php if ( $can_manage ) : ?>
+					<p>
+						<a class="choir-user-bar__link" href="<?php echo esc_url( admin_url( 'post-new.php?post_type=' . Choir_Rehearsal_Post_Types::SONG ) ); ?>">
+							<?php esc_html_e( 'Add the first song', 'choir-rehearsal' ); ?>
+						</a>
+					</p>
+				<?php endif; ?>
 			<?php else : ?>
 				<ul class="choir-song-list">
 					<?php foreach ( $songs as $song ) : ?>
 						<li>
-							<a href="<?php echo esc_url( get_permalink( $song ) ); ?>">
-								<?php echo esc_html( get_the_title( $song ) ); ?>
-							</a>
-							<span class="choir-track-count">
-								<?php
-								printf(
-									/* translators: %d: number of tracks */
-									esc_html( _n( '%d track', '%d tracks', count( Choir_Rehearsal_Post_Types::get_tracks_for_song( (int) $song->ID ) ), 'choir-rehearsal' ) ),
-									count( Choir_Rehearsal_Post_Types::get_tracks_for_song( (int) $song->ID ) )
-								);
-								?>
-							</span>
+							<div class="choir-song-list__main">
+								<a href="<?php echo esc_url( get_permalink( $song ) ); ?>">
+									<?php echo esc_html( get_the_title( $song ) ); ?>
+								</a>
+								<span class="choir-track-count">
+									<?php
+									printf(
+										/* translators: %d: number of tracks */
+										esc_html( _n( '%d track', '%d tracks', count( Choir_Rehearsal_Post_Types::get_tracks_for_song( (int) $song->ID ) ), 'choir-rehearsal' ) ),
+										count( Choir_Rehearsal_Post_Types::get_tracks_for_song( (int) $song->ID ) )
+									);
+									?>
+								</span>
+							</div>
+							<?php if ( $can_manage ) : ?>
+								<a class="choir-song-edit" href="<?php echo esc_url( get_edit_post_link( $song->ID, 'raw' ) ?: '' ); ?>">
+									<?php esc_html_e( 'Edit', 'choir-rehearsal' ); ?>
+								</a>
+							<?php endif; ?>
 						</li>
 					<?php endforeach; ?>
 				</ul>
@@ -143,12 +272,20 @@ final class Choir_Rehearsal_Frontend {
 	}
 
 	public static function render_song( WP_Post $song ): void {
-		$tracks  = Choir_Rehearsal_Post_Types::get_tracks_for_song( (int) $song->ID );
-		$pdf_url = Choir_Rehearsal_Post_Types::get_score_pdf_url( (int) $song->ID );
+		$tracks     = Choir_Rehearsal_Post_Types::get_tracks_for_song( (int) $song->ID );
+		$pdf_url    = Choir_Rehearsal_Post_Types::get_score_pdf_url( (int) $song->ID );
+		$can_manage = Choir_Rehearsal_Access::can_manage();
 		?>
 		<div class="choir-rehearsal-single" data-song-id="<?php echo esc_attr( (string) $song->ID ); ?>">
 			<p class="choir-back-link"><a href="<?php echo esc_url( get_post_type_archive_link( Choir_Rehearsal_Post_Types::SONG ) ); ?>">&larr; <?php esc_html_e( 'All songs', 'choir-rehearsal' ); ?></a></p>
-			<h1 class="choir-rehearsal-title"><?php echo esc_html( get_the_title( $song ) ); ?></h1>
+			<div class="choir-song-header">
+				<h1 class="choir-rehearsal-title"><?php echo esc_html( get_the_title( $song ) ); ?></h1>
+				<?php if ( $can_manage ) : ?>
+					<a class="choir-song-edit" href="<?php echo esc_url( get_edit_post_link( $song->ID, 'raw' ) ?: '' ); ?>">
+						<?php esc_html_e( 'Edit song', 'choir-rehearsal' ); ?>
+					</a>
+				<?php endif; ?>
+			</div>
 			<?php if ( $song->post_content ) : ?>
 				<div class="choir-song-notes"><?php echo wp_kses_post( wpautop( $song->post_content ) ); ?></div>
 			<?php endif; ?>

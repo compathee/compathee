@@ -1,6 +1,6 @@
 <?php
 /**
- * Archive template for rehearsal songs.
+ * Frontend login template for rehearsal pages.
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -10,10 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 get_header();
 ?>
 <main id="primary" class="site-main choir-rehearsal-main">
-	<?php
-	Choir_Rehearsal_Frontend::render_user_bar();
-	Choir_Rehearsal_Frontend::render_song_list();
-	?>
+	<?php Choir_Rehearsal_Frontend::render_login_form(); ?>
 </main>
 <?php
 get_footer();
