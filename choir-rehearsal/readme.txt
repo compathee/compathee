@@ -43,6 +43,9 @@ Yes. Use the shortcode `[choir_rehearsal]`.
 
 == Changelog ==
 
+= 0.3.10 =
+* Plugin author shown as Compath OÜ (was Cappella Veneta in older builds)
+
 = 0.3.9 =
 * Product page URL set to rehearsal.compath.ee
 
