@@ -276,3 +276,42 @@ msgstr "Редактировать страницу репетиций"
 
 msgid "Appearance → Menus"
 msgstr "Внешний вид → Меню"
+
+msgid "Record"
+msgstr "Запись"
+
+msgid "Start recording"
+msgstr "Начать запись"
+
+msgid "Stop"
+msgstr "Стоп"
+
+msgid "Use recording"
+msgstr "Использовать запись"
+
+msgid "Cancel"
+msgstr "Отмена"
+
+msgid "Recording…"
+msgstr "Запись…"
+
+msgid "Click start and sing your voice part."
+msgstr "Нажмите «Начать запись» и спойте свою партию."
+
+msgid "Uploading…"
+msgstr "Загрузка…"
+
+msgid "Microphone access was denied."
+msgstr "Доступ к микрофону запрещён."
+
+msgid "Microphone recording is not supported in this browser."
+msgstr "Запись с микрофона не поддерживается в этом браузере."
+
+msgid "Upload failed. Please try again."
+msgstr "Ошибка загрузки. Попробуйте снова."
+
+msgid "Save the song first, then you can record voice tracks."
+msgstr "Сначала сохраните песню, затем можно записывать треки."
+
+msgid "Add one row per voice part. Upload an audio file, record from your microphone, or pick one from the Media Library."
+msgstr "Добавьте строку для каждого голоса: загрузите файл, запишите с микрофона или выберите из медиатеки."

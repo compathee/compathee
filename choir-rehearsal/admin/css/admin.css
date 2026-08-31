@@ -13,8 +13,68 @@
 	display: inline-block;
 	margin-right: 8px;
 	min-width: 160px;
+	font-weight: 600;
 }
 
 .choir-track-row td {
-	vertical-align: middle;
+	vertical-align: top;
+}
+
+.choir-track-audio-cell {
+	min-width: 320px;
+}
+
+.choir-track-audio-controls {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px;
+	margin-bottom: 8px;
+}
+
+.choir-recorder-panel {
+	margin-top: 8px;
+	padding: 12px;
+	border: 1px solid #c3c4c7;
+	border-radius: 8px;
+	background: #f6f7f7;
+	max-width: 520px;
+}
+
+.choir-recorder-panel.is-hidden {
+	display: none;
+}
+
+.choir-recorder-panel__status {
+	margin: 0 0 8px;
+}
+
+.choir-recorder-panel__timer {
+	margin: 0 0 8px;
+	font-size: 1.4rem;
+	font-weight: 700;
+	font-variant-numeric: tabular-nums;
+}
+
+.choir-recorder-panel__preview {
+	display: block;
+	width: 100%;
+	margin-bottom: 8px;
+}
+
+.choir-recorder-panel__actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+.choir-record-audio {
+	border-color: #1f4fd8;
+	color: #1f4fd8;
+}
+
+.choir-record-audio:hover {
+	background: #eef4ff;
+	border-color: #173ea8;
+	color: #173ea8;
 }

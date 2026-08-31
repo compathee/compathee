@@ -203,16 +203,31 @@ final class Choir_Rehearsal_Admin {
 			'choir-rehearsal-admin',
 			'choirRehearsalAdmin',
 			array(
-				'voices'       => Choir_Rehearsal_Voice_Types::choices(),
-				'selectAudio'  => __( 'Select audio', 'choir-rehearsal' ),
-				'useAudio'     => __( 'Use this audio', 'choir-rehearsal' ),
-				'removeTrack'  => __( 'Remove', 'choir-rehearsal' ),
-				'trackLabel'   => __( 'Track', 'choir-rehearsal' ),
-				'noAudio'      => __( 'No audio selected', 'choir-rehearsal' ),
-				'selectPdf'    => __( 'Select PDF', 'choir-rehearsal' ),
-				'usePdf'       => __( 'Use this PDF', 'choir-rehearsal' ),
-				'noPdf'        => __( 'No PDF selected', 'choir-rehearsal' ),
-				'removePdf'    => __( 'Remove PDF', 'choir-rehearsal' ),
+				'ajaxUrl'        => admin_url( 'admin-ajax.php' ),
+				'postId'         => $screen && 'post' === $screen->base ? (int) get_the_ID() : 0,
+				'recordingNonce' => wp_create_nonce( 'choir_rehearsal_recording' ),
+				'voices'         => Choir_Rehearsal_Voice_Types::choices(),
+				'selectAudio'    => __( 'Upload / Select', 'choir-rehearsal' ),
+				'recordAudio'    => __( 'Record', 'choir-rehearsal' ),
+				'useAudio'       => __( 'Use this audio', 'choir-rehearsal' ),
+				'removeTrack'    => __( 'Remove', 'choir-rehearsal' ),
+				'trackLabel'     => __( 'Track', 'choir-rehearsal' ),
+				'noAudio'        => __( 'No audio selected', 'choir-rehearsal' ),
+				'selectPdf'      => __( 'Select PDF', 'choir-rehearsal' ),
+				'usePdf'         => __( 'Use this PDF', 'choir-rehearsal' ),
+				'noPdf'          => __( 'No PDF selected', 'choir-rehearsal' ),
+				'removePdf'      => __( 'Remove PDF', 'choir-rehearsal' ),
+				'startRecording' => __( 'Start recording', 'choir-rehearsal' ),
+				'stopRecording'  => __( 'Stop', 'choir-rehearsal' ),
+				'useRecording'   => __( 'Use recording', 'choir-rehearsal' ),
+				'cancelRecording'=> __( 'Cancel', 'choir-rehearsal' ),
+				'recording'      => __( 'Recording…', 'choir-rehearsal' ),
+				'readyToRecord'  => __( 'Click start and sing your voice part.', 'choir-rehearsal' ),
+				'uploading'      => __( 'Uploading…', 'choir-rehearsal' ),
+				'micDenied'      => __( 'Microphone access was denied.', 'choir-rehearsal' ),
+				'micUnavailable' => __( 'Microphone recording is not supported in this browser.', 'choir-rehearsal' ),
+				'uploadFailed'   => __( 'Upload failed. Please try again.', 'choir-rehearsal' ),
+				'saveSongFirst'  => __( 'Save the song first, then you can record voice tracks.', 'choir-rehearsal' ),
 			)
 		);
 	}
@@ -246,7 +261,7 @@ final class Choir_Rehearsal_Admin {
 		$voices = Choir_Rehearsal_Voice_Types::choices();
 		?>
 		<div class="choir-tracks-wrap">
-			<p class="description"><?php esc_html_e( 'Add one row per voice part. Upload an MP3/WAV file or pick one from the Media Library.', 'choir-rehearsal' ); ?></p>
+			<p class="description"><?php esc_html_e( 'Add one row per voice part. Upload an audio file, record from your microphone, or pick one from the Media Library.', 'choir-rehearsal' ); ?></p>
 			<table class="widefat choir-tracks-table">
 				<thead>
 					<tr>
@@ -297,10 +312,24 @@ final class Choir_Rehearsal_Admin {
 					<?php endforeach; ?>
 				</select>
 			</td>
-			<td>
+			<td class="choir-track-audio-cell">
 				<input type="hidden" class="choir-audio-id" name="choir_tracks[<?php echo esc_attr( (string) $index ); ?>][audio_id]" value="<?php echo esc_attr( (string) $audio_id ); ?>" />
-				<span class="choir-audio-name"><?php echo esc_html( $filename ?: __( 'No audio selected', 'choir-rehearsal' ) ); ?></span>
-				<button type="button" class="button choir-select-audio"><?php esc_html_e( 'Upload / Select', 'choir-rehearsal' ); ?></button>
+				<div class="choir-track-audio-controls">
+					<span class="choir-audio-name"><?php echo esc_html( $filename ?: __( 'No audio selected', 'choir-rehearsal' ) ); ?></span>
+					<button type="button" class="button choir-select-audio"><?php esc_html_e( 'Upload / Select', 'choir-rehearsal' ); ?></button>
+					<button type="button" class="button choir-record-audio"><?php esc_html_e( 'Record', 'choir-rehearsal' ); ?></button>
+				</div>
+				<div class="choir-recorder-panel is-hidden" aria-hidden="true">
+					<p class="choir-recorder-panel__status"><?php esc_html_e( 'Click start and sing your voice part.', 'choir-rehearsal' ); ?></p>
+					<p class="choir-recorder-panel__timer">00:00</p>
+					<audio class="choir-recorder-panel__preview" controls hidden></audio>
+					<div class="choir-recorder-panel__actions">
+						<button type="button" class="button button-primary choir-recorder-start"><?php esc_html_e( 'Start recording', 'choir-rehearsal' ); ?></button>
+						<button type="button" class="button choir-recorder-stop" disabled><?php esc_html_e( 'Stop', 'choir-rehearsal' ); ?></button>
+						<button type="button" class="button button-primary choir-recorder-use" disabled><?php esc_html_e( 'Use recording', 'choir-rehearsal' ); ?></button>
+						<button type="button" class="button choir-recorder-cancel"><?php esc_html_e( 'Cancel', 'choir-rehearsal' ); ?></button>
+					</div>
+				</div>
 			</td>
 			<td>
 				<button type="button" class="button-link-delete choir-remove-track"><?php esc_html_e( 'Remove', 'choir-rehearsal' ); ?></button>
