@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>Choir Rehearsal — библиотека репетиций для хора</title>
+	<meta name="description" content="WordPress-плагин для хоров: песни, голосовые дорожки, PDF-ноты, прослушивание с телефона. Заказ, установка, подписка и обновления." />
+	<style>
+		:root {
+			--accent: #1f4fd8;
+			--accent-dark: #173ea8;
+			--bg: #f4f7fb;
+			--card: #ffffff;
+			--text: #1a1f2e;
+			--muted: #5c6578;
+			--border: rgba(0, 0, 0, 0.08);
+			--radius: 14px;
+			--max: 920px;
+		}
+
+		* { box-sizing: border-box; }
+
+		body {
+			margin: 0;
+			font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+			line-height: 1.6;
+			color: var(--text);
+			background: var(--bg);
+		}
+
+		a { color: var(--accent); }
+		a:hover { color: var(--accent-dark); }
+
+		.hero {
+			background: linear-gradient(135deg, #1f4fd8 0%, #3b82f6 55%, #6366f1 100%);
+			color: #fff;
+			padding: 48px 20px 56px;
+		}
+
+		.hero__inner,
+		.page {
+			max-width: var(--max);
+			margin: 0 auto;
+		}
+
+		.hero__badge {
+			display: inline-block;
+			padding: 4px 12px;
+			border-radius: 999px;
+			background: rgba(255, 255, 255, 0.18);
+			font-size: 0.85rem;
+			margin-bottom: 12px;
+		}
+
+		.hero h1 {
+			margin: 0 0 12px;
+			font-size: clamp(1.8rem, 4vw, 2.6rem);
+			line-height: 1.15;
+		}
+
+		.hero p {
+			margin: 0;
+			max-width: 640px;
+			font-size: 1.05rem;
+			opacity: 0.95;
+		}
+
+		.hero__cta {
+			margin-top: 24px;
+			display: flex;
+			flex-wrap: wrap;
+			gap: 12px;
+		}
+
+		.btn {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			padding: 12px 20px;
+			border-radius: 999px;
+			font-weight: 600;
+			text-decoration: none;
+			border: 0;
+			cursor: pointer;
+		}
+
+		.btn--primary {
+			background: #fff;
+			color: var(--accent-dark);
+		}
+
+		.btn--ghost {
+			background: transparent;
+			color: #fff;
+			border: 1px solid rgba(255, 255, 255, 0.55);
+		}
+
+		.page {
+			padding: 0 20px 64px;
+		}
+
+		.card {
+			background: var(--card);
+			border: 1px solid var(--border);
+			border-radius: var(--radius);
+			padding: 24px;
+			margin-top: 24px;
+			box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+		}
+
+		.card h2 {
+			margin: 0 0 16px;
+			font-size: 1.35rem;
+		}
+
+		.card h3 {
+			margin: 20px 0 8px;
+			font-size: 1.05rem;
+		}
+
+		.features {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+			gap: 12px;
+			margin: 0;
+			padding: 0;
+			list-style: none;
+		}
+
+		.features li {
+			padding: 14px 16px;
+			border-radius: 12px;
+			background: #f0f6ff;
+			border: 1px solid rgba(31, 79, 216, 0.12);
+		}
+
+		.pricing {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+			gap: 16px;
+		}
+
+		.plan {
+			border: 1px solid var(--border);
+			border-radius: 12px;
+			padding: 20px;
+			background: #fafbfd;
+		}
+
+		.plan--featured {
+			border-color: var(--accent);
+			background: #f0f6ff;
+			box-shadow: 0 0 0 1px rgba(31, 79, 216, 0.15);
+		}
+
+		.plan__name {
+			font-weight: 700;
+			font-size: 1.1rem;
+		}
+
+		.plan__price {
+			font-size: 1.6rem;
+			font-weight: 800;
+			margin: 8px 0;
+			color: var(--accent-dark);
+		}
+
+		.plan ul {
+			margin: 12px 0 0;
+			padding-left: 18px;
+			color: var(--muted);
+		}
+
+		.steps {
+			counter-reset: step;
+			list-style: none;
+			padding: 0;
+			margin: 0;
+		}
+
+		.steps li {
+			position: relative;
+			padding-left: 44px;
+			margin-bottom: 16px;
+		}
+
+		.steps li::before {
+			counter-increment: step;
+			content: counter(step);
+			position: absolute;
+			left: 0;
+			top: 0;
+			width: 28px;
+			height: 28px;
+			border-radius: 50%;
+			background: var(--accent);
+			color: #fff;
+			font-weight: 700;
+			font-size: 0.85rem;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+
+		.changelog details {
+			border: 1px solid var(--border);
+			border-radius: 10px;
+			padding: 12px 16px;
+			margin-bottom: 8px;
+			background: #fafbfd;
+		}
+
+		.changelog summary {
+			cursor: pointer;
+			font-weight: 600;
+		}
+
+		.changelog ul {
+			margin: 8px 0 0;
+			padding-left: 20px;
+			color: var(--muted);
+		}
+
+		.meta {
+			color: var(--muted);
+			font-size: 0.92rem;
+		}
+
+		.footer {
+			max-width: var(--max);
+			margin: 0 auto;
+			padding: 24px 20px 48px;
+			color: var(--muted);
+			font-size: 0.9rem;
+			text-align: center;
+		}
+
+		code {
+			background: #eef2ff;
+			padding: 2px 6px;
+			border-radius: 4px;
+			font-size: 0.92em;
+		}
+
+		@media (max-width: 600px) {
+			.card { padding: 18px; }
+		}
+	</style>
+</head>
+<body>
+	<header class="hero">
+		<div class="hero__inner">
+			<span class="hero__badge">WordPress-плагин · версия 0.3.8</span>
+			<h1>Choir Rehearsal</h1>
+			<p>Закрытая библиотека репетиций для хора: песни, голосовые дорожки, PDF-ноты и удобное прослушивание с телефона или компьютера.</p>
+			<div class="hero__cta">
+				<a class="btn btn--primary" href="https://github.com/compathee/compathee/releases/latest">Скачать последнюю версию</a>
+				<a class="btn btn--ghost" href="#order">Заказать и подписаться</a>
+			</div>
+		</div>
+	</header>
+
+	<main class="page">
+		<section class="card" id="about">
+			<h2>Описание</h2>
+			<p>Choir Rehearsal помогает хору учить новые произведения по голосам. Редакторы загружают PDF с нотами и аудио каждого голоса (или записывают прямо с телефона). Певцы заходят на страницу <code>/rehearsal/</code>, выбирают песню и слушают свою партию.</p>
+			<ul class="features">
+				<li>Список песен на сайте хора</li>
+				<li>PDF-просмотр с листанием страниц</li>
+				<li>Голосовые дорожки: bass, tenor, alto, soprano и др.</li>
+				<li>Запись голоса с микрофона в админке</li>
+				<li>Липкий плеер внизу экрана</li>
+				<li>Доступ только для залогиненных пользователей</li>
+				<li>Роли: редакторы управляют, певцы слушают</li>
+				<li>Обновления через WordPress, как у обычного плагина</li>
+			</ul>
+			<p class="meta">Требования: WordPress 6.4+, PHP 8.0+. Разработано для <a href="https://veneta.ee">Cappella Veneta</a>.</p>
+		</section>
+
+		<section class="card" id="order">
+			<h2>Заказ и подписка</h2>
+			<p>Плагин распространяется по лицензии GPL. Вы можете установить его самостоятельно бесплатно или заказать сопровождение у нас.</p>
+
+			<div class="pricing">
+				<div class="plan">
+					<div class="plan__name">Community</div>
+					<div class="plan__price">Бесплатно</div>
+					<ul>
+						<li>Скачивание с GitHub Releases</li>
+						<li>Самостоятельная установка</li>
+						<li>Обновления вручную или через GitHub</li>
+						<li>Документация в репозитории</li>
+					</ul>
+				</div>
+				<div class="plan plan--featured">
+					<div class="plan__name">Pro — подписка</div>
+					<div class="plan__price">49 € / год</div>
+					<ul>
+						<li>1 сайт хора</li>
+						<li>Автоматические обновления в WordPress</li>
+						<li>Ключ лицензии для Update JSON</li>
+						<li>Приоритетная поддержка по e-mail</li>
+						<li>Помощь при миграции и обновлениях</li>
+					</ul>
+				</div>
+				<div class="plan">
+					<div class="plan__name">Установка под ключ</div>
+					<div class="plan__price">от 120 €</div>
+					<ul>
+						<li>Разовая настройка на вашем WordPress</li>
+						<li>Создание страницы <code>/rehearsal/</code></li>
+						<li>Настройка ролей и доступа</li>
+						<li>Обучение редактора (1 сессия)</li>
+						<li>Первый год Pro включён</li>
+					</ul>
+				</div>
+			</div>
+
+			<h3>Как заказать</h3>
+			<ol class="steps">
+				<li>Напишите на <a href="mailto:info@veneta.ee">info@veneta.ee</a> с темой «Choir Rehearsal» — укажите название хора и адрес сайта.</li>
+				<li>Мы вышлем счёт и после оплаты — ключ лицензии (для Pro) или договоримся о дате установки.</li>
+				<li>Введите ключ в <strong>Choir Rehearsal → Settings → License key</strong> — обновления появятся в разделе «Плагины» автоматически.</li>
+			</ol>
+			<p class="meta">Для некоммерческих хоров и образовательных проектов возможны скидки — спросите при заказе.</p>
+		</section>
+
+		<section class="card" id="install">
+			<h2>Установка</h2>
+			<h3>Самостоятельно (Community)</h3>
+			<ol class="steps">
+				<li>Скачайте <code>choir-rehearsal.zip</code> с <a href="https://github.com/compathee/compathee/releases">GitHub Releases</a>.</li>
+				<li>В WordPress: <strong>Плагины → Добавить → Загрузить плагин</strong> — выберите zip-архив и активируйте.</li>
+				<li>Плагин создаст страницу <code>/rehearsal/</code> со шорткодом <code>[choir_rehearsal]</code>.</li>
+				<li>Добавьте песню: <strong>Choir Rehearsal → Add Song</strong> — название, PDF, голосовые дорожки.</li>
+				<li>Выдайте певцам учётные записи WordPress (роль Subscriber). Редакторам — Editor или Administrator.</li>
+			</ol>
+
+			<h3>Обновления</h3>
+			<ul>
+				<li><strong>Pro:</strong> ключ лицензии в настройках — WordPress покажет обновления автоматически.</li>
+				<li><strong>Community:</strong> скачайте новый zip и загрузите поверх, или укажите Update JSON URL из репозитория и нажмите «Check for updates now» в настройках.</li>
+				<li>Текущая версия отображается в <strong>Choir Rehearsal → Settings</strong>.</li>
+			</ul>
+
+			<h3>Роли пользователей</h3>
+			<ul>
+				<li><strong>Subscriber (Певец)</strong> — просмотр списка, прослушивание, PDF.</li>
+				<li><strong>Editor / Administrator</strong> — добавление и редактирование песен, запись голосов.</li>
+			</ul>
+		</section>
+
+		<section class="card changelog" id="changelog">
+			<h2>История изменений</h2>
+			<p class="meta">Полный лог версий плагина Choir Rehearsal.</p>
+
+			<details open>
+				<summary>0.3.7 — исправление вёрстки на ПК</summary>
+				<ul>
+					<li>Блок Publish больше не накладывается на поле названия песни</li>
+				</ul>
+			</details>
+			<details>
+				<summary>0.3.6 — поле названия</summary>
+				<ul>
+					<li>Исправлено: поле названия песни снова видно при редактировании</li>
+				</ul>
+			</details>
+			<details>
+				<summary>0.3.5 — кнопка «К списку песен»</summary>
+				<ul>
+					<li>На мобильном: возврат к библиотеке из режима редактирования</li>
+				</ul>
+			</details>
+			<details>
+				<summary>0.3.4 — упрощённый редактор</summary>
+				<ul>
+					<li>Только название, PDF и голосовые дорожки</li>
+					<li>Убран текстовый редактор WordPress</li>
+					<li>Мобильная панель Save/Publish внизу экрана</li>
+				</ul>
+			</details>
+			<details>
+				<summary>0.3.3 — мобильная админка</summary>
+				<ul>
+					<li>Компактный интерфейс дорожек на телефоне</li>
+				</ul>
+			</details>
+			<details>
+				<summary>0.3.2 — запись с микрофона</summary>
+				<ul>
+					<li>Исправлена загрузка записей (video/webm)</li>
+				</ul>
+			</details>
+			<details>
+				<summary>0.3.1 — версия в настройках</summary>
+				<ul>
+					<li>Отображение установленной версии на странице Settings</li>
+				</ul>
+			</details>
+			<details>
+				<summary>0.3.0 — запись голоса</summary>
+				<ul>
+					<li>Запись голосовых дорожек с микрофона в редакторе песни</li>
+				</ul>
+			</details>
+			<details>
+				<summary>0.2.x — фронтенд и обновления</summary>
+				<ul>
+					<li>0.2.6 — исправлен дублирующийся логин</li>
+					<li>0.2.5 — hotfix критической ошибки</li>
+					<li>0.2.4 — страница /rehearsal/ через шорткод</li>
+					<li>0.2.3 — исправлена проверка обновлений GitHub</li>
+					<li>0.2.2 — вход на фронтенде, панель ролей</li>
+					<li>0.2.1 — обновления через GitHub Releases</li>
+					<li>0.2.0 — PDF-ноты и просмотр по страницам</li>
+				</ul>
+			</details>
+			<details>
+				<summary>0.1.0 — первый релиз</summary>
+				<ul>
+					<li>Песни, дорожки, липкий плеер, REST API</li>
+				</ul>
+			</details>
+		</section>
+	</main>
+
+	<footer class="footer">
+		<p>Choir Rehearsal · <a href="https://veneta.ee">veneta.ee</a> · <a href="https://github.com/compathee/compathee">GitHub</a> · <a href="mailto:info@veneta.ee">info@veneta.ee</a></p>
+		<p>Лицензия GPL-2.0-or-later</p>
+	</footer>
+</body>
+</html>

@@ -67,6 +67,14 @@ final class Choir_Rehearsal_Admin {
 				<?php settings_fields( 'choir_rehearsal_settings' ); ?>
 				<table class="form-table" role="presentation">
 					<tr>
+						<th scope="row"><?php esc_html_e( 'Documentation', 'choir-rehearsal' ); ?></th>
+						<td>
+							<a href="<?php echo esc_url( CHOIR_REHEARSAL_DOCS_URL ); ?>" target="_blank" rel="noopener noreferrer">
+								<?php esc_html_e( 'Product page: order, install, pricing, changelog', 'choir-rehearsal' ); ?>
+							</a>
+						</td>
+					</tr>
+					<tr>
 						<th scope="row"><?php esc_html_e( 'Plugin version', 'choir-rehearsal' ); ?></th>
 						<td>
 							<code><?php echo esc_html( CHOIR_REHEARSAL_VERSION ); ?></code>

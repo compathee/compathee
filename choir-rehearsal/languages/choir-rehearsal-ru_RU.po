@@ -342,3 +342,9 @@ msgstr "Укажите название песни, загрузите PDF с н
 
 msgid "Back to song list"
 msgstr "К списку песен"
+
+msgid "Documentation"
+msgstr "Документация"
+
+msgid "Product page: order, install, pricing, changelog"
+msgstr "Страница продукта: заказ, установка, цены, история версий"

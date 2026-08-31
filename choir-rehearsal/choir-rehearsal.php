@@ -3,7 +3,7 @@
  * Plugin Name:       Choir Rehearsal
  * Plugin URI:        https://veneta.ee
  * Description:       Private rehearsal library for choirs: songs, voice parts, audio tracks, and a sticky player.
- * Version:           0.3.7
+ * Version:           0.3.8
  * Requires at least: 6.4
  * Requires PHP:      8.0
  * Author:            Cappella Veneta
@@ -19,10 +19,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'CHOIR_REHEARSAL_VERSION', '0.3.7' );
+define( 'CHOIR_REHEARSAL_VERSION', '0.3.8' );
 define( 'CHOIR_REHEARSAL_FILE', __FILE__ );
 define( 'CHOIR_REHEARSAL_PATH', plugin_dir_path( __FILE__ ) );
 define( 'CHOIR_REHEARSAL_URL', plugin_dir_url( __FILE__ ) );
+define( 'CHOIR_REHEARSAL_DOCS_URL', 'https://github.com/compathee/compathee/blob/main/choir-rehearsal/docs/product-page.html' );
 
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-plugin.php';
 
