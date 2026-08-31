@@ -1,0 +1,42 @@
+name: Deploy rehearsal.compath.ee
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  deploy-site:
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.event.release.tag_name, 'choir-rehearsal-v')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Prepare index.html
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          set -euo pipefail
+          if [ -n "${RELEASE_TAG}" ]; then
+            VERSION="${RELEASE_TAG#choir-rehearsal-v}"
+          else
+            VERSION="$(grep "define( 'CHOIR_REHEARSAL_VERSION'" choir-rehearsal/choir-rehearsal.php | sed "s/.*'\([^']*\)'.*/\1/")"
+          fi
+          mkdir -p deploy
+          cp choir-rehearsal/docs/product-page.html deploy/index.html
+          sed -i "s/версия [0-9][0-9.]*/версия ${VERSION}/g" deploy/index.html
+          echo "Prepared deploy/index.html for version ${VERSION}"
+
+      - name: Deploy to rehearsal.compath.ee (FTP/SFTP)
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.6
+        with:
+          server: ${{ secrets.REHEARSAL_FTP_SERVER }}
+          username: ${{ secrets.REHEARSAL_FTP_USERNAME }}
+          password: ${{ secrets.REHEARSAL_FTP_PASSWORD }}
+          protocol: ftps
+          port: 21
+          local-dir: deploy/
+          server-dir: ${{ secrets.REHEARSAL_FTP_REMOTE_DIR }}
+          dangerous-clean-slate: false
