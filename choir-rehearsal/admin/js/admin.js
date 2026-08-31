@@ -299,14 +299,14 @@
 			'<tr class="choir-track-row">' +
 				'<td>' +
 					'<input type="hidden" name="choir_tracks[' + index + '][id]" value="0" />' +
-					'<select name="choir_tracks[' + index + '][voice]">' + options + '</select>' +
+					'<select class="choir-voice-select" name="choir_tracks[' + index + '][voice]">' + options + '</select>' +
 				'</td>' +
 				'<td class="choir-track-audio-cell">' +
 					'<input type="hidden" class="choir-audio-id" name="choir_tracks[' + index + '][audio_id]" value="0" />' +
 					'<div class="choir-track-audio-controls">' +
 						'<span class="choir-audio-name">' + (i18n.noAudio || 'No audio selected') + '</span> ' +
-						'<button type="button" class="button choir-select-audio">' + (i18n.selectAudio || 'Upload / Select') + '</button> ' +
-						'<button type="button" class="button choir-record-audio">' + (i18n.recordAudio || 'Record') + '</button>' +
+						'<button type="button" class="button button-small choir-select-audio">' + (i18n.selectAudio || 'Upload') + '</button> ' +
+						'<button type="button" class="button button-small choir-record-audio">' + (i18n.recordAudio || 'Record') + '</button>' +
 					'</div>' +
 					recorderPanelHtml() +
 				'</td>' +

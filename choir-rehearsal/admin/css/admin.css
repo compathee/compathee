@@ -5,15 +5,26 @@
 	font-weight: 600;
 }
 
-.choir-tracks-table select {
-	min-width: 180px;
+.choir-tracks-wrap {
+	overflow-x: auto;
+}
+
+.choir-tracks-table select,
+.choir-tracks-table .choir-voice-select {
+	min-width: 140px;
+	max-width: 100%;
 }
 
 .choir-tracks-table .choir-audio-name {
 	display: inline-block;
 	margin-right: 8px;
-	min-width: 160px;
+	min-width: 0;
+	max-width: 100%;
 	font-weight: 600;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	vertical-align: middle;
 }
 
 .choir-track-row td {
@@ -21,15 +32,22 @@
 }
 
 .choir-track-audio-cell {
-	min-width: 320px;
+	min-width: 0;
 }
 
 .choir-track-audio-controls {
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
-	gap: 8px;
+	gap: 6px;
 	margin-bottom: 8px;
+}
+
+.choir-track-audio-controls .button-small {
+	min-height: 30px;
+	line-height: 1.2;
+	padding: 4px 10px;
+	font-size: 12px;
 }
 
 .choir-recorder-panel {
@@ -68,6 +86,11 @@
 	gap: 8px;
 }
 
+.choir-recorder-panel__actions .button {
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
 .choir-record-audio {
 	border-color: #1f4fd8;
 	color: #1f4fd8;
@@ -77,4 +100,89 @@
 	background: #eef4ff;
 	border-color: #173ea8;
 	color: #173ea8;
+}
+
+@media screen and (max-width: 782px) {
+	.choir-tracks-table thead {
+		display: none;
+	}
+
+	.choir-tracks-table,
+	.choir-tracks-table tbody,
+	.choir-tracks-table tr,
+	.choir-tracks-table td {
+		display: block;
+		width: 100%;
+		box-sizing: border-box;
+	}
+
+	.choir-tracks-table .choir-track-row {
+		margin-bottom: 12px;
+		padding: 10px;
+		border: 1px solid #c3c4c7;
+		border-radius: 8px;
+		background: #fff;
+	}
+
+	.choir-tracks-table .choir-track-row td {
+		padding: 6px 0;
+		border: 0;
+	}
+
+	.choir-tracks-table .choir-voice-select {
+		width: 100%;
+		min-width: 0;
+		max-width: 100%;
+		font-size: 13px;
+		padding: 4px 8px;
+	}
+
+	.choir-track-audio-controls {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 6px;
+		align-items: stretch;
+	}
+
+	.choir-track-audio-controls .choir-audio-name {
+		grid-column: 1 / -1;
+		margin-right: 0;
+		white-space: normal;
+		word-break: break-word;
+	}
+
+	.choir-track-audio-controls .button-small {
+		width: 100%;
+		margin: 0;
+		text-align: center;
+		padding: 8px 6px;
+		font-size: 12px;
+	}
+
+	.choir-recorder-panel {
+		max-width: none;
+	}
+
+	.choir-recorder-panel__actions {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 6px;
+	}
+
+	.choir-recorder-panel__actions .button {
+		width: 100%;
+		margin: 0;
+		padding: 8px 6px;
+		font-size: 12px;
+		text-align: center;
+		white-space: normal;
+		height: auto;
+		min-height: 36px;
+	}
+}
+
+@media screen and (max-width: 420px) {
+	.choir-recorder-panel__actions {
+		grid-template-columns: 1fr;
+	}
 }

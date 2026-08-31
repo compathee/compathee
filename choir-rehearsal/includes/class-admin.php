@@ -224,7 +224,7 @@ final class Choir_Rehearsal_Admin {
 				'postId'         => $screen && 'post' === $screen->base ? (int) get_the_ID() : 0,
 				'recordingNonce' => wp_create_nonce( 'choir_rehearsal_recording' ),
 				'voices'         => Choir_Rehearsal_Voice_Types::choices(),
-				'selectAudio'    => __( 'Upload / Select', 'choir-rehearsal' ),
+				'selectAudio'    => __( 'Upload', 'choir-rehearsal' ),
 				'recordAudio'    => __( 'Record', 'choir-rehearsal' ),
 				'useAudio'       => __( 'Use this audio', 'choir-rehearsal' ),
 				'removeTrack'    => __( 'Remove', 'choir-rehearsal' ),
@@ -323,7 +323,7 @@ final class Choir_Rehearsal_Admin {
 		<tr class="choir-track-row">
 			<td>
 				<input type="hidden" name="choir_tracks[<?php echo esc_attr( (string) $index ); ?>][id]" value="<?php echo esc_attr( (string) $track_id ); ?>" />
-				<select name="choir_tracks[<?php echo esc_attr( (string) $index ); ?>][voice]">
+				<select class="choir-voice-select" name="choir_tracks[<?php echo esc_attr( (string) $index ); ?>][voice]">
 					<?php foreach ( $voices as $slug => $label ) : ?>
 						<option value="<?php echo esc_attr( $slug ); ?>" <?php selected( $voice_slug, $slug ); ?>><?php echo esc_html( $label ); ?></option>
 					<?php endforeach; ?>
@@ -333,8 +333,8 @@ final class Choir_Rehearsal_Admin {
 				<input type="hidden" class="choir-audio-id" name="choir_tracks[<?php echo esc_attr( (string) $index ); ?>][audio_id]" value="<?php echo esc_attr( (string) $audio_id ); ?>" />
 				<div class="choir-track-audio-controls">
 					<span class="choir-audio-name"><?php echo esc_html( $filename ?: __( 'No audio selected', 'choir-rehearsal' ) ); ?></span>
-					<button type="button" class="button choir-select-audio"><?php esc_html_e( 'Upload / Select', 'choir-rehearsal' ); ?></button>
-					<button type="button" class="button choir-record-audio"><?php esc_html_e( 'Record', 'choir-rehearsal' ); ?></button>
+					<button type="button" class="button button-small choir-select-audio"><?php esc_html_e( 'Upload', 'choir-rehearsal' ); ?></button>
+					<button type="button" class="button button-small choir-record-audio"><?php esc_html_e( 'Record', 'choir-rehearsal' ); ?></button>
 				</div>
 				<div class="choir-recorder-panel is-hidden" aria-hidden="true">
 					<p class="choir-recorder-panel__status"><?php esc_html_e( 'Click start and sing your voice part.', 'choir-rehearsal' ); ?></p>
