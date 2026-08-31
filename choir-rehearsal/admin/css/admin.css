@@ -187,14 +187,18 @@
 	}
 }
 
-/* Simplified song edit screen */
-.choir-rehearsal-song-edit #post-body-content,
+/* Simplified song edit screen — hide editor only; title lives inside #post-body-content */
 .choir-rehearsal-song-edit #postdivrich,
 .choir-rehearsal-song-edit #wp-content-editor-container,
 .choir-rehearsal-song-edit #post-status-info,
 .choir-rehearsal-song-edit .block-editor,
 .choir-rehearsal-song-edit .edit-post-layout__content > .edit-post-visual-editor {
 	display: none !important;
+}
+
+.choir-rehearsal-song-edit #post-body-content {
+	margin-bottom: 0;
+	min-height: 0;
 }
 
 .choir-rehearsal-song-edit #titlediv {

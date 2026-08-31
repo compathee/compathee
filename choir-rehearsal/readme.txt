@@ -4,7 +4,7 @@ Tags: choir, audio, rehearsal, voice parts, music
 Requires at least: 6.4
 Tested up to: 6.9
 Requires PHP: 8.0
-Stable tag: 0.3.5
+Stable tag: 0.3.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -42,6 +42,9 @@ By default only logged-in users can view `/rehearsal/`. Change this under **Choi
 Yes. Use the shortcode `[choir_rehearsal]`.
 
 == Changelog ==
+
+= 0.3.6 =
+* Fix: song title field visible again on edit screen
 
 = 0.3.5 =
 * Mobile song editor: Back to song list button (top and sticky footer)
