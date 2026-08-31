@@ -18,431 +18,219 @@
 			--radius: 14px;
 			--max: 920px;
 		}
-
 		* { box-sizing: border-box; }
-
-		body {
-			margin: 0;
-			font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-			line-height: 1.6;
-			color: var(--text);
-			background: var(--bg);
-		}
-
+		body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; line-height: 1.6; color: var(--text); background: var(--bg); }
 		a { color: var(--accent); }
 		a:hover { color: var(--accent-dark); }
-
-		.hero {
-			background: linear-gradient(135deg, #1f4fd8 0%, #3b82f6 55%, #6366f1 100%);
-			color: #fff;
-			padding: 48px 20px 56px;
-		}
-
-		.hero__inner,
-		.page {
-			max-width: var(--max);
-			margin: 0 auto;
-		}
-
-		.hero__badge {
-			display: inline-block;
-			padding: 4px 12px;
-			border-radius: 999px;
-			background: rgba(255, 255, 255, 0.18);
-			font-size: 0.85rem;
-			margin-bottom: 12px;
-		}
-
-		.hero h1 {
-			margin: 0 0 12px;
-			font-size: clamp(1.8rem, 4vw, 2.6rem);
-			line-height: 1.15;
-		}
-
-		.hero p {
-			margin: 0;
-			max-width: 640px;
-			font-size: 1.05rem;
-			opacity: 0.95;
-		}
-
-		.hero__cta {
-			margin-top: 24px;
-			display: flex;
-			flex-wrap: wrap;
-			gap: 12px;
-		}
-
-		.btn {
-			display: inline-flex;
-			align-items: center;
-			justify-content: center;
-			padding: 12px 20px;
-			border-radius: 999px;
-			font-weight: 600;
-			text-decoration: none;
-			border: 0;
-			cursor: pointer;
-		}
-
-		.btn--primary {
-			background: #fff;
-			color: var(--accent-dark);
-		}
-
-		.btn--ghost {
-			background: transparent;
-			color: #fff;
-			border: 1px solid rgba(255, 255, 255, 0.55);
-		}
-
-		.page {
-			padding: 0 20px 64px;
-		}
-
-		.card {
-			background: var(--card);
-			border: 1px solid var(--border);
-			border-radius: var(--radius);
-			padding: 24px;
-			margin-top: 24px;
-			box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
-		}
-
-		.card h2 {
-			margin: 0 0 16px;
-			font-size: 1.35rem;
-		}
-
-		.card h3 {
-			margin: 20px 0 8px;
-			font-size: 1.05rem;
-		}
-
-		.features {
-			display: grid;
-			grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-			gap: 12px;
-			margin: 0;
-			padding: 0;
-			list-style: none;
-		}
-
-		.features li {
-			padding: 14px 16px;
-			border-radius: 12px;
-			background: #f0f6ff;
-			border: 1px solid rgba(31, 79, 216, 0.12);
-		}
-
-		.pricing {
-			display: grid;
-			grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-			gap: 16px;
-		}
-
-		.plan {
-			border: 1px solid var(--border);
-			border-radius: 12px;
-			padding: 20px;
-			background: #fafbfd;
-		}
-
-		.plan--featured {
-			border-color: var(--accent);
-			background: #f0f6ff;
-			box-shadow: 0 0 0 1px rgba(31, 79, 216, 0.15);
-		}
-
-		.plan__name {
-			font-weight: 700;
-			font-size: 1.1rem;
-		}
-
-		.plan__price {
-			font-size: 1.6rem;
-			font-weight: 800;
-			margin: 8px 0;
-			color: var(--accent-dark);
-		}
-
-		.plan ul {
-			margin: 12px 0 0;
-			padding-left: 18px;
-			color: var(--muted);
-		}
-
-		.steps {
-			counter-reset: step;
-			list-style: none;
-			padding: 0;
-			margin: 0;
-		}
-
-		.steps li {
-			position: relative;
-			padding-left: 44px;
-			margin-bottom: 16px;
-		}
-
-		.steps li::before {
-			counter-increment: step;
-			content: counter(step);
-			position: absolute;
-			left: 0;
-			top: 0;
-			width: 28px;
-			height: 28px;
-			border-radius: 50%;
-			background: var(--accent);
-			color: #fff;
-			font-weight: 700;
-			font-size: 0.85rem;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-		}
-
-		.changelog details {
-			border: 1px solid var(--border);
-			border-radius: 10px;
-			padding: 12px 16px;
-			margin-bottom: 8px;
-			background: #fafbfd;
-		}
-
-		.changelog summary {
-			cursor: pointer;
-			font-weight: 600;
-		}
-
-		.changelog ul {
-			margin: 8px 0 0;
-			padding-left: 20px;
-			color: var(--muted);
-		}
-
-		.meta {
-			color: var(--muted);
-			font-size: 0.92rem;
-		}
-
-		.footer {
-			max-width: var(--max);
-			margin: 0 auto;
-			padding: 24px 20px 48px;
-			color: var(--muted);
-			font-size: 0.9rem;
-			text-align: center;
-		}
-
-		code {
-			background: #eef2ff;
-			padding: 2px 6px;
-			border-radius: 4px;
-			font-size: 0.92em;
-		}
-
-		@media (max-width: 600px) {
-			.card { padding: 18px; }
-		}
+		.hero { background: linear-gradient(135deg, #1f4fd8 0%, #3b82f6 55%, #6366f1 100%); color: #fff; padding: 48px 20px 56px; }
+		.hero__inner, .page, .footer { max-width: var(--max); margin: 0 auto; }
+		.hero__badge { display: inline-block; padding: 4px 12px; border-radius: 999px; background: rgba(255,255,255,0.18); font-size: 0.85rem; margin-bottom: 12px; }
+		.hero h1 { margin: 0 0 12px; font-size: clamp(1.8rem, 4vw, 2.6rem); line-height: 1.15; }
+		.hero p { margin: 0; max-width: 640px; font-size: 1.05rem; opacity: 0.95; }
+		.hero__cta { margin-top: 24px; display: flex; flex-wrap: wrap; gap: 12px; }
+		.btn { display: inline-flex; align-items: center; justify-content: center; padding: 12px 20px; border-radius: 999px; font-weight: 600; text-decoration: none; border: 0; }
+		.btn--primary { background: #fff; color: var(--accent-dark); }
+		.btn--ghost { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.55); }
+		.page { padding: 0 20px 64px; }
+		.card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin-top: 24px; box-shadow: 0 8px 24px rgba(15,23,42,0.04); }
+		.card h2 { margin: 0 0 16px; font-size: 1.35rem; }
+		.card h3 { margin: 20px 0 8px; font-size: 1.05rem; }
+		.features { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 0; padding: 0; list-style: none; }
+		.features li { padding: 14px 16px; border-radius: 12px; background: #f0f6ff; border: 1px solid rgba(31,79,216,0.12); }
+		.pricing { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+		.plan { border: 1px solid var(--border); border-radius: 12px; padding: 20px; background: #fafbfd; }
+		.plan--featured { border-color: var(--accent); background: #f0f6ff; box-shadow: 0 0 0 1px rgba(31,79,216,0.15); }
+		.plan__name { font-weight: 700; font-size: 1.1rem; }
+		.plan__price { font-size: 1.6rem; font-weight: 800; margin: 8px 0; color: var(--accent-dark); }
+		.plan ul { margin: 12px 0 0; padding-left: 18px; color: var(--muted); }
+		.steps { counter-reset: step; list-style: none; padding: 0; margin: 0; }
+		.steps li { position: relative; padding-left: 44px; margin-bottom: 16px; }
+		.steps li::before { counter-increment: step; content: counter(step); position: absolute; left: 0; top: 0; width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: #fff; font-weight: 700; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; }
+		.changelog details { border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; margin-bottom: 8px; background: #fafbfd; }
+		.changelog summary { cursor: pointer; font-weight: 600; }
+		.changelog ul { margin: 8px 0 0; padding-left: 20px; color: var(--muted); }
+		.meta { color: var(--muted); font-size: 0.92rem; }
+		.footer { padding: 24px 20px 48px; color: var(--muted); font-size: 0.9rem; text-align: center; }
+		code { background: #eef2ff; padding: 2px 6px; border-radius: 4px; font-size: 0.92em; }
+		.loading { text-align: center; padding: 48px 20px; color: var(--muted); }
+		.error { background: #fff4f4; border: 1px solid #fecaca; color: #991b1b; padding: 16px; border-radius: 12px; margin: 24px auto; max-width: var(--max); }
+		@media (max-width: 600px) { .card { padding: 18px; } }
 	</style>
 </head>
 <body>
-	<header class="hero">
-		<div class="hero__inner">
-			<span class="hero__badge">WordPress plugin · version 0.3.9 · rehearsal.compath.ee</span>
-			<h1>Choir Rehearsal</h1>
-			<p>A private rehearsal library for choirs: songs, voice tracks, PDF scores, and easy listening on phone or desktop.</p>
-			<div class="hero__cta">
-				<a class="btn btn--primary" href="https://github.com/compathee/compathee/releases/latest">Download latest release</a>
-				<a class="btn btn--ghost" href="#order">Order &amp; subscribe</a>
-			</div>
-		</div>
-	</header>
+	<div id="app">
+		<p class="loading">Loading latest content from GitHub…</p>
+	</div>
+	<script>
+	(function () {
+		'use strict';
 
-	<main class="page">
-		<section class="card" id="about">
-			<h2>Overview</h2>
-			<p>Choir Rehearsal helps choir members learn new pieces by voice part. Editors upload PDF scores and audio for each voice (or record from a phone). Singers visit <code>/rehearsal/</code>, pick a song, and listen to their part.</p>
-			<ul class="features">
-				<li>Song list on your choir website</li>
-				<li>PDF viewer with page navigation</li>
-				<li>Voice tracks: bass, tenor, alto, soprano, and more</li>
-				<li>Microphone recording in the admin</li>
-				<li>Sticky player at the bottom of the screen</li>
-				<li>Login-only access (optional)</li>
-				<li>Roles: editors manage, singers listen</li>
-				<li>WordPress-native plugin updates</li>
-			</ul>
-			<p class="meta">Requirements: WordPress 6.4+, PHP 8.0+. Owner and developer: <strong>Compath OÜ</strong>, Tallinn, Estonia. First customer — <a href="https://veneta.ee">Cappella Veneta</a>.</p>
-		</section>
+		/** Tries main first, then the active plugin branch until merged */
+		var CONFIG = {
+			repo: 'compathee/compathee',
+			branches: ['main', 'cursor/choir-rehearsal-plugin-090e'],
+			releasesUrl: 'https://api.github.com/repos/compathee/compathee/releases?per_page=20'
+		};
 
-		<section class="card" id="order">
-			<h2>Order &amp; subscription</h2>
-			<p>The plugin is licensed under GPL. You can install it yourself for free or purchase support from us.</p>
+		function rawUrl(branch, path) {
+			return 'https://raw.githubusercontent.com/' + CONFIG.repo + '/' + branch + '/' + path;
+		}
 
-			<div class="pricing">
-				<div class="plan">
-					<div class="plan__name">Community</div>
-					<div class="plan__price">Free</div>
-					<ul>
-						<li>Download from GitHub Releases</li>
-						<li>Self-service installation</li>
-						<li>Manual updates via GitHub</li>
-						<li>Documentation in the repository</li>
-					</ul>
-				</div>
-				<div class="plan plan--featured">
-					<div class="plan__name">Pro — subscription</div>
-					<div class="plan__price">€49 / year</div>
-					<ul>
-						<li>1 choir website</li>
-						<li>Automatic updates in WordPress</li>
-						<li>License key for Update JSON</li>
-						<li>Priority email support</li>
-						<li>Help with migration and upgrades</li>
-					</ul>
-				</div>
-				<div class="plan">
-					<div class="plan__name">Done-for-you setup</div>
-					<div class="plan__price">from €120</div>
-					<ul>
-						<li>One-time setup on your WordPress site</li>
-						<li><code>/rehearsal/</code> page created</li>
-						<li>Roles and access configured</li>
-						<li>Editor training (1 session)</li>
-						<li>First year of Pro included</li>
-					</ul>
-				</div>
-			</div>
+		function fetchJsonFromRepo(path) {
+			var attempt = function (index) {
+				if (index >= CONFIG.branches.length) {
+					return Promise.reject(new Error('Could not load ' + path + ' from GitHub'));
+				}
+				var branch = CONFIG.branches[index];
+				return fetch(rawUrl(branch, path), { cache: 'no-store' }).then(function (response) {
+					if (!response.ok) {
+						return attempt(index + 1);
+					}
+					return response.json();
+				});
+			};
+			return attempt(0);
+		}
 
-			<h3>How to order</h3>
-			<ol class="steps">
-				<li>Email <a href="mailto:order@compath.ee">order@compath.ee</a> with subject “Choir Rehearsal” — include your choir name and website URL.</li>
-				<li>We send an invoice; after payment you receive a license key (Pro) or we schedule installation.</li>
-				<li>Enter the key in <strong>Choir Rehearsal → Settings → License key</strong> — updates appear under Plugins automatically.</li>
-			</ol>
-			<p class="meta">Discounts available for non-profit choirs and educational projects — ask when ordering.</p>
-		</section>
+		function esc(text) {
+			return String(text)
+				.replace(/&/g, '&amp;')
+				.replace(/</g, '&lt;')
+				.replace(/>/g, '&gt;')
+				.replace(/"/g, '&quot;');
+		}
 
-		<section class="card" id="install">
-			<h2>Installation</h2>
-			<h3>Self-service (Community)</h3>
-			<ol class="steps">
-				<li>Download <code>choir-rehearsal.zip</code> from <a href="https://github.com/compathee/compathee/releases">GitHub Releases</a>.</li>
-				<li>In WordPress: <strong>Plugins → Add New → Upload Plugin</strong> — select the zip and activate.</li>
-				<li>The plugin creates a <code>/rehearsal/</code> page with the <code>[choir_rehearsal]</code> shortcode.</li>
-				<li>Add a song: <strong>Choir Rehearsal → Add Song</strong> — title, PDF, voice tracks.</li>
-				<li>Give singers WordPress accounts (Subscriber role). Editors get Editor or Administrator.</li>
-			</ol>
+		function renderSteps(items) {
+			return '<ol class="steps">' + items.map(function (item) {
+				return '<li>' + item.replace(/order@compath\.ee/g, '<a href="mailto:order@compath.ee">order@compath.ee</a>') + '</li>';
+			}).join('') + '</ol>';
+		}
 
-			<h3>Updates</h3>
-			<ul>
-				<li><strong>Pro:</strong> license key in settings — WordPress shows updates automatically.</li>
-				<li><strong>Community:</strong> upload a new zip, or set Update JSON URL from the repository and click “Check for updates now” in settings.</li>
-				<li>Installed version is shown in <strong>Choir Rehearsal → Settings</strong>.</li>
-			</ul>
+		function renderChangelog(entries) {
+			return entries.map(function (entry) {
+				var open = entry.open ? ' open' : '';
+				var items = (entry.items || []).map(function (i) { return '<li>' + esc(i) + '</li>'; }).join('');
+				return '<details' + open + '><summary>' + esc(entry.version) + ' — ' + esc(entry.summary) + '</summary><ul>' + items + '</ul></details>';
+			}).join('');
+		}
 
-			<h3>User roles</h3>
-			<ul>
-				<li><strong>Subscriber (Singer)</strong> — browse songs, listen, view PDF.</li>
-				<li><strong>Editor / Administrator</strong> — add and edit songs, record voice tracks.</li>
-			</ul>
-		</section>
+		function renderPricing(plans) {
+			return plans.map(function (plan) {
+				var cls = plan.featured ? 'plan plan--featured' : 'plan';
+				var items = (plan.items || []).map(function (i) { return '<li>' + esc(i) + '</li>'; }).join('');
+				return '<div class="' + cls + '"><div class="plan__name">' + esc(plan.name) + '</div><div class="plan__price">' + esc(plan.price) + '</div><ul>' + items + '</ul></div>';
+			}).join('');
+		}
 
-		<section class="card changelog" id="changelog">
-			<h2>Changelog</h2>
-			<p class="meta">Full version history for Choir Rehearsal.</p>
+		function findLatestRelease(releases) {
+			var best = null;
+			var bestVersion = '';
+			releases.forEach(function (release) {
+				if (!release || release.draft || release.prerelease) return;
+				var tag = String(release.tag_name || '');
+				if (tag.indexOf('choir-rehearsal-v') !== 0) return;
+				var version = tag.replace('choir-rehearsal-v', '');
+				if (!best || compareVersions(version, bestVersion) > 0) {
+					best = release;
+					bestVersion = version;
+				}
+			});
+			return best;
+		}
 
-			<details open>
-				<summary>0.3.9 — product website</summary>
-				<ul>
-					<li>Product page: <a href="https://rehearsal.compath.ee">rehearsal.compath.ee</a></li>
-				</ul>
-			</details>
-			<details>
-				<summary>0.3.8 — documentation page</summary>
-				<ul>
-					<li>Product page: order, install, pricing, changelog</li>
-					<li>Documentation link in plugin settings</li>
-				</ul>
-			</details>
-			<details>
-				<summary>0.3.7 — desktop layout fix</summary>
-				<ul>
-					<li>Publish box no longer overlaps the song title field</li>
-				</ul>
-			</details>
-			<details>
-				<summary>0.3.6 — song title field</summary>
-				<ul>
-					<li>Fixed: song title field visible again when editing</li>
-				</ul>
-			</details>
-			<details>
-				<summary>0.3.5 — back to song list</summary>
-				<ul>
-					<li>Mobile: return to library from edit screen</li>
-				</ul>
-			</details>
-			<details>
-				<summary>0.3.4 — simplified editor</summary>
-				<ul>
-					<li>Title, PDF, and voice tracks only</li>
-					<li>WordPress content editor removed</li>
-					<li>Mobile Save/Publish bar at bottom</li>
-				</ul>
-			</details>
-			<details>
-				<summary>0.3.3 — mobile admin</summary>
-				<ul>
-					<li>Compact voice track UI on phone</li>
-				</ul>
-			</details>
-			<details>
-				<summary>0.3.2 — microphone recording</summary>
-				<ul>
-					<li>Fixed recording upload (video/webm)</li>
-				</ul>
-			</details>
-			<details>
-				<summary>0.3.1 — version in settings</summary>
-				<ul>
-					<li>Installed version shown on Settings page</li>
-				</ul>
-			</details>
-			<details>
-				<summary>0.3.0 — voice recording</summary>
-				<ul>
-					<li>Record voice tracks from microphone in song editor</li>
-				</ul>
-			</details>
-			<details>
-				<summary>0.2.x — frontend &amp; updates</summary>
-				<ul>
-					<li>0.2.6 — fixed duplicate login form</li>
-					<li>0.2.5 — critical error hotfix</li>
-					<li>0.2.4 — /rehearsal/ page via shortcode</li>
-					<li>0.2.3 — fixed GitHub update check</li>
-					<li>0.2.2 — frontend login, role toolbar</li>
-					<li>0.2.1 — updates via GitHub Releases</li>
-					<li>0.2.0 — PDF scores and page viewer</li>
-				</ul>
-			</details>
-			<details>
-				<summary>0.1.0 — initial release</summary>
-				<ul>
-					<li>Songs, tracks, sticky player, REST API</li>
-				</ul>
-			</details>
-		</section>
-	</main>
+		function compareVersions(a, b) {
+			var pa = a.split('.').map(Number);
+			var pb = b.split('.').map(Number);
+			for (var i = 0; i < Math.max(pa.length, pb.length); i++) {
+				var na = pa[i] || 0;
+				var nb = pb[i] || 0;
+				if (na !== nb) return na > nb ? 1 : -1;
+			}
+			return 0;
+		}
 
-	<footer class="footer">
-		<p>Choir Rehearsal · <a href="https://rehearsal.compath.ee">rehearsal.compath.ee</a> · <a href="https://compath.ee">compath.ee</a> · <a href="https://github.com/compathee/compathee">GitHub</a> · <a href="mailto:order@compath.ee">order@compath.ee</a></p>
-		<p>© Compath OÜ, Tallinn, Estonia</p>
-		<p>Licensed under GPL-2.0-or-later</p>
-	</footer>
+		function getDownloadUrl(release) {
+			if (!release || !release.assets) return 'https://github.com/compathee/compathee/releases/latest';
+			for (var i = 0; i < release.assets.length; i++) {
+				if (release.assets[i].name === 'choir-rehearsal.zip') return release.assets[i].browser_download_url;
+			}
+			return release.html_url || 'https://github.com/compathee/compathee/releases/latest';
+		}
+
+		function renderPage(data, version, downloadUrl) {
+			var email = data.orderEmail || 'order@compath.ee';
+			var customer = data.firstCustomer || { name: 'Cappella Veneta', url: 'https://veneta.ee' };
+
+			document.title = data.title + ' — rehearsal library for choirs';
+			document.getElementById('app').innerHTML =
+				'<header class="hero"><div class="hero__inner">' +
+					'<span class="hero__badge">WordPress plugin · version ' + esc(version) + ' · rehearsal.compath.ee</span>' +
+					'<h1>' + esc(data.title) + '</h1>' +
+					'<p>' + esc(data.tagline) + '</p>' +
+					'<div class="hero__cta">' +
+						'<a class="btn btn--primary" href="' + esc(downloadUrl) + '">Download latest release</a>' +
+						'<a class="btn btn--ghost" href="#order">Order &amp; subscribe</a>' +
+					'</div>' +
+				'</div></header>' +
+				'<main class="page">' +
+					'<section class="card" id="about"><h2>Overview</h2>' +
+						'<p>' + esc(data.overview) + '</p>' +
+						'<ul class="features">' + (data.features || []).map(function (f) { return '<li>' + esc(f) + '</li>'; }).join('') + '</ul>' +
+						'<p class="meta">Requirements: ' + esc(data.requirements) + '. Owner and developer: <strong>' + esc(data.owner) + '</strong>. First customer — <a href="' + esc(customer.url) + '">' + esc(customer.name) + '</a>.</p>' +
+					'</section>' +
+					'<section class="card" id="order"><h2>Order &amp; subscription</h2>' +
+						'<p>The plugin is licensed under GPL. Install it yourself for free or purchase support from us.</p>' +
+						'<div class="pricing">' + renderPricing(data.pricing || []) + '</div>' +
+						'<h3>How to order</h3>' + renderSteps(data.orderSteps || []) +
+						'<p class="meta">Discounts available for non-profit choirs and educational projects — ask when ordering.</p>' +
+					'</section>' +
+					'<section class="card" id="install"><h2>Installation</h2>' +
+						'<h3>Self-service (Community)</h3>' + renderSteps(data.installSteps || []) +
+						'<h3>Updates</h3><ul>' +
+							'<li><strong>Pro:</strong> license key in settings — WordPress shows updates automatically.</li>' +
+							'<li><strong>Community:</strong> upload a new zip, or set Update JSON URL and click “Check for updates now”.</li>' +
+							'<li>Installed version: <strong>Choir Rehearsal → Settings</strong>.</li>' +
+						'</ul>' +
+						'<h3>User roles</h3><ul>' +
+							'<li><strong>Subscriber (Singer)</strong> — browse songs, listen, view PDF.</li>' +
+							'<li><strong>Editor / Administrator</strong> — add and edit songs, record voice tracks.</li>' +
+						'</ul></section>' +
+					'<section class="card changelog" id="changelog"><h2>Changelog</h2>' +
+						'<p class="meta">Loaded from GitHub · content updates automatically after push</p>' +
+						renderChangelog(data.changelog || []) +
+					'</section>' +
+				'</main>' +
+				'<footer class="footer">' +
+					'<p>Choir Rehearsal · <a href="https://rehearsal.compath.ee">rehearsal.compath.ee</a> · <a href="https://compath.ee">compath.ee</a> · <a href="https://github.com/compathee/compathee">GitHub</a> · <a href="mailto:' + esc(email) + '">' + esc(email) + '</a></p>' +
+					'<p>© Compath OÜ, Tallinn, Estonia</p>' +
+					'<p>Licensed under GPL-2.0-or-later</p>' +
+				'</footer>';
+		}
+
+		function showError(message) {
+			document.getElementById('app').innerHTML =
+				'<div class="error"><strong>Could not load content from GitHub.</strong><p>' + esc(message) + '</p>' +
+				'<p>Try <a href="https://github.com/compathee/compathee/releases/latest">GitHub Releases</a> or email <a href="mailto:order@compath.ee">order@compath.ee</a>.</p></div>';
+		}
+
+		Promise.all([
+			fetchJsonFromRepo('choir-rehearsal/docs/product-data.json'),
+			fetchJsonFromRepo('choir-rehearsal/update.json').catch(function () { return {}; }),
+			fetch(CONFIG.releasesUrl, { cache: 'no-store' }).then(function (r) {
+				return r.ok ? r.json() : [];
+			}).catch(function () { return []; })
+		]).then(function (results) {
+			var data = results[0];
+			var updateMeta = results[1];
+			var releases = results[2];
+			var latestRelease = findLatestRelease(releases);
+			var version = (updateMeta && updateMeta.version) || (latestRelease ? latestRelease.tag_name.replace('choir-rehearsal-v', '') : '0.3.10');
+			var downloadUrl = (updateMeta && updateMeta.download_url) || getDownloadUrl(latestRelease);
+			renderPage(data, version, downloadUrl);
+		}).catch(function (err) {
+			showError(err.message || String(err));
+		});
+	})();
+	</script>
 </body>
 </html>

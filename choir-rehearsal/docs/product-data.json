@@ -1,0 +1,147 @@
+{
+  "title": "Choir Rehearsal",
+  "tagline": "A private rehearsal library for choirs: songs, voice tracks, PDF scores, and easy listening on phone or desktop.",
+  "overview": "Choir Rehearsal helps choir members learn new pieces by voice part. Editors upload PDF scores and audio for each voice (or record from a phone). Singers visit /rehearsal/, pick a song, and listen to their part.",
+  "requirements": "WordPress 6.4+, PHP 8.0+",
+  "owner": "Compath OÜ, Tallinn, Estonia",
+  "firstCustomer": {
+    "name": "Cappella Veneta",
+    "url": "https://veneta.ee"
+  },
+  "features": [
+    "Song list on your choir website",
+    "PDF viewer with page navigation",
+    "Voice tracks: bass, tenor, alto, soprano, and more",
+    "Microphone recording in the admin",
+    "Sticky player at the bottom of the screen",
+    "Login-only access (optional)",
+    "Roles: editors manage, singers listen",
+    "WordPress-native plugin updates"
+  ],
+  "pricing": [
+    {
+      "name": "Community",
+      "price": "Free",
+      "featured": false,
+      "items": [
+        "Download from GitHub Releases",
+        "Self-service installation",
+        "Manual updates via GitHub",
+        "Documentation in the repository"
+      ]
+    },
+    {
+      "name": "Pro — subscription",
+      "price": "€49 / year",
+      "featured": true,
+      "items": [
+        "1 choir website",
+        "Automatic updates in WordPress",
+        "License key for Update JSON",
+        "Priority email support",
+        "Help with migration and upgrades"
+      ]
+    },
+    {
+      "name": "Done-for-you setup",
+      "price": "from €120",
+      "featured": false,
+      "items": [
+        "One-time setup on your WordPress site",
+        "/rehearsal/ page created",
+        "Roles and access configured",
+        "Editor training (1 session)",
+        "First year of Pro included"
+      ]
+    }
+  ],
+  "orderEmail": "order@compath.ee",
+  "orderSteps": [
+    "Email order@compath.ee with subject \"Choir Rehearsal\" — include your choir name and website URL.",
+    "We send an invoice; after payment you receive a license key (Pro) or we schedule installation.",
+    "Enter the key in Choir Rehearsal → Settings → License key — updates appear under Plugins automatically."
+  ],
+  "installSteps": [
+    "Download choir-rehearsal.zip from GitHub Releases.",
+    "In WordPress: Plugins → Add New → Upload Plugin — select the zip and activate.",
+    "The plugin creates a /rehearsal/ page with the [choir_rehearsal] shortcode.",
+    "Add a song: Choir Rehearsal → Add Song — title, PDF, voice tracks.",
+    "Give singers WordPress accounts (Subscriber role). Editors get Editor or Administrator."
+  ],
+  "changelog": [
+    {
+      "version": "0.3.10",
+      "summary": "Plugin author",
+      "items": ["Plugin list shows By Compath OÜ"],
+      "open": true
+    },
+    {
+      "version": "0.3.9",
+      "summary": "Product website",
+      "items": ["Product page: rehearsal.compath.ee"]
+    },
+    {
+      "version": "0.3.8",
+      "summary": "Documentation page",
+      "items": ["Product page: order, install, pricing, changelog", "Documentation link in plugin settings"]
+    },
+    {
+      "version": "0.3.7",
+      "summary": "Desktop layout fix",
+      "items": ["Publish box no longer overlaps the song title field"]
+    },
+    {
+      "version": "0.3.6",
+      "summary": "Song title field",
+      "items": ["Fixed: song title field visible again when editing"]
+    },
+    {
+      "version": "0.3.5",
+      "summary": "Back to song list",
+      "items": ["Mobile: return to library from edit screen"]
+    },
+    {
+      "version": "0.3.4",
+      "summary": "Simplified editor",
+      "items": ["Title, PDF, and voice tracks only", "WordPress content editor removed", "Mobile Save/Publish bar at bottom"]
+    },
+    {
+      "version": "0.3.3",
+      "summary": "Mobile admin",
+      "items": ["Compact voice track UI on phone"]
+    },
+    {
+      "version": "0.3.2",
+      "summary": "Microphone recording",
+      "items": ["Fixed recording upload (video/webm)"]
+    },
+    {
+      "version": "0.3.1",
+      "summary": "Version in settings",
+      "items": ["Installed version shown on Settings page"]
+    },
+    {
+      "version": "0.3.0",
+      "summary": "Voice recording",
+      "items": ["Record voice tracks from microphone in song editor"]
+    },
+    {
+      "version": "0.2.x",
+      "summary": "Frontend & updates",
+      "items": [
+        "0.2.6 — fixed duplicate login form",
+        "0.2.5 — critical error hotfix",
+        "0.2.4 — /rehearsal/ page via shortcode",
+        "0.2.3 — fixed GitHub update check",
+        "0.2.2 — frontend login, role toolbar",
+        "0.2.1 — updates via GitHub Releases",
+        "0.2.0 — PDF scores and page viewer"
+      ]
+    },
+    {
+      "version": "0.1.0",
+      "summary": "Initial release",
+      "items": ["Songs, tracks, sticky player, REST API"]
+    }
+  ]
+}
