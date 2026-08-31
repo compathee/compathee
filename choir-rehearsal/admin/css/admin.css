@@ -198,7 +198,6 @@
 
 .choir-rehearsal-song-edit #post-body-content {
 	margin-bottom: 0;
-	min-height: 0;
 }
 
 .choir-rehearsal-song-edit #titlediv {
@@ -233,14 +232,8 @@
 	background: #f0f6ff;
 }
 
-.choir-rehearsal-song-edit #post-body.columns-2 #postbox-container-1 {
-	float: none;
-	width: 100%;
-}
-
-.choir-rehearsal-song-edit #post-body.columns-2 #postbox-container-2 {
-	float: none;
-	width: 100%;
+.choir-rehearsal-song-edit .choir-submitbox-back {
+	display: none;
 }
 
 .choir-rehearsal-song-edit .postbox .inside {
@@ -248,7 +241,28 @@
 	padding: 12px;
 }
 
+@media screen and (min-width: 783px) {
+	/* Keep default WP two-column layout: title + meta left, Publish sidebar right */
+	.choir-rehearsal-song-edit #post-body-content {
+		margin-bottom: 20px;
+	}
+}
+
 @media screen and (max-width: 782px) {
+	.choir-rehearsal-song-edit #post-body.columns-2 #postbox-container-1,
+	.choir-rehearsal-song-edit #post-body.columns-2 #postbox-container-2 {
+		float: none;
+		width: 100%;
+	}
+
+	.choir-rehearsal-song-edit #post-body-content {
+		min-height: 0 !important;
+		margin-right: 0 !important;
+	}
+
+	.choir-rehearsal-song-edit .choir-submitbox-back {
+		display: block;
+	}
 	.choir-rehearsal-song-edit #wpbody-content {
 		padding-bottom: 72px;
 	}
