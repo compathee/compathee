@@ -68,3 +68,65 @@ port: 22
 - `readme.txt` — официальный changelog плагина
 
 При настроенном автодеплое загрузка `index.html` не нужна — это делает GitHub Actions.
+
+## Ошибка 403 Forbidden
+
+Сообщение Apache «You don't have permission to access this resource» почти всегда означает одно из:
+
+### 1. Неверная папка FTP (`REHEARSAL_FTP_REMOTE_DIR`)
+
+Поддомен должен указывать **именно** на ту папку, куда загружаются файлы.
+
+В панели хостинга найдите **Document root** для `rehearsal.compath.ee`.  
+Примеры путей (зависит от хостера):
+
+- `/domains/rehearsal.compath.ee/public_html/`
+- `/home/user/domains/rehearsal.compath.ee/public_html/`
+- `/public_html/rehearsal.compath.ee/`
+
+Значение secret `REHEARSAL_FTP_REMOTE_DIR` должно совпадать с этим путём (часто с `/` в конце).
+
+### 2. Нет `index.html` в корне поддомена
+
+Через FTP-клиент проверьте, что в document root лежат:
+
+- `index.html`
+- `.htaccess`
+- `health.txt`
+
+Если папка пустая — деплой не сработал (нет secrets, неверный путь, workflow не в `main`).
+
+### 3. Права доступа (самая частая причина 403)
+
+Файлы после FTP часто получают права `600` — Apache не может их читать.
+
+Нужно:
+
+| Объект | Права |
+|--------|-------|
+| Папка | `755` |
+| `index.html`, `.htaccess` | `644` |
+
+В workflow добавлен шаг **Fix remote permissions** — после merge запустите деплой снова.
+
+Вручную в FTP-клиенте: правый клик → File permissions → `644` для файлов, `755` для папки.
+
+### 4. Быстрая проверка
+
+Откройте:
+
+- https://rehearsal.compath.ee/health.txt — должно быть: `Choir Rehearsal product site deploy OK`
+- https://rehearsal.compath.ee/ — главная страница
+
+Если `health.txt` открывается, а `/` — нет: проблема в `index.html` или `.htaccess`.  
+Если оба 403 — неверная папка или права на каталог.
+
+### 5. Чеклист
+
+1. Workflow `deploy-rehearsal-site.yml` есть в ветке **`main`**
+2. Secrets `REHEARSAL_FTP_*` заданы в GitHub
+3. **Actions → Deploy rehearsal.compath.ee → Run workflow** — зелёный статус
+4. В FTP видны `index.html`, `.htaccess`, `health.txt`
+5. Права: папка `755`, файлы `644`
+6. Document root поддомена = `REHEARSAL_FTP_REMOTE_DIR`
+

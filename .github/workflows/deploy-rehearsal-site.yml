@@ -14,7 +14,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Prepare index.html
+      - name: Prepare site files
         env:
           RELEASE_TAG: ${{ github.event.release.tag_name }}
         run: |
@@ -26,10 +26,13 @@ jobs:
           fi
           mkdir -p deploy
           cp choir-rehearsal/docs/product-page.html deploy/index.html
+          cp choir-rehearsal/docs/deploy/.htaccess deploy/.htaccess
+          cp choir-rehearsal/docs/deploy/health.txt deploy/health.txt
           sed -i "s/version [0-9][0-9.]*/version ${VERSION}/g" deploy/index.html
-          echo "Prepared deploy/index.html for version ${VERSION}"
+          ls -la deploy/
+          echo "Prepared deploy/ for version ${VERSION}"
 
-      - name: Deploy to rehearsal.compath.ee (FTP/SFTP)
+      - name: Deploy to rehearsal.compath.ee (FTP/FTPS)
         uses: SamKirkland/FTP-Deploy-Action@v4.3.6
         with:
           server: ${{ secrets.REHEARSAL_FTP_SERVER }}
@@ -40,3 +43,38 @@ jobs:
           local-dir: deploy/
           server-dir: ${{ secrets.REHEARSAL_FTP_REMOTE_DIR }}
           dangerous-clean-slate: false
+
+      - name: Fix remote permissions (Apache 403)
+        env:
+          FTP_SERVER: ${{ secrets.REHEARSAL_FTP_SERVER }}
+          FTP_USER: ${{ secrets.REHEARSAL_FTP_USERNAME }}
+          FTP_PASS: ${{ secrets.REHEARSAL_FTP_PASSWORD }}
+          FTP_DIR: ${{ secrets.REHEARSAL_FTP_REMOTE_DIR }}
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y lftp
+          lftp -u "${FTP_USER}","${FTP_PASS}" "${FTP_SERVER}" <<EOF
+          set ssl:verify-certificate no
+          set ftp:ssl-force true
+          set ftp:ssl-protect-data true
+          cd ${FTP_DIR}
+          chmod 755 .
+          chmod 644 index.html
+          chmod 644 .htaccess
+          chmod 644 health.txt
+          bye
+          EOF
+
+      - name: Verify health.txt is reachable
+        run: |
+          set -euo pipefail
+          for URL in "https://rehearsal.compath.ee/health.txt" "http://rehearsal.compath.ee/health.txt"; do
+            echo "Checking ${URL}"
+            if curl -fsSL --max-time 30 "${URL}" | grep -q "deploy OK"; then
+              echo "OK: ${URL}"
+              exit 0
+            fi
+          done
+          echo "::warning::Site not reachable yet. Check REHEARSAL_FTP_REMOTE_DIR and subdomain document root."
+          exit 0
