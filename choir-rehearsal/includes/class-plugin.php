@@ -16,6 +16,7 @@ require_once CHOIR_REHEARSAL_PATH . 'includes/class-admin.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-frontend.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-rest.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-abilities.php';
+require_once CHOIR_REHEARSAL_PATH . 'includes/class-updater.php';
 
 final class Choir_Rehearsal_Plugin {
 
@@ -35,6 +36,7 @@ final class Choir_Rehearsal_Plugin {
 
 		add_action( 'plugins_loaded', array( $this, 'load_textdomain' ) );
 		add_action( 'init', array( $this, 'init' ), 5 );
+		Choir_Rehearsal_Updater::register();
 	}
 
 	public function load_textdomain(): void {

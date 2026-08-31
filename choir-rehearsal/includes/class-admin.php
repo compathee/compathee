@@ -42,6 +42,8 @@ final class Choir_Rehearsal_Admin {
 				'default'           => true,
 			)
 		);
+
+		Choir_Rehearsal_Updater::register_settings();
 	}
 
 	public static function render_settings_page(): void {
@@ -58,6 +60,27 @@ final class Choir_Rehearsal_Admin {
 								<input type="checkbox" name="choir_rehearsal_require_login" value="1" <?php checked( Choir_Rehearsal_Access::requires_login() ); ?> />
 								<?php esc_html_e( 'Only logged-in users can view rehearsal pages.', 'choir-rehearsal' ); ?>
 							</label>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row"><?php esc_html_e( 'Update JSON URL', 'choir-rehearsal' ); ?></th>
+						<td>
+							<input type="url" class="regular-text" name="choir_rehearsal_update_json_url" value="<?php echo esc_attr( (string) get_option( 'choir_rehearsal_update_json_url', '' ) ); ?>" placeholder="https://example.com/updates/choir-rehearsal.json" />
+							<p class="description"><?php esc_html_e( 'Optional. If empty, the plugin checks GitHub Releases.', 'choir-rehearsal' ); ?></p>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row"><?php esc_html_e( 'GitHub repository', 'choir-rehearsal' ); ?></th>
+						<td>
+							<input type="text" class="regular-text" name="choir_rehearsal_github_repo" value="<?php echo esc_attr( (string) get_option( 'choir_rehearsal_github_repo', 'compathee/compathee' ) ); ?>" />
+							<p class="description"><?php esc_html_e( 'Used when Update JSON URL is empty. Release asset must be named choir-rehearsal.zip.', 'choir-rehearsal' ); ?></p>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row"><?php esc_html_e( 'License key', 'choir-rehearsal' ); ?></th>
+						<td>
+							<input type="password" class="regular-text" name="choir_rehearsal_license_key" value="<?php echo esc_attr( (string) get_option( 'choir_rehearsal_license_key', '' ) ); ?>" autocomplete="off" />
+							<p class="description"><?php esc_html_e( 'Optional. Sent as Bearer token when requesting Update JSON URL (for paid customers).', 'choir-rehearsal' ); ?></p>
 						</td>
 					</tr>
 				</table>
