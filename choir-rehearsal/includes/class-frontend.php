@@ -70,6 +70,8 @@ final class Choir_Rehearsal_Frontend {
 			'choirRehearsalPlayer',
 			array(
 				'nowPlaying' => __( 'Now playing', 'choir-rehearsal' ),
+				'play'       => __( 'Play', 'choir-rehearsal' ),
+				'pause'      => __( 'Pause', 'choir-rehearsal' ),
 			)
 		);
 
@@ -358,7 +360,16 @@ final class Choir_Rehearsal_Frontend {
 				<strong class="choir-sticky-player__label"><?php esc_html_e( 'Now playing', 'choir-rehearsal' ); ?></strong>
 				<span class="choir-sticky-player__title"></span>
 			</div>
-			<audio class="choir-sticky-player__audio" controls preload="none"></audio>
+			<div class="choir-sticky-player__controls">
+				<button type="button" class="choir-sticky-player__play" aria-label="<?php esc_attr_e( 'Play', 'choir-rehearsal' ); ?>">
+					<span class="choir-sticky-player__play-icon" aria-hidden="true">▶</span>
+				</button>
+				<div class="choir-sticky-player__timeline">
+					<input type="range" class="choir-sticky-player__seek" min="0" max="100" value="0" step="0.1" aria-label="<?php esc_attr_e( 'Seek', 'choir-rehearsal' ); ?>" />
+					<span class="choir-sticky-player__time">0:00 / 0:00</span>
+				</div>
+				<audio class="choir-sticky-player__audio" preload="none"></audio>
+			</div>
 		</div>
 		<?php
 	}

@@ -70,10 +70,15 @@
   ],
   "changelog": [
     {
+      "version": "0.3.11",
+      "summary": "Mobile player",
+      "items": ["Wider sticky player with large play button and seek bar on phone"],
+      "open": true
+    },
+    {
       "version": "0.3.10",
       "summary": "Plugin author",
-      "items": ["Plugin list shows By Compath OÜ"],
-      "open": true
+      "items": ["Plugin list shows By Compath OÜ"]
     },
     {
       "version": "0.3.9",
