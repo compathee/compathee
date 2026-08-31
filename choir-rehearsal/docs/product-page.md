@@ -1,133 +1,133 @@
-# Choir Rehearsal — библиотека репетиций для хора
+# Choir Rehearsal — rehearsal library for choirs
 
-**WordPress-плагин · версия 0.3.9** · [rehearsal.compath.ee](https://rehearsal.compath.ee)
+**WordPress plugin · version 0.3.9** · [rehearsal.compath.ee](https://rehearsal.compath.ee)
 
-Закрытая библиотека репетиций: песни, голосовые дорожки, PDF-ноты и прослушивание с телефона.
+A private rehearsal library: songs, voice tracks, PDF scores, and mobile-friendly listening.
 
-- [Скачать последнюю версию](https://github.com/compathee/compathee/releases/latest)
-- [Полная HTML-страница](product-page.html) — для публикации на сайте
-
----
-
-## Описание
-
-Choir Rehearsal помогает хору учить новые произведения по голосам. Редакторы загружают PDF с нотами и аудио каждого голоса (или записывают с телефона). Певцы заходят на `/rehearsal/`, выбирают песню и слушают партию.
-
-**Возможности:**
-
-- Список песен на сайте хора
-- PDF-просмотр с листанием страниц
-- Голосовые дорожки: bass, tenor, alto, soprano и др.
-- Запись голоса с микрофона в админке
-- Липкий плеер внизу экрана
-- Доступ только для залогиненных пользователей
-- Роли: редакторы управляют, певцы слушают
-- Обновления через WordPress
-
-**Требования:** WordPress 6.4+, PHP 8.0+
-
-**Владелец и разработчик:** Compath OÜ, Tallinn, Estonia  
-Первый заказчик — [Cappella Veneta](https://veneta.ee)
+- [Download latest release](https://github.com/compathee/compathee/releases/latest)
+- [Full HTML page](product-page.html) — for publishing on the website
 
 ---
 
-## Заказ и подписка
+## Overview
 
-Плагин распространяется по лицензии GPL. Можно установить бесплатно или заказать сопровождение.
+Choir Rehearsal helps choir members learn new pieces by voice part. Editors upload PDF scores and audio for each voice (or record from a phone). Singers visit `/rehearsal/`, pick a song, and listen to their part.
 
-### Community — бесплатно
+**Features:**
 
-- Скачивание с GitHub Releases
-- Самостоятельная установка
-- Обновления вручную или через GitHub
+- Song list on your choir website
+- PDF viewer with page navigation
+- Voice tracks: bass, tenor, alto, soprano, and more
+- Microphone recording in the admin
+- Sticky player at the bottom of the screen
+- Login-only access (optional)
+- Roles: editors manage, singers listen
+- WordPress-native plugin updates
 
-### Pro — подписка — 49 € / год
+**Requirements:** WordPress 6.4+, PHP 8.0+
 
-- 1 сайт хора
-- Автоматические обновления в WordPress
-- Ключ лицензии
-- Приоритетная поддержка по e-mail
-
-### Установка под ключ — от 120 €
-
-- Настройка на вашем WordPress
-- Страница `/rehearsal/`, роли, доступ
-- Обучение редактора
-- Первый год Pro включён
-
-### Как заказать
-
-1. Напишите на **order@compath.ee** (тема: «Choir Rehearsal») — название хора и адрес сайта.
-2. После оплаты — ключ лицензии или дата установки.
-3. Ключ в **Choir Rehearsal → Settings → License key**.
+**Owner and developer:** Compath OÜ, Tallinn, Estonia  
+First customer — [Cappella Veneta](https://veneta.ee)
 
 ---
 
-## Установка
+## Order & subscription
 
-1. Скачайте `choir-rehearsal.zip` с [GitHub Releases](https://github.com/compathee/compathee/releases).
-2. **Плагины → Добавить → Загрузить плагин** — активируйте.
-3. Плагин создаст страницу `/rehearsal/` со шорткодом `[choir_rehearsal]`.
-4. **Choir Rehearsal → Add Song** — название, PDF, дорожки.
-5. Певцам — роль Subscriber, редакторам — Editor.
+The plugin is licensed under GPL. Install it yourself for free or purchase support from us.
 
-### Обновления
+### Community — free
 
-- **Pro:** ключ лицензии → обновления в «Плагины».
-- **Community:** новый zip или Update JSON URL + «Check for updates now».
+- Download from GitHub Releases
+- Self-service installation
+- Manual updates via GitHub
 
-### Роли
+### Pro — subscription — €49 / year
 
-| Роль | Доступ |
+- 1 choir website
+- Automatic updates in WordPress
+- License key
+- Priority email support
+
+### Done-for-you setup — from €120
+
+- Setup on your WordPress site
+- `/rehearsal/` page, roles, access
+- Editor training
+- First year of Pro included
+
+### How to order
+
+1. Email **order@compath.ee** (subject: “Choir Rehearsal”) — choir name and website URL.
+2. After payment — license key or installation date.
+3. Key in **Choir Rehearsal → Settings → License key**.
+
+---
+
+## Installation
+
+1. Download `choir-rehearsal.zip` from [GitHub Releases](https://github.com/compathee/compathee/releases).
+2. **Plugins → Add New → Upload Plugin** — activate.
+3. The plugin creates `/rehearsal/` with shortcode `[choir_rehearsal]`.
+4. **Choir Rehearsal → Add Song** — title, PDF, tracks.
+5. Singers — Subscriber role; editors — Editor.
+
+### Updates
+
+- **Pro:** license key → updates under Plugins.
+- **Community:** new zip or Update JSON URL + “Check for updates now”.
+
+### Roles
+
+| Role | Access |
 |------|--------|
-| Subscriber | Слушать, смотреть PDF |
-| Editor / Admin | Управлять песнями |
+| Subscriber | Listen, view PDF |
+| Editor / Admin | Manage songs |
 
 ---
 
-## История изменений
+## Changelog
 
 ### 0.3.9
-- Сайт продукта: rehearsal.compath.ee
+- Product website: rehearsal.compath.ee
 
 ### 0.3.8
-- Страница документации продукта
-- Ссылка в Settings
+- Product documentation page
+- Link in Settings
 
 ### 0.3.7
-- Блок Publish не накладывается на название (ПК)
+- Publish box no longer overlaps title (desktop)
 
 ### 0.3.6
-- Поле названия снова видно
+- Song title field visible again
 
 ### 0.3.5
-- Кнопка «К списку песен» на мобильном
+- “Back to song list” on mobile
 
 ### 0.3.4
-- Упрощённый редактор: название, PDF, дорожки
+- Simplified editor: title, PDF, tracks
 
 ### 0.3.3
-- Мобильная админка для дорожек
+- Mobile admin for voice tracks
 
 ### 0.3.2
-- Исправлена загрузка записи с микрофона
+- Fixed microphone recording upload
 
 ### 0.3.1
-- Версия в Settings
+- Version in Settings
 
 ### 0.3.0
-- Запись голоса с микрофона
+- Voice recording from microphone
 
 ### 0.2.6 – 0.2.0
-- Логин на фронтенде, страница /rehearsal/, обновления GitHub, PDF-ноты
+- Frontend login, /rehearsal/ page, GitHub updates, PDF scores
 
 ### 0.1.0
-- Первый релиз
+- Initial release
 
 ---
 
-**Контакты:** [rehearsal.compath.ee](https://rehearsal.compath.ee) · [compath.ee](https://compath.ee) · [GitHub](https://github.com/compathee/compathee) · order@compath.ee
+**Contact:** [rehearsal.compath.ee](https://rehearsal.compath.ee) · [compath.ee](https://compath.ee) · [GitHub](https://github.com/compathee/compathee) · order@compath.ee
 
 © Compath OÜ, Tallinn, Estonia
 
-Лицензия GPL-2.0-or-later
+Licensed under GPL-2.0-or-later
