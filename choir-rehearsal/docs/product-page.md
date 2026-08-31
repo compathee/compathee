@@ -54,7 +54,7 @@ Choir Rehearsal помогает хору учить новые произвед
 
 ### Как заказать
 
-1. Напишите на **info@compath.ee** (тема: «Choir Rehearsal») — название хора и адрес сайта.
+1. Напишите на **order@compath.ee** (тема: «Choir Rehearsal») — название хора и адрес сайта.
 2. После оплаты — ключ лицензии или дата установки.
 3. Ключ в **Choir Rehearsal → Settings → License key**.
 
@@ -123,6 +123,6 @@ Choir Rehearsal помогает хору учить новые произвед
 
 ---
 
-**Контакты:** [rehearsal.compath.ee](https://rehearsal.compath.ee) · [compath.ee](https://compath.ee) · [GitHub](https://github.com/compathee/compathee) · info@compath.ee
+**Контакты:** [rehearsal.compath.ee](https://rehearsal.compath.ee) · [compath.ee](https://compath.ee) · [GitHub](https://github.com/compathee/compathee) · order@compath.ee
 
 Лицензия GPL-2.0-or-later
