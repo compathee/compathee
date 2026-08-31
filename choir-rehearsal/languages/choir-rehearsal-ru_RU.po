@@ -1,0 +1,164 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Choir Rehearsal 0.1.0\n"
+"Language: ru_RU\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+msgid "Songs"
+msgstr "Песни"
+
+msgid "Song"
+msgstr "Песня"
+
+msgid "Add Song"
+msgstr "Добавить песню"
+
+msgid "Add New Song"
+msgstr "Добавить новую песню"
+
+msgid "Edit Song"
+msgstr "Редактировать песню"
+
+msgid "Choir Rehearsal"
+msgstr "Репетиции хора"
+
+msgid "Tracks"
+msgstr "Треки"
+
+msgid "Track"
+msgstr "Трек"
+
+msgid "Backing track"
+msgstr "Фонограмма"
+
+msgid "Bass 1"
+msgstr "Бас 1"
+
+msgid "Bass 2"
+msgstr "Бас 2"
+
+msgid "Baritone 1"
+msgstr "Баритон 1"
+
+msgid "Baritone 2"
+msgstr "Баритон 2"
+
+msgid "Tenor 1"
+msgstr "Тенор 1"
+
+msgid "Tenor 2"
+msgstr "Тенор 2"
+
+msgid "Alto 1"
+msgstr "Альт 1"
+
+msgid "Alto 2"
+msgstr "Альт 2"
+
+msgid "Soprano 1"
+msgstr "Сопрано 1"
+
+msgid "Soprano 2"
+msgstr "Сопрано 2"
+
+msgid "Other"
+msgstr "Прочее"
+
+msgid "Voice Types"
+msgstr "Типы голосов"
+
+msgid "Voice Type"
+msgstr "Тип голоса"
+
+msgid "Settings"
+msgstr "Настройки"
+
+msgid "Choir Rehearsal Settings"
+msgstr "Настройки репетиций"
+
+msgid "Require login"
+msgstr "Только для авторизованных"
+
+msgid "Only logged-in users can view rehearsal pages."
+msgstr "Только авторизованные пользователи могут видеть страницы репетиций."
+
+msgid "Song list URL: %s"
+msgstr "URL списка песен: %s"
+
+msgid "Voice Tracks"
+msgstr "Треки по голосам"
+
+msgid "Add one row per voice part. Upload an MP3/WAV file or pick one from the Media Library."
+msgstr "Добавьте строку для каждого голоса. Загрузите MP3/WAV или выберите файл из медиатеки."
+
+msgid "Voice"
+msgstr "Голос"
+
+msgid "Audio"
+msgstr "Аудио"
+
+msgid "Actions"
+msgstr "Действия"
+
+msgid "No audio selected"
+msgstr "Аудио не выбрано"
+
+msgid "Upload / Select"
+msgstr "Загрузить / Выбрать"
+
+msgid "Remove"
+msgstr "Удалить"
+
+msgid "Add track"
+msgstr "Добавить трек"
+
+msgid "Select audio"
+msgstr "Выбрать аудио"
+
+msgid "Use this audio"
+msgstr "Использовать это аудио"
+
+msgid "Rehearsal Library"
+msgstr "Библиотека репетиций"
+
+msgid "No songs yet."
+msgstr "Песен пока нет."
+
+msgid "%d track"
+msgid_plural "%d tracks"
+msgstr[0] "%d трек"
+msgstr[1] "%d трека"
+msgstr[2] "%d треков"
+
+msgid "All songs"
+msgstr "Все песни"
+
+msgid "No tracks uploaded yet."
+msgstr "Треки ещё не загружены."
+
+msgid "Play"
+msgstr "▶"
+
+msgid "Now playing"
+msgstr "Сейчас играет"
+
+msgid "Song not found."
+msgstr "Песня не найдена."
+
+msgid "List choir songs"
+msgstr "Список песен хора"
+
+msgid "Returns published rehearsal songs with track counts."
+msgstr "Возвращает опубликованные песни с количеством треков."
+
+msgid "Get choir song details"
+msgstr "Детали песни хора"
+
+msgid "Returns one song with all voice tracks and audio URLs."
+msgstr "Возвращает одну песню со всеми голосами и URL аудио."
+
+msgid "%1$s — %2$s"
+msgstr "%1$s — %2$s"

@@ -1,0 +1,13 @@
+.choir-tracks-table select {
+	min-width: 180px;
+}
+
+.choir-tracks-table .choir-audio-name {
+	display: inline-block;
+	margin-right: 8px;
+	min-width: 160px;
+}
+
+.choir-track-row td {
+	vertical-align: middle;
+}
