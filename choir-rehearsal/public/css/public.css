@@ -1,11 +1,72 @@
 .choir-rehearsal-main {
-	max-width: 760px;
+	max-width: 960px;
 	margin: 0 auto 120px;
 	padding: 24px 16px;
 }
 
 .choir-rehearsal-title {
 	margin-bottom: 1rem;
+}
+
+.choir-section-title {
+	margin: 2rem 0 1rem;
+	font-size: 1.15rem;
+}
+
+.choir-score-section {
+	margin-bottom: 2rem;
+}
+
+.choir-pdf-viewer {
+	border: 1px solid rgba(0, 0, 0, 0.08);
+	border-radius: 12px;
+	overflow: hidden;
+	background: #f8fafc;
+}
+
+.choir-pdf-viewer__canvas-wrap {
+	overflow: auto;
+	padding: 12px;
+	background: #eef2f7;
+}
+
+.choir-pdf-viewer__canvas {
+	display: block;
+	max-width: 100%;
+	height: auto;
+	margin: 0 auto;
+	background: #fff;
+	box-shadow: 0 8px 24px rgba(16, 24, 40, 0.08);
+}
+
+.choir-pdf-viewer__controls {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 16px;
+	padding: 12px 16px;
+	background: #fff;
+	border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.choir-pdf-viewer__controls button {
+	border: 0;
+	border-radius: 999px;
+	background: #1f4fd8;
+	color: #fff;
+	padding: 8px 16px;
+	cursor: pointer;
+}
+
+.choir-pdf-viewer__controls button:disabled {
+	opacity: 0.45;
+	cursor: not-allowed;
+}
+
+.choir-pdf-page {
+	min-width: 72px;
+	text-align: center;
+	font-weight: 600;
 }
 
 .choir-song-list,

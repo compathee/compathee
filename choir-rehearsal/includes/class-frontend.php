@@ -56,6 +56,36 @@ final class Choir_Rehearsal_Frontend {
 				'nowPlaying' => __( 'Now playing', 'choir-rehearsal' ),
 			)
 		);
+
+		if ( is_singular( Choir_Rehearsal_Post_Types::SONG ) ) {
+			$song_id = get_queried_object_id();
+			$pdf_url = Choir_Rehearsal_Post_Types::get_score_pdf_url( $song_id );
+			if ( '' !== $pdf_url ) {
+				wp_enqueue_script(
+					'pdfjs',
+					'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',
+					array(),
+					'3.11.174',
+					true
+				);
+				wp_enqueue_script(
+					'choir-rehearsal-pdf',
+					CHOIR_REHEARSAL_URL . 'public/js/pdf-viewer.js',
+					array( 'pdfjs' ),
+					CHOIR_REHEARSAL_VERSION,
+					true
+				);
+				wp_localize_script(
+					'choir-rehearsal-pdf',
+					'choirRehearsalPdf',
+					array(
+						'workerSrc' => 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js',
+						'prev'      => __( 'Previous page', 'choir-rehearsal' ),
+						'next'      => __( 'Next page', 'choir-rehearsal' ),
+					)
+				);
+			}
+		}
 	}
 
 	private static function should_enqueue(): bool {
@@ -113,7 +143,8 @@ final class Choir_Rehearsal_Frontend {
 	}
 
 	public static function render_song( WP_Post $song ): void {
-		$tracks = Choir_Rehearsal_Post_Types::get_tracks_for_song( (int) $song->ID );
+		$tracks  = Choir_Rehearsal_Post_Types::get_tracks_for_song( (int) $song->ID );
+		$pdf_url = Choir_Rehearsal_Post_Types::get_score_pdf_url( (int) $song->ID );
 		?>
 		<div class="choir-rehearsal-single" data-song-id="<?php echo esc_attr( (string) $song->ID ); ?>">
 			<p class="choir-back-link"><a href="<?php echo esc_url( get_post_type_archive_link( Choir_Rehearsal_Post_Types::SONG ) ); ?>">&larr; <?php esc_html_e( 'All songs', 'choir-rehearsal' ); ?></a></p>
@@ -122,32 +153,51 @@ final class Choir_Rehearsal_Frontend {
 				<div class="choir-song-notes"><?php echo wp_kses_post( wpautop( $song->post_content ) ); ?></div>
 			<?php endif; ?>
 
-			<?php if ( empty( $tracks ) ) : ?>
-				<p><?php esc_html_e( 'No tracks uploaded yet.', 'choir-rehearsal' ); ?></p>
-			<?php else : ?>
-				<ul class="choir-track-list">
-					<?php foreach ( $tracks as $track ) : ?>
-						<?php
-						$audio_url = Choir_Rehearsal_Post_Types::get_audio_url( (int) $track->ID );
-						if ( '' === $audio_url ) {
-							continue;
-						}
-						?>
-						<li class="choir-track-item">
-							<span class="choir-track-voice"><?php echo esc_html( Choir_Rehearsal_Post_Types::get_voice_label( (int) $track->ID ) ); ?></span>
-							<button
-								type="button"
-								class="choir-play-track"
-								data-track-id="<?php echo esc_attr( (string) $track->ID ); ?>"
-								data-track-title="<?php echo esc_attr( get_the_title( $song ) . ' — ' . Choir_Rehearsal_Post_Types::get_voice_label( (int) $track->ID ) ); ?>"
-								data-track-url="<?php echo esc_url( $audio_url ); ?>"
-							>
-								<?php esc_html_e( 'Play', 'choir-rehearsal' ); ?>
-							</button>
-						</li>
-					<?php endforeach; ?>
-				</ul>
+			<?php if ( '' !== $pdf_url ) : ?>
+				<section class="choir-score-section" aria-label="<?php esc_attr_e( 'Sheet music', 'choir-rehearsal' ); ?>">
+					<h2 class="choir-section-title"><?php esc_html_e( 'Sheet music', 'choir-rehearsal' ); ?></h2>
+					<div class="choir-pdf-viewer" data-pdf-url="<?php echo esc_url( $pdf_url ); ?>">
+						<div class="choir-pdf-viewer__canvas-wrap">
+							<canvas class="choir-pdf-viewer__canvas"></canvas>
+						</div>
+						<div class="choir-pdf-viewer__controls">
+							<button type="button" class="choir-pdf-prev" aria-label="<?php esc_attr_e( 'Previous page', 'choir-rehearsal' ); ?>">&larr; <?php esc_html_e( 'Previous', 'choir-rehearsal' ); ?></button>
+							<span class="choir-pdf-page">1 / 1</span>
+							<button type="button" class="choir-pdf-next" aria-label="<?php esc_attr_e( 'Next page', 'choir-rehearsal' ); ?>"><?php esc_html_e( 'Next', 'choir-rehearsal' ); ?> &rarr;</button>
+						</div>
+					</div>
+				</section>
 			<?php endif; ?>
+
+			<section class="choir-tracks-section" aria-label="<?php esc_attr_e( 'Voice tracks', 'choir-rehearsal' ); ?>">
+				<h2 class="choir-section-title"><?php esc_html_e( 'Voice tracks', 'choir-rehearsal' ); ?></h2>
+				<?php if ( empty( $tracks ) ) : ?>
+					<p><?php esc_html_e( 'No tracks uploaded yet.', 'choir-rehearsal' ); ?></p>
+				<?php else : ?>
+					<ul class="choir-track-list">
+						<?php foreach ( $tracks as $track ) : ?>
+							<?php
+							$audio_url = Choir_Rehearsal_Post_Types::get_audio_url( (int) $track->ID );
+							if ( '' === $audio_url ) {
+								continue;
+							}
+							?>
+							<li class="choir-track-item">
+								<span class="choir-track-voice"><?php echo esc_html( Choir_Rehearsal_Post_Types::get_voice_label( (int) $track->ID ) ); ?></span>
+								<button
+									type="button"
+									class="choir-play-track"
+									data-track-id="<?php echo esc_attr( (string) $track->ID ); ?>"
+									data-track-title="<?php echo esc_attr( get_the_title( $song ) . ' — ' . Choir_Rehearsal_Post_Types::get_voice_label( (int) $track->ID ) ); ?>"
+									data-track-url="<?php echo esc_url( $audio_url ); ?>"
+								>
+									<?php esc_html_e( 'Play', 'choir-rehearsal' ); ?>
+								</button>
+							</li>
+						<?php endforeach; ?>
+					</ul>
+				<?php endif; ?>
+			</section>
 		</div>
 
 		<div id="choir-sticky-player" class="choir-sticky-player is-hidden" aria-hidden="true">

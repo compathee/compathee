@@ -85,6 +85,18 @@ final class Choir_Rehearsal_Post_Types {
 		);
 
 		register_post_meta(
+			self::SONG,
+			'_choir_score_pdf_id',
+			array(
+				'type'              => 'integer',
+				'single'            => true,
+				'show_in_rest'      => true,
+				'auth_callback'     => static fn() => current_user_can( 'edit_posts' ),
+				'sanitize_callback' => 'absint',
+			)
+		);
+
+		register_post_meta(
 			self::TRACK,
 			'_choir_voice_slug',
 			array(
@@ -118,6 +130,25 @@ final class Choir_Rehearsal_Post_Types {
 	public static function get_audio_url( int $track_id ): string {
 		$attachment_id = (int) get_post_meta( $track_id, '_choir_audio_id', true );
 		if ( $attachment_id <= 0 ) {
+			return '';
+		}
+
+		$url = wp_get_attachment_url( $attachment_id );
+		return is_string( $url ) ? $url : '';
+	}
+
+	public static function get_score_pdf_id( int $song_id ): int {
+		return (int) get_post_meta( $song_id, '_choir_score_pdf_id', true );
+	}
+
+	public static function get_score_pdf_url( int $song_id ): string {
+		$attachment_id = self::get_score_pdf_id( $song_id );
+		if ( $attachment_id <= 0 ) {
+			return '';
+		}
+
+		$mime = get_post_mime_type( $attachment_id );
+		if ( 'application/pdf' !== $mime ) {
 			return '';
 		}
 

@@ -67,5 +67,27 @@
 			$('#choir-tracks-body').append($row);
 			bindRow($row);
 		});
+
+		$('#choir-select-pdf').on('click', function () {
+			const frame = wp.media({
+				title: choirRehearsalAdmin.selectPdf,
+				button: { text: choirRehearsalAdmin.usePdf },
+				library: { type: 'application/pdf' },
+				multiple: false,
+			});
+
+			frame.on('select', function () {
+				const attachment = frame.state().get('selection').first().toJSON();
+				$('#choir-score-pdf-id').val(attachment.id);
+				$('#choir-score-pdf-name').text(attachment.filename || attachment.title || choirRehearsalAdmin.noPdf);
+			});
+
+			frame.open();
+		});
+
+		$('#choir-remove-pdf').on('click', function () {
+			$('#choir-score-pdf-id').val('0');
+			$('#choir-score-pdf-name').text(choirRehearsalAdmin.noPdf);
+		});
 	});
 })(jQuery);

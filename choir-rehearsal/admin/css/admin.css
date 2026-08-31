@@ -1,3 +1,10 @@
+.choir-score-wrap .choir-score-pdf-name {
+	display: inline-block;
+	min-width: 200px;
+	margin-right: 8px;
+	font-weight: 600;
+}
+
 .choir-tracks-table select {
 	min-width: 180px;
 }

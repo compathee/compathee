@@ -91,6 +91,7 @@ final class Choir_Rehearsal_REST {
 			'title'       => get_the_title( $song ),
 			'url'         => get_permalink( $song ),
 			'track_count' => count( Choir_Rehearsal_Post_Types::get_tracks_for_song( (int) $song->ID ) ),
+			'has_score'   => Choir_Rehearsal_Post_Types::get_score_pdf_id( (int) $song->ID ) > 0,
 		);
 	}
 
@@ -109,11 +110,12 @@ final class Choir_Rehearsal_REST {
 		}
 
 		return array(
-			'id'     => (int) $song->ID,
-			'title'  => get_the_title( $song ),
-			'notes'  => apply_filters( 'the_content', $song->post_content ),
-			'url'    => get_permalink( $song ),
-			'tracks' => $tracks,
+			'id'       => (int) $song->ID,
+			'title'    => get_the_title( $song ),
+			'notes'    => apply_filters( 'the_content', $song->post_content ),
+			'url'      => get_permalink( $song ),
+			'score_pdf_url' => Choir_Rehearsal_Post_Types::get_score_pdf_url( (int) $song->ID ),
+			'tracks'   => $tracks,
 		);
 	}
 }

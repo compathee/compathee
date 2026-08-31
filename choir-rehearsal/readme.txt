@@ -4,7 +4,7 @@ Tags: choir, audio, rehearsal, voice parts, music
 Requires at least: 6.4
 Tested up to: 6.9
 Requires PHP: 8.0
-Stable tag: 0.1.0
+Stable tag: 0.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -17,6 +17,7 @@ Choir Rehearsal helps choir members learn new pieces by voice part.
 * Create songs and attach unlimited voice tracks
 * Built-in voice list: backing track, bass, baritone, tenor, alto, soprano, other
 * Upload MP3/WAV files from the Media Library
+* Attach a PDF score per song with page-by-page viewer
 * Frontend song list at `/rehearsal/`
 * Sticky HTML5 player at the bottom of the page
 * Optional login-only access
@@ -41,6 +42,10 @@ By default only logged-in users can view `/rehearsal/`. Change this under **Choi
 Yes. Use the shortcode `[choir_rehearsal]`.
 
 == Changelog ==
+
+= 0.2.0 =
+* PDF sheet music attachment per song
+* PDF viewer with previous/next page controls on song pages
 
 = 0.1.0 =
 * Initial release: songs, tracks, sticky player, REST API, MCP abilities.

@@ -82,19 +82,33 @@ final class Choir_Rehearsal_Admin {
 			$new[ $key ] = $label;
 			if ( 'title' === $key ) {
 				$new['choir_tracks'] = __( 'Tracks', 'choir-rehearsal' );
+				$new['choir_score']  = __( 'Score', 'choir-rehearsal' );
 			}
 		}
 		return $new;
 	}
 
 	public static function render_song_column( string $column, int $post_id ): void {
-		if ( 'choir_tracks' !== $column ) {
+		if ( 'choir_tracks' === $column ) {
+			echo esc_html( (string) count( Choir_Rehearsal_Post_Types::get_tracks_for_song( $post_id ) ) );
 			return;
 		}
-		echo esc_html( (string) count( Choir_Rehearsal_Post_Types::get_tracks_for_song( $post_id ) ) );
+
+		if ( 'choir_score' === $column ) {
+			echo Choir_Rehearsal_Post_Types::get_score_pdf_id( $post_id ) > 0 ? 'PDF' : '—';
+		}
 	}
 
 	public static function add_meta_boxes(): void {
+		add_meta_box(
+			'choir-rehearsal-score',
+			__( 'Sheet Music (PDF)', 'choir-rehearsal' ),
+			array( self::class, 'render_score_metabox' ),
+			Choir_Rehearsal_Post_Types::SONG,
+			'normal',
+			'high'
+		);
+
 		add_meta_box(
 			'choir-rehearsal-tracks',
 			__( 'Voice Tracks', 'choir-rehearsal' ),
@@ -135,8 +149,35 @@ final class Choir_Rehearsal_Admin {
 				'removeTrack'  => __( 'Remove', 'choir-rehearsal' ),
 				'trackLabel'   => __( 'Track', 'choir-rehearsal' ),
 				'noAudio'      => __( 'No audio selected', 'choir-rehearsal' ),
+				'selectPdf'    => __( 'Select PDF', 'choir-rehearsal' ),
+				'usePdf'       => __( 'Use this PDF', 'choir-rehearsal' ),
+				'noPdf'        => __( 'No PDF selected', 'choir-rehearsal' ),
+				'removePdf'    => __( 'Remove PDF', 'choir-rehearsal' ),
 			)
 		);
+	}
+
+	public static function render_score_metabox( WP_Post $post ): void {
+		wp_nonce_field( 'choir_rehearsal_save_score', 'choir_rehearsal_score_nonce' );
+		$pdf_id   = Choir_Rehearsal_Post_Types::get_score_pdf_id( (int) $post->ID );
+		$filename = '';
+		if ( $pdf_id > 0 ) {
+			$file = get_attached_file( $pdf_id );
+			$filename = $file ? basename( $file ) : get_the_title( $pdf_id );
+		}
+		?>
+		<div class="choir-score-wrap">
+			<p class="description"><?php esc_html_e( 'Upload a PDF score for this song. Singers will see it with page navigation on the song page.', 'choir-rehearsal' ); ?></p>
+			<input type="hidden" id="choir-score-pdf-id" name="choir_score_pdf_id" value="<?php echo esc_attr( (string) $pdf_id ); ?>" />
+			<p>
+				<span id="choir-score-pdf-name" class="choir-score-pdf-name"><?php echo esc_html( $filename ?: __( 'No PDF selected', 'choir-rehearsal' ) ); ?></span>
+			</p>
+			<p>
+				<button type="button" class="button" id="choir-select-pdf"><?php esc_html_e( 'Upload / Select PDF', 'choir-rehearsal' ); ?></button>
+				<button type="button" class="button-link-delete" id="choir-remove-pdf"><?php esc_html_e( 'Remove PDF', 'choir-rehearsal' ); ?></button>
+			</p>
+		</div>
+		<?php
 	}
 
 	public static function render_tracks_metabox( WP_Post $post ): void {
@@ -209,11 +250,20 @@ final class Choir_Rehearsal_Admin {
 	}
 
 	public static function save_song( int $post_id, WP_Post $post ): void {
-		if ( ! isset( $_POST['choir_rehearsal_tracks_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['choir_rehearsal_tracks_nonce'] ) ), 'choir_rehearsal_save_tracks' ) ) {
+		if ( ! current_user_can( 'edit_post', $post_id ) ) {
 			return;
 		}
 
-		if ( ! current_user_can( 'edit_post', $post_id ) ) {
+		if ( isset( $_POST['choir_rehearsal_score_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['choir_rehearsal_score_nonce'] ) ), 'choir_rehearsal_save_score' ) ) {
+			$pdf_id = isset( $_POST['choir_score_pdf_id'] ) ? absint( wp_unslash( $_POST['choir_score_pdf_id'] ) ) : 0;
+			if ( $pdf_id > 0 && 'application/pdf' === get_post_mime_type( $pdf_id ) ) {
+				update_post_meta( $post_id, '_choir_score_pdf_id', $pdf_id );
+			} else {
+				delete_post_meta( $post_id, '_choir_score_pdf_id' );
+			}
+		}
+
+		if ( ! isset( $_POST['choir_rehearsal_tracks_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['choir_rehearsal_tracks_nonce'] ) ), 'choir_rehearsal_save_tracks' ) ) {
 			return;
 		}
 

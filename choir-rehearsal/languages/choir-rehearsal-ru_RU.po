@@ -162,3 +162,45 @@ msgstr "Возвращает одну песню со всеми голосам�
 
 msgid "%1$s — %2$s"
 msgstr "%1$s — %2$s"
+
+msgid "Score"
+msgstr "Ноты"
+
+msgid "Sheet Music (PDF)"
+msgstr "Ноты (PDF)"
+
+msgid "Upload a PDF score for this song. Singers will see it with page navigation on the song page."
+msgstr "Загрузите PDF с нотами. Певцы увидят его с пролистыванием страниц на странице песни."
+
+msgid "Upload / Select PDF"
+msgstr "Загрузить / Выбрать PDF"
+
+msgid "Select PDF"
+msgstr "Выбрать PDF"
+
+msgid "Use this PDF"
+msgstr "Использовать этот PDF"
+
+msgid "No PDF selected"
+msgstr "PDF не выбран"
+
+msgid "Remove PDF"
+msgstr "Удалить PDF"
+
+msgid "Sheet music"
+msgstr "Ноты"
+
+msgid "Previous page"
+msgstr "Предыдущая страница"
+
+msgid "Previous"
+msgstr "Назад"
+
+msgid "Next page"
+msgstr "Следующая страница"
+
+msgid "Next"
+msgstr "Вперёд"
+
+msgid "Voice tracks"
+msgstr "Треки по голосам"
