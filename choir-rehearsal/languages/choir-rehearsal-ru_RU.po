@@ -315,3 +315,9 @@ msgstr "Сначала сохраните песню, затем можно за
 
 msgid "Add one row per voice part. Upload an audio file, record from your microphone, or pick one from the Media Library."
 msgstr "Добавьте строку для каждого голоса: загрузите файл, запишите с микрофона или выберите из медиатеки."
+
+msgid "Plugin version"
+msgstr "Версия плагина"
+
+msgid "Updates are published at %s"
+msgstr "Обновления публикуются на %s"

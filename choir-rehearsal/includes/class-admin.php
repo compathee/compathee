@@ -60,6 +60,23 @@ final class Choir_Rehearsal_Admin {
 				<?php settings_fields( 'choir_rehearsal_settings' ); ?>
 				<table class="form-table" role="presentation">
 					<tr>
+						<th scope="row"><?php esc_html_e( 'Plugin version', 'choir-rehearsal' ); ?></th>
+						<td>
+							<code><?php echo esc_html( CHOIR_REHEARSAL_VERSION ); ?></code>
+							<p class="description">
+								<?php
+								echo wp_kses_post(
+									sprintf(
+										/* translators: %s: GitHub releases link */
+										__( 'Updates are published at %s', 'choir-rehearsal' ),
+										'<a href="https://github.com/compathee/compathee/releases" target="_blank" rel="noopener noreferrer">GitHub Releases</a>'
+									)
+								);
+								?>
+							</p>
+						</td>
+					</tr>
+					<tr>
 						<th scope="row"><?php esc_html_e( 'Rehearsal page', 'choir-rehearsal' ); ?></th>
 						<td>
 							<?php
