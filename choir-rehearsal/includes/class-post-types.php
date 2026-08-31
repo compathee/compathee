@@ -48,7 +48,7 @@ final class Choir_Rehearsal_Post_Types {
 					'slug'       => 'rehearsal',
 					'with_front' => false,
 				),
-				'supports'            => array( 'title', 'editor', 'author', 'revisions' ),
+				'supports'            => array( 'title' ),
 				'capability_type'     => 'post',
 				'exclude_from_search' => true,
 			)

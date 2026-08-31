@@ -4,7 +4,7 @@ Tags: choir, audio, rehearsal, voice parts, music
 Requires at least: 6.4
 Tested up to: 6.9
 Requires PHP: 8.0
-Stable tag: 0.3.3
+Stable tag: 0.3.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -42,6 +42,11 @@ By default only logged-in users can view `/rehearsal/`. Change this under **Choi
 Yes. Use the shortcode `[choir_rehearsal]`.
 
 == Changelog ==
+
+= 0.3.4 =
+* Simplified song editor: title, PDF score, and voice tracks only
+* Removed WordPress content editor and extra meta boxes
+* Mobile: main fields first, sticky Save/Publish bar at bottom
 
 = 0.3.3 =
 * Mobile-friendly admin layout for voice tracks (compact select and buttons)

@@ -12,7 +12,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class Choir_Rehearsal_Admin {
 
 	public static function register(): void {
-		add_action( 'add_meta_boxes', array( self::class, 'add_meta_boxes' ) );
+		add_action( 'init', array( self::class, 'remove_song_editor_support' ), 20 );
+		add_filter( 'use_block_editor_for_post_type', array( self::class, 'disable_block_editor' ), 10, 2 );
+		add_action( 'add_meta_boxes', array( self::class, 'add_meta_boxes' ), 10 );
+		add_action( 'add_meta_boxes', array( self::class, 'remove_meta_boxes' ), 100 );
+		add_filter( 'admin_body_class', array( self::class, 'admin_body_class' ) );
+		add_action( 'edit_form_after_title', array( self::class, 'render_edit_intro' ) );
 		add_action( 'save_post_' . Choir_Rehearsal_Post_Types::SONG, array( self::class, 'save_song' ), 10, 2 );
 		add_action( 'admin_enqueue_scripts', array( self::class, 'enqueue_assets' ) );
 		add_action( 'admin_menu', array( self::class, 'register_settings_page' ) );
@@ -176,6 +181,59 @@ final class Choir_Rehearsal_Admin {
 		}
 	}
 
+	public static function remove_song_editor_support(): void {
+		$remove = array( 'editor', 'excerpt', 'thumbnail', 'comments', 'trackbacks', 'custom-fields', 'revisions', 'author' );
+		foreach ( $remove as $feature ) {
+			remove_post_type_support( Choir_Rehearsal_Post_Types::SONG, $feature );
+		}
+	}
+
+	public static function disable_block_editor( bool $use_block_editor, string $post_type ): bool {
+		if ( Choir_Rehearsal_Post_Types::SONG === $post_type ) {
+			return false;
+		}
+
+		return $use_block_editor;
+	}
+
+	public static function admin_body_class( string $classes ): string {
+		$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+		if ( $screen && Choir_Rehearsal_Post_Types::SONG === $screen->post_type && in_array( $screen->base, array( 'post', 'post-new' ), true ) ) {
+			$classes .= ' choir-rehearsal-song-edit';
+		}
+
+		return $classes;
+	}
+
+	public static function remove_meta_boxes(): void {
+		$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+		if ( ! $screen || Choir_Rehearsal_Post_Types::SONG !== $screen->post_type ) {
+			return;
+		}
+
+		remove_meta_box( 'slugdiv', Choir_Rehearsal_Post_Types::SONG, 'normal' );
+		remove_meta_box( 'authordiv', Choir_Rehearsal_Post_Types::SONG, 'normal' );
+		remove_meta_box( 'revisionsdiv', Choir_Rehearsal_Post_Types::SONG, 'normal' );
+		remove_meta_box( 'postcustom', Choir_Rehearsal_Post_Types::SONG, 'normal' );
+		remove_meta_box( 'commentstatusdiv', Choir_Rehearsal_Post_Types::SONG, 'normal' );
+		remove_meta_box( 'commentsdiv', Choir_Rehearsal_Post_Types::SONG, 'normal' );
+		remove_meta_box( 'trackbacksdiv', Choir_Rehearsal_Post_Types::SONG, 'normal' );
+		remove_meta_box( 'postexcerpt', Choir_Rehearsal_Post_Types::SONG, 'normal' );
+		remove_meta_box( 'postimagediv', Choir_Rehearsal_Post_Types::SONG, 'side' );
+		remove_meta_box( 'pageparentdiv', Choir_Rehearsal_Post_Types::SONG, 'side' );
+	}
+
+	public static function render_edit_intro( WP_Post $post ): void {
+		if ( Choir_Rehearsal_Post_Types::SONG !== $post->post_type ) {
+			return;
+		}
+		?>
+		<p class="choir-song-edit-intro description">
+			<?php esc_html_e( 'Add the song title, upload a PDF score, then record or upload each voice part.', 'choir-rehearsal' ); ?>
+		</p>
+		<?php
+	}
+
 	public static function add_meta_boxes(): void {
 		add_meta_box(
 			'choir-rehearsal-score',
@@ -202,13 +260,28 @@ final class Choir_Rehearsal_Admin {
 			return;
 		}
 
+		if ( in_array( $screen->base, array( 'post', 'post-new' ), true ) ) {
+			wp_enqueue_style(
+				'choir-rehearsal-admin',
+				CHOIR_REHEARSAL_URL . 'admin/css/admin.css',
+				array(),
+				CHOIR_REHEARSAL_VERSION
+			);
+		}
+
+		if ( 'post' !== $screen->base && 'post-new' !== $screen->base ) {
+			return;
+		}
+
 		wp_enqueue_media();
-		wp_enqueue_style(
-			'choir-rehearsal-admin',
-			CHOIR_REHEARSAL_URL . 'admin/css/admin.css',
-			array(),
-			CHOIR_REHEARSAL_VERSION
-		);
+		if ( ! wp_style_is( 'choir-rehearsal-admin', 'enqueued' ) ) {
+			wp_enqueue_style(
+				'choir-rehearsal-admin',
+				CHOIR_REHEARSAL_URL . 'admin/css/admin.css',
+				array(),
+				CHOIR_REHEARSAL_VERSION
+			);
+		}
 		wp_enqueue_script(
 			'choir-rehearsal-admin',
 			CHOIR_REHEARSAL_URL . 'admin/js/admin.js',

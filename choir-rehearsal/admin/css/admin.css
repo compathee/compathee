@@ -186,3 +186,117 @@
 		grid-template-columns: 1fr;
 	}
 }
+
+/* Simplified song edit screen */
+.choir-rehearsal-song-edit #post-body-content,
+.choir-rehearsal-song-edit #postdivrich,
+.choir-rehearsal-song-edit #wp-content-editor-container,
+.choir-rehearsal-song-edit #post-status-info,
+.choir-rehearsal-song-edit .block-editor,
+.choir-rehearsal-song-edit .edit-post-layout__content > .edit-post-visual-editor {
+	display: none !important;
+}
+
+.choir-rehearsal-song-edit #titlediv {
+	margin: 0 0 12px;
+}
+
+.choir-rehearsal-song-edit #title {
+	font-size: 1.2em;
+	padding: 10px 12px;
+}
+
+.choir-rehearsal-song-edit .choir-song-edit-intro {
+	margin: 0 0 16px;
+	padding: 10px 12px;
+	border-left: 4px solid #1f4fd8;
+	background: #f0f6ff;
+}
+
+.choir-rehearsal-song-edit #post-body.columns-2 #postbox-container-1 {
+	float: none;
+	width: 100%;
+}
+
+.choir-rehearsal-song-edit #post-body.columns-2 #postbox-container-2 {
+	float: none;
+	width: 100%;
+}
+
+.choir-rehearsal-song-edit .postbox .inside {
+	margin: 0;
+	padding: 12px;
+}
+
+@media screen and (max-width: 782px) {
+	.choir-rehearsal-song-edit #wpbody-content {
+		padding-bottom: 72px;
+	}
+
+	.choir-rehearsal-song-edit #post-body {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.choir-rehearsal-song-edit #postbox-container-2 {
+		order: 1;
+	}
+
+	.choir-rehearsal-song-edit #postbox-container-1 {
+		order: 2;
+	}
+
+	.choir-rehearsal-song-edit #titlewrap {
+		padding-top: 0;
+	}
+
+	.choir-rehearsal-song-edit #title-prompt-text {
+		font-size: 14px;
+	}
+
+	.choir-rehearsal-song-edit #submitdiv {
+		position: fixed;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		z-index: 100;
+		margin: 0;
+		border: 0;
+		border-radius: 0;
+		box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.12);
+	}
+
+	.choir-rehearsal-song-edit #submitdiv .postbox-header,
+	.choir-rehearsal-song-edit #submitdiv .handlediv {
+		display: none;
+	}
+
+	.choir-rehearsal-song-edit #submitdiv .inside {
+		padding: 10px 12px;
+		margin: 0;
+	}
+
+	.choir-rehearsal-song-edit #submitdiv #major-publishing-actions {
+		padding: 0;
+		border: 0;
+		background: transparent;
+	}
+
+	.choir-rehearsal-song-edit #delete-action,
+	.choir-rehearsal-song-edit .misc-pub-section,
+	.choir-rehearsal-song-edit #minor-publishing-actions {
+		display: none;
+	}
+
+	.choir-rehearsal-song-edit #publishing-action {
+		float: none;
+		width: 100%;
+	}
+
+	.choir-rehearsal-song-edit #publishing-action #publish {
+		width: 100%;
+		float: none;
+		min-height: 44px;
+		font-size: 15px;
+	}
+}
