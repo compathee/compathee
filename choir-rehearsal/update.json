@@ -1,8 +1,8 @@
 {
   "name": "Choir Rehearsal",
   "slug": "choir-rehearsal",
-  "version": "0.3.4",
-  "download_url": "https://github.com/compathee/compathee/releases/download/choir-rehearsal-v0.3.4/choir-rehearsal.zip",
+  "version": "0.3.5",
+  "download_url": "https://github.com/compathee/compathee/releases/download/choir-rehearsal-v0.3.5/choir-rehearsal.zip",
   "homepage": "https://veneta.ee",
   "requires": "6.4",
   "tested": "6.9",
@@ -10,6 +10,6 @@
   "last_updated": "2026-08-31",
   "sections": {
     "description": "Private rehearsal library for choirs: songs, voice parts, audio tracks, PDF scores, and a sticky player.",
-    "changelog": "<h4>0.3.4</h4><ul><li>Simplified song editor: title, PDF, voice tracks only</li><li>Mobile: sticky Save/Publish bar, no content editor</li></ul>"
+    "changelog": "<h4>0.3.5</h4><ul><li>Mobile song editor: Back to song list button</li></ul>"
   }
 }

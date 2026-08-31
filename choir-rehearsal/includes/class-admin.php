@@ -17,7 +17,9 @@ final class Choir_Rehearsal_Admin {
 		add_action( 'add_meta_boxes', array( self::class, 'add_meta_boxes' ), 10 );
 		add_action( 'add_meta_boxes', array( self::class, 'remove_meta_boxes' ), 100 );
 		add_filter( 'admin_body_class', array( self::class, 'admin_body_class' ) );
+		add_action( 'edit_form_top', array( self::class, 'render_back_to_list_link' ) );
 		add_action( 'edit_form_after_title', array( self::class, 'render_edit_intro' ) );
+		add_action( 'post_submitbox_start', array( self::class, 'render_submitbox_back_link' ) );
 		add_action( 'save_post_' . Choir_Rehearsal_Post_Types::SONG, array( self::class, 'save_song' ), 10, 2 );
 		add_action( 'admin_enqueue_scripts', array( self::class, 'enqueue_assets' ) );
 		add_action( 'admin_menu', array( self::class, 'register_settings_page' ) );
@@ -221,6 +223,32 @@ final class Choir_Rehearsal_Admin {
 		remove_meta_box( 'postexcerpt', Choir_Rehearsal_Post_Types::SONG, 'normal' );
 		remove_meta_box( 'postimagediv', Choir_Rehearsal_Post_Types::SONG, 'side' );
 		remove_meta_box( 'pageparentdiv', Choir_Rehearsal_Post_Types::SONG, 'side' );
+	}
+
+	public static function render_back_to_list_link( WP_Post $post ): void {
+		if ( Choir_Rehearsal_Post_Types::SONG !== $post->post_type ) {
+			return;
+		}
+		?>
+		<p class="choir-song-back-link">
+			<a class="button choir-back-to-list choir-back-to-list--top" href="<?php echo esc_url( Choir_Rehearsal_Pages::get_library_url() ); ?>">
+				&larr; <?php esc_html_e( 'Back to song list', 'choir-rehearsal' ); ?>
+			</a>
+		</p>
+		<?php
+	}
+
+	public static function render_submitbox_back_link( WP_Post $post ): void {
+		if ( Choir_Rehearsal_Post_Types::SONG !== $post->post_type ) {
+			return;
+		}
+		?>
+		<div class="choir-submitbox-back">
+			<a class="button choir-back-to-list choir-back-to-list--sticky" href="<?php echo esc_url( Choir_Rehearsal_Pages::get_library_url() ); ?>">
+				&larr; <?php esc_html_e( 'Back to song list', 'choir-rehearsal' ); ?>
+			</a>
+		</div>
+		<?php
 	}
 
 	public static function render_edit_intro( WP_Post $post ): void {

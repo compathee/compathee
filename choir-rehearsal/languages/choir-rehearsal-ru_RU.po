@@ -339,3 +339,6 @@ msgstr "Файл записи не был получен сервером."
 
 msgid "Add the song title, upload a PDF score, then record or upload each voice part."
 msgstr "Укажите название песни, загрузите PDF с нотами и запишите или загрузите каждый голос."
+
+msgid "Back to song list"
+msgstr "К списку песен"

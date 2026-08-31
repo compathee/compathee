@@ -206,6 +206,22 @@
 	padding: 10px 12px;
 }
 
+.choir-rehearsal-song-edit .choir-song-back-link {
+	margin: 0 0 12px;
+}
+
+.choir-rehearsal-song-edit .choir-back-to-list {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 4px;
+	text-decoration: none;
+}
+
+.choir-rehearsal-song-edit .choir-back-to-list--sticky {
+	display: none;
+}
+
 .choir-rehearsal-song-edit .choir-song-edit-intro {
 	margin: 0 0 16px;
 	padding: 10px 12px;
@@ -231,6 +247,29 @@
 @media screen and (max-width: 782px) {
 	.choir-rehearsal-song-edit #wpbody-content {
 		padding-bottom: 72px;
+	}
+
+	.choir-rehearsal-song-edit .choir-back-to-list--top {
+		display: none;
+	}
+
+	.choir-rehearsal-song-edit .choir-back-to-list--sticky {
+		display: inline-flex;
+		width: 100%;
+		min-height: 44px;
+		text-align: center;
+		justify-content: center;
+	}
+
+	.choir-rehearsal-song-edit #submitdiv #major-publishing-actions {
+		display: flex;
+		gap: 8px;
+		align-items: stretch;
+	}
+
+	.choir-rehearsal-song-edit .choir-submitbox-back {
+		flex: 1;
+		min-width: 0;
 	}
 
 	.choir-rehearsal-song-edit #post-body {
@@ -289,8 +328,10 @@
 	}
 
 	.choir-rehearsal-song-edit #publishing-action {
+		flex: 1;
 		float: none;
-		width: 100%;
+		width: auto;
+		min-width: 0;
 	}
 
 	.choir-rehearsal-song-edit #publishing-action #publish {
