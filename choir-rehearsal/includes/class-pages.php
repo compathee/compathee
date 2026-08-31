@@ -15,7 +15,6 @@ final class Choir_Rehearsal_Pages {
 	public const OPTION_VERSION = 'choir_rehearsal_installed_version';
 
 	public static function register(): void {
-		add_action( 'admin_init', array( self::class, 'register_settings' ) );
 		add_action( 'admin_post_choir_rehearsal_flush_rewrites', array( self::class, 'handle_flush_rewrites' ) );
 	}
 
@@ -25,20 +24,32 @@ final class Choir_Rehearsal_Pages {
 			self::OPTION_PAGE_ID,
 			array(
 				'type'              => 'integer',
-				'sanitize_callback' => static fn( $value ) => absint( $value ),
+				'sanitize_callback' => array( self::class, 'sanitize_page_id' ),
 				'default'           => 0,
 			)
 		);
 	}
 
+	public static function sanitize_page_id( $value ): int {
+		return absint( $value );
+	}
+
 	public static function maybe_upgrade(): void {
+		if ( ! function_exists( 'wp_insert_post' ) ) {
+			return;
+		}
+
 		$stored = (string) get_option( self::OPTION_VERSION, '' );
 		if ( version_compare( $stored, CHOIR_REHEARSAL_VERSION, '>=' ) ) {
 			return;
 		}
 
 		self::ensure_library_page();
-		flush_rewrite_rules( false );
+
+		if ( function_exists( 'flush_rewrite_rules' ) ) {
+			flush_rewrite_rules( false );
+		}
+
 		update_option( self::OPTION_VERSION, CHOIR_REHEARSAL_VERSION );
 	}
 
@@ -82,15 +93,22 @@ final class Choir_Rehearsal_Pages {
 			array(
 				'role'   => 'administrator',
 				'number' => 1,
-				'fields' => array( 'ID' ),
+				'fields' => 'ID',
 			)
 		);
 
-		if ( ! empty( $users ) && isset( $users[0]->ID ) ) {
-			return (int) $users[0]->ID;
+		if ( ! empty( $users ) ) {
+			$first = $users[0];
+			if ( is_object( $first ) && isset( $first->ID ) ) {
+				return (int) $first->ID;
+			}
+			if ( is_numeric( $first ) ) {
+				return (int) $first;
+			}
 		}
 
-		return get_current_user_id() > 0 ? get_current_user_id() : 1;
+		$current = get_current_user_id();
+		return $current > 0 ? $current : 1;
 	}
 
 	private static function ensure_page_has_shortcode( int $page_id ): void {

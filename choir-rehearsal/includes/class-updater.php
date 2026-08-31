@@ -277,7 +277,7 @@ final class Choir_Rehearsal_Updater {
 
 			$tag     = (string) ( $release['tag_name'] ?? '' );
 			$version = self::parse_release_version( $tag );
-			if ( '' === $version || ! str_starts_with( $tag, 'choir-rehearsal-v' ) ) {
+			if ( '' === $version || 0 !== strpos( $tag, 'choir-rehearsal-v' ) ) {
 				continue;
 			}
 

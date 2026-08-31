@@ -36,7 +36,7 @@ final class Choir_Rehearsal_Plugin {
 		register_deactivation_hook( CHOIR_REHEARSAL_FILE, array( $this, 'deactivate' ) );
 
 		add_action( 'plugins_loaded', array( $this, 'load_textdomain' ) );
-		add_action( 'plugins_loaded', array( $this, 'maybe_upgrade' ), 20 );
+		add_action( 'init', array( $this, 'maybe_upgrade' ), 20 );
 		add_action( 'init', array( $this, 'init' ), 5 );
 		Choir_Rehearsal_Updater::register();
 	}
