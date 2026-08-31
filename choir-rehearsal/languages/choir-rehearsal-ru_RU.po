@@ -321,3 +321,18 @@ msgstr "Версия плагина"
 
 msgid "Updates are published at %s"
 msgstr "Обновления публикуются на %s"
+
+msgid "Security check failed. Reload the page and try again."
+msgstr "Ошибка проверки безопасности. Перезагрузите страницу и попробуйте снова."
+
+msgid "Recording upload was blocked by the server."
+msgstr "Сервер заблокировал загрузку записи."
+
+msgid "Recording is too large for the server upload limit."
+msgstr "Запись слишком большая для лимита загрузки на сервере."
+
+msgid "Recording was only partially uploaded."
+msgstr "Запись загружена только частично."
+
+msgid "No recording file was received."
+msgstr "Файл записи не был получен сервером."

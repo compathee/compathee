@@ -1,8 +1,8 @@
 {
   "name": "Choir Rehearsal",
   "slug": "choir-rehearsal",
-  "version": "0.3.1",
-  "download_url": "https://github.com/compathee/compathee/releases/download/choir-rehearsal-v0.3.1/choir-rehearsal.zip",
+  "version": "0.3.2",
+  "download_url": "https://github.com/compathee/compathee/releases/download/choir-rehearsal-v0.3.2/choir-rehearsal.zip",
   "homepage": "https://veneta.ee",
   "requires": "6.4",
   "tested": "6.9",
@@ -10,6 +10,6 @@
   "last_updated": "2026-08-31",
   "sections": {
     "description": "Private rehearsal library for choirs: songs, voice parts, audio tracks, PDF scores, and a sticky player.",
-    "changelog": "<h4>0.3.1</h4><ul><li>Show plugin version in Settings</li></ul><h4>0.3.0</h4><ul><li>Microphone recording for voice tracks</li></ul>"
+    "changelog": "<h4>0.3.2</h4><ul><li>Fix microphone recording upload (video/webm MIME type)</li><li>Clearer upload error messages</li></ul>"
   }
 }

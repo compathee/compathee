@@ -202,8 +202,12 @@
 			self.$row.find('.choir-audio-id').val(response.data.id);
 			self.$row.find('.choir-audio-name').text(response.data.filename || i18n.useAudio || 'Use this audio');
 			self.close();
-		}).fail(function () {
-			window.alert(i18n.uploadFailed || 'Upload failed. Please try again.');
+		}).fail(function (xhr) {
+			let message = i18n.uploadFailed || 'Upload failed. Please try again.';
+			if (xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.message) {
+				message = xhr.responseJSON.data.message;
+			}
+			window.alert(message);
 			self.$use.prop('disabled', false).text(i18n.useRecording || 'Use recording');
 		});
 	};
