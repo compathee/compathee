@@ -182,7 +182,8 @@ final class Choir_Rehearsal_Updater {
 			return null;
 		}
 
-		$tag = isset( $body['tag_name'] ) ? ltrim( (string) $body['tag_name'], 'v' ) : '';
+		$tag          = isset( $body['tag_name'] ) ? (string) $body['tag_name'] : '';
+		$version      = self::parse_release_version( $tag );
 		$download_url = '';
 
 		if ( ! empty( $body['assets'] ) && is_array( $body['assets'] ) ) {
@@ -203,7 +204,7 @@ final class Choir_Rehearsal_Updater {
 
 		return array(
 			'name'         => 'Choir Rehearsal',
-			'version'      => $tag,
+			'version'      => $version,
 			'download_url' => $download_url,
 			'homepage'     => 'https://veneta.ee',
 			'requires'     => '6.4',
@@ -243,6 +244,14 @@ final class Choir_Rehearsal_Updater {
 
 		$body = json_decode( wp_remote_retrieve_body( $response ), true );
 		return is_array( $body ) ? $body : null;
+	}
+
+	private static function parse_release_version( string $tag_name ): string {
+		if ( preg_match( '/(\d+\.\d+\.\d+)/', $tag_name, $matches ) ) {
+			return $matches[1];
+		}
+
+		return ltrim( $tag_name, 'v' );
 	}
 
 	/**
