@@ -4,7 +4,7 @@ Tags: choir, audio, rehearsal, voice parts, music
 Requires at least: 6.4
 Tested up to: 6.9
 Requires PHP: 8.0
-Stable tag: 0.3.11
+Stable tag: 0.4.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -42,6 +42,11 @@ By default only logged-in users can view `/rehearsal/`. Change this under **Choi
 Yes. Use the shortcode `[choir_rehearsal]`.
 
 == Changelog ==
+
+= 0.4.0 =
+* Lite edition: up to 4 voice tracks per song, no microphone recording
+* Pro edition via separate Choir Rehearsal Pro add-on plugin
+* Edition label and upgrade link in Settings
 
 = 0.3.11 =
 * Mobile-friendly sticky player: wider controls, large play button, seek bar

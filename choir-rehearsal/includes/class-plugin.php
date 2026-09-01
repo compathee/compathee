@@ -9,6 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+require_once CHOIR_REHEARSAL_PATH . 'includes/class-edition.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-post-types.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-voice-types.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-pages.php';

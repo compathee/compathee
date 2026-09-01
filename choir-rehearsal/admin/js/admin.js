@@ -295,6 +295,11 @@
 			options += '<option value="' + slug + '">' + voices[slug] + '</option>';
 		});
 
+		const recordButton = i18n.isPro
+			? '<button type="button" class="button button-small choir-record-audio">' + (i18n.recordAudio || 'Record') + '</button>'
+			: '';
+		const recorderPanel = i18n.isPro ? recorderPanelHtml() : '';
+
 		const html =
 			'<tr class="choir-track-row">' +
 				'<td>' +
@@ -306,14 +311,22 @@
 					'<div class="choir-track-audio-controls">' +
 						'<span class="choir-audio-name">' + (i18n.noAudio || 'No audio selected') + '</span> ' +
 						'<button type="button" class="button button-small choir-select-audio">' + (i18n.selectAudio || 'Upload') + '</button> ' +
-						'<button type="button" class="button button-small choir-record-audio">' + (i18n.recordAudio || 'Record') + '</button>' +
+						recordButton +
 					'</div>' +
-					recorderPanelHtml() +
+					recorderPanel +
 				'</td>' +
 				'<td><button type="button" class="button-link-delete choir-remove-track">' + (i18n.removeTrack || 'Remove') + '</button></td>' +
 			'</tr>';
 
 		return $(html);
+	}
+
+	function canAddTrack() {
+		const maxTracks = parseInt(i18n.maxTracks, 10) || 0;
+		if (!maxTracks) {
+			return true;
+		}
+		return $('#choir-tracks-body .choir-track-row').length < maxTracks;
 	}
 
 	$(function () {
@@ -322,6 +335,10 @@
 		});
 
 		$('#choir-add-track').on('click', function () {
+			if (!canAddTrack()) {
+				window.alert(i18n.trackLimitMsg || 'Track limit reached.');
+				return;
+			}
 			const $row = createRow(nextIndex());
 			$('#choir-tracks-body').append($row);
 			bindRow($row);

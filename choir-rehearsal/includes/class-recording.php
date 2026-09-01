@@ -12,6 +12,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class Choir_Rehearsal_Recording {
 
 	public static function register(): void {
+		if ( ! Choir_Rehearsal_Edition::can_record() ) {
+			return;
+		}
+
 		add_action( 'wp_ajax_choir_rehearsal_upload_recording', array( self::class, 'handle_upload' ) );
 		add_filter( 'upload_mimes', array( self::class, 'allow_audio_mimes' ) );
 		add_filter( 'wp_check_filetype_and_ext', array( self::class, 'fix_recording_filetype' ), 10, 5 );
@@ -69,6 +73,13 @@ final class Choir_Rehearsal_Recording {
 	}
 
 	public static function handle_upload(): void {
+		if ( ! Choir_Rehearsal_Edition::can_record() ) {
+			wp_send_json_error(
+				array( 'message' => __( 'Microphone recording is available in Choir Rehearsal Pro.', 'choir-rehearsal' ) ),
+				403
+			);
+		}
+
 		if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( (string) $_POST['nonce'] ) ), 'choir_rehearsal_recording' ) ) {
 			wp_send_json_error(
 				array( 'message' => __( 'Security check failed. Reload the page and try again.', 'choir-rehearsal' ) ),

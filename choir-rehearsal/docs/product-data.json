@@ -20,14 +20,15 @@
   ],
   "pricing": [
     {
-      "name": "Community",
+      "name": "Lite",
       "price": "Free",
       "featured": false,
       "items": [
-        "Download from GitHub Releases",
-        "Self-service installation",
-        "Manual updates via GitHub",
-        "Documentation in the repository"
+        "WordPress.org / GitHub download",
+        "Up to 4 voice tracks per song",
+        "PDF scores and sticky player",
+        "Upload audio files (no microphone recording)",
+        "Updates via WordPress.org or GitHub"
       ]
     },
     {
@@ -35,11 +36,11 @@
       "price": "€49 / year",
       "featured": true,
       "items": [
-        "1 choir website",
+        "Unlimited voice tracks per song",
+        "Microphone recording in the admin",
+        "1 choir website license",
         "Automatic updates in WordPress",
-        "License key for Update JSON",
-        "Priority email support",
-        "Help with migration and upgrades"
+        "Priority email support"
       ]
     },
     {

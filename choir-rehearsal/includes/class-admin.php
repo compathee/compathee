@@ -75,6 +75,28 @@ final class Choir_Rehearsal_Admin {
 						</td>
 					</tr>
 					<tr>
+						<th scope="row"><?php esc_html_e( 'Edition', 'choir-rehearsal' ); ?></th>
+						<td>
+							<code><?php echo esc_html( Choir_Rehearsal_Edition::edition_label() ); ?></code>
+							<?php if ( ! Choir_Rehearsal_Edition::is_pro() ) : ?>
+								<p class="description">
+									<?php
+									echo wp_kses_post(
+										sprintf(
+											/* translators: 1: max tracks, 2: upgrade link HTML */
+											__( 'Lite: up to %1$d voice tracks per song, no microphone recording. %2$s', 'choir-rehearsal' ),
+											Choir_Rehearsal_Edition::LITE_MAX_TRACKS,
+											'<a href="' . esc_url( Choir_Rehearsal_Edition::upgrade_url() ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Upgrade to Pro', 'choir-rehearsal' ) . '</a>'
+										)
+									);
+									?>
+								</p>
+							<?php else : ?>
+								<p class="description"><?php esc_html_e( 'Unlimited voice tracks and microphone recording.', 'choir-rehearsal' ); ?></p>
+							<?php endif; ?>
+						</td>
+					</tr>
+					<tr>
 						<th scope="row"><?php esc_html_e( 'Plugin version', 'choir-rehearsal' ); ?></th>
 						<td>
 							<code><?php echo esc_html( CHOIR_REHEARSAL_VERSION ); ?></code>
@@ -265,7 +287,13 @@ final class Choir_Rehearsal_Admin {
 		}
 		?>
 		<p class="choir-song-edit-intro description">
-			<?php esc_html_e( 'Add the song title, upload a PDF score, then record or upload each voice part.', 'choir-rehearsal' ); ?>
+			<?php
+			if ( Choir_Rehearsal_Edition::can_record() ) {
+				esc_html_e( 'Add the song title, upload a PDF score, then record or upload each voice part.', 'choir-rehearsal' );
+			} else {
+				esc_html_e( 'Add the song title, upload a PDF score, then upload each voice part (up to 4 tracks in Lite).', 'choir-rehearsal' );
+			}
+			?>
 		</p>
 		<?php
 	}
@@ -333,6 +361,14 @@ final class Choir_Rehearsal_Admin {
 				'postId'         => $screen && 'post' === $screen->base ? (int) get_the_ID() : 0,
 				'recordingNonce' => wp_create_nonce( 'choir_rehearsal_recording' ),
 				'voices'         => Choir_Rehearsal_Voice_Types::choices(),
+				'isPro'          => Choir_Rehearsal_Edition::is_pro(),
+				'maxTracks'      => Choir_Rehearsal_Edition::max_tracks(),
+				'upgradeUrl'     => Choir_Rehearsal_Edition::upgrade_url(),
+				'trackLimitMsg'  => sprintf(
+					/* translators: %d: maximum track count */
+					__( 'Lite edition allows up to %d voice tracks per song. Upgrade to Pro for unlimited tracks and microphone recording.', 'choir-rehearsal' ),
+					Choir_Rehearsal_Edition::LITE_MAX_TRACKS
+				),
 				'selectAudio'    => __( 'Upload', 'choir-rehearsal' ),
 				'recordAudio'    => __( 'Record', 'choir-rehearsal' ),
 				'useAudio'       => __( 'Use this audio', 'choir-rehearsal' ),
@@ -387,7 +423,22 @@ final class Choir_Rehearsal_Admin {
 		$voices = Choir_Rehearsal_Voice_Types::choices();
 		?>
 		<div class="choir-tracks-wrap">
-			<p class="description"><?php esc_html_e( 'Add one row per voice part. Upload an audio file, record from your microphone, or pick one from the Media Library.', 'choir-rehearsal' ); ?></p>
+			<p class="description">
+				<?php
+				if ( Choir_Rehearsal_Edition::can_record() ) {
+					esc_html_e( 'Add one row per voice part. Upload an audio file, record from your microphone, or pick one from the Media Library.', 'choir-rehearsal' );
+				} else {
+					echo wp_kses_post(
+						sprintf(
+							/* translators: 1: max tracks, 2: upgrade link HTML */
+							__( 'Add one row per voice part (up to %1$d in Lite). Upload an audio file or pick one from the Media Library. %2$s', 'choir-rehearsal' ),
+							Choir_Rehearsal_Edition::LITE_MAX_TRACKS,
+							'<a href="' . esc_url( Choir_Rehearsal_Edition::upgrade_url() ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Pro adds microphone recording and unlimited tracks.', 'choir-rehearsal' ) . '</a>'
+						)
+					);
+				}
+				?>
+			</p>
 			<table class="widefat choir-tracks-table">
 				<thead>
 					<tr>
@@ -443,8 +494,11 @@ final class Choir_Rehearsal_Admin {
 				<div class="choir-track-audio-controls">
 					<span class="choir-audio-name"><?php echo esc_html( $filename ?: __( 'No audio selected', 'choir-rehearsal' ) ); ?></span>
 					<button type="button" class="button button-small choir-select-audio"><?php esc_html_e( 'Upload', 'choir-rehearsal' ); ?></button>
-					<button type="button" class="button button-small choir-record-audio"><?php esc_html_e( 'Record', 'choir-rehearsal' ); ?></button>
+					<?php if ( Choir_Rehearsal_Edition::can_record() ) : ?>
+						<button type="button" class="button button-small choir-record-audio"><?php esc_html_e( 'Record', 'choir-rehearsal' ); ?></button>
+					<?php endif; ?>
 				</div>
+				<?php if ( Choir_Rehearsal_Edition::can_record() ) : ?>
 				<div class="choir-recorder-panel is-hidden" aria-hidden="true">
 					<p class="choir-recorder-panel__status"><?php esc_html_e( 'Click start and sing your voice part.', 'choir-rehearsal' ); ?></p>
 					<p class="choir-recorder-panel__timer">00:00</p>
@@ -456,6 +510,7 @@ final class Choir_Rehearsal_Admin {
 						<button type="button" class="button choir-recorder-cancel"><?php esc_html_e( 'Cancel', 'choir-rehearsal' ); ?></button>
 					</div>
 				</div>
+				<?php endif; ?>
 			</td>
 			<td>
 				<button type="button" class="button-link-delete choir-remove-track"><?php esc_html_e( 'Remove', 'choir-rehearsal' ); ?></button>
@@ -485,6 +540,16 @@ final class Choir_Rehearsal_Admin {
 		$submitted = isset( $_POST['choir_tracks'] ) && is_array( $_POST['choir_tracks'] )
 			? wp_unslash( $_POST['choir_tracks'] )
 			: array();
+
+		$max_tracks = Choir_Rehearsal_Edition::max_tracks();
+		if ( $max_tracks > 0 && count( $submitted ) > $max_tracks ) {
+			$submitted = array_slice( $submitted, 0, $max_tracks );
+			set_transient(
+				'choir_rehearsal_track_limit_' . get_current_user_id(),
+				1,
+				30
+			);
+		}
 
 		$existing = Choir_Rehearsal_Post_Types::get_tracks_for_song( $post_id );
 		$keep_ids = array();
