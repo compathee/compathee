@@ -2,9 +2,35 @@
 
 Stripe webhooks → paid sales invoice in **ERPLY Books** (Merit Aktiva later).
 
-## Upload layout on hosting
+## Ready-to-upload package
 
-Point the subdomain **document root** to the `public/` folder:
+**Use the `deploy/` folder** (or `api-compath-ee-deploy.zip` after running `./build-deploy.sh`).
+
+Upload everything inside `deploy/` to your hosting **document root**  
+(e.g. `/home/np9027/api.compath.ee/public_html/`).
+
+Step-by-step (RU): **[deploy/INSTALL.md](deploy/INSTALL.md)**
+
+```
+deploy/
+├── index.php
+├── .htaccess
+├── health.txt
+├── INSTALL.md
+├── config/
+│   ├── config.example.php   → copy to config.php on server
+│   └── .htaccess
+├── data/                    ← chmod 755, writable
+└── src/
+```
+
+After code changes in `src/`, run:
+
+```bash
+./build-deploy.sh
+```
+
+## Alternative layout (document root = public/)
 
 ```
 api.compath.ee/
