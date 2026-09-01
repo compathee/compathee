@@ -108,3 +108,28 @@ Pro buyers get **both** zips (or one bundle zip with both folders).
 2. SureCart live products
 3. Update rehearsal.compath.ee checkout buttons
 4. Remove public Pro zip from GitHub Releases (Lite only on GitHub)
+
+## Troubleshooting
+
+### SureCart: `Currency.php on line 139` — array offset on null
+
+**Cause:** WordPress site language (e.g. `et` Estonian) is selected but the language pack is **not installed**, so SureCart cannot find that locale in its list.
+
+**Fix (pick one):**
+
+1. **Install the language pack** (keep Estonian):
+   - WP Admin → **Dashboard → Updates**
+   - Scroll to **Languages** → **Install** next to Eesti
+   - After install, reload SureCart settings
+
+2. **Temporarily use English** (fastest):
+   - **Settings → General → Site Language** → **English (United States)**
+   - Save → open **SureCart → Settings** again
+
+3. **Complete SureCart store setup:**
+   - **SureCart → Settings** → Store name, **Default currency: EUR (Euro)**
+   - Finish **Complete Setup** / reconnect store if disconnected
+
+4. **Update SureCart** to the latest version (Plugins → update).
+
+The warning is harmless for checkout once currency is EUR and store is connected, but it should disappear after steps 1 or 2.
