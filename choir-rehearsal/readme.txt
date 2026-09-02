@@ -43,6 +43,9 @@ Yes. Use the shortcode `[choir_rehearsal]`.
 
 == Changelog ==
 
+= 0.4.1 =
+* Pro: search songs by title in the rehearsal library list
+
 = 0.4.0 =
 * Lite edition: up to 4 voice tracks per song, no microphone recording
 * Pro edition via separate Choir Rehearsal Pro add-on plugin

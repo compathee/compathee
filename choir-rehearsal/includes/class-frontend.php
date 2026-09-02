@@ -58,6 +58,16 @@ final class Choir_Rehearsal_Frontend {
 			return;
 		}
 
+		if ( Choir_Rehearsal_Edition::is_pro() && self::is_song_list_page() ) {
+			wp_enqueue_script(
+				'choir-rehearsal-song-list',
+				CHOIR_REHEARSAL_URL . 'public/js/song-list.js',
+				array(),
+				CHOIR_REHEARSAL_VERSION,
+				true
+			);
+		}
+
 		wp_enqueue_script(
 			'choir-rehearsal-player',
 			CHOIR_REHEARSAL_URL . 'public/js/player.js',
@@ -104,6 +114,19 @@ final class Choir_Rehearsal_Frontend {
 				);
 			}
 		}
+	}
+
+	private static function is_song_list_page(): bool {
+		if ( Choir_Rehearsal_Pages::is_library_page() ) {
+			return true;
+		}
+
+		if ( is_post_type_archive( Choir_Rehearsal_Post_Types::SONG ) ) {
+			return true;
+		}
+
+		global $post;
+		return $post instanceof WP_Post && Choir_Rehearsal_Pages::page_has_shortcode( (string) $post->post_content );
 	}
 
 	private static function should_enqueue(): bool {
@@ -246,9 +269,24 @@ final class Choir_Rehearsal_Frontend {
 			)
 		);
 		$can_manage = Choir_Rehearsal_Access::can_manage();
+		$is_pro = Choir_Rehearsal_Edition::is_pro();
 		?>
 		<div class="choir-rehearsal-archive">
-			<h1 class="choir-rehearsal-title"><?php esc_html_e( 'Rehearsal Library', 'choir-rehearsal' ); ?></h1>
+			<div class="choir-rehearsal-archive__header">
+				<h1 class="choir-rehearsal-title"><?php esc_html_e( 'Rehearsal Library', 'choir-rehearsal' ); ?></h1>
+				<?php if ( $is_pro && ! empty( $songs ) ) : ?>
+					<div class="choir-song-search">
+						<label class="screen-reader-text" for="choir-song-search"><?php esc_html_e( 'Search songs', 'choir-rehearsal' ); ?></label>
+						<input
+							type="search"
+							id="choir-song-search"
+							class="choir-song-search__input"
+							placeholder="<?php esc_attr_e( 'Search by title…', 'choir-rehearsal' ); ?>"
+							autocomplete="off"
+						/>
+					</div>
+				<?php endif; ?>
+			</div>
 			<?php if ( empty( $songs ) ) : ?>
 				<p><?php esc_html_e( 'No songs yet.', 'choir-rehearsal' ); ?></p>
 				<?php if ( $can_manage ) : ?>
@@ -259,9 +297,14 @@ final class Choir_Rehearsal_Frontend {
 					</p>
 				<?php endif; ?>
 			<?php else : ?>
+				<?php if ( $is_pro ) : ?>
+					<p class="choir-song-list__empty-search" role="status" aria-live="polite">
+						<?php esc_html_e( 'No songs match your search.', 'choir-rehearsal' ); ?>
+					</p>
+				<?php endif; ?>
 				<ul class="choir-song-list">
 					<?php foreach ( $songs as $song ) : ?>
-						<li>
+						<li data-song-title="<?php echo esc_attr( get_the_title( $song ) ); ?>">
 							<div class="choir-song-list__main">
 								<a href="<?php echo esc_url( get_permalink( $song ) ); ?>">
 									<?php echo esc_html( get_the_title( $song ) ); ?>

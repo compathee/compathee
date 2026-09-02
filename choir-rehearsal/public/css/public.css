@@ -153,6 +153,48 @@
 	color: #101828;
 }
 
+.choir-rehearsal-archive__header {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	margin-bottom: 1rem;
+}
+
+.choir-rehearsal-archive__header .choir-rehearsal-title {
+	margin-bottom: 0;
+}
+
+.choir-song-search {
+	flex: 1 1 220px;
+	max-width: 360px;
+}
+
+.choir-song-search__input {
+	width: 100%;
+	padding: 10px 14px;
+	border: 1px solid rgba(0, 0, 0, 0.12);
+	border-radius: 999px;
+	font: inherit;
+	background: #fff;
+}
+
+.choir-song-search__input:focus {
+	outline: 2px solid #1f4fd8;
+	outline-offset: 1px;
+}
+
+.choir-song-list__empty-search {
+	display: none;
+	margin: 0 0 8px;
+	color: #667085;
+}
+
+.choir-song-list__empty-search.is-visible {
+	display: block;
+}
+
 .choir-song-list__main {
 	display: flex;
 	flex-direction: column;

@@ -58,12 +58,13 @@
   ],
   "orderEmail": "order@compath.ee",
   "orderSteps": [
-    "Email order@compath.ee with subject \"Choir Rehearsal\" — include your choir name and website URL.",
-    "We send an invoice; after payment you receive a license key (Pro) or we schedule installation.",
-    "Enter the key in Choir Rehearsal → Settings → License key — updates appear under Plugins automatically."
+    "Subscribe at shop.compath.ee (Stripe Checkout) or email order@compath.ee for setup services.",
+    "After payment you receive a license key and download link for Choir Rehearsal Pro.",
+    "Install Choir Rehearsal (Lite) and Choir Rehearsal Pro on your WordPress site."
   ],
   "installSteps": [
-    "Download choir-rehearsal.zip from GitHub Releases.",
+    "Download choir-rehearsal.zip (Lite) from GitHub Releases or WordPress.org.",
+    "Pro customers: install choir-rehearsal-pro.zip from the SureCart customer dashboard.",
     "In WordPress: Plugins → Add New → Upload Plugin — select the zip and activate.",
     "The plugin creates a /rehearsal/ page with the [choir_rehearsal] shortcode.",
     "Add a song: Choir Rehearsal → Add Song — title, PDF, voice tracks.",
@@ -71,10 +72,28 @@
   ],
   "changelog": [
     {
+      "version": "0.4.1",
+      "summary": "Song search (Pro)",
+      "items": [
+        "Search songs by title in the rehearsal library list (Pro only)"
+      ],
+      "open": true
+    },
+    {
+      "version": "0.4.0",
+      "summary": "Lite and Pro editions",
+      "items": [
+        "Lite: up to 4 voice tracks, upload only",
+        "Pro add-on: unlimited tracks and microphone recording",
+        "shop.compath.ee subscriptions via SureCart"
+      ],
+      "open": false
+    },
+    {
       "version": "0.3.11",
       "summary": "Mobile player",
       "items": ["Wider sticky player with large play button and seek bar on phone"],
-      "open": true
+      "open": false
     },
     {
       "version": "0.3.10",
