@@ -43,6 +43,11 @@ Yes. Use the shortcode `[choir_rehearsal]`.
 
 == Changelog ==
 
+= 0.4.2 =
+* Song list pagination (20 songs per page) for large libraries
+* Pro search spans the full library while browsing stays paginated
+* Mobile: search field spans full width above the song list
+
 = 0.4.1 =
 * Pro: search songs by title in the rehearsal library list
 

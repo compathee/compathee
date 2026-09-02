@@ -72,12 +72,22 @@
   ],
   "changelog": [
     {
+      "version": "0.4.2",
+      "summary": "Pagination and mobile search",
+      "items": [
+        "Paginated song list (20 per page) for large libraries",
+        "Pro search filters the full library across pages",
+        "Mobile layout: full-width search above the list"
+      ],
+      "open": true
+    },
+    {
       "version": "0.4.1",
       "summary": "Song search (Pro)",
       "items": [
         "Search songs by title in the rehearsal library list (Pro only)"
       ],
-      "open": true
+      "open": false
     },
     {
       "version": "0.4.0",

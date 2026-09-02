@@ -11,6 +11,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 final class Choir_Rehearsal_Frontend {
 
+	private const SONGS_PER_PAGE = 20;
+
 	private static bool $shortcode_rendered = false;
 
 	public static function register(): void {
@@ -65,6 +67,18 @@ final class Choir_Rehearsal_Frontend {
 				array(),
 				CHOIR_REHEARSAL_VERSION,
 				true
+			);
+			wp_localize_script(
+				'choir-rehearsal-song-list',
+				'choirRehearsalSongList',
+				array(
+					'songs' => self::get_songs_search_index( Choir_Rehearsal_Access::can_manage() ),
+					'i18n'  => array(
+						'edit'          => __( 'Edit', 'choir-rehearsal' ),
+						'trackSingular' => __( '%d track', 'choir-rehearsal' ),
+						'trackPlural'   => __( '%d tracks', 'choir-rehearsal' ),
+					),
+				)
 			);
 		}
 
@@ -259,22 +273,27 @@ final class Choir_Rehearsal_Frontend {
 	}
 
 	public static function render_song_list(): void {
-		$songs = get_posts(
+		$total_songs  = (int) wp_count_posts( Choir_Rehearsal_Post_Types::SONG )->publish;
+		$total_pages  = max( 1, (int) ceil( $total_songs / self::SONGS_PER_PAGE ) );
+		$current_page = min( self::get_current_list_page(), $total_pages );
+		$query        = new WP_Query(
 			array(
 				'post_type'      => Choir_Rehearsal_Post_Types::SONG,
-				'posts_per_page' => -1,
+				'posts_per_page' => self::SONGS_PER_PAGE,
+				'paged'          => $current_page,
 				'orderby'        => 'title',
 				'order'          => 'ASC',
 				'post_status'    => 'publish',
 			)
 		);
-		$can_manage = Choir_Rehearsal_Access::can_manage();
-		$is_pro = Choir_Rehearsal_Edition::is_pro();
+		$songs        = $query->posts;
+		$can_manage   = Choir_Rehearsal_Access::can_manage();
+		$is_pro       = Choir_Rehearsal_Edition::is_pro();
 		?>
 		<div class="choir-rehearsal-archive">
 			<div class="choir-rehearsal-archive__header">
 				<h1 class="choir-rehearsal-title"><?php esc_html_e( 'Rehearsal Library', 'choir-rehearsal' ); ?></h1>
-				<?php if ( $is_pro && ! empty( $songs ) ) : ?>
+				<?php if ( $is_pro && $total_songs > 0 ) : ?>
 					<div class="choir-song-search">
 						<label class="screen-reader-text" for="choir-song-search"><?php esc_html_e( 'Search songs', 'choir-rehearsal' ); ?></label>
 						<input
@@ -287,7 +306,7 @@ final class Choir_Rehearsal_Frontend {
 					</div>
 				<?php endif; ?>
 			</div>
-			<?php if ( empty( $songs ) ) : ?>
+			<?php if ( 0 === $total_songs ) : ?>
 				<p><?php esc_html_e( 'No songs yet.', 'choir-rehearsal' ); ?></p>
 				<?php if ( $can_manage ) : ?>
 					<p>
@@ -304,31 +323,140 @@ final class Choir_Rehearsal_Frontend {
 				<?php endif; ?>
 				<ul class="choir-song-list">
 					<?php foreach ( $songs as $song ) : ?>
-						<li data-song-title="<?php echo esc_attr( get_the_title( $song ) ); ?>">
-							<div class="choir-song-list__main">
-								<a href="<?php echo esc_url( get_permalink( $song ) ); ?>">
-									<?php echo esc_html( get_the_title( $song ) ); ?>
-								</a>
-								<span class="choir-track-count">
-									<?php
-									printf(
-										/* translators: %d: number of tracks */
-										esc_html( _n( '%d track', '%d tracks', count( Choir_Rehearsal_Post_Types::get_tracks_for_song( (int) $song->ID ) ), 'choir-rehearsal' ) ),
-										count( Choir_Rehearsal_Post_Types::get_tracks_for_song( (int) $song->ID ) )
-									);
-									?>
-								</span>
-							</div>
-							<?php if ( $can_manage ) : ?>
-								<a class="choir-song-edit" href="<?php echo esc_url( get_edit_post_link( $song->ID, 'raw' ) ?: '' ); ?>">
-									<?php esc_html_e( 'Edit', 'choir-rehearsal' ); ?>
-								</a>
-							<?php endif; ?>
-						</li>
+						<?php self::render_song_list_item( $song, $can_manage ); ?>
 					<?php endforeach; ?>
 				</ul>
+				<?php self::render_song_pagination( $current_page, $total_pages, $total_songs ); ?>
 			<?php endif; ?>
 		</div>
+		<?php
+	}
+
+	private static function get_current_list_page(): int {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		return max( 1, absint( wp_unslash( $_GET['cr_page'] ?? 1 ) ) );
+	}
+
+	private static function get_list_page_url(): string {
+		if ( Choir_Rehearsal_Pages::is_library_page() ) {
+			return Choir_Rehearsal_Pages::get_library_url();
+		}
+
+		global $post;
+		if ( $post instanceof WP_Post ) {
+			$url = get_permalink( $post );
+			if ( is_string( $url ) && '' !== $url ) {
+				return $url;
+			}
+		}
+
+		return home_url( '/' );
+	}
+
+	/**
+	 * @return list<array{title: string, url: string, trackCount: int, editUrl: string}>
+	 */
+	private static function get_songs_search_index( bool $can_manage ): array {
+		$songs = get_posts(
+			array(
+				'post_type'      => Choir_Rehearsal_Post_Types::SONG,
+				'posts_per_page' => -1,
+				'orderby'        => 'title',
+				'order'          => 'ASC',
+				'post_status'    => 'publish',
+				'fields'         => 'ids',
+			)
+		);
+
+		$index = array();
+		foreach ( $songs as $song_id ) {
+			$song_id = (int) $song_id;
+			$title   = get_the_title( $song_id );
+			$url     = get_permalink( $song_id );
+			if ( ! is_string( $url ) || '' === $url ) {
+				continue;
+			}
+
+			$item = array(
+				'title'       => $title,
+				'url'         => $url,
+				'trackCount'  => count( Choir_Rehearsal_Post_Types::get_tracks_for_song( $song_id ) ),
+				'editUrl'     => '',
+			);
+
+			if ( $can_manage ) {
+				$edit_url = get_edit_post_link( $song_id, 'raw' );
+				$item['editUrl'] = is_string( $edit_url ) ? $edit_url : '';
+			}
+
+			$index[] = $item;
+		}
+
+		return $index;
+	}
+
+	private static function render_song_list_item( WP_Post $song, bool $can_manage ): void {
+		$track_count = count( Choir_Rehearsal_Post_Types::get_tracks_for_song( (int) $song->ID ) );
+		?>
+		<li data-song-title="<?php echo esc_attr( get_the_title( $song ) ); ?>">
+			<div class="choir-song-list__main">
+				<a href="<?php echo esc_url( get_permalink( $song ) ); ?>">
+					<?php echo esc_html( get_the_title( $song ) ); ?>
+				</a>
+				<span class="choir-track-count">
+					<?php
+					printf(
+						/* translators: %d: number of tracks */
+						esc_html( _n( '%d track', '%d tracks', $track_count, 'choir-rehearsal' ) ),
+						$track_count
+					);
+					?>
+				</span>
+			</div>
+			<?php if ( $can_manage ) : ?>
+				<a class="choir-song-edit" href="<?php echo esc_url( get_edit_post_link( $song->ID, 'raw' ) ?: '' ); ?>">
+					<?php esc_html_e( 'Edit', 'choir-rehearsal' ); ?>
+				</a>
+			<?php endif; ?>
+		</li>
+		<?php
+	}
+
+	private static function render_song_pagination( int $current_page, int $total_pages, int $total_songs ): void {
+		if ( $total_pages <= 1 ) {
+			return;
+		}
+
+		$links = paginate_links(
+			array(
+				'base'      => add_query_arg( 'cr_page', '%#%', self::get_list_page_url() ),
+				'format'    => '',
+				'current'   => $current_page,
+				'total'     => $total_pages,
+				'prev_text' => '&larr; ' . esc_html__( 'Previous', 'choir-rehearsal' ),
+				'next_text' => esc_html__( 'Next', 'choir-rehearsal' ) . ' &rarr;',
+				'type'      => 'list',
+			)
+		);
+
+		if ( ! is_string( $links ) || '' === $links ) {
+			return;
+		}
+		?>
+		<nav class="choir-song-pagination" aria-label="<?php esc_attr_e( 'Song list pages', 'choir-rehearsal' ); ?>">
+			<p class="choir-song-pagination__summary">
+				<?php
+				printf(
+					/* translators: 1: first song number on page, 2: last song number on page, 3: total songs */
+					esc_html__( 'Showing %1$d–%2$d of %3$d songs', 'choir-rehearsal' ),
+					( ( $current_page - 1 ) * self::SONGS_PER_PAGE ) + 1,
+					min( $current_page * self::SONGS_PER_PAGE, $total_songs ),
+					$total_songs
+				);
+				?>
+			</p>
+			<?php echo wp_kses_post( $links ); ?>
+		</nav>
 		<?php
 	}
 
