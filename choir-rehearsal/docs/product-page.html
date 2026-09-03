@@ -78,7 +78,8 @@
 		};
 
 		function rawUrl(branch, path) {
-			return 'https://raw.githubusercontent.com/' + CONFIG.repo + '/' + branch + '/' + path;
+			// jsDelivr tracks branch tips more reliably than raw.githubusercontent.com CDN
+			return 'https://cdn.jsdelivr.net/gh/' + CONFIG.repo + '@' + branch + '/' + path;
 		}
 
 		function fetchJsonFromRepo(path) {
