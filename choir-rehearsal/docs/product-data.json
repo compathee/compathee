@@ -67,6 +67,8 @@
       "name": "Pro — subscription",
       "price": "€49 / year",
       "featured": true,
+      "ctaUrl": "https://shop.compath.ee/products/choir-rehearsal-pro/",
+      "ctaLabel": "Order Pro",
       "items": [
         "Install beside Lite (separate add-on)",
         "Unlimited voice tracks per song",
