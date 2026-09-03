@@ -72,12 +72,20 @@
   ],
   "changelog": [
     {
+      "version": "0.4.6",
+      "summary": "One-click plugin update",
+      "items": [
+        "Fix needing two Update now clicks after Check for updates"
+      ],
+      "open": true
+    },
+    {
       "version": "0.4.5",
       "summary": "Remove Lite license key field",
       "items": [
         "License key removed from Lite Settings (Pro licensing will live in the Pro add-on)"
       ],
-      "open": true
+      "open": false
     },
     {
       "version": "0.4.4",

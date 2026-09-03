@@ -21,6 +21,7 @@ final class Choir_Rehearsal_Updater {
 		add_filter( 'pre_set_site_transient_update_plugins', array( self::class, 'inject_update' ) );
 		add_filter( 'plugins_api', array( self::class, 'plugin_info' ), 10, 3 );
 		add_action( 'admin_post_choir_rehearsal_check_updates', array( self::class, 'handle_check_updates' ) );
+		add_action( 'upgrader_process_complete', array( self::class, 'after_upgrade' ), 10, 2 );
 	}
 
 	public static function register_settings(): void {
@@ -61,8 +62,12 @@ final class Choir_Rehearsal_Updater {
 
 		check_admin_referer( 'choir_rehearsal_check_updates' );
 
-		delete_transient( 'choir_rehearsal_update_metadata' );
-		delete_site_transient( 'update_plugins' );
+		self::clear_update_caches();
+
+		// Rebuild the update transient now so Plugins shows a single ready "Update now".
+		if ( function_exists( 'wp_update_plugins' ) ) {
+			wp_update_plugins();
+		}
 
 		wp_safe_redirect( admin_url( 'plugins.php?plugin_status=all&choir_rehearsal_checked=1' ) );
 		exit;
@@ -76,6 +81,74 @@ final class Choir_Rehearsal_Updater {
 	}
 
 	/**
+	 * @param WP_Upgrader $upgrader
+	 * @param array<string, mixed> $options
+	 */
+	public static function after_upgrade( $upgrader, array $options ): void {
+		if ( ( $options['type'] ?? '' ) !== 'plugin' ) {
+			return;
+		}
+
+		$updated = array();
+		if ( ! empty( $options['plugins'] ) && is_array( $options['plugins'] ) ) {
+			$updated = $options['plugins'];
+		} elseif ( ! empty( $options['plugin'] ) && is_string( $options['plugin'] ) ) {
+			$updated = array( $options['plugin'] );
+		}
+
+		if ( ! in_array( self::PLUGIN_SLUG, $updated, true ) ) {
+			return;
+		}
+
+		self::clear_update_caches();
+
+		$transient = get_site_transient( 'update_plugins' );
+		if ( is_object( $transient ) ) {
+			if ( isset( $transient->response[ self::PLUGIN_SLUG ] ) ) {
+				unset( $transient->response[ self::PLUGIN_SLUG ] );
+			}
+			$installed = self::get_installed_version();
+			if ( '' !== $installed ) {
+				$transient->no_update[ self::PLUGIN_SLUG ] = (object) array(
+					'slug'        => 'choir-rehearsal',
+					'plugin'      => self::PLUGIN_SLUG,
+					'new_version' => $installed,
+					'url'         => 'https://rehearsal.compath.ee',
+				);
+			}
+			set_site_transient( 'update_plugins', $transient );
+		}
+	}
+
+	private static function clear_update_caches(): void {
+		delete_transient( 'choir_rehearsal_update_metadata' );
+		delete_site_transient( 'update_plugins' );
+
+		if ( function_exists( 'wp_clean_plugins_cache' ) ) {
+			wp_clean_plugins_cache( true );
+		}
+	}
+
+	/**
+	 * Installed version from disk (not the in-memory constant — that stays old mid-upgrade).
+	 */
+	private static function get_installed_version(): string {
+		$plugin_file = WP_PLUGIN_DIR . '/' . self::PLUGIN_SLUG;
+		if ( ! is_readable( $plugin_file ) ) {
+			return defined( 'CHOIR_REHEARSAL_VERSION' ) ? (string) CHOIR_REHEARSAL_VERSION : '';
+		}
+
+		if ( ! function_exists( 'get_plugin_data' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+
+		$data = get_plugin_data( $plugin_file, false, false );
+		$version = isset( $data['Version'] ) ? (string) $data['Version'] : '';
+
+		return '' !== $version ? $version : ( defined( 'CHOIR_REHEARSAL_VERSION' ) ? (string) CHOIR_REHEARSAL_VERSION : '' );
+	}
+
+	/**
 	 * @param mixed $transient
 	 * @return mixed
 	 */
@@ -84,12 +157,32 @@ final class Choir_Rehearsal_Updater {
 			return $transient;
 		}
 
+		// WordPress briefly sets an empty transient; do not inject then or updates reappear after install.
+		if ( empty( $transient->checked ) || ! is_array( $transient->checked ) ) {
+			return $transient;
+		}
+
+		$current = isset( $transient->checked[ self::PLUGIN_SLUG ] )
+			? (string) $transient->checked[ self::PLUGIN_SLUG ]
+			: self::get_installed_version();
+
+		if ( '' === $current ) {
+			return $transient;
+		}
+
 		$remote = self::fetch_remote_metadata();
 		if ( null === $remote ) {
 			return $transient;
 		}
 
-		if ( version_compare( CHOIR_REHEARSAL_VERSION, $remote['version'], '>=' ) ) {
+		if ( version_compare( $current, $remote['version'], '>=' ) ) {
+			unset( $transient->response[ self::PLUGIN_SLUG ] );
+			$transient->no_update[ self::PLUGIN_SLUG ] = (object) array(
+				'slug'        => 'choir-rehearsal',
+				'plugin'      => self::PLUGIN_SLUG,
+				'new_version' => $current,
+				'url'         => $remote['homepage'],
+			);
 			return $transient;
 		}
 
@@ -197,34 +290,9 @@ final class Choir_Rehearsal_Updater {
 
 		$owner = $matches[1];
 		$name  = $matches[2];
-		$url   = sprintf(
-			'https://api.github.com/repos/%s/%s/releases/latest',
-			rawurlencode( $owner ),
-			rawurlencode( $name )
-		);
 
-		$response = wp_remote_get(
-			$url,
-			array(
-				'timeout' => 15,
-				'headers' => array(
-					'Accept'     => 'application/vnd.github+json',
-					'User-Agent' => 'Choir-Rehearsal-Updater',
-				),
-			)
-		);
-
-		if ( is_wp_error( $response ) ) {
-			return self::fetch_latest_choir_release_from_list( $owner, $name );
-		}
-
-		$status = (int) wp_remote_retrieve_response_code( $response );
-		$body   = json_decode( wp_remote_retrieve_body( $response ), true );
-		if ( 200 !== $status || ! is_array( $body ) ) {
-			return self::fetch_latest_choir_release_from_list( $owner, $name );
-		}
-
-		return self::map_github_release( $body );
+		// Prefer the full list: /releases/latest can point at an unrelated non-plugin release.
+		return self::fetch_latest_choir_release_from_list( $owner, $name );
 	}
 
 	/**
