@@ -304,7 +304,7 @@
 				'<main class="page">' +
 					'<section class="card" id="about"><h2>Overview</h2>' +
 						'<p>' + esc(data.overview) + '</p>' +
-						renderFeatures(data.features || []) +
+						renderFeatures(data.featureCards || data.features || []) +
 						'<p class="meta">Requirements: ' + esc(data.requirements) + '. Owner and developer: <strong>' + esc(data.owner) + '</strong>. First customer — <a href="' + esc(customer.url) + '">' + esc(customer.name) + '</a>.</p>' +
 					'</section>' +
 					'<section class="card" id="order"><h2>Order &amp; subscription</h2>' +
