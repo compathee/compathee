@@ -1,7 +1,7 @@
 {
   "title": "Choir Rehearsal",
   "tagline": "A private rehearsal library for choirs: songs, voice tracks, PDF scores, and easy listening on phone or desktop.",
-  "overview": "Choir Rehearsal helps choir members learn new pieces by voice part. Editors upload PDF scores and audio for each voice (or record from a phone). Singers visit /rehearsal/, pick a song, and listen to their part.",
+  "overview": "Choir Rehearsal helps choir members learn new pieces by voice part. Editors upload PDF scores and audio for each voice. Singers visit /rehearsal/, pick a song, and listen. Lite is free from GitHub; Pro is a separate add-on from shop.compath.ee (keep Lite installed — do not replace it).",
   "requirements": "WordPress 6.4+, PHP 8.0+",
   "owner": "Compath OÜ, Tallinn, Estonia",
   "firstCustomer": {
@@ -9,14 +9,14 @@
     "url": "https://veneta.ee"
   },
   "features": [
-    "Song list on your choir website",
+    "Song list on your choir website (paginated)",
     "PDF viewer with page navigation",
     "Voice tracks: bass, tenor, alto, soprano, and more",
-    "Microphone recording in the admin",
     "Sticky player at the bottom of the screen",
     "Login-only access (optional)",
     "Roles: editors manage, singers listen",
-    "WordPress-native plugin updates"
+    "Lite: up to 4 tracks per song, upload audio",
+    "Pro add-on: unlimited tracks, microphone recording, search by title"
   ],
   "pricing": [
     {
@@ -24,11 +24,11 @@
       "price": "Free",
       "featured": false,
       "items": [
-        "WordPress.org / GitHub download",
+        "Download from GitHub Releases",
         "Up to 4 voice tracks per song",
         "PDF scores and sticky player",
-        "Upload audio files (no microphone recording)",
-        "Updates via WordPress.org or GitHub"
+        "Upload audio (no microphone recording)",
+        "Updates via WordPress (Check for updates)"
       ]
     },
     {
@@ -36,10 +36,11 @@
       "price": "€49 / year",
       "featured": true,
       "items": [
+        "Install beside Lite (separate add-on)",
         "Unlimited voice tracks per song",
         "Microphone recording in the admin",
-        "1 choir website license",
-        "Automatic updates in WordPress",
+        "Search songs by title",
+        "1 choir website",
         "Priority email support"
       ]
     },
@@ -58,17 +59,17 @@
   ],
   "orderEmail": "order@compath.ee",
   "orderSteps": [
-    "Subscribe at https://shop.compath.ee/products/choir-rehearsal-pro/ (Stripe Checkout) or email order@compath.ee for setup services.",
-    "After payment you receive a license key and download link for Choir Rehearsal Pro.",
-    "Install Choir Rehearsal (Lite) and Choir Rehearsal Pro on your WordPress site."
+    "Open https://shop.compath.ee/products/choir-rehearsal-pro/ (or email order@compath.ee for setup services).",
+    "After payment, download choir-rehearsal-pro.zip from your SureCart customer dashboard.",
+    "Keep Choir Rehearsal (Lite) installed. Upload and activate the Pro add-on beside it — do not replace Lite."
   ],
   "installSteps": [
-    "Download choir-rehearsal.zip (Lite) from GitHub Releases or WordPress.org.",
-    "Pro customers: install choir-rehearsal-pro.zip from the SureCart customer dashboard.",
-    "In WordPress: Plugins → Add New → Upload Plugin — select the zip and activate.",
+    "Download choir-rehearsal.zip (Lite) from GitHub Releases.",
+    "In WordPress: Plugins → Add New → Upload Plugin — activate Lite.",
+    "Pro customers: upload choir-rehearsal-pro.zip next and activate it. Settings should show Edition: Pro.",
     "The plugin creates a /rehearsal/ page with the [choir_rehearsal] shortcode.",
     "Add a song: Choir Rehearsal → Add Song — title, PDF, voice tracks.",
-    "Give singers WordPress accounts (Subscriber role). Editors get Editor or Administrator."
+    "Give singers WordPress accounts (Subscriber). Editors need Editor or Administrator."
   ],
   "changelog": [
     {
@@ -154,56 +155,22 @@
       "items": ["Product page: order, install, pricing, changelog", "Documentation link in plugin settings"]
     },
     {
-      "version": "0.3.7",
-      "summary": "Desktop layout fix",
-      "items": ["Publish box no longer overlaps the song title field"]
-    },
-    {
-      "version": "0.3.6",
-      "summary": "Song title field",
-      "items": ["Fixed: song title field visible again when editing"]
-    },
-    {
-      "version": "0.3.5",
-      "summary": "Back to song list",
-      "items": ["Mobile: return to library from edit screen"]
-    },
-    {
-      "version": "0.3.4",
-      "summary": "Simplified editor",
-      "items": ["Title, PDF, and voice tracks only", "WordPress content editor removed", "Mobile Save/Publish bar at bottom"]
-    },
-    {
-      "version": "0.3.3",
-      "summary": "Mobile admin",
-      "items": ["Compact voice track UI on phone"]
-    },
-    {
-      "version": "0.3.2",
-      "summary": "Microphone recording",
-      "items": ["Fixed recording upload (video/webm)"]
-    },
-    {
-      "version": "0.3.1",
-      "summary": "Version in settings",
-      "items": ["Installed version shown on Settings page"]
-    },
-    {
-      "version": "0.3.0",
-      "summary": "Voice recording",
-      "items": ["Record voice tracks from microphone in song editor"]
+      "version": "0.3.0–0.3.7",
+      "summary": "Recording and editor",
+      "items": [
+        "Microphone recording in song editor",
+        "Simplified mobile-friendly song editor",
+        "Version shown in Settings"
+      ]
     },
     {
       "version": "0.2.x",
       "summary": "Frontend & updates",
       "items": [
-        "0.2.6 — fixed duplicate login form",
-        "0.2.5 — critical error hotfix",
-        "0.2.4 — /rehearsal/ page via shortcode",
-        "0.2.3 — fixed GitHub update check",
-        "0.2.2 — frontend login, role toolbar",
-        "0.2.1 — updates via GitHub Releases",
-        "0.2.0 — PDF scores and page viewer"
+        "Frontend login and role toolbar",
+        "/rehearsal/ page via shortcode",
+        "Updates via GitHub Releases",
+        "PDF scores and page viewer"
       ]
     },
     {
