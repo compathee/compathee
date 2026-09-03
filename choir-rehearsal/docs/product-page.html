@@ -65,15 +65,21 @@
 	(function () {
 		'use strict';
 
-		/** Tries main first, then the active plugin branch until merged */
+		/** Tries active release branch first, then main after merge */
 		var CONFIG = {
 			repo: 'compathee/compathee',
-			branches: ['main', 'cursor/choir-rehearsal-plugin-090e'],
-			releasesUrl: 'https://api.github.com/repos/compathee/compathee/releases?per_page=20'
+			branches: [
+				'cursor/lite-pro-hub-setup-abc2',
+				'main',
+				'cursor/choir-rehearsal-plugin-090e'
+			],
+			releasesUrl: 'https://api.github.com/repos/compathee/compathee/releases?per_page=20',
+			buyProUrl: 'https://shop.compath.ee/products/choir-rehearsal-pro/'
 		};
 
 		function rawUrl(branch, path) {
-			return 'https://raw.githubusercontent.com/' + CONFIG.repo + '/' + branch + '/' + path;
+			// jsDelivr tracks branch tips more reliably than raw.githubusercontent.com CDN
+			return 'https://cdn.jsdelivr.net/gh/' + CONFIG.repo + '@' + branch + '/' + path;
 		}
 
 		function fetchJsonFromRepo(path) {
@@ -102,7 +108,10 @@
 
 		function renderSteps(items) {
 			return '<ol class="steps">' + items.map(function (item) {
-				return '<li>' + item.replace(/order@compath\.ee/g, '<a href="mailto:order@compath.ee">order@compath.ee</a>') + '</li>';
+				var html = esc(item)
+					.replace(/order@compath\.ee/g, '<a href="mailto:order@compath.ee">order@compath.ee</a>')
+					.replace(/https:\/\/shop\.compath\.ee\/products\/choir-rehearsal-pro\//g, '<a href="https://shop.compath.ee/products/choir-rehearsal-pro/" target="_blank" rel="noopener noreferrer">https://shop.compath.ee/products/choir-rehearsal-pro/</a>');
+				return '<li>' + html + '</li>';
 			}).join('') + '</ol>';
 		}
 
@@ -168,7 +177,8 @@
 					'<h1>' + esc(data.title) + '</h1>' +
 					'<p>' + esc(data.tagline) + '</p>' +
 					'<div class="hero__cta">' +
-						'<a class="btn btn--primary" href="' + esc(downloadUrl) + '">Download latest release</a>' +
+						'<a class="btn btn--primary" href="' + esc(downloadUrl) + '">Download Lite</a>' +
+						'<a class="btn btn--ghost" href="' + esc(CONFIG.buyProUrl) + '" target="_blank" rel="noopener noreferrer">Buy Pro</a>' +
 						'<a class="btn btn--ghost" href="#order">Order &amp; subscribe</a>' +
 					'</div>' +
 				'</div></header>' +
@@ -179,21 +189,22 @@
 						'<p class="meta">Requirements: ' + esc(data.requirements) + '. Owner and developer: <strong>' + esc(data.owner) + '</strong>. First customer — <a href="' + esc(customer.url) + '">' + esc(customer.name) + '</a>.</p>' +
 					'</section>' +
 					'<section class="card" id="order"><h2>Order &amp; subscription</h2>' +
-						'<p>The plugin is licensed under GPL. Install it yourself for free or purchase support from us.</p>' +
+						'<p>Lite is free (GPL). Pro is a separate WordPress add-on — keep Lite installed and activate Pro beside it.</p>' +
 						'<div class="pricing">' + renderPricing(data.pricing || []) + '</div>' +
+						'<p style="margin-top:16px;"><a class="btn btn--primary" style="background:var(--accent);color:#fff;" href="' + esc(CONFIG.buyProUrl) + '" target="_blank" rel="noopener noreferrer">Buy Pro — €49 / year</a></p>' +
 						'<h3>How to order</h3>' + renderSteps(data.orderSteps || []) +
 						'<p class="meta">Discounts available for non-profit choirs and educational projects — ask when ordering.</p>' +
 					'</section>' +
 					'<section class="card" id="install"><h2>Installation</h2>' +
-						'<h3>Self-service (Community)</h3>' + renderSteps(data.installSteps || []) +
+						'<h3>Self-service</h3>' + renderSteps(data.installSteps || []) +
 						'<h3>Updates</h3><ul>' +
-							'<li><strong>Pro:</strong> license key in settings — WordPress shows updates automatically.</li>' +
-							'<li><strong>Community:</strong> upload a new zip, or set Update JSON URL and click “Check for updates now”.</li>' +
+							'<li><strong>Lite:</strong> Choir Rehearsal → Settings → Check for updates now (GitHub Releases).</li>' +
+							'<li><strong>Pro:</strong> download the latest add-on zip from your SureCart account until licensed auto-updates ship.</li>' +
 							'<li>Installed version: <strong>Choir Rehearsal → Settings</strong>.</li>' +
 						'</ul>' +
 						'<h3>User roles</h3><ul>' +
 							'<li><strong>Subscriber (Singer)</strong> — browse songs, listen, view PDF.</li>' +
-							'<li><strong>Editor / Administrator</strong> — add and edit songs, record voice tracks.</li>' +
+							'<li><strong>Editor / Administrator</strong> — add and edit songs, upload or record (Pro) voice tracks.</li>' +
 						'</ul></section>' +
 					'<section class="card changelog" id="changelog"><h2>Changelog</h2>' +
 						'<p class="meta">Loaded from GitHub · content updates automatically after push</p>' +
@@ -224,8 +235,18 @@
 			var updateMeta = results[1];
 			var releases = results[2];
 			var latestRelease = findLatestRelease(releases);
-			var version = (updateMeta && updateMeta.version) || (latestRelease ? latestRelease.tag_name.replace('choir-rehearsal-v', '') : '0.3.10');
-			var downloadUrl = (updateMeta && updateMeta.download_url) || getDownloadUrl(latestRelease);
+			var versionFromRelease = latestRelease ? latestRelease.tag_name.replace('choir-rehearsal-v', '') : '';
+			var versionFromJson = (updateMeta && updateMeta.version) ? String(updateMeta.version) : '';
+			var version = versionFromRelease || versionFromJson || '0.4.6';
+			if (versionFromRelease && versionFromJson && compareVersions(versionFromRelease, versionFromJson) >= 0) {
+				version = versionFromRelease;
+			} else if (versionFromJson) {
+				version = versionFromJson;
+			}
+			var downloadUrl = getDownloadUrl(latestRelease);
+			if (updateMeta && updateMeta.download_url && (!latestRelease || compareVersions(versionFromJson, versionFromRelease) > 0)) {
+				downloadUrl = updateMeta.download_url;
+			}
 			renderPage(data, version, downloadUrl);
 		}).catch(function (err) {
 			showError(err.message || String(err));
