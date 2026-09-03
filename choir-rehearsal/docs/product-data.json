@@ -9,6 +9,16 @@
     "url": "https://veneta.ee"
   },
   "features": [
+    "Song library — paginated list on your choir website with shortcode embedding",
+    "PDF scores — attach sheet music and flip pages in the built-in viewer",
+    "Voice tracks — bass, tenor, alto, soprano and more",
+    "Sticky player — listen while reading the score",
+    "Private access — optional login-only rehearsal pages",
+    "Editor & singer roles — editors manage, singers listen",
+    "Lite (free) — up to 4 tracks per song, audio upload, GitHub updates",
+    "Pro add-on — unlimited tracks, microphone recording, search by title"
+  ],
+  "featureCards": [
     {
       "icon": "library",
       "title": "Song library",
