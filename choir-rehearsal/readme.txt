@@ -43,6 +43,9 @@ Yes. Use the shortcode `[choir_rehearsal]`.
 
 == Changelog ==
 
+= 0.4.5 =
+* Remove License key field from Lite settings (licensing belongs in Pro add-on)
+
 = 0.4.4 =
 * Buy Pro links to https://shop.compath.ee/products/choir-rehearsal-pro/
 

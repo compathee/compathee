@@ -44,8 +44,8 @@ The plugin is licensed under GPL. Install it yourself for free or purchase suppo
 ### Pro — subscription — €49 / year
 
 - 1 choir website
-- Automatic updates in WordPress
-- License key
+- Unlimited tracks, microphone recording, song search
+- Pro add-on installed beside Lite
 - Priority email support
 
 ### Done-for-you setup — from €120
@@ -57,9 +57,9 @@ The plugin is licensed under GPL. Install it yourself for free or purchase suppo
 
 ### How to order
 
-1. Email **order@compath.ee** (subject: “Choir Rehearsal”) — choir name and website URL.
-2. After payment — license key or installation date.
-3. Key in **Choir Rehearsal → Settings → License key**.
+1. Open [shop.compath.ee/products/choir-rehearsal-pro](https://shop.compath.ee/products/choir-rehearsal-pro/) or email **order@compath.ee**.
+2. After payment — download `choir-rehearsal-pro.zip` from your SureCart account.
+3. Keep Lite installed → **Plugins → Upload** Pro add-on → Activate.
 
 ---
 
@@ -73,8 +73,8 @@ The plugin is licensed under GPL. Install it yourself for free or purchase suppo
 
 ### Updates
 
-- **Pro:** license key → updates under Plugins.
-- **Community:** new zip or Update JSON URL + “Check for updates now”.
+- **Lite:** GitHub Releases → WordPress “Check for updates”.
+- **Pro add-on:** new zip from SureCart customer dashboard (until licensed auto-updates).
 
 ### Roles
 

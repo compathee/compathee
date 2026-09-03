@@ -155,13 +155,6 @@ final class Choir_Rehearsal_Admin {
 							<p class="description"><?php esc_html_e( 'Used when Update JSON URL is empty. Release asset must be named choir-rehearsal.zip.', 'choir-rehearsal' ); ?></p>
 						</td>
 					</tr>
-					<tr>
-						<th scope="row"><?php esc_html_e( 'License key', 'choir-rehearsal' ); ?></th>
-						<td>
-							<input type="password" class="regular-text" name="choir_rehearsal_license_key" value="<?php echo esc_attr( (string) get_option( 'choir_rehearsal_license_key', '' ) ); ?>" autocomplete="off" />
-							<p class="description"><?php esc_html_e( 'Optional. Sent as Bearer token when requesting Update JSON URL (for paid customers).', 'choir-rehearsal' ); ?></p>
-						</td>
-					</tr>
 				</table>
 				<?php submit_button(); ?>
 			</form>

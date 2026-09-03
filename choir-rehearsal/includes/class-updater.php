@@ -43,16 +43,6 @@ final class Choir_Rehearsal_Updater {
 				'default'           => 'compathee/compathee',
 			)
 		);
-
-		register_setting(
-			'choir_rehearsal_settings',
-			'choir_rehearsal_license_key',
-			array(
-				'type'              => 'string',
-				'sanitize_callback' => 'sanitize_text_field',
-				'default'           => '',
-			)
-		);
 	}
 
 	public static function sanitize_github_repo( string $value ): string {
@@ -341,18 +331,12 @@ final class Choir_Rehearsal_Updater {
 			return null;
 		}
 
-		$license = trim( (string) get_option( 'choir_rehearsal_license_key', '' ) );
-
 		$args = array(
 			'timeout' => 15,
 			'headers' => array(
 				'Accept' => 'application/json',
 			),
 		);
-
-		if ( '' !== $license ) {
-			$args['headers']['Authorization'] = 'Bearer ' . $license;
-		}
 
 		$response = wp_remote_get( $url, $args );
 		if ( is_wp_error( $response ) ) {
