@@ -86,11 +86,44 @@
 			color: var(--muted);
 		}
 		.pricing { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
-		.plan { border: 1px solid var(--border); border-radius: 12px; padding: 20px; background: #fafbfd; }
+		.plan {
+			display: flex;
+			flex-direction: column;
+			border: 1px solid var(--border);
+			border-radius: 12px;
+			padding: 20px;
+			background: #fafbfd;
+		}
 		.plan--featured { border-color: var(--accent); background: #f0f6ff; box-shadow: 0 0 0 1px rgba(31,79,216,0.15); }
 		.plan__name { font-weight: 700; font-size: 1.1rem; }
 		.plan__price { font-size: 1.6rem; font-weight: 800; margin: 8px 0; color: var(--accent-dark); }
-		.plan ul { margin: 12px 0 0; padding-left: 18px; color: var(--muted); }
+		.plan ul { margin: 12px 0 0; padding-left: 18px; color: var(--muted); flex: 1; }
+		.plan__cta {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			margin-top: 18px;
+			padding: 12px 18px;
+			border-radius: 999px;
+			background: var(--accent);
+			color: #fff !important;
+			font-weight: 700;
+			text-decoration: none;
+			text-align: center;
+		}
+		.plan__cta:hover { background: var(--accent-dark); color: #fff !important; }
+		.order-cta {
+			margin-top: 20px;
+			display: flex;
+			flex-wrap: wrap;
+			gap: 12px;
+			align-items: center;
+		}
+		.btn--accent {
+			background: var(--accent);
+			color: #fff !important;
+		}
+		.btn--accent:hover { background: var(--accent-dark); color: #fff !important; }
 		.steps { counter-reset: step; list-style: none; padding: 0; margin: 0; }
 		.steps li { position: relative; padding-left: 44px; margin-bottom: 16px; }
 		.steps li::before { counter-increment: step; content: counter(step); position: absolute; left: 0; top: 0; width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: #fff; font-weight: 700; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; }
@@ -175,7 +208,13 @@
 			return plans.map(function (plan) {
 				var cls = plan.featured ? 'plan plan--featured' : 'plan';
 				var items = (plan.items || []).map(function (i) { return '<li>' + esc(i) + '</li>'; }).join('');
-				return '<div class="' + cls + '"><div class="plan__name">' + esc(plan.name) + '</div><div class="plan__price">' + esc(plan.price) + '</div><ul>' + items + '</ul></div>';
+				var cta = '';
+				if (plan.featured || plan.ctaUrl || /pro/i.test(plan.name || '')) {
+					var url = plan.ctaUrl || CONFIG.buyProUrl;
+					var label = plan.ctaLabel || ('Order ' + (plan.name || 'Pro'));
+					cta = '<a class="plan__cta" href="' + esc(url) + '" target="_blank" rel="noopener noreferrer">' + esc(label) + '</a>';
+				}
+				return '<div class="' + cls + '"><div class="plan__name">' + esc(plan.name) + '</div><div class="plan__price">' + esc(plan.price) + '</div><ul>' + items + '</ul>' + cta + '</div>';
 			}).join('');
 		}
 
@@ -271,7 +310,10 @@
 					'<section class="card" id="order"><h2>Order &amp; subscription</h2>' +
 						'<p>Lite is free (GPL). Pro is a separate WordPress add-on — keep Lite installed and activate Pro beside it.</p>' +
 						'<div class="pricing">' + renderPricing(data.pricing || []) + '</div>' +
-						'<p style="margin-top:16px;"><a class="btn btn--primary" style="background:var(--accent);color:#fff;" href="' + esc(CONFIG.buyProUrl) + '" target="_blank" rel="noopener noreferrer">Buy Pro — €49 / year</a></p>' +
+						'<div class="order-cta">' +
+							'<a class="btn btn--accent" href="' + esc(CONFIG.buyProUrl) + '" target="_blank" rel="noopener noreferrer">Buy Pro — €49 / year</a>' +
+							'<span class="meta">Opens shop.compath.ee checkout</span>' +
+						'</div>' +
 						'<h3>How to order</h3>' + renderSteps(data.orderSteps || []) +
 						'<p class="meta">Discounts available for non-profit choirs and educational projects — ask when ordering.</p>' +
 					'</section>' +
