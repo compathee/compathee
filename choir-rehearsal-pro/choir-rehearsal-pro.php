@@ -57,6 +57,6 @@ add_filter(
 add_filter(
 	'choir_rehearsal_upgrade_url',
 	static function (): string {
-		return 'https://shop.compath.ee/';
+		return 'https://shop.compath.ee/products/choir-rehearsal-pro/';
 	}
 );

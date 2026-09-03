@@ -33,7 +33,7 @@ final class Choir_Rehearsal_Edition {
 	}
 
 	public static function upgrade_url(): string {
-		return (string) apply_filters( 'choir_rehearsal_upgrade_url', 'https://shop.compath.ee/' );
+		return (string) apply_filters( 'choir_rehearsal_upgrade_url', 'https://shop.compath.ee/products/choir-rehearsal-pro/' );
 	}
 
 	public static function edition_label(): string {

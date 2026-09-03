@@ -1,8 +1,8 @@
 {
   "name": "Choir Rehearsal",
   "slug": "choir-rehearsal",
-  "version": "0.4.3",
-  "download_url": "https://github.com/compathee/compathee/releases/download/choir-rehearsal-v0.4.3/choir-rehearsal.zip",
+  "version": "0.4.4",
+  "download_url": "https://github.com/compathee/compathee/releases/download/choir-rehearsal-v0.4.4/choir-rehearsal.zip",
   "homepage": "https://rehearsal.compath.ee",
   "author": "Compath OÜ",
   "author_homepage": "https://compath.ee",
@@ -12,6 +12,6 @@
   "last_updated": "2026-09-03",
   "sections": {
     "description": "Private rehearsal library for choirs: songs, voice parts, audio tracks, PDF scores, and a sticky player.",
-    "changelog": "<h4>0.4.3</h4><ul><li>Lite / Pro editions (Pro is a separate add-on)</li><li>Buy Pro button in Lite</li><li>Paginated song list</li><li>Pro: search by title, unlimited tracks, microphone recording</li></ul>"
+    "changelog": "<h4>0.4.4</h4><ul><li>Buy Pro opens the SureCart product page</li></ul><h4>0.4.3</h4><ul><li>Lite / Pro editions (Pro is a separate add-on)</li><li>Buy Pro button in Lite</li><li>Paginated song list</li><li>Pro: search by title, unlimited tracks, microphone recording</li></ul>"
   }
 }

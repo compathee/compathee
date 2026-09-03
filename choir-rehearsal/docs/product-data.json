@@ -58,7 +58,7 @@
   ],
   "orderEmail": "order@compath.ee",
   "orderSteps": [
-    "Subscribe at shop.compath.ee (Stripe Checkout) or email order@compath.ee for setup services.",
+    "Subscribe at https://shop.compath.ee/products/choir-rehearsal-pro/ (Stripe Checkout) or email order@compath.ee for setup services.",
     "After payment you receive a license key and download link for Choir Rehearsal Pro.",
     "Install Choir Rehearsal (Lite) and Choir Rehearsal Pro on your WordPress site."
   ],
@@ -72,13 +72,21 @@
   ],
   "changelog": [
     {
+      "version": "0.4.4",
+      "summary": "Buy Pro product URL",
+      "items": [
+        "Buy Pro opens https://shop.compath.ee/products/choir-rehearsal-pro/"
+      ],
+      "open": true
+    },
+    {
       "version": "0.4.3",
       "summary": "Buy Pro and Lite→Pro process",
       "items": [
         "Buy Pro button in Lite (Settings, Plugins list, library toolbar)",
         "Keep Lite installed; Pro is a separate add-on"
       ],
-      "open": true
+      "open": false
     },
     {
       "version": "0.4.2",

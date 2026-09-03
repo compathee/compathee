@@ -28,7 +28,7 @@ Lite limits: 4 voice tracks per song, no microphone recording, no song search.
 
 ## Customer: Lite → Pro (do not uninstall Lite)
 
-After purchase on [shop.compath.ee](https://shop.compath.ee/):
+After purchase on [shop.compath.ee/products/choir-rehearsal-pro](https://shop.compath.ee/products/choir-rehearsal-pro/):
 
 1. Keep **Choir Rehearsal** installed and active.
 2. Download `choir-rehearsal-pro.zip` from the SureCart customer dashboard (or the email after payment).

@@ -37,7 +37,8 @@ Optional later:
    - Save
 5. Create product **Done-for-you setup** (optional):
    - One-time **€120**
-6. Copy **Checkout URL** for Pro → use on rehearsal.compath.ee
+6. Copy **Checkout / product URL** for Pro → use on rehearsal.compath.ee and in the plugin Buy Pro button:
+   - Product page: `https://shop.compath.ee/products/choir-rehearsal-pro/`
 
 ## 4. FluentCRM setup
 

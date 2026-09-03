@@ -43,6 +43,9 @@ Yes. Use the shortcode `[choir_rehearsal]`.
 
 == Changelog ==
 
+= 0.4.4 =
+* Buy Pro links to https://shop.compath.ee/products/choir-rehearsal-pro/
+
 = 0.4.3 =
 * Lite: Buy Pro button on Settings, Plugins list, and editor toolbar
 * Documented Lite → Pro add-on install (do not replace Lite)
