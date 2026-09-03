@@ -9,14 +9,46 @@
     "url": "https://veneta.ee"
   },
   "features": [
-    "Song list on your choir website (paginated)",
-    "PDF viewer with page navigation",
-    "Voice tracks: bass, tenor, alto, soprano, and more",
-    "Sticky player at the bottom of the screen",
-    "Login-only access (optional)",
-    "Roles: editors manage, singers listen",
-    "Lite: up to 4 tracks per song, upload audio",
-    "Pro add-on: unlimited tracks, microphone recording, search by title"
+    {
+      "icon": "library",
+      "title": "Song library",
+      "text": "Paginated song list on your choir website with shortcode embedding."
+    },
+    {
+      "icon": "pdf",
+      "title": "PDF scores",
+      "text": "Attach sheet music and flip pages in the built-in viewer."
+    },
+    {
+      "icon": "voices",
+      "title": "Voice tracks",
+      "text": "Bass, tenor, alto, soprano and more — one audio part per voice."
+    },
+    {
+      "icon": "player",
+      "title": "Sticky player",
+      "text": "Listen while reading the score — player stays at the bottom of the screen."
+    },
+    {
+      "icon": "lock",
+      "title": "Private access",
+      "text": "Optional login-only rehearsal pages for your choir members."
+    },
+    {
+      "icon": "users",
+      "title": "Editor & singer roles",
+      "text": "Editors manage the library; singers browse, listen, and view PDFs."
+    },
+    {
+      "icon": "lite",
+      "title": "Lite — free",
+      "text": "Up to 4 tracks per song, audio upload, GitHub updates."
+    },
+    {
+      "icon": "pro",
+      "title": "Pro add-on",
+      "text": "Unlimited tracks, microphone recording, and search by song title."
+    }
   ],
   "pricing": [
     {
