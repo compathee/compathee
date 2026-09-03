@@ -44,6 +44,7 @@ FTP нужен только когда меняется сам `product-page.htm
 
 | Файл | Назначение |
 |------|------------|
+| [lite-pro-updates.md](lite-pro-updates.md) | Lite install, Buy Pro, Lite→Pro add-on, GitHub auto-update |
 | [product-page.html](product-page.html) | Оболочка (JS) — загрузить как `index.html` **один раз** |
 | [product-data.json](product-data.json) | **Контент страницы** — редактировать при каждом релизе |
 | [product-page.md](product-page.md) | Markdown-копия (справочно) |

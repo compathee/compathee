@@ -83,7 +83,9 @@ api.compath.ee → ERPLY paid invoice (automatic)
 | **Lite** | `choir-rehearsal.zip` — free, wordpress.org / GitHub, max 4 tracks, no mic |
 | **Pro** | `choir-rehearsal-pro.zip` — requires Lite, unlimited tracks + recording |
 
-Pro buyers get **both** zips (or one bundle zip with both folders).
+Pro buyers get **both** zips. Install order is always **Lite first, then Pro**. Never replace the Lite plugin folder with Pro.
+
+See [lite-pro-updates.md](lite-pro-updates.md) for the full Lite → Pro process and how to publish GitHub updates.
 
 ## 8. Secrets checklist
 

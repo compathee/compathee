@@ -72,6 +72,15 @@
   ],
   "changelog": [
     {
+      "version": "0.4.3",
+      "summary": "Buy Pro and Lite→Pro process",
+      "items": [
+        "Buy Pro button in Lite (Settings, Plugins list, library toolbar)",
+        "Keep Lite installed; Pro is a separate add-on"
+      ],
+      "open": true
+    },
+    {
       "version": "0.4.2",
       "summary": "Pagination and mobile search",
       "items": [
@@ -79,7 +88,7 @@
         "Pro search filters the full library across pages",
         "Mobile layout: full-width search above the list"
       ],
-      "open": true
+      "open": false
     },
     {
       "version": "0.4.1",

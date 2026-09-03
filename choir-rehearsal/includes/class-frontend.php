@@ -256,6 +256,11 @@ final class Choir_Rehearsal_Frontend {
 				<?php endif; ?>
 			</div>
 			<div class="choir-user-bar__actions">
+				<?php if ( $can_manage && ! Choir_Rehearsal_Edition::is_pro() ) : ?>
+					<a class="choir-user-bar__link choir-user-bar__link--buy" href="<?php echo esc_url( Choir_Rehearsal_Edition::upgrade_url() ); ?>" target="_blank" rel="noopener noreferrer">
+						<?php esc_html_e( 'Buy Pro', 'choir-rehearsal' ); ?>
+					</a>
+				<?php endif; ?>
 				<?php if ( $can_manage ) : ?>
 					<a class="choir-user-bar__link" href="<?php echo esc_url( admin_url( 'post-new.php?post_type=' . Choir_Rehearsal_Post_Types::SONG ) ); ?>">
 						<?php esc_html_e( 'Add song', 'choir-rehearsal' ); ?>

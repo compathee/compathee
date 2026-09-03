@@ -43,6 +43,10 @@ Yes. Use the shortcode `[choir_rehearsal]`.
 
 == Changelog ==
 
+= 0.4.3 =
+* Lite: Buy Pro button on Settings, Plugins list, and editor toolbar
+* Documented Lite → Pro add-on install (do not replace Lite)
+
 = 0.4.2 =
 * Song list pagination (20 songs per page) for large libraries
 * Pro search spans the full library while browsing stays paginated

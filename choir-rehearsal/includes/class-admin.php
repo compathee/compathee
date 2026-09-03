@@ -24,6 +24,7 @@ final class Choir_Rehearsal_Admin {
 		add_action( 'admin_enqueue_scripts', array( self::class, 'enqueue_assets' ) );
 		add_action( 'admin_menu', array( self::class, 'register_settings_page' ) );
 		add_action( 'admin_init', array( self::class, 'register_settings' ) );
+		add_filter( 'plugin_action_links_' . plugin_basename( CHOIR_REHEARSAL_FILE ), array( self::class, 'plugin_action_links' ) );
 		add_filter( 'manage_' . Choir_Rehearsal_Post_Types::SONG . '_posts_columns', array( self::class, 'song_columns' ) );
 		add_action( 'manage_' . Choir_Rehearsal_Post_Types::SONG . '_posts_custom_column', array( self::class, 'render_song_column' ), 10, 2 );
 	}
@@ -81,18 +82,20 @@ final class Choir_Rehearsal_Admin {
 							<?php if ( ! Choir_Rehearsal_Edition::is_pro() ) : ?>
 								<p class="description">
 									<?php
-									echo wp_kses_post(
-										sprintf(
-											/* translators: 1: max tracks, 2: upgrade link HTML */
-											__( 'Lite: up to %1$d voice tracks per song, no microphone recording. %2$s', 'choir-rehearsal' ),
-											Choir_Rehearsal_Edition::LITE_MAX_TRACKS,
-											'<a href="' . esc_url( Choir_Rehearsal_Edition::upgrade_url() ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Upgrade to Pro', 'choir-rehearsal' ) . '</a>'
-										)
+									printf(
+										/* translators: %d: maximum track count */
+										esc_html__( 'Lite: up to %d voice tracks per song, no microphone recording, no song search.', 'choir-rehearsal' ),
+										Choir_Rehearsal_Edition::LITE_MAX_TRACKS
 									);
 									?>
 								</p>
+								<p>
+									<a class="button button-primary" href="<?php echo esc_url( Choir_Rehearsal_Edition::upgrade_url() ); ?>" target="_blank" rel="noopener noreferrer">
+										<?php esc_html_e( 'Buy Pro', 'choir-rehearsal' ); ?>
+									</a>
+								</p>
 							<?php else : ?>
-								<p class="description"><?php esc_html_e( 'Unlimited voice tracks and microphone recording.', 'choir-rehearsal' ); ?></p>
+								<p class="description"><?php esc_html_e( 'Unlimited voice tracks, microphone recording, and song search.', 'choir-rehearsal' ); ?></p>
 							<?php endif; ?>
 						</td>
 					</tr>
@@ -162,6 +165,19 @@ final class Choir_Rehearsal_Admin {
 				</table>
 				<?php submit_button(); ?>
 			</form>
+			<?php if ( ! Choir_Rehearsal_Edition::is_pro() ) : ?>
+				<div class="choir-buy-pro-banner">
+					<p>
+						<strong><?php esc_html_e( 'Choir Rehearsal Pro', 'choir-rehearsal' ); ?></strong>
+						<?php esc_html_e( 'Unlimited tracks, microphone recording, and search by song title. Keep this Lite plugin installed — Pro is a separate add-on.', 'choir-rehearsal' ); ?>
+					</p>
+					<p>
+						<a class="button button-primary" href="<?php echo esc_url( Choir_Rehearsal_Edition::upgrade_url() ); ?>" target="_blank" rel="noopener noreferrer">
+							<?php esc_html_e( 'Buy Pro', 'choir-rehearsal' ); ?>
+						</a>
+					</p>
+				</div>
+			<?php endif; ?>
 			<p>
 				<a class="button button-secondary" href="<?php echo esc_url( Choir_Rehearsal_Updater::get_check_updates_url() ); ?>">
 					<?php esc_html_e( 'Check for updates now', 'choir-rehearsal' ); ?>
@@ -188,6 +204,30 @@ final class Choir_Rehearsal_Admin {
 			<?php endif; ?>
 		</div>
 		<?php
+	}
+
+	/**
+	 * @param array<string, string> $links
+	 * @return array<string, string>
+	 */
+	public static function plugin_action_links( array $links ): array {
+		$settings = sprintf(
+			'<a href="%s">%s</a>',
+			esc_url( admin_url( 'edit.php?post_type=' . Choir_Rehearsal_Post_Types::SONG . '&page=choir-rehearsal-settings' ) ),
+			esc_html__( 'Settings', 'choir-rehearsal' )
+		);
+
+		$extra = array( 'settings' => $settings );
+
+		if ( ! Choir_Rehearsal_Edition::is_pro() ) {
+			$extra['buy_pro'] = sprintf(
+				'<a href="%s" target="_blank" rel="noopener noreferrer" style="font-weight:600;">%s</a>',
+				esc_url( Choir_Rehearsal_Edition::upgrade_url() ),
+				esc_html__( 'Buy Pro', 'choir-rehearsal' )
+			);
+		}
+
+		return array_merge( $extra, $links );
 	}
 
 	public static function song_columns( array $columns ): array {
@@ -433,7 +473,7 @@ final class Choir_Rehearsal_Admin {
 							/* translators: 1: max tracks, 2: upgrade link HTML */
 							__( 'Add one row per voice part (up to %1$d in Lite). Upload an audio file or pick one from the Media Library. %2$s', 'choir-rehearsal' ),
 							Choir_Rehearsal_Edition::LITE_MAX_TRACKS,
-							'<a href="' . esc_url( Choir_Rehearsal_Edition::upgrade_url() ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Pro adds microphone recording and unlimited tracks.', 'choir-rehearsal' ) . '</a>'
+							'<a class="button button-small" href="' . esc_url( Choir_Rehearsal_Edition::upgrade_url() ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Buy Pro', 'choir-rehearsal' ) . '</a>'
 						)
 					);
 				}

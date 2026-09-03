@@ -153,6 +153,15 @@
 	color: #101828;
 }
 
+.choir-user-bar__link--buy {
+	background: #b42318;
+}
+
+.choir-user-bar__link--buy:hover {
+	background: #912018;
+	color: #fff;
+}
+
 .choir-rehearsal-archive__header {
 	display: flex;
 	flex-wrap: wrap;
