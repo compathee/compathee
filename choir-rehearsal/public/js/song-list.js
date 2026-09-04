@@ -17,6 +17,36 @@
 
 	const originalHtml = list.innerHTML;
 
+	/**
+	 * Unicode-aware normalize for Latin, Cyrillic, and other scripts.
+	 */
+	function normalizeSearchText(value) {
+		let text = String(value || '');
+		if (typeof text.normalize === 'function') {
+			text = text.normalize('NFC');
+		}
+		text = text.trim();
+		// Locale-aware case fold (handles Cyrillic А-Я and similar).
+		if (typeof text.toLocaleLowerCase === 'function') {
+			text = text.toLocaleLowerCase();
+		} else {
+			text = text.toLowerCase();
+		}
+		// Collapse whitespace so "Бого  родице" still matches.
+		text = text.replace(/\s+/g, ' ');
+		return text;
+	}
+
+	const songs = config.songs.map(function (song) {
+		return {
+			title: String(song.title || ''),
+			url: String(song.url || ''),
+			trackCount: Number(song.trackCount) || 0,
+			editUrl: String(song.editUrl || ''),
+			needle: normalizeSearchText(song.title || '')
+		};
+	});
+
 	function formatTracks(count) {
 		const template = count === 1 ? config.i18n.trackSingular : config.i18n.trackPlural;
 		return template.replace('%d', String(count));
@@ -53,7 +83,7 @@
 	}
 
 	function renderResults(query) {
-		const normalizedQuery = query.trim().toLowerCase();
+		const normalizedQuery = normalizeSearchText(query);
 
 		if (normalizedQuery === '') {
 			list.innerHTML = originalHtml;
@@ -66,8 +96,8 @@
 			return;
 		}
 
-		const matches = config.songs.filter(function (song) {
-			return song.title.toLowerCase().includes(normalizedQuery);
+		const matches = songs.filter(function (song) {
+			return song.needle.indexOf(normalizedQuery) !== -1;
 		});
 
 		list.replaceChildren();
@@ -83,7 +113,13 @@
 		}
 	}
 
-	input.addEventListener('input', function () {
+	function onSearchInput() {
 		renderResults(input.value);
-	});
+	}
+
+	input.setAttribute('lang', document.documentElement.lang || 'ru');
+	input.addEventListener('input', onSearchInput);
+	input.addEventListener('search', onSearchInput);
+	// Mobile / IME composition (Cyrillic keyboards).
+	input.addEventListener('compositionend', onSearchInput);
 })();

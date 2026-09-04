@@ -117,12 +117,20 @@
   ],
   "changelog": [
     {
+      "version": "0.4.7",
+      "summary": "Unicode song search",
+      "items": [
+        "Pro search matches Cyrillic and other Unicode titles"
+      ],
+      "open": true
+    },
+    {
       "version": "0.4.6",
       "summary": "One-click plugin update",
       "items": [
         "Fix needing two Update now clicks after Check for updates"
       ],
-      "open": true
+      "open": false
     },
     {
       "version": "0.4.5",
@@ -180,23 +188,35 @@
     {
       "version": "0.3.11",
       "summary": "Mobile player",
-      "items": ["Wider sticky player with large play button and seek bar on phone"],
+      "items": [
+        "Wider sticky player with large play button and seek bar on phone"
+      ],
       "open": false
     },
     {
       "version": "0.3.10",
       "summary": "Plugin author",
-      "items": ["Plugin list shows By Compath OÜ"]
+      "items": [
+        "Plugin list shows By Compath OÜ"
+      ],
+      "open": false
     },
     {
       "version": "0.3.9",
       "summary": "Product website",
-      "items": ["Product page: rehearsal.compath.ee"]
+      "items": [
+        "Product page: rehearsal.compath.ee"
+      ],
+      "open": false
     },
     {
       "version": "0.3.8",
       "summary": "Documentation page",
-      "items": ["Product page: order, install, pricing, changelog", "Documentation link in plugin settings"]
+      "items": [
+        "Product page: order, install, pricing, changelog",
+        "Documentation link in plugin settings"
+      ],
+      "open": false
     },
     {
       "version": "0.3.0–0.3.7",
@@ -205,7 +225,8 @@
         "Microphone recording in song editor",
         "Simplified mobile-friendly song editor",
         "Version shown in Settings"
-      ]
+      ],
+      "open": false
     },
     {
       "version": "0.2.x",
@@ -215,12 +236,16 @@
         "/rehearsal/ page via shortcode",
         "Updates via GitHub Releases",
         "PDF scores and page viewer"
-      ]
+      ],
+      "open": false
     },
     {
       "version": "0.1.0",
       "summary": "Initial release",
-      "items": ["Songs, tracks, sticky player, REST API"]
+      "items": [
+        "Songs, tracks, sticky player, REST API"
+      ],
+      "open": false
     }
   ]
 }

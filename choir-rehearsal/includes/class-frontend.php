@@ -68,17 +68,19 @@ final class Choir_Rehearsal_Frontend {
 				CHOIR_REHEARSAL_VERSION,
 				true
 			);
-			wp_localize_script(
+			// Prefer inline JSON with unescaped Unicode — more reliable for Cyrillic titles than wp_localize_script.
+			$song_list_data = array(
+				'songs' => self::get_songs_search_index( Choir_Rehearsal_Access::can_manage() ),
+				'i18n'  => array(
+					'edit'          => __( 'Edit', 'choir-rehearsal' ),
+					'trackSingular' => __( '%d track', 'choir-rehearsal' ),
+					'trackPlural'   => __( '%d tracks', 'choir-rehearsal' ),
+				),
+			);
+			wp_add_inline_script(
 				'choir-rehearsal-song-list',
-				'choirRehearsalSongList',
-				array(
-					'songs' => self::get_songs_search_index( Choir_Rehearsal_Access::can_manage() ),
-					'i18n'  => array(
-						'edit'          => __( 'Edit', 'choir-rehearsal' ),
-						'trackSingular' => __( '%d track', 'choir-rehearsal' ),
-						'trackPlural'   => __( '%d tracks', 'choir-rehearsal' ),
-					),
-				)
+				'window.choirRehearsalSongList = ' . wp_json_encode( $song_list_data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) . ';',
+				'before'
 			);
 		}
 
@@ -376,17 +378,17 @@ final class Choir_Rehearsal_Frontend {
 		$index = array();
 		foreach ( $songs as $song_id ) {
 			$song_id = (int) $song_id;
-			$title   = get_the_title( $song_id );
+			$title   = self::get_song_search_title( $song_id );
 			$url     = get_permalink( $song_id );
-			if ( ! is_string( $url ) || '' === $url ) {
+			if ( '' === $title || ! is_string( $url ) || '' === $url ) {
 				continue;
 			}
 
 			$item = array(
-				'title'       => $title,
-				'url'         => $url,
-				'trackCount'  => count( Choir_Rehearsal_Post_Types::get_tracks_for_song( $song_id ) ),
-				'editUrl'     => '',
+				'title'      => $title,
+				'url'        => $url,
+				'trackCount' => count( Choir_Rehearsal_Post_Types::get_tracks_for_song( $song_id ) ),
+				'editUrl'    => '',
 			);
 
 			if ( $can_manage ) {
@@ -398,6 +400,18 @@ final class Choir_Rehearsal_Frontend {
 		}
 
 		return $index;
+	}
+
+	/**
+	 * Raw song title for client-side search (UTF-8, decoded entities).
+	 */
+	private static function get_song_search_title( int $song_id ): string {
+		$raw = (string) get_post_field( 'post_title', $song_id, 'raw' );
+		$raw = html_entity_decode( $raw, ENT_QUOTES | ENT_HTML5, 'UTF-8' );
+		$raw = wp_strip_all_tags( $raw );
+		$raw = preg_replace( '/\s+/u', ' ', $raw ) ?? $raw;
+
+		return trim( $raw );
 	}
 
 	private static function render_song_list_item( WP_Post $song, bool $can_manage ): void {
