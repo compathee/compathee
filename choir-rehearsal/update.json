@@ -1,8 +1,8 @@
 {
   "name": "Choir Rehearsal",
   "slug": "choir-rehearsal",
-  "version": "0.4.9",
-  "download_url": "https://github.com/compathee/compathee/releases/download/choir-rehearsal-v0.4.9/choir-rehearsal.zip",
+  "version": "0.4.10",
+  "download_url": "https://github.com/compathee/compathee/releases/download/choir-rehearsal-v0.4.10/choir-rehearsal.zip",
   "homepage": "https://rehearsal.compath.ee",
   "author": "Compath O\u00dc",
   "author_homepage": "https://compath.ee",
@@ -12,6 +12,6 @@
   "last_updated": "2026-09-04",
   "sections": {
     "description": "Private rehearsal library for choirs: songs, voice parts, audio tracks, PDF scores, and a sticky player.",
-    "changelog": "<h4>0.4.9</h4><ul><li>Demo load creates 25 songs so pagination appears</li></ul><h4>0.4.8</h4><ul><li>Settings: Load demo songs and Delete all songs</li></ul><h4>0.4.7</h4><ul><li>Pro search matches Cyrillic and other Unicode titles</li></ul>"
+    "changelog": "<h4>0.4.10</h4><ul><li>Demo titles: Demo Song 01, 02, \u2026 for correct A\u2013Z order</li></ul><h4>0.4.9</h4><ul><li>Demo load creates 25 songs so pagination appears</li></ul><h4>0.4.8</h4><ul><li>Settings: Load demo songs and Delete all songs</li></ul><h4>0.4.7</h4><ul><li>Pro search matches Cyrillic and other Unicode titles</li></ul>"
   }
 }

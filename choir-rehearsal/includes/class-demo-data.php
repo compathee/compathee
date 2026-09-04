@@ -18,6 +18,13 @@ final class Choir_Rehearsal_Demo_Data {
 	private const DEMO_AUDIO_BASENAME = 'choir-rehearsal-demo-voice.mp3';
 
 	/**
+	 * Zero-padded title so A–Z list order is Demo Song 01, 02, … 09, 10 (not 1, 10, 2).
+	 */
+	public static function format_demo_song_title( int $number ): string {
+		return sprintf( 'Demo Song %02d', max( 0, $number ) );
+	}
+
+	/**
 	 * Voice parts for each demo song (exactly Lite max of 4).
 	 *
 	 * @return list<array{slug: string, label: string}>
@@ -220,11 +227,12 @@ JS;
 		$tracks = 0;
 
 		for ( $n = $start; $n <= $end; $n++ ) {
-			$song_id = wp_insert_post(
+			$song_title = self::format_demo_song_title( $n );
+			$song_id    = wp_insert_post(
 				array(
 					'post_type'   => Choir_Rehearsal_Post_Types::SONG,
 					'post_status' => 'publish',
-					'post_title'  => sprintf( 'Demo Song %d', $n ),
+					'post_title'  => $song_title,
 				),
 				true
 			);
@@ -241,7 +249,7 @@ JS;
 						'post_type'   => Choir_Rehearsal_Post_Types::TRACK,
 						'post_status' => 'publish',
 						'post_parent' => (int) $song_id,
-						'post_title'  => sprintf( '%s — %s', sprintf( 'Demo Song %d', $n ), $voice['label'] ),
+						'post_title'  => sprintf( '%s — %s', $song_title, $voice['label'] ),
 						'menu_order'  => $order,
 					),
 					true
