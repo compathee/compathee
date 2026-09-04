@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>Choir Rehearsal — rehearsal library for choirs</title>
+	<meta name="description" content="WordPress plugin for choirs: songs, voice tracks, PDF scores, and mobile-friendly listening. Order, install, subscription, and updates." />
+	<link rel="canonical" href="https://rehearsal.compath.ee/" />
+	<style>
+		:root {
+			--accent: #1f4fd8;
+			--accent-dark: #173ea8;
+			--bg: #f4f7fb;
+			--card: #ffffff;
+			--text: #1a1f2e;
+			--muted: #5c6578;
+			--border: rgba(0, 0, 0, 0.08);
+			--radius: 14px;
+			--max: 920px;
+		}
+		* { box-sizing: border-box; }
+		body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; line-height: 1.6; color: var(--text); background: var(--bg); }
+		a { color: var(--accent); }
+		a:hover { color: var(--accent-dark); }
+		.hero { background: linear-gradient(135deg, #1f4fd8 0%, #3b82f6 55%, #6366f1 100%); color: #fff; padding: 48px 20px 56px; }
+		.hero__inner, .page, .footer { max-width: var(--max); margin: 0 auto; }
+		.hero__badge { display: inline-block; padding: 4px 12px; border-radius: 999px; background: rgba(255,255,255,0.18); font-size: 0.85rem; margin-bottom: 12px; }
+		.hero h1 { margin: 0 0 12px; font-size: clamp(1.8rem, 4vw, 2.6rem); line-height: 1.15; }
+		.hero p { margin: 0; max-width: 640px; font-size: 1.05rem; opacity: 0.95; }
+		.hero__cta { margin-top: 24px; display: flex; flex-wrap: wrap; gap: 12px; }
+		.btn { display: inline-flex; align-items: center; justify-content: center; padding: 12px 20px; border-radius: 999px; font-weight: 600; text-decoration: none; border: 0; }
+		.btn--primary { background: #fff; color: var(--accent-dark); }
+		.btn--ghost { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.55); }
+		.page { padding: 0 20px 64px; }
+		.card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin-top: 24px; box-shadow: 0 8px 24px rgba(15,23,42,0.04); }
+		.card h2 { margin: 0 0 16px; font-size: 1.35rem; }
+		.card h3 { margin: 20px 0 8px; font-size: 1.05rem; }
+		.features {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+			gap: 16px;
+			margin: 20px 0 0;
+			padding: 0;
+			list-style: none;
+		}
+		.features li {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			text-align: center;
+			gap: 10px;
+			padding: 28px 18px 22px;
+			border-radius: 12px;
+			background: #fff;
+			border: 1px solid var(--border);
+			box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+			min-height: 180px;
+		}
+		.features__icon {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			width: 72px;
+			height: 72px;
+			border-radius: 18px;
+			background: #eef4ff;
+			color: var(--accent);
+			flex-shrink: 0;
+		}
+		.features__icon svg {
+			width: 40px;
+			height: 40px;
+			display: block;
+		}
+		.features__title {
+			margin: 0;
+			font-size: 1.05rem;
+			font-weight: 700;
+			line-height: 1.25;
+			color: var(--text);
+		}
+		.features__text {
+			margin: 0;
+			font-size: 0.92rem;
+			line-height: 1.45;
+			color: var(--muted);
+		}
+		.pricing { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+		.plan {
+			display: flex;
+			flex-direction: column;
+			border: 1px solid var(--border);
+			border-radius: 12px;
+			padding: 20px;
+			background: #fafbfd;
+		}
+		.plan--featured { border-color: var(--accent); background: #f0f6ff; box-shadow: 0 0 0 1px rgba(31,79,216,0.15); }
+		.plan__name { font-weight: 700; font-size: 1.1rem; }
+		.plan__price { font-size: 1.6rem; font-weight: 800; margin: 8px 0; color: var(--accent-dark); }
+		.plan ul { margin: 12px 0 0; padding-left: 18px; color: var(--muted); flex: 1; }
+		.plan__cta {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			margin-top: 18px;
+			padding: 12px 18px;
+			border-radius: 999px;
+			background: var(--accent);
+			color: #fff !important;
+			font-weight: 700;
+			text-decoration: none;
+			text-align: center;
+		}
+		.plan__cta:hover { background: var(--accent-dark); color: #fff !important; }
+		.order-cta {
+			margin-top: 20px;
+			display: flex;
+			flex-wrap: wrap;
+			gap: 12px;
+			align-items: center;
+		}
+		.btn--accent {
+			background: var(--accent);
+			color: #fff !important;
+		}
+		.btn--accent:hover { background: var(--accent-dark); color: #fff !important; }
+		.steps { counter-reset: step; list-style: none; padding: 0; margin: 0; }
+		.steps li { position: relative; padding-left: 44px; margin-bottom: 16px; }
+		.steps li::before { counter-increment: step; content: counter(step); position: absolute; left: 0; top: 0; width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: #fff; font-weight: 700; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; }
+		.changelog details { border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; margin-bottom: 8px; background: #fafbfd; }
+		.changelog summary { cursor: pointer; font-weight: 600; }
+		.changelog ul { margin: 8px 0 0; padding-left: 20px; color: var(--muted); }
+		.meta { color: var(--muted); font-size: 0.92rem; }
+		.footer { padding: 24px 20px 48px; color: var(--muted); font-size: 0.9rem; text-align: center; }
+		code { background: #eef2ff; padding: 2px 6px; border-radius: 4px; font-size: 0.92em; }
+		.loading { text-align: center; padding: 48px 20px; color: var(--muted); }
+		.error { background: #fff4f4; border: 1px solid #fecaca; color: #991b1b; padding: 16px; border-radius: 12px; margin: 24px auto; max-width: var(--max); }
+		@media (max-width: 600px) { .card { padding: 18px; } }
+	</style>
+</head>
+<body>
+	<!-- shell: order-pro-cta -->
+	<div id="app">
+		<p class="loading">Loading latest content from GitHub…</p>
+	</div>
+	<script>
+	(function () {
+		'use strict';
+
+		/** Tries active release branch first, then main after merge */
+		var CONFIG = {
+			repo: 'compathee/compathee',
+			branches: [
+				'cursor/lite-pro-hub-setup-abc2',
+				'main',
+				'cursor/choir-rehearsal-plugin-090e'
+			],
+			releasesUrl: 'https://api.github.com/repos/compathee/compathee/releases?per_page=20',
+			buyProUrl: 'https://shop.compath.ee/products/choir-rehearsal-pro/'
+		};
+
+		function rawUrl(branch, path) {
+			// jsDelivr tracks branch tips more reliably than raw.githubusercontent.com CDN
+			return 'https://cdn.jsdelivr.net/gh/' + CONFIG.repo + '@' + branch + '/' + path;
+		}
+
+		function fetchJsonFromRepo(path) {
+			var attempt = function (index) {
+				if (index >= CONFIG.branches.length) {
+					return Promise.reject(new Error('Could not load ' + path + ' from GitHub'));
+				}
+				var branch = CONFIG.branches[index];
+				return fetch(rawUrl(branch, path), { cache: 'no-store' }).then(function (response) {
+					if (!response.ok) {
+						return attempt(index + 1);
+					}
+					return response.json();
+				});
+			};
+			return attempt(0);
+		}
+
+		function esc(text) {
+			return String(text)
+				.replace(/&/g, '&amp;')
+				.replace(/</g, '&lt;')
+				.replace(/>/g, '&gt;')
+				.replace(/"/g, '&quot;');
+		}
+
+		function renderSteps(items) {
+			return '<ol class="steps">' + items.map(function (item) {
+				var html = esc(item)
+					.replace(/order@compath\.ee/g, '<a href="mailto:order@compath.ee">order@compath.ee</a>')
+					.replace(/https:\/\/shop\.compath\.ee\/products\/choir-rehearsal-pro\//g, '<a href="https://shop.compath.ee/products/choir-rehearsal-pro/" target="_blank" rel="noopener noreferrer">https://shop.compath.ee/products/choir-rehearsal-pro/</a>');
+				return '<li>' + html + '</li>';
+			}).join('') + '</ol>';
+		}
+
+		function renderChangelog(entries) {
+			return entries.map(function (entry) {
+				var open = entry.open ? ' open' : '';
+				var items = (entry.items || []).map(function (i) { return '<li>' + esc(i) + '</li>'; }).join('');
+				return '<details' + open + '><summary>' + esc(entry.version) + ' — ' + esc(entry.summary) + '</summary><ul>' + items + '</ul></details>';
+			}).join('');
+		}
+
+		function renderPricing(plans) {
+			return plans.map(function (plan) {
+				var cls = plan.featured ? 'plan plan--featured' : 'plan';
+				var items = (plan.items || []).map(function (i) { return '<li>' + esc(i) + '</li>'; }).join('');
+				var cta = '';
+				if (plan.featured || plan.ctaUrl || /pro/i.test(plan.name || '')) {
+					var url = plan.ctaUrl || CONFIG.buyProUrl;
+					var label = plan.ctaLabel || 'Order Pro';
+					cta = '<a class="plan__cta" href="' + esc(url) + '" target="_blank" rel="noopener noreferrer">' + esc(label) + '</a>';
+				}
+				return '<div class="' + cls + '"><div class="plan__name">' + esc(plan.name) + '</div><div class="plan__price">' + esc(plan.price) + '</div><ul>' + items + '</ul>' + cta + '</div>';
+			}).join('');
+		}
+
+		function findLatestRelease(releases) {
+			var best = null;
+			var bestVersion = '';
+			releases.forEach(function (release) {
+				if (!release || release.draft || release.prerelease) return;
+				var tag = String(release.tag_name || '');
+				if (tag.indexOf('choir-rehearsal-v') !== 0) return;
+				var version = tag.replace('choir-rehearsal-v', '');
+				if (!best || compareVersions(version, bestVersion) > 0) {
+					best = release;
+					bestVersion = version;
+				}
+			});
+			return best;
+		}
+
+		function compareVersions(a, b) {
+			var pa = a.split('.').map(Number);
+			var pb = b.split('.').map(Number);
+			for (var i = 0; i < Math.max(pa.length, pb.length); i++) {
+				var na = pa[i] || 0;
+				var nb = pb[i] || 0;
+				if (na !== nb) return na > nb ? 1 : -1;
+			}
+			return 0;
+		}
+
+		function getDownloadUrl(release) {
+			if (!release || !release.assets) return 'https://github.com/compathee/compathee/releases/latest';
+			for (var i = 0; i < release.assets.length; i++) {
+				if (release.assets[i].name === 'choir-rehearsal.zip') return release.assets[i].browser_download_url;
+			}
+			return release.html_url || 'https://github.com/compathee/compathee/releases/latest';
+		}
+
+		function featureIcon(name) {
+			var icons = {
+				library: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><path d="M8 7h8M8 11h8"/></svg>',
+				pdf: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h5"/></svg>',
+				voices: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>',
+				player: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M10 8l6 4-6 4V8z" fill="currentColor" stroke="none"/></svg>',
+				lock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>',
+				users: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+				lite: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>',
+				pro: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="12 2 15 8.5 22 9.3 17 14.1 18.2 21 12 17.8 5.8 21 7 14.1 2 9.3 9 8.5 12 2"/></svg>',
+				mic: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><line x1="12" y1="17" x2="12" y2="22"/><line x1="8" y1="22" x2="16" y2="22"/></svg>',
+				search: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>'
+			};
+			return icons[name] || icons.library;
+		}
+
+		function renderFeatures(features) {
+			return '<ul class="features">' + (features || []).map(function (f) {
+				if (typeof f === 'string') {
+					return '<li><span class="features__icon">' + featureIcon('library') + '</span><h3 class="features__title">' + esc(f) + '</h3></li>';
+				}
+				var title = f.title || f.name || '';
+				var text = f.text || f.description || '';
+				var icon = f.icon || 'library';
+				return '<li>' +
+					'<span class="features__icon" aria-hidden="true">' + featureIcon(icon) + '</span>' +
+					'<h3 class="features__title">' + esc(title) + '</h3>' +
+					(text ? '<p class="features__text">' + esc(text) + '</p>' : '') +
+				'</li>';
+			}).join('') + '</ul>';
+		}
+
+		function renderPage(data, version, downloadUrl) {
+			var email = data.orderEmail || 'order@compath.ee';
+			var customer = data.firstCustomer || { name: 'Cappella Veneta', url: 'https://veneta.ee' };
+
+			document.title = data.title + ' — rehearsal library for choirs';
+			document.getElementById('app').innerHTML =
+				'<header class="hero"><div class="hero__inner">' +
+					'<span class="hero__badge">WordPress plugin · version ' + esc(version) + ' · rehearsal.compath.ee</span>' +
+					'<h1>' + esc(data.title) + '</h1>' +
+					'<p>' + esc(data.tagline) + '</p>' +
+					'<div class="hero__cta">' +
+						'<a class="btn btn--primary" href="' + esc(downloadUrl) + '">Download Lite</a>' +
+						'<a class="btn btn--ghost" href="' + esc(CONFIG.buyProUrl) + '" target="_blank" rel="noopener noreferrer">Order Pro</a>' +
+						'<a class="btn btn--ghost" href="#order">Order &amp; subscribe</a>' +
+					'</div>' +
+				'</div></header>' +
+				'<main class="page">' +
+					'<section class="card" id="about"><h2>Overview</h2>' +
+						'<p>' + esc(data.overview) + '</p>' +
+						renderFeatures(data.featureCards || data.features || []) +
+						'<p class="meta">Requirements: ' + esc(data.requirements) + '. Owner and developer: <strong>' + esc(data.owner) + '</strong>. First customer — <a href="' + esc(customer.url) + '">' + esc(customer.name) + '</a>.</p>' +
+					'</section>' +
+					'<section class="card" id="order"><h2>Order &amp; subscription</h2>' +
+						'<p>Lite is free (GPL). Pro is a separate WordPress add-on — keep Lite installed and activate Pro beside it.</p>' +
+						'<div class="pricing">' + renderPricing(data.pricing || []) + '</div>' +
+						'<div class="order-cta">' +
+							'<a class="btn btn--accent" href="' + esc(CONFIG.buyProUrl) + '" target="_blank" rel="noopener noreferrer">Order Pro — €49 / year</a>' +
+							'<span class="meta">Opens shop.compath.ee checkout</span>' +
+						'</div>' +
+						'<h3>How to order</h3>' + renderSteps(data.orderSteps || []) +
+						'<p class="meta">Discounts available for non-profit choirs and educational projects — ask when ordering.</p>' +
+					'</section>' +
+					'<section class="card" id="install"><h2>Installation</h2>' +
+						'<h3>Self-service</h3>' + renderSteps(data.installSteps || []) +
+						'<h3>Updates</h3><ul>' +
+							'<li><strong>Lite:</strong> Choir Rehearsal → Settings → Check for updates now (GitHub Releases).</li>' +
+							'<li><strong>Pro:</strong> download the latest add-on zip from your SureCart account until licensed auto-updates ship.</li>' +
+							'<li>Installed version: <strong>Choir Rehearsal → Settings</strong>.</li>' +
+						'</ul>' +
+						'<h3>User roles</h3><ul>' +
+							'<li><strong>Subscriber (Singer)</strong> — browse songs, listen, view PDF.</li>' +
+							'<li><strong>Editor / Administrator</strong> — add and edit songs, upload or record (Pro) voice tracks.</li>' +
+						'</ul></section>' +
+					'<section class="card changelog" id="changelog"><h2>Changelog</h2>' +
+						'<p class="meta">Loaded from GitHub · content updates automatically after push</p>' +
+						renderChangelog(data.changelog || []) +
+					'</section>' +
+				'</main>' +
+				'<footer class="footer">' +
+					'<p>Choir Rehearsal · <a href="https://rehearsal.compath.ee">rehearsal.compath.ee</a> · <a href="https://compath.ee">compath.ee</a> · <a href="https://github.com/compathee/compathee">GitHub</a> · <a href="mailto:' + esc(email) + '">' + esc(email) + '</a></p>' +
+					'<p>© Compath OÜ, Tallinn, Estonia</p>' +
+					'<p>Licensed under GPL-2.0-or-later</p>' +
+				'</footer>';
+		}
+
+		function showError(message) {
+			document.getElementById('app').innerHTML =
+				'<div class="error"><strong>Could not load content from GitHub.</strong><p>' + esc(message) + '</p>' +
+				'<p>Try <a href="https://github.com/compathee/compathee/releases/latest">GitHub Releases</a> or email <a href="mailto:order@compath.ee">order@compath.ee</a>.</p></div>';
+		}
+
+		Promise.all([
+			fetchJsonFromRepo('choir-rehearsal/docs/product-data.json'),
+			fetchJsonFromRepo('choir-rehearsal/update.json').catch(function () { return {}; }),
+			fetch(CONFIG.releasesUrl, { cache: 'no-store' }).then(function (r) {
+				return r.ok ? r.json() : [];
+			}).catch(function () { return []; })
+		]).then(function (results) {
+			var data = results[0];
+			var updateMeta = results[1];
+			var releases = results[2];
+			var latestRelease = findLatestRelease(releases);
+			var versionFromRelease = latestRelease ? latestRelease.tag_name.replace('choir-rehearsal-v', '') : '';
+			var versionFromJson = (updateMeta && updateMeta.version) ? String(updateMeta.version) : '';
+			var version = versionFromRelease || versionFromJson || '0.4.6';
+			if (versionFromRelease && versionFromJson && compareVersions(versionFromRelease, versionFromJson) >= 0) {
+				version = versionFromRelease;
+			} else if (versionFromJson) {
+				version = versionFromJson;
+			}
+			var downloadUrl = getDownloadUrl(latestRelease);
+			if (updateMeta && updateMeta.download_url && (!latestRelease || compareVersions(versionFromJson, versionFromRelease) > 0)) {
+				downloadUrl = updateMeta.download_url;
+			}
+			renderPage(data, version, downloadUrl);
+		}).catch(function (err) {
+			showError(err.message || String(err));
+		});
+	})();
+	</script>
+</body>
+</html>
