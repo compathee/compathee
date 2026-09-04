@@ -117,13 +117,21 @@
   ],
   "changelog": [
     {
+      "version": "0.4.9",
+      "summary": "Demo pagination",
+      "items": [
+        "Load demo songs creates 25 songs so the public list shows page navigation (20 per page)"
+      ],
+      "open": true
+    },
+    {
       "version": "0.4.8",
       "summary": "Demo library tools",
       "items": [
         "Settings: Load demo songs (10 songs × 4 tracks with demo voice audio)",
         "Settings: Delete all songs with Yes/No confirmation"
       ],
-      "open": true
+      "open": false
     },
     {
       "version": "0.4.7",
