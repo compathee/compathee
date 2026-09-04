@@ -4,7 +4,7 @@ Tags: choir, audio, rehearsal, voice parts, music
 Requires at least: 6.4
 Tested up to: 6.9
 Requires PHP: 8.0
-Stable tag: 0.4.12
+Stable tag: 0.4.13
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -42,6 +42,10 @@ By default only logged-in users can view `/rehearsal/`. Change this under **Choi
 Yes. Use the shortcode `[choir_rehearsal]`.
 
 == Changelog ==
+
+= 0.4.13 =
+* Mobile song editor: keep “Back to song list” at the top (visible with sticky player)
+* Pro: View PDF floating panel in the song editor so you can record while reading the score
 
 = 0.4.12 =
 * Song editor Play preview is Pro-only

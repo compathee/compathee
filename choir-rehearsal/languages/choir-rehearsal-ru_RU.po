@@ -402,3 +402,21 @@ msgstr "В Lite — до %d голосовых треков на песню. В 
 
 msgid "Add one row per voice part. Upload an audio file, record from your microphone, or pick one from the Media Library. Use Play to preview the track in the sticky player."
 msgstr "Добавьте строку для каждого голоса: загрузите файл, запишите с микрофона или выберите из медиатеки. Play открывает трек в нижнем плеере."
+
+msgid "View PDF"
+msgstr "Смотреть PDF"
+
+msgid "Upload a PDF score for this song. Use View PDF to keep the score open while you record voice tracks."
+msgstr "Загрузите PDF с нотами. «Смотреть PDF» оставляет партитуру открытой, пока вы записываете голос."
+
+msgid "Lite edition allows up to %d voice tracks per song. Upgrade to Pro for unlimited tracks, microphone recording, Play preview, and PDF view while recording."
+msgstr "В Lite — до %d голосовых треков. В Pro: безлимит, запись с микрофона, Play и просмотр PDF во время записи."
+
+msgid "Unlimited voice tracks, microphone recording, song search, Play preview, and PDF view while recording."
+msgstr "Безлимитные треки, запись с микрофона, поиск, Play и просмотр PDF во время записи."
+
+msgid "Unlimited tracks, microphone recording, search by song title, Play preview, and PDF view while recording. Keep this Lite plugin installed — Pro is a separate add-on."
+msgstr "Безлимитные треки, запись с микрофона, поиск, Play и PDF во время записи. Не удаляйте Lite — Pro это отдельное дополнение."
+
+msgid "Lite: up to %d voice tracks per song; no microphone recording, song search, editor Play, or PDF view while recording."
+msgstr "Lite: до %d голосовых треков; без записи с микрофона, поиска, Play и PDF в редакторе."

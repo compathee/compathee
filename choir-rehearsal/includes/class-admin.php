@@ -23,6 +23,7 @@ final class Choir_Rehearsal_Admin {
 		add_action( 'save_post_' . Choir_Rehearsal_Post_Types::SONG, array( self::class, 'save_song' ), 10, 2 );
 		add_action( 'admin_enqueue_scripts', array( self::class, 'enqueue_assets' ) );
 		add_action( 'admin_footer', array( self::class, 'render_song_editor_player' ) );
+		add_action( 'admin_footer', array( self::class, 'render_song_editor_pdf_panel' ) );
 		add_action( 'admin_menu', array( self::class, 'register_settings_page' ) );
 		add_action( 'admin_init', array( self::class, 'register_settings' ) );
 		add_filter( 'plugin_action_links_' . plugin_basename( CHOIR_REHEARSAL_FILE ), array( self::class, 'plugin_action_links' ) );
@@ -87,7 +88,7 @@ final class Choir_Rehearsal_Admin {
 									<?php
 									printf(
 										/* translators: %d: maximum track count */
-									esc_html__( 'Lite: up to %d voice tracks per song, no microphone recording, no song search, no Play preview in the editor.', 'choir-rehearsal' ),
+									esc_html__( 'Lite: up to %d voice tracks per song; no microphone recording, song search, editor Play, or PDF view while recording.', 'choir-rehearsal' ),
 									Choir_Rehearsal_Edition::LITE_MAX_TRACKS
 									);
 									?>
@@ -98,7 +99,7 @@ final class Choir_Rehearsal_Admin {
 									</a>
 								</p>
 							<?php else : ?>
-								<p class="description"><?php esc_html_e( 'Unlimited voice tracks, microphone recording, song search, and Play preview in the song editor.', 'choir-rehearsal' ); ?></p>
+								<p class="description"><?php esc_html_e( 'Unlimited voice tracks, microphone recording, song search, Play preview, and PDF view while recording.', 'choir-rehearsal' ); ?></p>
 							<?php endif; ?>
 						</td>
 					</tr>
@@ -165,7 +166,7 @@ final class Choir_Rehearsal_Admin {
 				<div class="choir-buy-pro-banner">
 					<p>
 						<strong><?php esc_html_e( 'Choir Rehearsal Pro', 'choir-rehearsal' ); ?></strong>
-						<?php esc_html_e( 'Unlimited tracks, microphone recording, search by song title, and Play preview in the song editor. Keep this Lite plugin installed — Pro is a separate add-on.', 'choir-rehearsal' ); ?>
+						<?php esc_html_e( 'Unlimited tracks, microphone recording, search by song title, Play preview, and PDF view while recording. Keep this Lite plugin installed — Pro is a separate add-on.', 'choir-rehearsal' ); ?>
 					</p>
 					<p>
 						<a class="button button-primary" href="<?php echo esc_url( Choir_Rehearsal_Edition::upgrade_url() ); ?>" target="_blank" rel="noopener noreferrer">
@@ -414,6 +415,37 @@ final class Choir_Rehearsal_Admin {
 				)
 			);
 		}
+		if ( Choir_Rehearsal_Edition::can_view_score_in_editor() ) {
+			if ( ! wp_style_is( 'choir-rehearsal-public', 'enqueued' ) ) {
+				wp_enqueue_style(
+					'choir-rehearsal-public',
+					CHOIR_REHEARSAL_URL . 'public/css/public.css',
+					array(),
+					CHOIR_REHEARSAL_VERSION
+				);
+			}
+			wp_enqueue_script(
+				'pdfjs',
+				'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',
+				array(),
+				'3.11.174',
+				true
+			);
+			wp_enqueue_script(
+				'choir-rehearsal-pdf',
+				CHOIR_REHEARSAL_URL . 'public/js/pdf-viewer.js',
+				array( 'pdfjs' ),
+				CHOIR_REHEARSAL_VERSION,
+				true
+			);
+			wp_localize_script(
+				'choir-rehearsal-pdf',
+				'choirRehearsalPdf',
+				array(
+					'workerSrc' => 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js',
+				)
+			);
+		}
 		wp_localize_script(
 			'choir-rehearsal-admin',
 			'choirRehearsalAdmin',
@@ -424,11 +456,12 @@ final class Choir_Rehearsal_Admin {
 				'voices'         => Choir_Rehearsal_Voice_Types::choices(),
 				'isPro'          => Choir_Rehearsal_Edition::is_pro(),
 				'canPlay'        => Choir_Rehearsal_Edition::can_play_in_editor(),
+				'canViewPdf'     => Choir_Rehearsal_Edition::can_view_score_in_editor(),
 				'maxTracks'      => Choir_Rehearsal_Edition::max_tracks(),
 				'upgradeUrl'     => Choir_Rehearsal_Edition::upgrade_url(),
 				'trackLimitMsg'  => sprintf(
 					/* translators: %d: maximum track count */
-					__( 'Lite edition allows up to %d voice tracks per song. Upgrade to Pro for unlimited tracks, microphone recording, and Play preview in the editor.', 'choir-rehearsal' ),
+					__( 'Lite edition allows up to %d voice tracks per song. Upgrade to Pro for unlimited tracks, microphone recording, Play preview, and PDF view while recording.', 'choir-rehearsal' ),
 					Choir_Rehearsal_Edition::LITE_MAX_TRACKS
 				),
 				'selectAudio'    => __( 'Upload', 'choir-rehearsal' ),
@@ -442,6 +475,11 @@ final class Choir_Rehearsal_Admin {
 				'usePdf'         => __( 'Use this PDF', 'choir-rehearsal' ),
 				'noPdf'          => __( 'No PDF selected', 'choir-rehearsal' ),
 				'removePdf'      => __( 'Remove PDF', 'choir-rehearsal' ),
+				'viewPdf'        => __( 'View PDF', 'choir-rehearsal' ),
+				'closePdf'       => __( 'Close', 'choir-rehearsal' ),
+				'sheetMusic'     => __( 'Sheet music', 'choir-rehearsal' ),
+				'prevPage'       => __( 'Previous', 'choir-rehearsal' ),
+				'nextPage'       => __( 'Next', 'choir-rehearsal' ),
 				'startRecording' => __( 'Start recording', 'choir-rehearsal' ),
 				'stopRecording'  => __( 'Stop', 'choir-rehearsal' ),
 				'useRecording'   => __( 'Use recording', 'choir-rehearsal' ),
@@ -472,23 +510,63 @@ final class Choir_Rehearsal_Admin {
 		Choir_Rehearsal_Frontend::render_sticky_player();
 	}
 
+	public static function render_song_editor_pdf_panel(): void {
+		$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+		if ( ! $screen || Choir_Rehearsal_Post_Types::SONG !== $screen->post_type ) {
+			return;
+		}
+		if ( ! in_array( $screen->base, array( 'post', 'post-new' ), true ) ) {
+			return;
+		}
+		if ( ! Choir_Rehearsal_Edition::can_view_score_in_editor() ) {
+			return;
+		}
+		?>
+		<div id="choir-admin-pdf-panel" class="choir-admin-pdf-panel is-hidden" aria-hidden="true" role="dialog" aria-label="<?php esc_attr_e( 'Sheet music', 'choir-rehearsal' ); ?>">
+			<div class="choir-admin-pdf-panel__header" id="choir-admin-pdf-drag">
+				<strong><?php esc_html_e( 'Sheet music', 'choir-rehearsal' ); ?></strong>
+				<button type="button" class="button button-small choir-admin-pdf-panel__close" id="choir-admin-pdf-close">
+					<?php esc_html_e( 'Close', 'choir-rehearsal' ); ?>
+				</button>
+			</div>
+			<div class="choir-admin-pdf-panel__body" id="choir-admin-pdf-body"></div>
+		</div>
+		<?php
+	}
+
 	public static function render_score_metabox( WP_Post $post ): void {
 		wp_nonce_field( 'choir_rehearsal_save_score', 'choir_rehearsal_score_nonce' );
 		$pdf_id   = Choir_Rehearsal_Post_Types::get_score_pdf_id( (int) $post->ID );
+		$pdf_url  = Choir_Rehearsal_Post_Types::get_score_pdf_url( (int) $post->ID );
 		$filename = '';
 		if ( $pdf_id > 0 ) {
 			$file = get_attached_file( $pdf_id );
 			$filename = $file ? basename( $file ) : get_the_title( $pdf_id );
 		}
+		$can_view = Choir_Rehearsal_Edition::can_view_score_in_editor();
 		?>
 		<div class="choir-score-wrap">
-			<p class="description"><?php esc_html_e( 'Upload a PDF score for this song. Singers will see it with page navigation on the song page.', 'choir-rehearsal' ); ?></p>
+			<p class="description">
+				<?php
+				if ( $can_view ) {
+					esc_html_e( 'Upload a PDF score for this song. Use View PDF to keep the score open while you record voice tracks.', 'choir-rehearsal' );
+				} else {
+					esc_html_e( 'Upload a PDF score for this song. Singers will see it with page navigation on the song page.', 'choir-rehearsal' );
+				}
+				?>
+			</p>
 			<input type="hidden" id="choir-score-pdf-id" name="choir_score_pdf_id" value="<?php echo esc_attr( (string) $pdf_id ); ?>" />
+			<input type="hidden" id="choir-score-pdf-url" value="<?php echo esc_url( $pdf_url ); ?>" />
 			<p>
 				<span id="choir-score-pdf-name" class="choir-score-pdf-name"><?php echo esc_html( $filename ?: __( 'No PDF selected', 'choir-rehearsal' ) ); ?></span>
 			</p>
 			<p>
 				<button type="button" class="button" id="choir-select-pdf"><?php esc_html_e( 'Upload / Select PDF', 'choir-rehearsal' ); ?></button>
+				<?php if ( $can_view ) : ?>
+					<button type="button" class="button button-primary" id="choir-view-pdf" <?php disabled( '' === $pdf_url ); ?>>
+						<?php esc_html_e( 'View PDF', 'choir-rehearsal' ); ?>
+					</button>
+				<?php endif; ?>
 				<button type="button" class="button-link-delete" id="choir-remove-pdf"><?php esc_html_e( 'Remove PDF', 'choir-rehearsal' ); ?></button>
 			</p>
 		</div>

@@ -44,7 +44,7 @@ The plugin is licensed under GPL. Install it yourself for free or purchase suppo
 ### Pro — subscription — €49 / year
 
 - 1 choir website
-- Unlimited tracks, microphone recording, song search, Play preview in the song editor
+- Unlimited tracks, microphone recording, song search, Play preview, PDF view while recording
 - Pro add-on installed beside Lite
 - Priority email support
 

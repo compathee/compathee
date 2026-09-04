@@ -51,6 +51,7 @@
 
 		player.classList.remove('is-hidden');
 		player.setAttribute('aria-hidden', 'false');
+		document.body.classList.add('choir-sticky-player-open');
 		title.textContent = trackTitle || '';
 		audio.src = url;
 		seek.value = '0';

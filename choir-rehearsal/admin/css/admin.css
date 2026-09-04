@@ -86,6 +86,86 @@ body.choir-rehearsal-song-edit .choir-sticky-player.is-hidden {
 	display: none;
 }
 
+/* Non-modal floating PDF panel — page stays interactive (Record works underneath). */
+.choir-admin-pdf-panel {
+	position: fixed;
+	z-index: 100050;
+	display: flex;
+	flex-direction: column;
+	background: #fff;
+	border: 1px solid #c3c4c7;
+	border-radius: 8px;
+	box-shadow: 0 12px 40px rgba(0, 0, 0, 0.22);
+	overflow: hidden;
+}
+
+.choir-admin-pdf-panel.is-hidden {
+	display: none;
+}
+
+.choir-admin-pdf-panel__header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+	padding: 8px 12px;
+	background: #1d2327;
+	color: #fff;
+	cursor: move;
+	user-select: none;
+}
+
+.choir-admin-pdf-panel__header strong {
+	font-size: 13px;
+}
+
+.choir-admin-pdf-panel__close {
+	min-height: 32px;
+}
+
+.choir-admin-pdf-panel__body {
+	flex: 1;
+	min-height: 0;
+	overflow: auto;
+	background: #f0f0f1;
+	padding: 8px;
+}
+
+.choir-admin-pdf-panel .choir-pdf-viewer {
+	margin: 0;
+	max-width: none;
+}
+
+.choir-admin-pdf-panel .choir-pdf-viewer__canvas {
+	max-width: 100%;
+	height: auto;
+}
+
+@media screen and (min-width: 783px) {
+	.choir-admin-pdf-panel {
+		top: 72px;
+		right: 24px;
+		width: min(420px, 42vw);
+		height: min(70vh, 720px);
+	}
+}
+
+@media screen and (max-width: 782px) {
+	.choir-admin-pdf-panel {
+		top: 46px;
+		left: 8px;
+		right: 8px;
+		width: auto;
+		height: 42vh;
+		max-height: 46vh;
+	}
+
+	/* Leave room under the PDF panel for voice tracks / Record. */
+	body.choir-rehearsal-song-edit.choir-admin-pdf-open #wpbody-content {
+		padding-top: 0;
+	}
+}
+
 .choir-recorder-panel {
 	margin-top: 8px;
 	padding: 12px;
@@ -296,34 +376,24 @@ body.choir-rehearsal-song-edit .choir-sticky-player.is-hidden {
 		margin-right: 0 !important;
 	}
 
-	.choir-rehearsal-song-edit .choir-submitbox-back {
-		display: block;
-	}
-	.choir-rehearsal-song-edit #wpbody-content {
-		padding-bottom: 72px;
+	/* Keep “Back to song list” at the top (like the public song page).
+	   Sticky submit bar + sticky player would cover a bottom back link. */
+	.choir-rehearsal-song-edit .choir-back-to-list--top {
+		display: inline-flex;
 	}
 
-	.choir-rehearsal-song-edit .choir-back-to-list--top {
+	.choir-rehearsal-song-edit .choir-submitbox-back {
 		display: none;
 	}
 
-	.choir-rehearsal-song-edit .choir-back-to-list--sticky {
-		display: inline-flex;
-		width: 100%;
-		min-height: 44px;
-		text-align: center;
-		justify-content: center;
+	.choir-rehearsal-song-edit #wpbody-content {
+		padding-bottom: 72px;
 	}
 
 	.choir-rehearsal-song-edit #submitdiv #major-publishing-actions {
 		display: flex;
 		gap: 8px;
 		align-items: stretch;
-	}
-
-	.choir-rehearsal-song-edit .choir-submitbox-back {
-		flex: 1;
-		min-width: 0;
 	}
 
 	.choir-rehearsal-song-edit #post-body {
@@ -393,5 +463,14 @@ body.choir-rehearsal-song-edit .choir-sticky-player.is-hidden {
 		float: none;
 		min-height: 44px;
 		font-size: 15px;
+	}
+
+	/* Lift Publish bar above sticky player when it is open. */
+	body.choir-rehearsal-song-edit.choir-sticky-player-open #submitdiv {
+		bottom: 96px;
+	}
+
+	body.choir-rehearsal-song-edit.choir-sticky-player-open #wpbody-content {
+		padding-bottom: 180px;
 	}
 }

@@ -424,7 +424,9 @@
 			frame.on('select', function () {
 				const attachment = frame.state().get('selection').first().toJSON();
 				$('#choir-score-pdf-id').val(attachment.id);
+				$('#choir-score-pdf-url').val(attachment.url || '');
 				$('#choir-score-pdf-name').text(attachment.filename || attachment.title || i18n.noPdf || 'No PDF selected');
+				$('#choir-view-pdf').prop('disabled', !attachment.url);
 			});
 
 			frame.open();
@@ -432,7 +434,119 @@
 
 		$('#choir-remove-pdf').on('click', function () {
 			$('#choir-score-pdf-id').val('0');
+			$('#choir-score-pdf-url').val('');
 			$('#choir-score-pdf-name').text(i18n.noPdf || 'No PDF selected');
+			$('#choir-view-pdf').prop('disabled', true);
+			closePdfPanel();
 		});
+
+		bindPdfPanel();
 	});
+
+	function pdfViewerHtml(url) {
+		return (
+			'<div class="choir-pdf-viewer" data-pdf-url="' + String(url || '').replace(/"/g, '&quot;') + '">' +
+				'<div class="choir-pdf-viewer__canvas-wrap">' +
+					'<canvas class="choir-pdf-viewer__canvas"></canvas>' +
+				'</div>' +
+				'<div class="choir-pdf-viewer__controls">' +
+					'<button type="button" class="choir-pdf-prev">&larr; ' + (i18n.prevPage || 'Previous') + '</button>' +
+					'<span class="choir-pdf-page">1 / 1</span>' +
+					'<button type="button" class="choir-pdf-next">' + (i18n.nextPage || 'Next') + ' &rarr;</button>' +
+				'</div>' +
+			'</div>'
+		);
+	}
+
+	function openPdfPanel(url) {
+		const panel = document.getElementById('choir-admin-pdf-panel');
+		const body = document.getElementById('choir-admin-pdf-body');
+		if (!panel || !body || !url) {
+			return;
+		}
+
+		body.innerHTML = pdfViewerHtml(url);
+		panel.classList.remove('is-hidden');
+		panel.setAttribute('aria-hidden', 'false');
+		document.body.classList.add('choir-admin-pdf-open');
+
+		const viewer = body.querySelector('.choir-pdf-viewer');
+		if (viewer && typeof window.choirInitPdfViewer === 'function') {
+			window.choirInitPdfViewer(viewer);
+		}
+	}
+
+	function closePdfPanel() {
+		const panel = document.getElementById('choir-admin-pdf-panel');
+		const body = document.getElementById('choir-admin-pdf-body');
+		if (!panel) {
+			return;
+		}
+		panel.classList.add('is-hidden');
+		panel.setAttribute('aria-hidden', 'true');
+		document.body.classList.remove('choir-admin-pdf-open');
+		if (body) {
+			body.innerHTML = '';
+		}
+	}
+
+	function bindPdfPanel() {
+		if (!i18n.canViewPdf) {
+			return;
+		}
+
+		$('#choir-view-pdf').on('click', function () {
+			const url = String($('#choir-score-pdf-url').val() || '');
+			if (!url) {
+				return;
+			}
+			openPdfPanel(url);
+		});
+
+		$('#choir-admin-pdf-close').on('click', function () {
+			closePdfPanel();
+		});
+
+		const panel = document.getElementById('choir-admin-pdf-panel');
+		const handle = document.getElementById('choir-admin-pdf-drag');
+		if (!panel || !handle || window.matchMedia('(max-width: 782px)').matches) {
+			return;
+		}
+
+		let dragging = false;
+		let startX = 0;
+		let startY = 0;
+		let originLeft = 0;
+		let originTop = 0;
+
+		handle.addEventListener('pointerdown', function (event) {
+			if (event.target.closest('button')) {
+				return;
+			}
+			dragging = true;
+			const rect = panel.getBoundingClientRect();
+			startX = event.clientX;
+			startY = event.clientY;
+			originLeft = rect.left;
+			originTop = rect.top;
+			panel.style.right = 'auto';
+			panel.style.left = originLeft + 'px';
+			panel.style.top = originTop + 'px';
+			handle.setPointerCapture(event.pointerId);
+		});
+
+		handle.addEventListener('pointermove', function (event) {
+			if (!dragging) {
+				return;
+			}
+			const left = Math.max(8, originLeft + (event.clientX - startX));
+			const top = Math.max(8, originTop + (event.clientY - startY));
+			panel.style.left = left + 'px';
+			panel.style.top = top + 'px';
+		});
+
+		handle.addEventListener('pointerup', function () {
+			dragging = false;
+		});
+	}
 })(jQuery);
