@@ -139,6 +139,7 @@
 	</style>
 </head>
 <body>
+	<!-- shell: order-pro-cta -->
 	<div id="app">
 		<p class="loading">Loading latest content from GitHub…</p>
 	</div>
@@ -211,7 +212,7 @@
 				var cta = '';
 				if (plan.featured || plan.ctaUrl || /pro/i.test(plan.name || '')) {
 					var url = plan.ctaUrl || CONFIG.buyProUrl;
-					var label = plan.ctaLabel || ('Order ' + (plan.name || 'Pro'));
+					var label = plan.ctaLabel || 'Order Pro';
 					cta = '<a class="plan__cta" href="' + esc(url) + '" target="_blank" rel="noopener noreferrer">' + esc(label) + '</a>';
 				}
 				return '<div class="' + cls + '"><div class="plan__name">' + esc(plan.name) + '</div><div class="plan__price">' + esc(plan.price) + '</div><ul>' + items + '</ul>' + cta + '</div>';
@@ -297,7 +298,7 @@
 					'<p>' + esc(data.tagline) + '</p>' +
 					'<div class="hero__cta">' +
 						'<a class="btn btn--primary" href="' + esc(downloadUrl) + '">Download Lite</a>' +
-						'<a class="btn btn--ghost" href="' + esc(CONFIG.buyProUrl) + '" target="_blank" rel="noopener noreferrer">Buy Pro</a>' +
+						'<a class="btn btn--ghost" href="' + esc(CONFIG.buyProUrl) + '" target="_blank" rel="noopener noreferrer">Order Pro</a>' +
 						'<a class="btn btn--ghost" href="#order">Order &amp; subscribe</a>' +
 					'</div>' +
 				'</div></header>' +
@@ -311,7 +312,7 @@
 						'<p>Lite is free (GPL). Pro is a separate WordPress add-on — keep Lite installed and activate Pro beside it.</p>' +
 						'<div class="pricing">' + renderPricing(data.pricing || []) + '</div>' +
 						'<div class="order-cta">' +
-							'<a class="btn btn--accent" href="' + esc(CONFIG.buyProUrl) + '" target="_blank" rel="noopener noreferrer">Buy Pro — €49 / year</a>' +
+							'<a class="btn btn--accent" href="' + esc(CONFIG.buyProUrl) + '" target="_blank" rel="noopener noreferrer">Order Pro — €49 / year</a>' +
 							'<span class="meta">Opens shop.compath.ee checkout</span>' +
 						'</div>' +
 						'<h3>How to order</h3>' + renderSteps(data.orderSteps || []) +

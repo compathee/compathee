@@ -105,6 +105,7 @@
   ],
   "orderEmail": "order@compath.ee",
   "orderSteps": [
+    "<a href=\"https://shop.compath.ee/products/choir-rehearsal-pro/\" target=\"_blank\" rel=\"noopener noreferrer\" style=\"display:inline-flex;align-items:center;justify-content:center;padding:12px 22px;border-radius:999px;background:#1f4fd8;color:#fff;font-weight:700;text-decoration:none\">Order Pro — €49 / year</a> <span style=\"color:#5c6578;margin-left:8px\">Opens shop.compath.ee checkout</span>",
     "Open https://shop.compath.ee/products/choir-rehearsal-pro/ (or email order@compath.ee for setup services).",
     "After payment, download choir-rehearsal-pro.zip from your SureCart customer dashboard.",
     "Keep Choir Rehearsal (Lite) installed. Upload and activate the Pro add-on beside it — do not replace Lite."
