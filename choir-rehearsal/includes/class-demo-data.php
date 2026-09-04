@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 final class Choir_Rehearsal_Demo_Data {
 
-	public const SONGS_PER_LOAD = 10;
+	public const SONGS_PER_LOAD = 25;
 
 	public const META_DEMO_AUDIO = '_choir_demo_audio';
 
@@ -68,32 +68,41 @@ final class Choir_Rehearsal_Demo_Data {
 		return <<<'JS'
 (function () {
 	'use strict';
+
 	var form = document.getElementById('choir-delete-all-songs-form');
 	var dialog = document.getElementById('choir-delete-all-dialog');
 	var openBtn = document.getElementById('choir-delete-all-songs');
 	var yesBtn = document.getElementById('choir-delete-all-yes');
 	var noBtn = document.getElementById('choir-delete-all-no');
+
 	if (!form || !openBtn) {
 		return;
 	}
 
-	function closeDialog() {
-		if (dialog && typeof dialog.close === 'function') {
-			dialog.close();
-		} else if (dialog) {
-			dialog.setAttribute('hidden', 'hidden');
+	var closeDialog = function () {
+		if (!dialog) {
+			return;
 		}
-	}
+		if (typeof dialog.close === 'function') {
+			dialog.close();
+			return;
+		}
+		dialog.setAttribute('hidden', 'hidden');
+	};
 
-	function openDialog() {
+	var openDialog = function () {
 		if (dialog && typeof dialog.showModal === 'function') {
 			dialog.showModal();
-		} else if (dialog) {
+			return;
+		}
+		if (dialog) {
 			dialog.removeAttribute('hidden');
-		} else if (window.confirm(openBtn.getAttribute('data-confirm') || '')) {
+			return;
+		}
+		if (window.confirm(openBtn.getAttribute('data-confirm') || '')) {
 			form.submit();
 		}
-	}
+	};
 
 	openBtn.addEventListener('click', function (event) {
 		event.preventDefault();
@@ -103,15 +112,18 @@ final class Choir_Rehearsal_Demo_Data {
 	if (yesBtn) {
 		yesBtn.addEventListener('click', function (event) {
 			event.preventDefault();
+			closeDialog();
 			form.submit();
 		});
 	}
+
 	if (noBtn) {
 		noBtn.addEventListener('click', function (event) {
 			event.preventDefault();
 			closeDialog();
 		});
 	}
+
 	if (dialog) {
 		dialog.addEventListener('cancel', function (event) {
 			event.preventDefault();
@@ -478,7 +490,14 @@ JS;
 		<hr />
 		<h2><?php esc_html_e( 'Demo library', 'choir-rehearsal' ); ?></h2>
 		<p class="description">
-			<?php esc_html_e( 'Load sample songs with four voice tracks and a short demo recording, or wipe the whole rehearsal library.', 'choir-rehearsal' ); ?>
+			<?php
+			printf(
+				/* translators: 1: songs created per click, 2: songs shown per library page */
+				esc_html__( 'Load %1$d sample songs (4 voice tracks each) so the public library shows pagination (%2$d songs per page), or wipe the whole rehearsal library.', 'choir-rehearsal' ),
+				self::SONGS_PER_LOAD,
+				Choir_Rehearsal_Frontend::songs_per_page()
+			);
+			?>
 		</p>
 		<p>
 			<a class="button button-secondary" href="<?php echo esc_url( self::get_load_demo_url() ); ?>">

@@ -15,6 +15,10 @@ final class Choir_Rehearsal_Frontend {
 
 	private static bool $shortcode_rendered = false;
 
+	public static function songs_per_page(): int {
+		return self::SONGS_PER_PAGE;
+	}
+
 	public static function register(): void {
 		add_filter( 'template_include', array( self::class, 'template_include' ) );
 		add_shortcode( 'choir_rehearsal', array( self::class, 'render_archive_shortcode' ) );

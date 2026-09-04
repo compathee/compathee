@@ -79,5 +79,6 @@ return [
         'Could not create the demo audio file in the Media Library.' => 'Не удалось создать демо-аудиофайл в медиатеке.',
         'Loaded demo songs %1$d–%2$d (%3$d songs, %4$d tracks).' => 'Загружены демо-песни %1$d–%2$d (%3$d песен, %4$d треков).',
         'Deleted %1$d songs, %2$d tracks, and %3$d media files.' => 'Удалено: %1$d песен, %2$d треков и %3$d медиафайлов.',
+        'Load %1$d sample songs (4 voice tracks each) so the public library shows pagination (%2$d songs per page), or wipe the whole rehearsal library.' => 'Загружает %1$d демо-песен (по 4 голосовых трека), чтобы в публичном списке появилась пагинация (%2$d песен на странице), или очищает всю библиотеку.',
     ],
 ];

@@ -384,3 +384,6 @@ msgstr "Загружены демо-песни %1$d–%2$d (%3$d песен, %4$
 
 msgid "Deleted %1$d songs, %2$d tracks, and %3$d media files."
 msgstr "Удалено: %1$d песен, %2$d треков и %3$d медиафайлов."
+
+msgid "Load %1$d sample songs (4 voice tracks each) so the public library shows pagination (%2$d songs per page), or wipe the whole rehearsal library."
+msgstr "Загружает %1$d демо-песен (по 4 голосовых трека), чтобы в публичном списке появилась пагинация (%2$d песен на странице), или очищает всю библиотеку."
