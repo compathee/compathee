@@ -86,6 +86,7 @@
         "Play preview of voice tracks in the song editor",
         "Floating PDF score view while recording",
         "Search songs by title",
+        "PDF icon on songs that have a score attached",
         "1 choir website",
         "Priority email support"
       ]
@@ -119,13 +120,22 @@
   ],
   "changelog": [
     {
+      "version": "0.4.14",
+      "summary": "Player close + PDF list icon",
+      "items": [
+        "Sticky player: close (×) on the right so mobile Update and content stay reachable",
+        "Pro: PDF icon after song titles that have an attached score"
+      ],
+      "open": true
+    },
+    {
       "version": "0.4.13",
       "summary": "Editor back link + PDF panel",
       "items": [
         "Mobile song editor: Back to song list stays at the top (not under sticky player)",
         "Pro: View PDF floating panel in song editor — record while reading the score"
       ],
-      "open": true
+      "open": false
     },
     {
       "version": "0.4.12",

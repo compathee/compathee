@@ -48,6 +48,8 @@ return [
         'No tracks uploaded yet.' => 'Ð¢ÑÐµÐºÐ¸ ÐµÑÑ Ð½Ðµ Ð·Ð°Ð³ÑÑÐ¶ÐµÐ½Ñ.',
         'Play' => 'â¶',
         'Now playing' => 'Ð¡ÐµÐ¹ÑÐ°Ñ Ð¸Ð³ÑÐ°ÐµÑ',
+        'Close player' => 'Закрыть плеер',
+        'PDF score attached' => 'Прикреплён PDF с нотами',
         'Song not found.' => 'ÐÐµÑÐ½Ñ Ð½Ðµ Ð½Ð°Ð¹Ð´ÐµÐ½Ð°.',
         'List choir songs' => 'Ð¡Ð¿Ð¸ÑÐ¾Ðº Ð¿ÐµÑÐµÐ½ ÑÐ¾ÑÐ°',
         'Returns published rehearsal songs with track counts.' => 'ÐÐ¾Ð·Ð²ÑÐ°ÑÐ°ÐµÑ Ð¾Ð¿ÑÐ±Ð»Ð¸ÐºÐ¾Ð²Ð°Ð½Ð½ÑÐµ Ð¿ÐµÑÐ½Ð¸ Ñ ÐºÐ¾Ð»Ð¸ÑÐµÑÑÐ²Ð¾Ð¼ ÑÑÐµÐºÐ¾Ð².',

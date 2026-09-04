@@ -79,6 +79,7 @@ final class Choir_Rehearsal_Frontend {
 					'edit'          => __( 'Edit', 'choir-rehearsal' ),
 					'trackSingular' => __( '%d track', 'choir-rehearsal' ),
 					'trackPlural'   => __( '%d tracks', 'choir-rehearsal' ),
+					'pdfAttached'   => __( 'PDF score attached', 'choir-rehearsal' ),
 				),
 			);
 			wp_add_inline_script(
@@ -102,6 +103,7 @@ final class Choir_Rehearsal_Frontend {
 				'nowPlaying' => __( 'Now playing', 'choir-rehearsal' ),
 				'play'       => __( 'Play', 'choir-rehearsal' ),
 				'pause'      => __( 'Pause', 'choir-rehearsal' ),
+				'close'      => __( 'Close player', 'choir-rehearsal' ),
 			)
 		);
 
@@ -365,7 +367,7 @@ final class Choir_Rehearsal_Frontend {
 	}
 
 	/**
-	 * @return list<array{title: string, url: string, trackCount: int, editUrl: string}>
+	 * @return list<array{title: string, url: string, trackCount: int, editUrl: string, hasPdf: bool}>
 	 */
 	private static function get_songs_search_index( bool $can_manage ): array {
 		$songs = get_posts(
@@ -393,6 +395,7 @@ final class Choir_Rehearsal_Frontend {
 				'url'        => $url,
 				'trackCount' => count( Choir_Rehearsal_Post_Types::get_tracks_for_song( $song_id ) ),
 				'editUrl'    => '',
+				'hasPdf'     => Choir_Rehearsal_Post_Types::get_score_pdf_id( $song_id ) > 0,
 			);
 
 			if ( $can_manage ) {
@@ -420,12 +423,19 @@ final class Choir_Rehearsal_Frontend {
 
 	private static function render_song_list_item( WP_Post $song, bool $can_manage ): void {
 		$track_count = count( Choir_Rehearsal_Post_Types::get_tracks_for_song( (int) $song->ID ) );
+		$show_pdf    = Choir_Rehearsal_Edition::is_pro()
+			&& Choir_Rehearsal_Post_Types::get_score_pdf_id( (int) $song->ID ) > 0;
 		?>
 		<li data-song-title="<?php echo esc_attr( get_the_title( $song ) ); ?>">
 			<div class="choir-song-list__main">
-				<a href="<?php echo esc_url( get_permalink( $song ) ); ?>">
-					<?php echo esc_html( get_the_title( $song ) ); ?>
-				</a>
+				<div class="choir-song-list__title-row">
+					<a href="<?php echo esc_url( get_permalink( $song ) ); ?>">
+						<?php echo esc_html( get_the_title( $song ) ); ?>
+					</a>
+					<?php if ( $show_pdf ) : ?>
+						<?php self::render_song_pdf_badge(); ?>
+					<?php endif; ?>
+				</div>
 				<span class="choir-track-count">
 					<?php
 					printf(
@@ -442,6 +452,20 @@ final class Choir_Rehearsal_Frontend {
 				</a>
 			<?php endif; ?>
 		</li>
+		<?php
+	}
+
+	/**
+	 * Compact PDF indicator for Pro song list rows.
+	 */
+	private static function render_song_pdf_badge(): void {
+		?>
+		<span class="choir-song-pdf-badge" title="<?php esc_attr_e( 'PDF score attached', 'choir-rehearsal' ); ?>">
+			<span class="screen-reader-text"><?php esc_html_e( 'PDF score attached', 'choir-rehearsal' ); ?></span>
+			<svg class="choir-song-pdf-badge__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">
+				<path fill="currentColor" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm1 7V3.5L19.5 9H15zM8.5 12h1.2c1.1 0 1.8.5 1.8 1.4 0 .9-.7 1.4-1.8 1.4H9.3v1.7H8.5V12zm1.2 2c.4 0 .7-.2.7-.6s-.3-.6-.7-.6H9.3v1.2h.4zm3.1-2h1.5c1.3 0 2.1.7 2.1 1.9s-.8 1.9-2.1 1.9h-.7v1.7h-.8V12zm1.5 3c.7 0 1.2-.4 1.2-1.1S15 12.8 14.3 12.8h-.7V15h.7zm3.2-3h.8v4.5h-.8V12z"/>
+			</svg>
+		</span>
 		<?php
 	}
 
@@ -573,6 +597,9 @@ final class Choir_Rehearsal_Frontend {
 				</div>
 				<audio class="choir-sticky-player__audio" preload="none"></audio>
 			</div>
+			<button type="button" class="choir-sticky-player__close" aria-label="<?php esc_attr_e( 'Close player', 'choir-rehearsal' ); ?>">
+				<span aria-hidden="true">&times;</span>
+			</button>
 		</div>
 		<?php
 	}

@@ -151,6 +151,12 @@ msgstr "Перемотка"
 msgid "Now playing"
 msgstr "Сейчас играет"
 
+msgid "Close player"
+msgstr "Закрыть плеер"
+
+msgid "PDF score attached"
+msgstr "Прикреплён PDF с нотами"
+
 msgid "Song not found."
 msgstr "Песня не найдена."
 

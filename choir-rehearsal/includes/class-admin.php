@@ -412,6 +412,7 @@ final class Choir_Rehearsal_Admin {
 					'nowPlaying' => __( 'Now playing', 'choir-rehearsal' ),
 					'play'       => __( 'Play', 'choir-rehearsal' ),
 					'pause'      => __( 'Pause', 'choir-rehearsal' ),
+					'close'      => __( 'Close player', 'choir-rehearsal' ),
 				)
 			);
 		}

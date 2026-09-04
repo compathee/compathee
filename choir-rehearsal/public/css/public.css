@@ -260,6 +260,32 @@
 	gap: 4px;
 }
 
+.choir-song-list__title-row {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	min-width: 0;
+}
+
+.choir-song-list__title-row > a {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.choir-song-pdf-badge {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex: 0 0 auto;
+	color: #b42318;
+	line-height: 0;
+}
+
+.choir-song-pdf-badge__icon {
+	display: block;
+}
+
 .choir-song-header {
 	display: flex;
 	flex-wrap: wrap;
@@ -394,7 +420,8 @@
 	bottom: 0;
 	z-index: 9999;
 	display: grid;
-	grid-template-columns: minmax(0, 1fr) minmax(0, 2.5fr);
+	grid-template-columns: minmax(0, 1fr) minmax(0, 2.5fr) auto;
+	grid-template-areas: "info controls close";
 	gap: 12px 16px;
 	align-items: center;
 	padding: 14px 20px max(14px, env(safe-area-inset-bottom));
@@ -408,6 +435,7 @@
 }
 
 .choir-sticky-player__info {
+	grid-area: info;
 	min-width: 0;
 }
 
@@ -430,12 +458,39 @@
 }
 
 .choir-sticky-player__controls {
+	grid-area: controls;
 	display: flex;
 	align-items: center;
 	gap: 12px;
 	min-width: 0;
 	width: 100%;
 	position: relative;
+}
+
+.choir-sticky-player__close {
+	grid-area: close;
+	flex: 0 0 auto;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 40px;
+	height: 40px;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	border-radius: 10px;
+	background: rgba(255, 255, 255, 0.08);
+	color: #fff;
+	font-size: 1.6rem;
+	line-height: 1;
+	cursor: pointer;
+}
+
+.choir-sticky-player__close:hover,
+.choir-sticky-player__close:focus-visible {
+	background: rgba(255, 255, 255, 0.18);
+	outline: none;
+	box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.25);
 }
 
 .choir-sticky-player__play {
@@ -549,9 +604,19 @@
 	}
 
 	.choir-sticky-player {
-		grid-template-columns: 1fr;
+		grid-template-columns: minmax(0, 1fr) auto;
+		grid-template-areas:
+			"info close"
+			"controls controls";
 		gap: 10px;
 		padding: 12px 14px max(12px, env(safe-area-inset-bottom));
+	}
+
+	.choir-sticky-player__close {
+		width: 44px;
+		height: 44px;
+		font-size: 1.75rem;
+		align-self: start;
 	}
 
 	.choir-sticky-player__title {

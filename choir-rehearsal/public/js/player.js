@@ -13,6 +13,7 @@
 	const playIcon = player.querySelector('.choir-sticky-player__play-icon');
 	const seek = player.querySelector('.choir-sticky-player__seek');
 	const timeEl = player.querySelector('.choir-sticky-player__time');
+	const closeBtn = player.querySelector('.choir-sticky-player__close');
 
 	if (!audio || !playBtn || !seek || !timeEl) {
 		return;
@@ -44,6 +45,21 @@
 		playBtn.classList.toggle('is-playing', playing);
 	}
 
+	function closePlayer() {
+		audio.pause();
+		audio.removeAttribute('src');
+		audio.load();
+		seek.value = '0';
+		timeEl.textContent = '0:00 / 0:00';
+		if (title) {
+			title.textContent = '';
+		}
+		setPlaying(false);
+		player.classList.add('is-hidden');
+		player.setAttribute('aria-hidden', 'true');
+		document.body.classList.remove('choir-sticky-player-open');
+	}
+
 	function playTrack(url, trackTitle) {
 		if (!url) {
 			return;
@@ -67,6 +83,14 @@
 			audio.pause();
 		}
 	});
+
+	if (closeBtn) {
+		closeBtn.setAttribute('aria-label', i18n.close || 'Close player');
+		closeBtn.addEventListener('click', function (event) {
+			event.preventDefault();
+			closePlayer();
+		});
+	}
 
 	seek.addEventListener('input', function () {
 		isSeeking = true;
