@@ -16,7 +16,7 @@
     "Private access — optional login-only rehearsal pages",
     "Editor & singer roles — editors manage, singers listen",
     "Lite (free) — up to 4 tracks per song, audio upload, GitHub updates",
-    "Pro add-on — unlimited tracks, microphone recording, search by title"
+    "Pro add-on — unlimited tracks, microphone recording, search by title, Play preview in the song editor"
   ],
   "featureCards": [
     {
@@ -57,7 +57,7 @@
     {
       "icon": "pro",
       "title": "Pro add-on",
-      "text": "Unlimited tracks, microphone recording, and search by song title."
+      "text": "Unlimited tracks, microphone recording, search by song title, and Play preview in the song editor."
     }
   ],
   "pricing": [
@@ -83,6 +83,7 @@
         "Install beside Lite (separate add-on)",
         "Unlimited voice tracks per song",
         "Microphone recording in the admin",
+        "Play preview of voice tracks in the song editor",
         "Search songs by title",
         "1 choir website",
         "Priority email support"
@@ -117,12 +118,21 @@
   ],
   "changelog": [
     {
+      "version": "0.4.12",
+      "summary": "Editor Play is Pro",
+      "items": [
+        "Song editor Play preview is a Pro feature",
+        "Pro benefits copy updated (Settings, product page, docs)"
+      ],
+      "open": true
+    },
+    {
       "version": "0.4.11",
       "summary": "Editor track Play",
       "items": [
         "Voice Tracks: Play button after Upload/Record opens the sticky player"
       ],
-      "open": true
+      "open": false
     },
     {
       "version": "0.4.10",
