@@ -6,13 +6,17 @@
 			return null;
 		}
 
-		const pdfUrl = viewer.getAttribute('data-pdf-url');
+		if (viewer._choirPdfApi) {
+			return viewer._choirPdfApi;
+		}
+
 		const canvas = viewer.querySelector('.choir-pdf-viewer__canvas');
+		const wrap = viewer.querySelector('.choir-pdf-viewer__canvas-wrap');
 		const prevBtn = viewer.querySelector('.choir-pdf-prev');
 		const nextBtn = viewer.querySelector('.choir-pdf-next');
 		const pageLabel = viewer.querySelector('.choir-pdf-page');
 
-		if (!pdfUrl || !canvas || !prevBtn || !nextBtn || !pageLabel) {
+		if (!canvas || !wrap || !prevBtn || !nextBtn || !pageLabel) {
 			return null;
 		}
 
@@ -24,10 +28,18 @@
 		let pageNum = 1;
 		let pageRendering = false;
 		let pageNumPending = null;
+		let loadToken = 0;
 		const scale = Math.min(window.devicePixelRatio || 1, 2) * 1.2;
+
+		function setStatus(text) {
+			pageLabel.textContent = text;
+			prevBtn.disabled = true;
+			nextBtn.disabled = true;
+		}
 
 		function updateControls() {
 			if (!pdfDoc) {
+				setStatus('—');
 				return;
 			}
 
@@ -37,6 +49,10 @@
 		}
 
 		function renderPage(num) {
+			if (!pdfDoc) {
+				return;
+			}
+
 			pageRendering = true;
 
 			pdfDoc.getPage(num).then(function (page) {
@@ -51,15 +67,19 @@
 					viewport: viewport,
 				});
 
-				renderTask.promise.then(function () {
+				return renderTask.promise.then(function () {
 					pageRendering = false;
 					updateControls();
 
 					if (pageNumPending !== null) {
-						renderPage(pageNumPending);
+						const pending = pageNumPending;
 						pageNumPending = null;
+						renderPage(pending);
 					}
 				});
+			}).catch(function () {
+				pageRendering = false;
+				setStatus('—');
 			});
 		}
 
@@ -72,36 +92,128 @@
 			renderPage(num);
 		}
 
-		prevBtn.addEventListener('click', function () {
-			if (!pdfDoc || pageNum <= 1) {
+		function goToPage(num) {
+			if (!pdfDoc || num < 1 || num > pdfDoc.numPages || num === pageNum) {
+				return;
+			}
+			pageNum = num;
+			queueRenderPage(pageNum);
+		}
+
+		function clearCanvas() {
+			const context = canvas.getContext('2d');
+			context.clearRect(0, 0, canvas.width || 1, canvas.height || 1);
+			canvas.width = 1;
+			canvas.height = 1;
+		}
+
+		function loadDocument(url) {
+			const token = ++loadToken;
+			pdfDoc = null;
+			pageNum = 1;
+			pageNumPending = null;
+			pageRendering = false;
+			viewer.setAttribute('data-pdf-url', url || '');
+			viewer.classList.toggle('is-empty', !url);
+			clearCanvas();
+
+			if (!url) {
+				setStatus('—');
 				return;
 			}
 
-			pageNum -= 1;
-			queueRenderPage(pageNum);
+			setStatus('…');
+
+			window.pdfjsLib.getDocument({ url: url, withCredentials: true }).promise.then(function (pdf) {
+				if (token !== loadToken) {
+					return;
+				}
+				pdfDoc = pdf;
+				pageNum = 1;
+				renderPage(pageNum);
+			}).catch(function () {
+				// Retry without credentials (some hosts reject credentialed PDF fetches).
+				return window.pdfjsLib.getDocument({ url: url, withCredentials: false }).promise.then(function (pdf) {
+					if (token !== loadToken) {
+						return;
+					}
+					pdfDoc = pdf;
+					pageNum = 1;
+					renderPage(pageNum);
+				});
+			}).catch(function () {
+				if (token !== loadToken) {
+					return;
+				}
+				setStatus('—');
+				viewer.classList.add('is-error');
+			});
+		}
+
+		prevBtn.addEventListener('click', function () {
+			goToPage(pageNum - 1);
 		});
 
 		nextBtn.addEventListener('click', function () {
-			if (!pdfDoc || pageNum >= pdfDoc.numPages) {
+			goToPage(pageNum + 1);
+		});
+
+		// Swipe / drag left-right to change pages (touch and pointer).
+		let pointerId = null;
+		let startX = 0;
+		let startY = 0;
+		let tracking = false;
+
+		wrap.addEventListener('pointerdown', function (event) {
+			if (event.pointerType === 'mouse' && event.button !== 0) {
 				return;
 			}
-
-			pageNum += 1;
-			queueRenderPage(pageNum);
+			pointerId = event.pointerId;
+			startX = event.clientX;
+			startY = event.clientY;
+			tracking = true;
+			try {
+				wrap.setPointerCapture(event.pointerId);
+			} catch (err) {
+				// Older browsers may not support capture.
+			}
 		});
 
-		window.pdfjsLib.getDocument({ url: pdfUrl, withCredentials: true }).promise.then(function (pdf) {
-			pdfDoc = pdf;
-			renderPage(pageNum);
-		}).catch(function () {
-			pageLabel.textContent = '—';
+		wrap.addEventListener('pointerup', function (event) {
+			if (!tracking || event.pointerId !== pointerId) {
+				return;
+			}
+			tracking = false;
+			const dx = event.clientX - startX;
+			const dy = event.clientY - startY;
+			if (Math.abs(dx) < 48 || Math.abs(dx) < Math.abs(dy) * 1.2) {
+				return;
+			}
+			if (dx < 0) {
+				goToPage(pageNum + 1);
+			} else {
+				goToPage(pageNum - 1);
+			}
 		});
 
-		return {
-			reload: function (url) {
-				viewer.setAttribute('data-pdf-url', url || '');
+		wrap.addEventListener('pointercancel', function () {
+			tracking = false;
+		});
+
+		const api = {
+			load: loadDocument,
+			reload: loadDocument,
+			next: function () {
+				goToPage(pageNum + 1);
+			},
+			prev: function () {
+				goToPage(pageNum - 1);
 			},
 		};
+
+		viewer._choirPdfApi = api;
+		loadDocument(viewer.getAttribute('data-pdf-url') || '');
+		return api;
 	}
 
 	window.choirInitPdfViewer = initChoirPdfViewer;

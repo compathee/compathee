@@ -5,7 +5,7 @@ Choir Rehearsal uses the WordPress add-on model (same pattern as WooCommerce, AC
 | Plugin | What it is | Who installs it |
 |--------|------------|-----------------|
 | **Choir Rehearsal** (`choir-rehearsal.zip`) | Base library. Always Lite until Pro is active. | Everyone |
-| **Choir Rehearsal Pro** (`choir-rehearsal-pro.zip`) | Add-on. Unlocks search, unlimited tracks, microphone recording, Play preview, and floating PDF view while recording. | Paying customers only |
+| **Choir Rehearsal Pro** (`choir-rehearsal-pro.zip`) | Add-on. Unlocks search, unlimited tracks, microphone recording, Play preview, and embedded PDF in the editor. | Paying customers only |
 
 **Never replace Lite with Pro.** Pro is an extra plugin next to Lite. Songs, tracks, and PDFs stay in WordPress; the add-on only turns features on.
 
@@ -22,7 +22,7 @@ Choir Rehearsal uses the WordPress add-on model (same pattern as WooCommerce, AC
    - **Buy Pro** button is visible
 5. Do **not** install `choir-rehearsal-pro.zip` on this site if you want a Lite-only test.
 
-Lite limits: 4 voice tracks per song; no mic recording, search, editor Play, or PDF view while recording.
+Lite limits: 4 voice tracks per song; no mic recording, search, editor Play, or embedded PDF in the editor.
 
 ---
 
@@ -36,7 +36,7 @@ After purchase on [shop.compath.ee/products/choir-rehearsal-pro](https://shop.co
 4. Refresh **Choir Rehearsal → Settings**.
    - **Edition** must show `Pro`.
    - **Buy Pro** button disappears.
-5. Check a song: Record, Play, and View PDF available; more than 4 tracks allowed; search on the public library.
+5. Check a song: Record, Play, and embedded PDF available; more than 4 tracks allowed; search on the public library.
 
 If Pro is uploaded but Lite is missing, WordPress shows: *Choir Rehearsal Pro requires the Choir Rehearsal plugin*.
 

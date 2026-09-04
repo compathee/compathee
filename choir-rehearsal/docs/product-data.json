@@ -16,7 +16,7 @@
     "Private access — optional login-only rehearsal pages",
     "Editor & singer roles — editors manage, singers listen",
     "Lite (free) — up to 4 tracks per song, audio upload, GitHub updates",
-    "Pro add-on — unlimited tracks, mic recording, search, editor Play, PDF view while recording"
+    "Pro add-on — unlimited tracks, mic recording, search, editor Play, embedded PDF in the editor"
   ],
   "featureCards": [
     {
@@ -57,7 +57,7 @@
     {
       "icon": "pro",
       "title": "Pro add-on",
-      "text": "Unlimited tracks, mic recording, search by title, Play preview, and floating PDF while you record."
+      "text": "Unlimited tracks, mic recording, search by title, Play preview, and embedded PDF preview in the editor."
     }
   ],
   "pricing": [
@@ -84,7 +84,7 @@
         "Unlimited voice tracks per song",
         "Microphone recording in the admin",
         "Play preview of voice tracks in the song editor",
-        "Floating PDF score view while recording",
+        "Embedded PDF score in the song editor (swipe pages)",
         "Search songs by title",
         "PDF icon on songs that have a score attached",
         "1 choir website",
@@ -120,13 +120,24 @@
   ],
   "changelog": [
     {
+      "version": "0.4.15",
+      "summary": "Editor song card + swipe PDF",
+      "items": [
+        "Song editor matches the public song card with an embedded PDF viewer",
+        "Swipe left/right on the score to change pages",
+        "Voice tracks use listen-style rows with Upload / Record / Play icons",
+        "Removed the floating PDF panel"
+      ],
+      "open": true
+    },
+    {
       "version": "0.4.14",
       "summary": "Player close + PDF list icon",
       "items": [
         "Sticky player: close (×) on the right so mobile Update and content stay reachable",
         "Pro: PDF icon after song titles that have an attached score"
       ],
-      "open": true
+      "open": false
     },
     {
       "version": "0.4.13",

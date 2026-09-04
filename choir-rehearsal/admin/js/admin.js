@@ -3,6 +3,13 @@
 
 	const i18n = choirRehearsalAdmin || {};
 
+	const ICONS = {
+		upload: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12 3l4.5 4.5h-3V14h-3V7.5h-3L12 3zm-7 14h14v2H5v-2z"/></svg>',
+		record: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="7" fill="currentColor"/></svg>',
+		play: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path fill="currentColor" d="M8 5v14l11-7L8 5z"/></svg>',
+		remove: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path fill="currentColor" d="M6.4 6.4l1.2-1.2L12 9.6l4.4-4.4 1.2 1.2L13.2 12l4.4 4.4-1.2 1.2L12 14.4l-4.4 4.4-1.2-1.2L10.8 12 6.4 6.4z"/></svg>'
+	};
+
 	function nextIndex() {
 		return $('#choir-tracks-body .choir-track-row').length;
 	}
@@ -91,6 +98,29 @@
 	function syncPlayTitle($row) {
 		const $play = $row.find('.choir-play-track');
 		$play.attr('data-track-title', trackPlayTitle($row));
+	}
+
+	function getEditorPdfApi() {
+		const viewer = document.getElementById('choir-editor-pdf-viewer');
+		if (!viewer) {
+			return null;
+		}
+		if (typeof window.choirInitPdfViewer === 'function') {
+			return window.choirInitPdfViewer(viewer);
+		}
+		return viewer._choirPdfApi || null;
+	}
+
+	function setEditorPdf(url) {
+		const viewer = document.getElementById('choir-editor-pdf-viewer');
+		const api = getEditorPdfApi();
+		if (viewer) {
+			viewer.classList.toggle('is-empty', !url);
+			viewer.classList.remove('is-error');
+		}
+		if (api && typeof api.load === 'function') {
+			api.load(url || '');
+		}
 	}
 
 	function Recorder($row) {
@@ -287,9 +317,11 @@
 	};
 
 	function bindRow($row) {
-		const recorder = new Recorder($row);
-		$row.data('recorder', recorder);
-		recorder.bind();
+		if (i18n.isPro) {
+			const recorder = new Recorder($row);
+			$row.data('recorder', recorder);
+			recorder.bind();
+		}
 
 		$row.find('.choir-select-audio').on('click', function () {
 			const frame = wp.media({
@@ -317,6 +349,7 @@
 		});
 
 		$row.find('.choir-remove-track').on('click', function () {
+			const recorder = $row.data('recorder');
 			if (recorder) {
 				recorder.close();
 			}
@@ -345,6 +378,14 @@
 		);
 	}
 
+	function iconButton(className, label, icon, extraAttrs) {
+		return (
+			'<button type="button" class="choir-icon-btn ' + className + '" title="' + label + '" aria-label="' + label + '"' + (extraAttrs || '') + '>' +
+				ICONS[icon] +
+			'</button>'
+		);
+	}
+
 	function createRow(index) {
 		const voices = i18n.voices || {};
 		let options = '';
@@ -353,33 +394,29 @@
 		});
 
 		const recordButton = i18n.isPro
-			? '<button type="button" class="button button-small choir-record-audio">' + (i18n.recordAudio || 'Record') + '</button> '
+			? iconButton('choir-record-audio', i18n.recordAudio || 'Record', 'record')
+			: '';
+		const playButton = i18n.canPlay
+			? iconButton('choir-play-track', i18n.playAudio || 'Play', 'play', ' data-track-url="" data-track-title="" disabled')
 			: '';
 		const recorderPanel = i18n.isPro ? recorderPanelHtml() : '';
-		const playButton = i18n.canPlay
-			? '<button type="button" class="button button-small choir-play-track" data-track-url="" data-track-title="" disabled>' +
-				(i18n.playAudio || 'Play') +
-				'</button>'
-			: '';
 
 		const html =
-			'<tr class="choir-track-row">' +
-				'<td>' +
-					'<input type="hidden" name="choir_tracks[' + index + '][id]" value="0" />' +
-					'<select class="choir-voice-select" name="choir_tracks[' + index + '][voice]">' + options + '</select>' +
-				'</td>' +
-				'<td class="choir-track-audio-cell">' +
-					'<input type="hidden" class="choir-audio-id" name="choir_tracks[' + index + '][audio_id]" value="0" />' +
-					'<div class="choir-track-audio-controls">' +
-						'<span class="choir-audio-name">' + (i18n.noAudio || 'No audio selected') + '</span> ' +
-						'<button type="button" class="button button-small choir-select-audio">' + (i18n.selectAudio || 'Upload') + '</button> ' +
-						recordButton +
-						playButton +
-					'</div>' +
-					recorderPanel +
-				'</td>' +
-				'<td><button type="button" class="button-link-delete choir-remove-track">' + (i18n.removeTrack || 'Remove') + '</button></td>' +
-			'</tr>';
+			'<li class="choir-track-item choir-track-row">' +
+				'<input type="hidden" name="choir_tracks[' + index + '][id]" value="0" />' +
+				'<input type="hidden" class="choir-audio-id" name="choir_tracks[' + index + '][audio_id]" value="0" />' +
+				'<div class="choir-track-item__main">' +
+					'<select class="choir-voice-select choir-track-voice" name="choir_tracks[' + index + '][voice]" aria-label="Voice">' + options + '</select>' +
+					'<span class="choir-audio-name">' + (i18n.noAudio || 'No audio selected') + '</span>' +
+				'</div>' +
+				'<div class="choir-track-item__actions">' +
+					iconButton('choir-select-audio', i18n.selectAudio || 'Upload', 'upload') +
+					recordButton +
+					playButton +
+					iconButton('choir-icon-btn--danger choir-remove-track', i18n.removeTrack || 'Remove', 'remove') +
+				'</div>' +
+				recorderPanel +
+			'</li>';
 
 		return $(html);
 	}
@@ -423,10 +460,13 @@
 
 			frame.on('select', function () {
 				const attachment = frame.state().get('selection').first().toJSON();
+				const url = attachment.url || '';
 				$('#choir-score-pdf-id').val(attachment.id);
-				$('#choir-score-pdf-url').val(attachment.url || '');
+				$('#choir-score-pdf-url').val(url);
 				$('#choir-score-pdf-name').text(attachment.filename || attachment.title || i18n.noPdf || 'No PDF selected');
-				$('#choir-view-pdf').prop('disabled', !attachment.url);
+				if (i18n.canViewPdf) {
+					setEditorPdf(url);
+				}
 			});
 
 			frame.open();
@@ -436,117 +476,16 @@
 			$('#choir-score-pdf-id').val('0');
 			$('#choir-score-pdf-url').val('');
 			$('#choir-score-pdf-name').text(i18n.noPdf || 'No PDF selected');
-			$('#choir-view-pdf').prop('disabled', true);
-			closePdfPanel();
+			if (i18n.canViewPdf) {
+				setEditorPdf('');
+			}
 		});
 
-		bindPdfPanel();
+		if (i18n.canViewPdf) {
+			// Ensure viewer is ready after pdf.js loads (script order: pdf then admin).
+			window.setTimeout(function () {
+				getEditorPdfApi();
+			}, 0);
+		}
 	});
-
-	function pdfViewerHtml(url) {
-		return (
-			'<div class="choir-pdf-viewer" data-pdf-url="' + String(url || '').replace(/"/g, '&quot;') + '">' +
-				'<div class="choir-pdf-viewer__canvas-wrap">' +
-					'<canvas class="choir-pdf-viewer__canvas"></canvas>' +
-				'</div>' +
-				'<div class="choir-pdf-viewer__controls">' +
-					'<button type="button" class="choir-pdf-prev">&larr; ' + (i18n.prevPage || 'Previous') + '</button>' +
-					'<span class="choir-pdf-page">1 / 1</span>' +
-					'<button type="button" class="choir-pdf-next">' + (i18n.nextPage || 'Next') + ' &rarr;</button>' +
-				'</div>' +
-			'</div>'
-		);
-	}
-
-	function openPdfPanel(url) {
-		const panel = document.getElementById('choir-admin-pdf-panel');
-		const body = document.getElementById('choir-admin-pdf-body');
-		if (!panel || !body || !url) {
-			return;
-		}
-
-		body.innerHTML = pdfViewerHtml(url);
-		panel.classList.remove('is-hidden');
-		panel.setAttribute('aria-hidden', 'false');
-		document.body.classList.add('choir-admin-pdf-open');
-
-		const viewer = body.querySelector('.choir-pdf-viewer');
-		if (viewer && typeof window.choirInitPdfViewer === 'function') {
-			window.choirInitPdfViewer(viewer);
-		}
-	}
-
-	function closePdfPanel() {
-		const panel = document.getElementById('choir-admin-pdf-panel');
-		const body = document.getElementById('choir-admin-pdf-body');
-		if (!panel) {
-			return;
-		}
-		panel.classList.add('is-hidden');
-		panel.setAttribute('aria-hidden', 'true');
-		document.body.classList.remove('choir-admin-pdf-open');
-		if (body) {
-			body.innerHTML = '';
-		}
-	}
-
-	function bindPdfPanel() {
-		if (!i18n.canViewPdf) {
-			return;
-		}
-
-		$('#choir-view-pdf').on('click', function () {
-			const url = String($('#choir-score-pdf-url').val() || '');
-			if (!url) {
-				return;
-			}
-			openPdfPanel(url);
-		});
-
-		$('#choir-admin-pdf-close').on('click', function () {
-			closePdfPanel();
-		});
-
-		const panel = document.getElementById('choir-admin-pdf-panel');
-		const handle = document.getElementById('choir-admin-pdf-drag');
-		if (!panel || !handle || window.matchMedia('(max-width: 782px)').matches) {
-			return;
-		}
-
-		let dragging = false;
-		let startX = 0;
-		let startY = 0;
-		let originLeft = 0;
-		let originTop = 0;
-
-		handle.addEventListener('pointerdown', function (event) {
-			if (event.target.closest('button')) {
-				return;
-			}
-			dragging = true;
-			const rect = panel.getBoundingClientRect();
-			startX = event.clientX;
-			startY = event.clientY;
-			originLeft = rect.left;
-			originTop = rect.top;
-			panel.style.right = 'auto';
-			panel.style.left = originLeft + 'px';
-			panel.style.top = originTop + 'px';
-			handle.setPointerCapture(event.pointerId);
-		});
-
-		handle.addEventListener('pointermove', function (event) {
-			if (!dragging) {
-				return;
-			}
-			const left = Math.max(8, originLeft + (event.clientX - startX));
-			const top = Math.max(8, originTop + (event.clientY - startY));
-			panel.style.left = left + 'px';
-			panel.style.top = top + 'px';
-		});
-
-		handle.addEventListener('pointerup', function () {
-			dragging = false;
-		});
-	}
 })(jQuery);

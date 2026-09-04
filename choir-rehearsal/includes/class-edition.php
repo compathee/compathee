@@ -40,7 +40,7 @@ final class Choir_Rehearsal_Edition {
 	}
 
 	/**
-	 * Floating PDF score preview in the song editor (Pro).
+	 * Embedded PDF score preview in the song editor (Pro).
 	 */
 	public static function can_view_score_in_editor(): bool {
 		return self::is_pro();
