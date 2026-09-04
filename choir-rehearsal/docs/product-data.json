@@ -117,12 +117,20 @@
   ],
   "changelog": [
     {
+      "version": "0.4.10",
+      "summary": "Demo title sorting",
+      "items": [
+        "Demo song titles use zero-padded numbers (01, 02, …) so the list sorts in numeric order"
+      ],
+      "open": true
+    },
+    {
       "version": "0.4.9",
       "summary": "Demo pagination",
       "items": [
         "Load demo songs creates 25 songs so the public list shows page navigation (20 per page)"
       ],
-      "open": true
+      "open": false
     },
     {
       "version": "0.4.8",
