@@ -354,3 +354,33 @@ msgstr "Документация"
 
 msgid "Product page: order, install, pricing, changelog"
 msgstr "Страница продукта: заказ, установка, цены, история версий"
+
+msgid "Demo library"
+msgstr "Демо-библиотека"
+
+msgid "Load sample songs with four voice tracks and a short demo recording, or wipe the whole rehearsal library."
+msgstr "Загрузите демо-песни с четырьмя голосовыми треками и короткой записью или очистите всю библиотеку."
+
+msgid "Load demo songs"
+msgstr "Загрузить демо-песни"
+
+msgid "Delete all songs"
+msgstr "Удалить все песни"
+
+msgid "All songs will be deleted from the library. Do you agree?"
+msgstr "Все песни из библиотеки будут удалены. Вы согласны?"
+
+msgid "Yes"
+msgstr "Да"
+
+msgid "No"
+msgstr "Нет"
+
+msgid "Could not create the demo audio file in the Media Library."
+msgstr "Не удалось создать демо-аудиофайл в медиатеке."
+
+msgid "Loaded demo songs %1$d–%2$d (%3$d songs, %4$d tracks)."
+msgstr "Загружены демо-песни %1$d–%2$d (%3$d песен, %4$d треков)."
+
+msgid "Deleted %1$d songs, %2$d tracks, and %3$d media files."
+msgstr "Удалено: %1$d песен, %2$d треков и %3$d медиафайлов."

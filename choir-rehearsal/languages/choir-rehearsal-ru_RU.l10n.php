@@ -68,5 +68,16 @@ return [
         'Next page' => 'Ð¡Ð»ÐµÐ´ÑÑÑÐ°Ñ ÑÑÑÐ°Ð½Ð¸ÑÐ°',
         'Next' => 'ÐÐ¿ÐµÑÑÐ´',
         'Voice tracks' => 'Ð¢ÑÐµÐºÐ¸ Ð¿Ð¾ Ð³Ð¾Ð»Ð¾ÑÐ°Ð¼',
+
+        'Demo library' => 'Демо-библиотека',
+        'Load sample songs with four voice tracks and a short demo recording, or wipe the whole rehearsal library.' => 'Загрузите демо-песни с четырьмя голосовыми треками и короткой записью или очистите всю библиотеку.',
+        'Load demo songs' => 'Загрузить демо-песни',
+        'Delete all songs' => 'Удалить все песни',
+        'All songs will be deleted from the library. Do you agree?' => 'Все песни из библиотеки будут удалены. Вы согласны?',
+        'Yes' => 'Да',
+        'No' => 'Нет',
+        'Could not create the demo audio file in the Media Library.' => 'Не удалось создать демо-аудиофайл в медиатеке.',
+        'Loaded demo songs %1$d–%2$d (%3$d songs, %4$d tracks).' => 'Загружены демо-песни %1$d–%2$d (%3$d песен, %4$d треков).',
+        'Deleted %1$d songs, %2$d tracks, and %3$d media files.' => 'Удалено: %1$d песен, %2$d треков и %3$d медиафайлов.',
     ],
 ];

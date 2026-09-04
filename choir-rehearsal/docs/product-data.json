@@ -117,12 +117,21 @@
   ],
   "changelog": [
     {
+      "version": "0.4.8",
+      "summary": "Demo library tools",
+      "items": [
+        "Settings: Load demo songs (10 songs × 4 tracks with demo voice audio)",
+        "Settings: Delete all songs with Yes/No confirmation"
+      ],
+      "open": true
+    },
+    {
       "version": "0.4.7",
       "summary": "Unicode song search",
       "items": [
         "Pro search matches Cyrillic and other Unicode titles"
       ],
-      "open": true
+      "open": false
     },
     {
       "version": "0.4.6",

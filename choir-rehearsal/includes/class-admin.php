@@ -60,6 +60,8 @@ final class Choir_Rehearsal_Admin {
 			echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Permalinks refreshed and rehearsal page verified.', 'choir-rehearsal' ) . '</p></div>';
 		}
 
+		Choir_Rehearsal_Demo_Data::render_settings_notices();
+
 		$library_page_id = Choir_Rehearsal_Pages::get_page_id();
 		?>
 		<div class="wrap">
@@ -179,6 +181,7 @@ final class Choir_Rehearsal_Admin {
 					<?php esc_html_e( 'Refresh permalinks', 'choir-rehearsal' ); ?>
 				</a>
 			</p>
+			<?php Choir_Rehearsal_Demo_Data::render_settings_buttons(); ?>
 			<p>
 				<?php
 				printf(
