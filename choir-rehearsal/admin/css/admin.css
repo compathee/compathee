@@ -68,6 +68,24 @@
 	font-size: 12px;
 }
 
+.choir-track-audio-controls .choir-play-track:disabled {
+	opacity: 0.55;
+	cursor: not-allowed;
+}
+
+/* Sticky player on song editor (reuses public player styles). */
+body.choir-rehearsal-song-edit {
+	padding-bottom: 110px;
+}
+
+body.choir-rehearsal-song-edit .choir-sticky-player {
+	z-index: 100100;
+}
+
+body.choir-rehearsal-song-edit .choir-sticky-player.is-hidden {
+	display: none;
+}
+
 .choir-recorder-panel {
 	margin-top: 8px;
 	padding: 12px;

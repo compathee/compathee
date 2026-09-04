@@ -44,6 +44,21 @@
 		playBtn.classList.toggle('is-playing', playing);
 	}
 
+	function playTrack(url, trackTitle) {
+		if (!url) {
+			return;
+		}
+
+		player.classList.remove('is-hidden');
+		player.setAttribute('aria-hidden', 'false');
+		title.textContent = trackTitle || '';
+		audio.src = url;
+		seek.value = '0';
+		audio.play().catch(function () {
+			setPlaying(false);
+		});
+	}
+
 	playBtn.addEventListener('click', function () {
 		if (audio.paused) {
 			audio.play().catch(function () {});
@@ -77,23 +92,14 @@
 		setPlaying(false);
 	});
 
-	document.querySelectorAll('.choir-play-track').forEach(function (button) {
-		button.addEventListener('click', function () {
-			const url = button.getAttribute('data-track-url');
-			const trackTitle = button.getAttribute('data-track-title');
+	// Delegation so admin rows added later still work.
+	document.addEventListener('click', function (event) {
+		const button = event.target.closest('.choir-play-track');
+		if (!button || button.disabled) {
+			return;
+		}
 
-			if (!url) {
-				return;
-			}
-
-			player.classList.remove('is-hidden');
-			player.setAttribute('aria-hidden', 'false');
-			title.textContent = trackTitle || '';
-			audio.src = url;
-			seek.value = '0';
-			audio.play().catch(function () {
-				setPlaying(false);
-			});
-		});
+		event.preventDefault();
+		playTrack(button.getAttribute('data-track-url'), button.getAttribute('data-track-title'));
 	});
 })();

@@ -4,7 +4,7 @@ Tags: choir, audio, rehearsal, voice parts, music
 Requires at least: 6.4
 Tested up to: 6.9
 Requires PHP: 8.0
-Stable tag: 0.4.10
+Stable tag: 0.4.11
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -42,6 +42,9 @@ By default only logged-in users can view `/rehearsal/`. Change this under **Choi
 Yes. Use the shortcode `[choir_rehearsal]`.
 
 == Changelog ==
+
+= 0.4.11 =
+* Song editor: Play button on voice tracks opens the sticky player
 
 = 0.4.10 =
 * Demo song titles use zero-padded numbers (Demo Song 01, 02, …) so A–Z sort stays in order

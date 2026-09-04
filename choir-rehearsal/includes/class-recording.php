@@ -174,6 +174,7 @@ final class Choir_Rehearsal_Recording {
 			array(
 				'id'       => (int) $attachment_id,
 				'filename' => basename( (string) $upload['file'] ),
+				'url'      => (string) ( wp_get_attachment_url( (int) $attachment_id ) ?: '' ),
 			)
 		);
 	}

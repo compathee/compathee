@@ -549,6 +549,15 @@ final class Choir_Rehearsal_Frontend {
 			</section>
 		</div>
 
+		<?php self::render_sticky_player(); ?>
+		<?php
+	}
+
+	/**
+	 * Sticky bottom player markup (public song page and admin song editor).
+	 */
+	public static function render_sticky_player(): void {
+		?>
 		<div id="choir-sticky-player" class="choir-sticky-player is-hidden" aria-hidden="true">
 			<div class="choir-sticky-player__info">
 				<strong class="choir-sticky-player__label"><?php esc_html_e( 'Now playing', 'choir-rehearsal' ); ?></strong>

@@ -22,6 +22,7 @@ final class Choir_Rehearsal_Admin {
 		add_action( 'post_submitbox_start', array( self::class, 'render_submitbox_back_link' ) );
 		add_action( 'save_post_' . Choir_Rehearsal_Post_Types::SONG, array( self::class, 'save_song' ), 10, 2 );
 		add_action( 'admin_enqueue_scripts', array( self::class, 'enqueue_assets' ) );
+		add_action( 'admin_footer', array( self::class, 'render_song_editor_player' ) );
 		add_action( 'admin_menu', array( self::class, 'register_settings_page' ) );
 		add_action( 'admin_init', array( self::class, 'register_settings' ) );
 		add_filter( 'plugin_action_links_' . plugin_basename( CHOIR_REHEARSAL_FILE ), array( self::class, 'plugin_action_links' ) );
@@ -389,6 +390,28 @@ final class Choir_Rehearsal_Admin {
 			CHOIR_REHEARSAL_VERSION,
 			true
 		);
+		wp_enqueue_style(
+			'choir-rehearsal-public',
+			CHOIR_REHEARSAL_URL . 'public/css/public.css',
+			array(),
+			CHOIR_REHEARSAL_VERSION
+		);
+		wp_enqueue_script(
+			'choir-rehearsal-player',
+			CHOIR_REHEARSAL_URL . 'public/js/player.js',
+			array(),
+			CHOIR_REHEARSAL_VERSION,
+			true
+		);
+		wp_localize_script(
+			'choir-rehearsal-player',
+			'choirRehearsalPlayer',
+			array(
+				'nowPlaying' => __( 'Now playing', 'choir-rehearsal' ),
+				'play'       => __( 'Play', 'choir-rehearsal' ),
+				'pause'      => __( 'Pause', 'choir-rehearsal' ),
+			)
+		);
 		wp_localize_script(
 			'choir-rehearsal-admin',
 			'choirRehearsalAdmin',
@@ -407,6 +430,7 @@ final class Choir_Rehearsal_Admin {
 				),
 				'selectAudio'    => __( 'Upload', 'choir-rehearsal' ),
 				'recordAudio'    => __( 'Record', 'choir-rehearsal' ),
+				'playAudio'      => __( 'Play', 'choir-rehearsal' ),
 				'useAudio'       => __( 'Use this audio', 'choir-rehearsal' ),
 				'removeTrack'    => __( 'Remove', 'choir-rehearsal' ),
 				'trackLabel'     => __( 'Track', 'choir-rehearsal' ),
@@ -428,6 +452,18 @@ final class Choir_Rehearsal_Admin {
 				'saveSongFirst'  => __( 'Save the song first, then you can record voice tracks.', 'choir-rehearsal' ),
 			)
 		);
+	}
+
+	public static function render_song_editor_player(): void {
+		$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+		if ( ! $screen || Choir_Rehearsal_Post_Types::SONG !== $screen->post_type ) {
+			return;
+		}
+		if ( ! in_array( $screen->base, array( 'post', 'post-new' ), true ) ) {
+			return;
+		}
+
+		Choir_Rehearsal_Frontend::render_sticky_player();
 	}
 
 	public static function render_score_metabox( WP_Post $post ): void {
@@ -511,10 +547,20 @@ final class Choir_Rehearsal_Admin {
 	 */
 	private static function render_track_row( int $index, string $voice_slug, int $audio_id, array $voices, int $track_id = 0 ): void {
 		$filename = '';
+		$audio_url = '';
 		if ( $audio_id > 0 ) {
 			$file = get_attached_file( $audio_id );
 			$filename = $file ? basename( $file ) : '';
+			$url      = wp_get_attachment_url( $audio_id );
+			$audio_url = is_string( $url ) ? $url : '';
 		}
+
+		$song_title  = get_the_title();
+		$voice_label = $voices[ $voice_slug ] ?? $voice_slug;
+		$play_title  = trim( (string) $song_title ) !== ''
+			? $song_title . ' — ' . $voice_label
+			: (string) $voice_label;
+		$can_play    = '' !== $audio_url;
 		?>
 		<tr class="choir-track-row">
 			<td>
@@ -533,6 +579,15 @@ final class Choir_Rehearsal_Admin {
 					<?php if ( Choir_Rehearsal_Edition::can_record() ) : ?>
 						<button type="button" class="button button-small choir-record-audio"><?php esc_html_e( 'Record', 'choir-rehearsal' ); ?></button>
 					<?php endif; ?>
+					<button
+						type="button"
+						class="button button-small choir-play-track"
+						data-track-url="<?php echo esc_url( $audio_url ); ?>"
+						data-track-title="<?php echo esc_attr( $play_title ); ?>"
+						<?php disabled( ! $can_play ); ?>
+					>
+						<?php esc_html_e( 'Play', 'choir-rehearsal' ); ?>
+					</button>
 				</div>
 				<?php if ( Choir_Rehearsal_Edition::can_record() ) : ?>
 				<div class="choir-recorder-panel is-hidden" aria-hidden="true">

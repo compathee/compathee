@@ -44,6 +44,55 @@
 		return 'webm';
 	}
 
+	function songTitle() {
+		const titleInput = document.getElementById('title');
+		if (titleInput && titleInput.value) {
+			return String(titleInput.value).trim();
+		}
+		return '';
+	}
+
+	function voiceLabel($row) {
+		const $select = $row.find('.choir-voice-select');
+		const selected = $select.find('option:selected');
+		if (selected.length) {
+			return String(selected.text() || selected.val() || '').trim();
+		}
+		return '';
+	}
+
+	function trackPlayTitle($row) {
+		const song = songTitle();
+		const voice = voiceLabel($row);
+		if (song && voice) {
+			return song + ' — ' + voice;
+		}
+		return song || voice || (i18n.trackLabel || 'Track');
+	}
+
+	function setRowAudio($row, audioId, filename, url) {
+		$row.find('.choir-audio-id').val(audioId || '');
+		$row.find('.choir-audio-name').text(filename || i18n.noAudio || 'No audio selected');
+		updatePlayButton($row, url || '');
+	}
+
+	function clearRowAudio($row) {
+		setRowAudio($row, '', i18n.noAudio || 'No audio selected', '');
+	}
+
+	function updatePlayButton($row, url) {
+		const $play = $row.find('.choir-play-track');
+		const hasUrl = Boolean(url);
+		$play.attr('data-track-url', hasUrl ? url : '');
+		$play.attr('data-track-title', trackPlayTitle($row));
+		$play.prop('disabled', !hasUrl);
+	}
+
+	function syncPlayTitle($row) {
+		const $play = $row.find('.choir-play-track');
+		$play.attr('data-track-title', trackPlayTitle($row));
+	}
+
 	function Recorder($row) {
 		this.$row = $row;
 		this.$panel = $row.find('.choir-recorder-panel');
@@ -201,6 +250,7 @@
 
 			self.$row.find('.choir-audio-id').val(response.data.id);
 			self.$row.find('.choir-audio-name').text(response.data.filename || i18n.useAudio || 'Use this audio');
+			updatePlayButton(self.$row, response.data.url || '');
 			self.close();
 		}).fail(function (xhr) {
 			let message = i18n.uploadFailed || 'Upload failed. Please try again.';
@@ -251,11 +301,19 @@
 
 			frame.on('select', function () {
 				const attachment = frame.state().get('selection').first().toJSON();
-				$row.find('.choir-audio-id').val(attachment.id);
-				$row.find('.choir-audio-name').text(attachment.filename || attachment.title || i18n.noAudio || 'No audio selected');
+				setRowAudio(
+					$row,
+					attachment.id,
+					attachment.filename || attachment.title || i18n.noAudio || 'No audio selected',
+					attachment.url || ''
+				);
 			});
 
 			frame.open();
+		});
+
+		$row.find('.choir-voice-select').on('change', function () {
+			syncPlayTitle($row);
 		});
 
 		$row.find('.choir-remove-track').on('click', function () {
@@ -266,8 +324,7 @@
 			if ($('#choir-tracks-body .choir-track-row').length > 1) {
 				$row.remove();
 			} else {
-				$row.find('.choir-audio-id').val('');
-				$row.find('.choir-audio-name').text(i18n.noAudio || 'No audio selected');
+				clearRowAudio($row);
 			}
 		});
 	}
@@ -296,9 +353,13 @@
 		});
 
 		const recordButton = i18n.isPro
-			? '<button type="button" class="button button-small choir-record-audio">' + (i18n.recordAudio || 'Record') + '</button>'
+			? '<button type="button" class="button button-small choir-record-audio">' + (i18n.recordAudio || 'Record') + '</button> '
 			: '';
 		const recorderPanel = i18n.isPro ? recorderPanelHtml() : '';
+		const playButton =
+			'<button type="button" class="button button-small choir-play-track" data-track-url="" data-track-title="" disabled>' +
+			(i18n.playAudio || 'Play') +
+			'</button>';
 
 		const html =
 			'<tr class="choir-track-row">' +
@@ -312,6 +373,7 @@
 						'<span class="choir-audio-name">' + (i18n.noAudio || 'No audio selected') + '</span> ' +
 						'<button type="button" class="button button-small choir-select-audio">' + (i18n.selectAudio || 'Upload') + '</button> ' +
 						recordButton +
+						playButton +
 					'</div>' +
 					recorderPanel +
 				'</td>' +
@@ -332,6 +394,12 @@
 	$(function () {
 		$('#choir-tracks-body .choir-track-row').each(function () {
 			bindRow($(this));
+		});
+
+		$('#title').on('input change', function () {
+			$('#choir-tracks-body .choir-track-row').each(function () {
+				syncPlayTitle($(this));
+			});
 		});
 
 		$('#choir-add-track').on('click', function () {
