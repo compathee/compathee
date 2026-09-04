@@ -356,10 +356,11 @@
 			? '<button type="button" class="button button-small choir-record-audio">' + (i18n.recordAudio || 'Record') + '</button> '
 			: '';
 		const recorderPanel = i18n.isPro ? recorderPanelHtml() : '';
-		const playButton =
-			'<button type="button" class="button button-small choir-play-track" data-track-url="" data-track-title="" disabled>' +
-			(i18n.playAudio || 'Play') +
-			'</button>';
+		const playButton = i18n.canPlay
+			? '<button type="button" class="button button-small choir-play-track" data-track-url="" data-track-title="" disabled>' +
+				(i18n.playAudio || 'Play') +
+				'</button>'
+			: '';
 
 		const html =
 			'<tr class="choir-track-row">' +

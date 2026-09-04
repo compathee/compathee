@@ -82,7 +82,7 @@ api.compath.ee → ERPLY paid invoice (automatic)
 | Package | Contents |
 |---------|----------|
 | **Lite** | `choir-rehearsal.zip` — free, wordpress.org / GitHub, max 4 tracks, no mic |
-| **Pro** | `choir-rehearsal-pro.zip` — requires Lite, unlimited tracks + recording |
+| **Pro** | `choir-rehearsal-pro.zip` — requires Lite, unlimited tracks, recording, search, editor Play |
 
 Pro buyers get **both** zips. Install order is always **Lite first, then Pro**. Never replace the Lite plugin folder with Pro.
 
@@ -101,7 +101,7 @@ See [lite-pro-updates.md](lite-pro-updates.md) for the full Lite → Pro process
 
 1. Stripe **test mode** ON
 2. SureCart test purchase → license key appears in customer dashboard
-3. Install Lite + Pro on test WP → unlimited tracks + Record button visible
+3. Install Lite + Pro on test WP → unlimited tracks + Record and Play buttons visible
 4. Stripe CLI or test payment → check ERPLY for new paid invoice
 5. `https://api.compath.ee/health` returns `ok`
 

@@ -80,5 +80,10 @@ return [
         'Loaded demo songs %1$d–%2$d (%3$d songs, %4$d tracks).' => 'Загружены демо-песни %1$d–%2$d (%3$d песен, %4$d треков).',
         'Deleted %1$d songs, %2$d tracks, and %3$d media files.' => 'Удалено: %1$d песен, %2$d треков и %3$d медиафайлов.',
         'Load %1$d sample songs (4 voice tracks each) so the public library shows pagination (%2$d songs per page), or wipe the whole rehearsal library.' => 'Загружает %1$d демо-песен (по 4 голосовых трека), чтобы в публичном списке появилась пагинация (%2$d песен на странице), или очищает всю библиотеку.',
+        'Lite: up to %d voice tracks per song, no microphone recording, no song search, no Play preview in the editor.' => 'Lite: до %d голосовых треков на песню, без записи с микрофона, без поиска и без Play в редакторе.',
+        'Unlimited voice tracks, microphone recording, song search, and Play preview in the song editor.' => 'Безлимитные треки, запись с микрофона, поиск по названию и Play в редакторе песни.',
+        'Unlimited tracks, microphone recording, search by song title, and Play preview in the song editor. Keep this Lite plugin installed — Pro is a separate add-on.' => 'Безлимитные треки, запись с микрофона, поиск по названию и Play в редакторе. Не удаляйте Lite — Pro это отдельное дополнение.',
+        'Lite edition allows up to %d voice tracks per song. Upgrade to Pro for unlimited tracks, microphone recording, and Play preview in the editor.' => 'В Lite — до %d голосовых треков на песню. В Pro: безлимит, запись с микрофона и Play в редакторе.',
+        'Add one row per voice part. Upload an audio file, record from your microphone, or pick one from the Media Library. Use Play to preview the track in the sticky player.' => 'Добавьте строку для каждого голоса: загрузите файл, запишите с микрофона или выберите из медиатеки. Play открывает трек в нижнем плеере.',
     ],
 ];

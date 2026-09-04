@@ -87,8 +87,8 @@ final class Choir_Rehearsal_Admin {
 									<?php
 									printf(
 										/* translators: %d: maximum track count */
-										esc_html__( 'Lite: up to %d voice tracks per song, no microphone recording, no song search.', 'choir-rehearsal' ),
-										Choir_Rehearsal_Edition::LITE_MAX_TRACKS
+									esc_html__( 'Lite: up to %d voice tracks per song, no microphone recording, no song search, no Play preview in the editor.', 'choir-rehearsal' ),
+									Choir_Rehearsal_Edition::LITE_MAX_TRACKS
 									);
 									?>
 								</p>
@@ -98,7 +98,7 @@ final class Choir_Rehearsal_Admin {
 									</a>
 								</p>
 							<?php else : ?>
-								<p class="description"><?php esc_html_e( 'Unlimited voice tracks, microphone recording, and song search.', 'choir-rehearsal' ); ?></p>
+								<p class="description"><?php esc_html_e( 'Unlimited voice tracks, microphone recording, song search, and Play preview in the song editor.', 'choir-rehearsal' ); ?></p>
 							<?php endif; ?>
 						</td>
 					</tr>
@@ -165,7 +165,7 @@ final class Choir_Rehearsal_Admin {
 				<div class="choir-buy-pro-banner">
 					<p>
 						<strong><?php esc_html_e( 'Choir Rehearsal Pro', 'choir-rehearsal' ); ?></strong>
-						<?php esc_html_e( 'Unlimited tracks, microphone recording, and search by song title. Keep this Lite plugin installed — Pro is a separate add-on.', 'choir-rehearsal' ); ?>
+						<?php esc_html_e( 'Unlimited tracks, microphone recording, search by song title, and Play preview in the song editor. Keep this Lite plugin installed — Pro is a separate add-on.', 'choir-rehearsal' ); ?>
 					</p>
 					<p>
 						<a class="button button-primary" href="<?php echo esc_url( Choir_Rehearsal_Edition::upgrade_url() ); ?>" target="_blank" rel="noopener noreferrer">
@@ -390,28 +390,30 @@ final class Choir_Rehearsal_Admin {
 			CHOIR_REHEARSAL_VERSION,
 			true
 		);
-		wp_enqueue_style(
-			'choir-rehearsal-public',
-			CHOIR_REHEARSAL_URL . 'public/css/public.css',
-			array(),
-			CHOIR_REHEARSAL_VERSION
-		);
-		wp_enqueue_script(
-			'choir-rehearsal-player',
-			CHOIR_REHEARSAL_URL . 'public/js/player.js',
-			array(),
-			CHOIR_REHEARSAL_VERSION,
-			true
-		);
-		wp_localize_script(
-			'choir-rehearsal-player',
-			'choirRehearsalPlayer',
-			array(
-				'nowPlaying' => __( 'Now playing', 'choir-rehearsal' ),
-				'play'       => __( 'Play', 'choir-rehearsal' ),
-				'pause'      => __( 'Pause', 'choir-rehearsal' ),
-			)
-		);
+		if ( Choir_Rehearsal_Edition::can_play_in_editor() ) {
+			wp_enqueue_style(
+				'choir-rehearsal-public',
+				CHOIR_REHEARSAL_URL . 'public/css/public.css',
+				array(),
+				CHOIR_REHEARSAL_VERSION
+			);
+			wp_enqueue_script(
+				'choir-rehearsal-player',
+				CHOIR_REHEARSAL_URL . 'public/js/player.js',
+				array(),
+				CHOIR_REHEARSAL_VERSION,
+				true
+			);
+			wp_localize_script(
+				'choir-rehearsal-player',
+				'choirRehearsalPlayer',
+				array(
+					'nowPlaying' => __( 'Now playing', 'choir-rehearsal' ),
+					'play'       => __( 'Play', 'choir-rehearsal' ),
+					'pause'      => __( 'Pause', 'choir-rehearsal' ),
+				)
+			);
+		}
 		wp_localize_script(
 			'choir-rehearsal-admin',
 			'choirRehearsalAdmin',
@@ -421,11 +423,12 @@ final class Choir_Rehearsal_Admin {
 				'recordingNonce' => wp_create_nonce( 'choir_rehearsal_recording' ),
 				'voices'         => Choir_Rehearsal_Voice_Types::choices(),
 				'isPro'          => Choir_Rehearsal_Edition::is_pro(),
+				'canPlay'        => Choir_Rehearsal_Edition::can_play_in_editor(),
 				'maxTracks'      => Choir_Rehearsal_Edition::max_tracks(),
 				'upgradeUrl'     => Choir_Rehearsal_Edition::upgrade_url(),
 				'trackLimitMsg'  => sprintf(
 					/* translators: %d: maximum track count */
-					__( 'Lite edition allows up to %d voice tracks per song. Upgrade to Pro for unlimited tracks and microphone recording.', 'choir-rehearsal' ),
+					__( 'Lite edition allows up to %d voice tracks per song. Upgrade to Pro for unlimited tracks, microphone recording, and Play preview in the editor.', 'choir-rehearsal' ),
 					Choir_Rehearsal_Edition::LITE_MAX_TRACKS
 				),
 				'selectAudio'    => __( 'Upload', 'choir-rehearsal' ),
@@ -460,6 +463,9 @@ final class Choir_Rehearsal_Admin {
 			return;
 		}
 		if ( ! in_array( $screen->base, array( 'post', 'post-new' ), true ) ) {
+			return;
+		}
+		if ( ! Choir_Rehearsal_Edition::can_play_in_editor() ) {
 			return;
 		}
 
@@ -498,7 +504,7 @@ final class Choir_Rehearsal_Admin {
 			<p class="description">
 				<?php
 				if ( Choir_Rehearsal_Edition::can_record() ) {
-					esc_html_e( 'Add one row per voice part. Upload an audio file, record from your microphone, or pick one from the Media Library.', 'choir-rehearsal' );
+					esc_html_e( 'Add one row per voice part. Upload an audio file, record from your microphone, or pick one from the Media Library. Use Play to preview the track in the sticky player.', 'choir-rehearsal' );
 				} else {
 					echo wp_kses_post(
 						sprintf(
@@ -579,6 +585,7 @@ final class Choir_Rehearsal_Admin {
 					<?php if ( Choir_Rehearsal_Edition::can_record() ) : ?>
 						<button type="button" class="button button-small choir-record-audio"><?php esc_html_e( 'Record', 'choir-rehearsal' ); ?></button>
 					<?php endif; ?>
+					<?php if ( Choir_Rehearsal_Edition::can_play_in_editor() ) : ?>
 					<button
 						type="button"
 						class="button button-small choir-play-track"
@@ -588,6 +595,7 @@ final class Choir_Rehearsal_Admin {
 					>
 						<?php esc_html_e( 'Play', 'choir-rehearsal' ); ?>
 					</button>
+					<?php endif; ?>
 				</div>
 				<?php if ( Choir_Rehearsal_Edition::can_record() ) : ?>
 				<div class="choir-recorder-panel is-hidden" aria-hidden="true">

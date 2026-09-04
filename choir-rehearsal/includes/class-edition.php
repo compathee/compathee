@@ -32,6 +32,13 @@ final class Choir_Rehearsal_Edition {
 		return self::is_pro();
 	}
 
+	/**
+	 * Sticky-player preview of voice tracks in the song editor (Pro).
+	 */
+	public static function can_play_in_editor(): bool {
+		return self::is_pro();
+	}
+
 	public static function upgrade_url(): string {
 		return (string) apply_filters( 'choir_rehearsal_upgrade_url', 'https://shop.compath.ee/products/choir-rehearsal-pro/' );
 	}
