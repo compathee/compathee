@@ -120,6 +120,16 @@
   ],
   "changelog": [
     {
+      "version": "0.4.16",
+      "summary": "Public songs for guests",
+      "items": [
+        "Song editor: Make public button (icon-only on mobile)",
+        "Guests see a public songs list and can listen without signing in",
+        "Private songs remain login-gated when require-login is on"
+      ],
+      "open": true
+    },
+    {
       "version": "0.4.15",
       "summary": "Editor song card + swipe PDF",
       "items": [
@@ -128,7 +138,7 @@
         "Voice tracks use listen-style rows with Upload / Record / Play icons",
         "Removed the floating PDF panel"
       ],
-      "open": true
+      "open": false
     },
     {
       "version": "0.4.14",

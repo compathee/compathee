@@ -98,6 +98,19 @@ final class Choir_Rehearsal_Post_Types {
 		);
 
 		register_post_meta(
+			self::SONG,
+			'_choir_is_public',
+			array(
+				'type'              => 'boolean',
+				'single'            => true,
+				'show_in_rest'      => true,
+				'auth_callback'     => static fn() => current_user_can( 'edit_posts' ),
+				'sanitize_callback' => static fn( $value ) => (bool) $value,
+				'default'           => false,
+			)
+		);
+
+		register_post_meta(
 			self::TRACK,
 			'_choir_voice_slug',
 			array(
@@ -107,6 +120,40 @@ final class Choir_Rehearsal_Post_Types {
 				'auth_callback'     => static fn() => current_user_can( 'edit_posts' ),
 				'sanitize_callback' => 'sanitize_key',
 			)
+		);
+	}
+
+	public static function is_public( int $song_id ): bool {
+		if ( $song_id <= 0 ) {
+			return false;
+		}
+
+		return (bool) get_post_meta( $song_id, '_choir_is_public', true );
+	}
+
+	public static function set_public( int $song_id, bool $is_public ): void {
+		if ( $song_id <= 0 ) {
+			return;
+		}
+
+		if ( $is_public ) {
+			update_post_meta( $song_id, '_choir_is_public', 1 );
+			return;
+		}
+
+		delete_post_meta( $song_id, '_choir_is_public' );
+	}
+
+	/**
+	 * @return array<string, mixed>
+	 */
+	public static function public_songs_meta_query(): array {
+		return array(
+			array(
+				'key'     => '_choir_is_public',
+				'value'   => '1',
+				'compare' => '=',
+			),
 		);
 	}
 

@@ -655,3 +655,21 @@
 		font-size: 0.82rem;
 	}
 }
+
+
+.choir-rehearsal-archive--public {
+	margin-bottom: 28px;
+}
+
+.choir-rehearsal-archive__intro {
+	margin: 0 0 16px;
+	color: #475467;
+}
+
+.choir-rehearsal-login--after-public {
+	margin-top: 8px;
+}
+
+.choir-rehearsal-login--after-public .choir-rehearsal-title {
+	font-size: 1.35rem;
+}

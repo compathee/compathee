@@ -232,8 +232,9 @@ final class Choir_Rehearsal_Admin {
 		foreach ( $columns as $key => $label ) {
 			$new[ $key ] = $label;
 			if ( 'title' === $key ) {
-				$new['choir_tracks'] = __( 'Tracks', 'choir-rehearsal' );
-				$new['choir_score']  = __( 'Score', 'choir-rehearsal' );
+				$new['choir_tracks']  = __( 'Tracks', 'choir-rehearsal' );
+				$new['choir_score']   = __( 'Score', 'choir-rehearsal' );
+				$new['choir_public']  = __( 'Visibility', 'choir-rehearsal' );
 			}
 		}
 		return $new;
@@ -247,6 +248,15 @@ final class Choir_Rehearsal_Admin {
 
 		if ( 'choir_score' === $column ) {
 			echo Choir_Rehearsal_Post_Types::get_score_pdf_id( $post_id ) > 0 ? 'PDF' : '—';
+			return;
+		}
+
+		if ( 'choir_public' === $column ) {
+			echo esc_html(
+				Choir_Rehearsal_Post_Types::is_public( $post_id )
+					? __( 'Public', 'choir-rehearsal' )
+					: __( 'Private', 'choir-rehearsal' )
+			);
 		}
 	}
 
@@ -322,6 +332,8 @@ final class Choir_Rehearsal_Admin {
 		if ( Choir_Rehearsal_Post_Types::SONG !== $post->post_type ) {
 			return;
 		}
+
+		$is_public = Choir_Rehearsal_Post_Types::is_public( (int) $post->ID );
 		?>
 		<p class="choir-song-edit-intro description">
 			<?php
@@ -332,6 +344,33 @@ final class Choir_Rehearsal_Admin {
 			}
 			?>
 		</p>
+		<div class="choir-song-visibility">
+			<?php wp_nonce_field( 'choir_rehearsal_save_visibility', 'choir_rehearsal_visibility_nonce' ); ?>
+			<input type="hidden" name="choir_is_public" id="choir-is-public" value="<?php echo $is_public ? '1' : '0'; ?>" />
+			<button
+				type="button"
+				id="choir-toggle-public"
+				class="button choir-make-public<?php echo $is_public ? ' is-public' : ''; ?>"
+				aria-pressed="<?php echo $is_public ? 'true' : 'false'; ?>"
+				title="<?php echo esc_attr( $is_public ? __( 'Make private', 'choir-rehearsal' ) : __( 'Make public', 'choir-rehearsal' ) ); ?>"
+			>
+				<span class="choir-make-public__icon" aria-hidden="true">
+					<?php echo self::icon_svg( 'globe' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+				</span>
+				<span class="choir-make-public__label">
+					<?php echo esc_html( $is_public ? __( 'Make private', 'choir-rehearsal' ) : __( 'Make public', 'choir-rehearsal' ) ); ?>
+				</span>
+			</button>
+			<span class="choir-song-visibility__hint description">
+				<?php
+				echo esc_html(
+					$is_public
+						? __( 'Anyone can view and listen without signing in.', 'choir-rehearsal' )
+						: __( 'Only signed-in users can access this song (when login is required).', 'choir-rehearsal' )
+				);
+				?>
+			</span>
+		</div>
 		<?php
 	}
 
@@ -485,6 +524,10 @@ final class Choir_Rehearsal_Admin {
 				'micUnavailable' => __( 'Microphone recording is not supported in this browser.', 'choir-rehearsal' ),
 				'uploadFailed'   => __( 'Upload failed. Please try again.', 'choir-rehearsal' ),
 				'saveSongFirst'  => __( 'Save the song first, then you can record voice tracks.', 'choir-rehearsal' ),
+				'makePublic'     => __( 'Make public', 'choir-rehearsal' ),
+				'makePrivate'    => __( 'Make private', 'choir-rehearsal' ),
+				'publicHint'     => __( 'Anyone can view and listen without signing in.', 'choir-rehearsal' ),
+				'privateHint'    => __( 'Only signed-in users can access this song (when login is required).', 'choir-rehearsal' ),
 			)
 		);
 	}
@@ -682,6 +725,7 @@ final class Choir_Rehearsal_Admin {
 			'record' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="7" fill="currentColor"/></svg>',
 			'play'   => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path fill="currentColor" d="M8 5v14l11-7L8 5z"/></svg>',
 			'remove' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path fill="currentColor" d="M6.4 6.4l1.2-1.2L12 9.6l4.4-4.4 1.2 1.2L13.2 12l4.4 4.4-1.2 1.2L12 14.4l-4.4 4.4-1.2-1.2L10.8 12 6.4 6.4z"/></svg>',
+			'globe'  => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12 2a10 10 0 100 20 10 10 0 000-20zm6.9 9h-3.1a15.4 15.4 0 00-1.2-5 8.03 8.03 0 014.3 5zM12 4c.9 0 2.2 1.9 2.8 5H9.2C9.8 5.9 11.1 4 12 4zM4 12c0-.7.1-1.4.3-2h3.1a15.4 15.4 0 001.2 5H4.3A8 8 0 014 12zm1.1 3h3.1a15.4 15.4 0 001.2 5 8.03 8.03 0 01-4.3-5zm6.9 5c-.9 0-2.2-1.9-2.8-5h5.6c-.6 3.1-1.9 5-2.8 5zm2.8-2a15.4 15.4 0 001.2-5h3.1a8.03 8.03 0 01-4.3 5zM8.3 10A15.4 15.4 0 017.1 5a8.03 8.03 0 00-4.3 5h3.1z"/></svg>',
 		);
 
 		return $icons[ $name ] ?? '';
@@ -690,6 +734,11 @@ final class Choir_Rehearsal_Admin {
 	public static function save_song( int $post_id, WP_Post $post ): void {
 		if ( ! current_user_can( 'edit_post', $post_id ) ) {
 			return;
+		}
+
+		if ( isset( $_POST['choir_rehearsal_visibility_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['choir_rehearsal_visibility_nonce'] ) ), 'choir_rehearsal_save_visibility' ) ) {
+			$is_public = isset( $_POST['choir_is_public'] ) && '1' === (string) wp_unslash( $_POST['choir_is_public'] );
+			Choir_Rehearsal_Post_Types::set_public( $post_id, $is_public );
 		}
 
 		if ( isset( $_POST['choir_rehearsal_score_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['choir_rehearsal_score_nonce'] ) ), 'choir_rehearsal_save_score' ) ) {

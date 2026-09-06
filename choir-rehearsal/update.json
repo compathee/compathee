@@ -1,10 +1,10 @@
 {
   "name": "Choir Rehearsal",
   "slug": "choir-rehearsal",
-  "version": "0.4.15",
-  "download_url": "https://github.com/compathee/compathee/releases/download/choir-rehearsal-v0.4.15/choir-rehearsal.zip",
+  "version": "0.4.16",
+  "download_url": "https://github.com/compathee/compathee/releases/download/choir-rehearsal-v0.4.16/choir-rehearsal.zip",
   "homepage": "https://rehearsal.compath.ee",
-  "author": "Compath O\u00dc",
+  "author": "Compath OÜ",
   "author_homepage": "https://compath.ee",
   "requires": "6.4",
   "tested": "6.9",
@@ -12,6 +12,6 @@
   "last_updated": "2026-09-04",
   "sections": {
     "description": "Private rehearsal library for choirs: songs, voice parts, audio tracks, PDF scores, and a sticky player.",
-    "changelog": "<h4>0.4.15</h4><ul><li>Editor matches public song card</li><li>Embedded PDF with swipe pages</li><li>Track rows with Upload/Record/Play icons</li></ul><h4>0.4.14</h4><ul><li>Sticky player close (\u00d7) button</li><li>Pro: PDF icon on songs with attached scores</li></ul><h4>0.4.13</h4><ul><li>Mobile editor back link at top</li><li>Pro: floating PDF view while recording</li></ul><h4>0.4.12</h4><ul><li>Song editor Play preview is Pro-only; Pro benefit copy updated</li></ul><h4>0.4.11</h4><ul><li>Song editor Play button opens sticky player for the selected track</li></ul><h4>0.4.10</h4><ul><li>Demo titles: Demo Song 01, 02, \u2026 for correct A\u2013Z order</li></ul><h4>0.4.9</h4><ul><li>Demo load creates 25 songs so pagination appears</li></ul><h4>0.4.8</h4><ul><li>Settings: Load demo songs and Delete all songs</li></ul><h4>0.4.7</h4><ul><li>Pro search matches Cyrillic and other Unicode titles</li></ul>"
+    "changelog": "<h4>0.4.16</h4><ul><li>Make public control on song editor (mobile icon)</li><li>Public songs list and listen without login</li><li>Private songs still gated when login required</li></ul><h4>0.4.15</h4><ul><li>Editor matches public song card</li><li>Embedded PDF with swipe pages</li><li>Track rows with Upload/Record/Play icons</li></ul><h4>0.4.14</h4><ul><li>Sticky player close (×) button</li><li>Pro: PDF icon on songs with attached scores</li></ul><h4>0.4.13</h4><ul><li>Mobile editor back link at top</li><li>Pro: floating PDF view while recording</li></ul><h4>0.4.12</h4><ul><li>Song editor Play preview is Pro-only; Pro benefit copy updated</li></ul><h4>0.4.11</h4><ul><li>Song editor Play button opens sticky player for the selected track</li></ul><h4>0.4.10</h4><ul><li>Demo titles: Demo Song 01, 02, … for correct A–Z order</li></ul><h4>0.4.9</h4><ul><li>Demo load creates 25 songs so pagination appears</li></ul><h4>0.4.8</h4><ul><li>Settings: Load demo songs and Delete all songs</li></ul><h4>0.4.7</h4><ul><li>Pro search matches Cyrillic and other Unicode titles</li></ul>"
   }
 }

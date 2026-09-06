@@ -3,6 +3,24 @@
 
 	const i18n = choirRehearsalAdmin || {};
 
+	function syncPublicButton(isPublic) {
+		const $btn = $('#choir-toggle-public');
+		const $input = $('#choir-is-public');
+		const $hint = $('.choir-song-visibility__hint');
+		if (!$btn.length || !$input.length) {
+			return;
+		}
+		$input.val(isPublic ? '1' : '0');
+		$btn.toggleClass('is-public', isPublic);
+		$btn.attr('aria-pressed', isPublic ? 'true' : 'false');
+		const label = isPublic ? (i18n.makePrivate || 'Make private') : (i18n.makePublic || 'Make public');
+		$btn.attr('title', label);
+		$btn.find('.choir-make-public__label').text(label);
+		if ($hint.length) {
+			$hint.text(isPublic ? (i18n.publicHint || '') : (i18n.privateHint || ''));
+		}
+	}
+
 	const ICONS = {
 		upload: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12 3l4.5 4.5h-3V14h-3V7.5h-3L12 3zm-7 14h14v2H5v-2z"/></svg>',
 		record: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="7" fill="currentColor"/></svg>',
@@ -487,5 +505,11 @@
 				getEditorPdfApi();
 			}, 0);
 		}
+
+		$('#choir-toggle-public').on('click', function () {
+			const next = $('#choir-is-public').val() !== '1';
+			syncPublicButton(next);
+		});
+
 	});
 })(jQuery);

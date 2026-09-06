@@ -40,8 +40,32 @@ final class Choir_Rehearsal_Access {
 		return false;
 	}
 
+	public static function can_view_song( int $song_id ): bool {
+		if ( ! self::requires_login() ) {
+			return true;
+		}
+
+		if ( is_user_logged_in() ) {
+			return true;
+		}
+
+		return Choir_Rehearsal_Post_Types::is_public( $song_id );
+	}
+
+	/**
+	 * True when the current rehearsal request must show the login wall
+	 * (private song page for guests). Library pages show public songs instead.
+	 */
 	public static function should_show_login(): bool {
-		return self::requires_login() && self::is_rehearsal_request() && ! is_user_logged_in();
+		if ( ! self::requires_login() || ! self::is_rehearsal_request() || is_user_logged_in() ) {
+			return false;
+		}
+
+		if ( is_singular( Choir_Rehearsal_Post_Types::SONG ) ) {
+			return ! self::can_view_song( get_queried_object_id() );
+		}
+
+		return false;
 	}
 
 	public static function can_view(): bool {
@@ -50,6 +74,13 @@ final class Choir_Rehearsal_Access {
 		}
 
 		return is_user_logged_in();
+	}
+
+	/**
+	 * Guests browsing the library while login is required.
+	 */
+	public static function is_guest_library_request(): bool {
+		return self::requires_login() && ! is_user_logged_in() && self::is_rehearsal_request() && ! is_singular( Choir_Rehearsal_Post_Types::SONG );
 	}
 
 	public static function can_manage(): bool {

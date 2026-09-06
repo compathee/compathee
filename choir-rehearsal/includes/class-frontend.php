@@ -64,6 +64,8 @@ final class Choir_Rehearsal_Frontend {
 			return;
 		}
 
+		$public_only = Choir_Rehearsal_Access::is_guest_library_request();
+
 		if ( Choir_Rehearsal_Edition::is_pro() && self::is_song_list_page() ) {
 			wp_enqueue_script(
 				'choir-rehearsal-song-list',
@@ -74,7 +76,7 @@ final class Choir_Rehearsal_Frontend {
 			);
 			// Prefer inline JSON with unescaped Unicode — more reliable for Cyrillic titles than wp_localize_script.
 			$song_list_data = array(
-				'songs' => self::get_songs_search_index( Choir_Rehearsal_Access::can_manage() ),
+				'songs' => self::get_songs_search_index( Choir_Rehearsal_Access::can_manage(), $public_only ),
 				'i18n'  => array(
 					'edit'          => __( 'Edit', 'choir-rehearsal' ),
 					'trackSingular' => __( '%d track', 'choir-rehearsal' ),
@@ -109,6 +111,9 @@ final class Choir_Rehearsal_Frontend {
 
 		if ( is_singular( Choir_Rehearsal_Post_Types::SONG ) ) {
 			$song_id = get_queried_object_id();
+			if ( ! Choir_Rehearsal_Access::can_view_song( $song_id ) ) {
+				return;
+			}
 			$pdf_url = Choir_Rehearsal_Post_Types::get_score_pdf_url( $song_id );
 			if ( '' !== $pdf_url ) {
 				wp_enqueue_script(
@@ -179,24 +184,34 @@ final class Choir_Rehearsal_Frontend {
 
 		if ( Choir_Rehearsal_Access::should_show_login() ) {
 			self::render_login_form();
+		} elseif ( Choir_Rehearsal_Access::is_guest_library_request() ) {
+			self::render_song_list( true );
+			self::render_login_form( true );
 		} else {
 			self::render_user_bar();
-			self::render_song_list();
+			self::render_song_list( false );
 		}
 
 		return (string) ob_get_clean();
 	}
 
-	public static function render_login_form(): void {
-		$error      = Choir_Rehearsal_Access::get_login_error();
-		$redirect   = Choir_Rehearsal_Access::get_requested_redirect_url();
+	public static function render_login_form( bool $after_public_list = false ): void {
+		$error    = Choir_Rehearsal_Access::get_login_error();
+		$redirect = Choir_Rehearsal_Access::get_requested_redirect_url();
 		?>
-		<div class="choir-rehearsal-login">
+		<div class="choir-rehearsal-login<?php echo $after_public_list ? ' choir-rehearsal-login--after-public' : ''; ?>">
 			<div class="choir-rehearsal-login__card">
-				<h1 class="choir-rehearsal-title"><?php esc_html_e( 'Rehearsal Library', 'choir-rehearsal' ); ?></h1>
-				<p class="choir-rehearsal-login__intro">
-					<?php esc_html_e( 'Sign in with your WordPress account to access songs, sheet music, and voice tracks.', 'choir-rehearsal' ); ?>
-				</p>
+				<?php if ( $after_public_list ) : ?>
+					<h2 class="choir-rehearsal-title"><?php esc_html_e( 'Sign in for the full library', 'choir-rehearsal' ); ?></h2>
+					<p class="choir-rehearsal-login__intro">
+						<?php esc_html_e( 'Public songs above are open to everyone. Sign in with your WordPress account to access the full rehearsal library.', 'choir-rehearsal' ); ?>
+					</p>
+				<?php else : ?>
+					<h1 class="choir-rehearsal-title"><?php esc_html_e( 'Rehearsal Library', 'choir-rehearsal' ); ?></h1>
+					<p class="choir-rehearsal-login__intro">
+						<?php esc_html_e( 'Sign in with your WordPress account to access songs, sheet music, and voice tracks.', 'choir-rehearsal' ); ?>
+					</p>
+				<?php endif; ?>
 
 				<?php if ( '' !== $error ) : ?>
 					<div class="choir-rehearsal-login__error" role="alert">
@@ -285,27 +300,51 @@ final class Choir_Rehearsal_Frontend {
 		<?php
 	}
 
-	public static function render_song_list(): void {
-		$total_songs  = (int) wp_count_posts( Choir_Rehearsal_Post_Types::SONG )->publish;
-		$total_pages  = max( 1, (int) ceil( $total_songs / self::SONGS_PER_PAGE ) );
-		$current_page = min( self::get_current_list_page(), $total_pages );
-		$query        = new WP_Query(
-			array(
-				'post_type'      => Choir_Rehearsal_Post_Types::SONG,
-				'posts_per_page' => self::SONGS_PER_PAGE,
-				'paged'          => $current_page,
-				'orderby'        => 'title',
-				'order'          => 'ASC',
-				'post_status'    => 'publish',
+	public static function render_song_list( bool $public_only = false ): void {
+		$query_args = array(
+			'post_type'      => Choir_Rehearsal_Post_Types::SONG,
+			'posts_per_page' => self::SONGS_PER_PAGE,
+			'paged'          => 1,
+			'orderby'        => 'title',
+			'order'          => 'ASC',
+			'post_status'    => 'publish',
+		);
+
+		if ( $public_only ) {
+			$query_args['meta_query'] = Choir_Rehearsal_Post_Types::public_songs_meta_query();
+		}
+
+		$count_query = new WP_Query(
+			array_merge(
+				$query_args,
+				array(
+					'posts_per_page' => 1,
+					'fields'         => 'ids',
+					'no_found_rows'  => false,
+				)
 			)
 		);
-		$songs        = $query->posts;
-		$can_manage   = Choir_Rehearsal_Access::can_manage();
-		$is_pro       = Choir_Rehearsal_Edition::is_pro();
+		$total_songs  = (int) $count_query->found_posts;
+		$total_pages  = max( 1, (int) ceil( $total_songs / self::SONGS_PER_PAGE ) );
+		$current_page = min( self::get_current_list_page(), $total_pages );
+		$query_args['paged'] = $current_page;
+
+		$query      = new WP_Query( $query_args );
+		$songs      = $query->posts;
+		$can_manage = ! $public_only && Choir_Rehearsal_Access::can_manage();
+		$is_pro     = Choir_Rehearsal_Edition::is_pro();
 		?>
-		<div class="choir-rehearsal-archive">
+		<div class="choir-rehearsal-archive<?php echo $public_only ? ' choir-rehearsal-archive--public' : ''; ?>">
 			<div class="choir-rehearsal-archive__header">
-				<h1 class="choir-rehearsal-title"><?php esc_html_e( 'Rehearsal Library', 'choir-rehearsal' ); ?></h1>
+				<h1 class="choir-rehearsal-title">
+					<?php
+					echo esc_html(
+						$public_only
+							? __( 'Public songs', 'choir-rehearsal' )
+							: __( 'Rehearsal Library', 'choir-rehearsal' )
+					);
+					?>
+				</h1>
 				<?php if ( $is_pro && $total_songs > 0 ) : ?>
 					<div class="choir-song-search">
 						<label class="screen-reader-text" for="choir-song-search"><?php esc_html_e( 'Search songs', 'choir-rehearsal' ); ?></label>
@@ -320,7 +359,15 @@ final class Choir_Rehearsal_Frontend {
 				<?php endif; ?>
 			</div>
 			<?php if ( 0 === $total_songs ) : ?>
-				<p><?php esc_html_e( 'No songs yet.', 'choir-rehearsal' ); ?></p>
+				<p>
+					<?php
+					echo esc_html(
+						$public_only
+							? __( 'No public songs yet. Sign in below for the full library, or ask an editor to make a song public.', 'choir-rehearsal' )
+							: __( 'No songs yet.', 'choir-rehearsal' )
+					);
+					?>
+				</p>
 				<?php if ( $can_manage ) : ?>
 					<p>
 						<a class="choir-user-bar__link" href="<?php echo esc_url( admin_url( 'post-new.php?post_type=' . Choir_Rehearsal_Post_Types::SONG ) ); ?>">
@@ -329,6 +376,11 @@ final class Choir_Rehearsal_Frontend {
 					</p>
 				<?php endif; ?>
 			<?php else : ?>
+				<?php if ( $public_only ) : ?>
+					<p class="choir-rehearsal-archive__intro">
+						<?php esc_html_e( 'These songs are open to listen and view without signing in.', 'choir-rehearsal' ); ?>
+					</p>
+				<?php endif; ?>
 				<?php if ( $is_pro ) : ?>
 					<p class="choir-song-list__empty-search" role="status" aria-live="polite">
 						<?php esc_html_e( 'No songs match your search.', 'choir-rehearsal' ); ?>
@@ -369,17 +421,21 @@ final class Choir_Rehearsal_Frontend {
 	/**
 	 * @return list<array{title: string, url: string, trackCount: int, editUrl: string, hasPdf: bool}>
 	 */
-	private static function get_songs_search_index( bool $can_manage ): array {
-		$songs = get_posts(
-			array(
-				'post_type'      => Choir_Rehearsal_Post_Types::SONG,
-				'posts_per_page' => -1,
-				'orderby'        => 'title',
-				'order'          => 'ASC',
-				'post_status'    => 'publish',
-				'fields'         => 'ids',
-			)
+	private static function get_songs_search_index( bool $can_manage, bool $public_only = false ): array {
+		$args = array(
+			'post_type'      => Choir_Rehearsal_Post_Types::SONG,
+			'posts_per_page' => -1,
+			'orderby'        => 'title',
+			'order'          => 'ASC',
+			'post_status'    => 'publish',
+			'fields'         => 'ids',
 		);
+
+		if ( $public_only ) {
+			$args['meta_query'] = Choir_Rehearsal_Post_Types::public_songs_meta_query();
+		}
+
+		$songs = get_posts( $args );
 
 		$index = array();
 		foreach ( $songs as $song_id ) {

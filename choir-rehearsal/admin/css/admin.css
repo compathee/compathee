@@ -475,3 +475,58 @@ body.choir-rehearsal-song-edit #choir-rehearsal-tracks .inside {
 		padding-bottom: 180px;
 	}
 }
+
+
+.choir-song-visibility {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 10px 14px;
+	margin: 0 0 16px;
+}
+
+.choir-make-public {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.choir-make-public__icon {
+	display: inline-flex;
+	line-height: 0;
+}
+
+.choir-make-public.is-public {
+	border-color: #1f4fd8;
+	color: #1f4fd8;
+}
+
+.choir-song-visibility__hint {
+	margin: 0;
+	flex: 1 1 220px;
+}
+
+@media screen and (max-width: 782px) {
+	.choir-make-public__label {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border: 0;
+	}
+
+	.choir-make-public {
+		min-width: 40px;
+		justify-content: center;
+		padding-left: 8px;
+		padding-right: 8px;
+	}
+
+	.choir-song-visibility__hint {
+		flex-basis: 100%;
+	}
+}
