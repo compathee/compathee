@@ -120,6 +120,15 @@
   ],
   "changelog": [
     {
+      "version": "0.4.17",
+      "summary": "Share song links",
+      "items": [
+        "Song view: Share icon button",
+        "Copy public or private (login-required) link to the song"
+      ],
+      "open": true
+    },
+    {
       "version": "0.4.16",
       "summary": "Public songs for guests",
       "items": [
@@ -127,7 +136,7 @@
         "Guests see a public songs list and can listen without signing in",
         "Private songs remain login-gated when require-login is on"
       ],
-      "open": true
+      "open": false
     },
     {
       "version": "0.4.15",

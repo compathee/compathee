@@ -299,6 +299,95 @@
 	margin-bottom: 0;
 }
 
+.choir-song-header__actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px;
+}
+
+.choir-share {
+	position: relative;
+}
+
+.choir-share__toggle {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 40px;
+	height: 40px;
+	padding: 0;
+	border: 1px solid rgba(0, 0, 0, 0.12);
+	border-radius: 10px;
+	background: #fff;
+	color: #344054;
+	cursor: pointer;
+}
+
+.choir-share__toggle:hover,
+.choir-share__toggle[aria-expanded="true"] {
+	border-color: #1f4fd8;
+	color: #1f4fd8;
+}
+
+.choir-share__icon {
+	display: inline-flex;
+	line-height: 0;
+}
+
+.choir-share__menu {
+	position: absolute;
+	top: calc(100% + 6px);
+	right: 0;
+	z-index: 30;
+	min-width: min(280px, 82vw);
+	padding: 8px;
+	border: 1px solid rgba(0, 0, 0, 0.1);
+	border-radius: 12px;
+	background: #fff;
+	box-shadow: 0 10px 30px rgba(16, 24, 40, 0.12);
+}
+
+.choir-share__option {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 2px;
+	width: 100%;
+	margin: 0;
+	padding: 10px 12px;
+	border: 0;
+	border-radius: 8px;
+	background: transparent;
+	color: inherit;
+	text-align: left;
+	cursor: pointer;
+}
+
+.choir-share__option:hover,
+.choir-share__option:focus-visible {
+	background: #f2f4f7;
+	outline: none;
+}
+
+.choir-share__option-label {
+	font-weight: 600;
+	font-size: 0.95rem;
+}
+
+.choir-share__option-hint {
+	font-size: 0.8rem;
+	line-height: 1.35;
+	color: #667085;
+}
+
+.choir-share__status {
+	min-height: 1.2em;
+	margin: 6px 4px 2px;
+	font-size: 0.85rem;
+	color: #027a48;
+}
+
 .choir-rehearsal-title {
 	margin-bottom: 1rem;
 }

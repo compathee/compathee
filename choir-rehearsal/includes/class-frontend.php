@@ -114,6 +114,25 @@ final class Choir_Rehearsal_Frontend {
 			if ( ! Choir_Rehearsal_Access::can_view_song( $song_id ) ) {
 				return;
 			}
+
+			wp_enqueue_script(
+				'choir-rehearsal-share',
+				CHOIR_REHEARSAL_URL . 'public/js/share.js',
+				array(),
+				CHOIR_REHEARSAL_VERSION,
+				true
+			);
+			wp_localize_script(
+				'choir-rehearsal-share',
+				'choirRehearsalShare',
+				array(
+					'copiedPublic'        => __( 'Public link copied', 'choir-rehearsal' ),
+					'copiedPrivate'       => __( 'Private link copied', 'choir-rehearsal' ),
+					'copiedPublicPrivate' => __( 'Link copied. Song is still private for guests.', 'choir-rehearsal' ),
+					'copyFailed'          => __( 'Could not copy the link. Please copy it from the address bar.', 'choir-rehearsal' ),
+				)
+			);
+
 			$pdf_url = Choir_Rehearsal_Post_Types::get_score_pdf_url( $song_id );
 			if ( '' !== $pdf_url ) {
 				wp_enqueue_script(
@@ -567,16 +586,68 @@ final class Choir_Rehearsal_Frontend {
 		$tracks     = Choir_Rehearsal_Post_Types::get_tracks_for_song( (int) $song->ID );
 		$pdf_url    = Choir_Rehearsal_Post_Types::get_score_pdf_url( (int) $song->ID );
 		$can_manage = Choir_Rehearsal_Access::can_manage();
+		$is_public  = Choir_Rehearsal_Post_Types::is_public( (int) $song->ID );
+		$share_url  = get_permalink( $song );
+		$share_url  = is_string( $share_url ) ? $share_url : '';
 		?>
 		<div class="choir-rehearsal-single" data-song-id="<?php echo esc_attr( (string) $song->ID ); ?>">
 			<p class="choir-back-link"><a href="<?php echo esc_url( Choir_Rehearsal_Pages::get_library_url() ); ?>">&larr; <?php esc_html_e( 'All songs', 'choir-rehearsal' ); ?></a></p>
 			<div class="choir-song-header">
 				<h1 class="choir-rehearsal-title"><?php echo esc_html( get_the_title( $song ) ); ?></h1>
-				<?php if ( $can_manage ) : ?>
-					<a class="choir-song-edit" href="<?php echo esc_url( get_edit_post_link( $song->ID, 'raw' ) ?: '' ); ?>">
-						<?php esc_html_e( 'Edit song', 'choir-rehearsal' ); ?>
-					</a>
-				<?php endif; ?>
+				<div class="choir-song-header__actions">
+					<?php if ( '' !== $share_url ) : ?>
+						<div
+							class="choir-share"
+							data-share-url="<?php echo esc_url( $share_url ); ?>"
+							data-is-public="<?php echo $is_public ? '1' : '0'; ?>"
+						>
+							<button
+								type="button"
+								class="choir-share__toggle"
+								aria-expanded="false"
+								aria-haspopup="true"
+								aria-controls="choir-share-menu-<?php echo esc_attr( (string) $song->ID ); ?>"
+								title="<?php esc_attr_e( 'Share', 'choir-rehearsal' ); ?>"
+								aria-label="<?php esc_attr_e( 'Share', 'choir-rehearsal' ); ?>"
+							>
+								<span class="choir-share__icon" aria-hidden="true">
+									<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" focusable="false">
+										<path fill="currentColor" d="M18 16.1a2.9 2.9 0 0 0-2.1.9l-7.1-4.1a3 3 0 0 0 0-1.8l7.1-4.1a3 3 0 1 0-1-1.7l-7.1 4.1a3 3 0 1 0 0 5.2l7.1 4.1A3 3 0 1 0 18 16.1z"/>
+									</svg>
+								</span>
+							</button>
+							<div
+								id="choir-share-menu-<?php echo esc_attr( (string) $song->ID ); ?>"
+								class="choir-share__menu"
+								hidden
+								role="menu"
+							>
+								<button type="button" class="choir-share__option" data-share-type="public" role="menuitem">
+									<span class="choir-share__option-label"><?php esc_html_e( 'Copy public link', 'choir-rehearsal' ); ?></span>
+									<span class="choir-share__option-hint">
+										<?php
+										echo esc_html(
+											$is_public
+												? __( 'Anyone can open without signing in', 'choir-rehearsal' )
+												: __( 'Song is private — guests will see the login form', 'choir-rehearsal' )
+										);
+										?>
+									</span>
+								</button>
+								<button type="button" class="choir-share__option" data-share-type="private" role="menuitem">
+									<span class="choir-share__option-label"><?php esc_html_e( 'Copy private link', 'choir-rehearsal' ); ?></span>
+									<span class="choir-share__option-hint"><?php esc_html_e( 'Requires sign-in when login is required', 'choir-rehearsal' ); ?></span>
+								</button>
+								<p class="choir-share__status" role="status" aria-live="polite"></p>
+							</div>
+						</div>
+					<?php endif; ?>
+					<?php if ( $can_manage ) : ?>
+						<a class="choir-song-edit" href="<?php echo esc_url( get_edit_post_link( $song->ID, 'raw' ) ?: '' ); ?>">
+							<?php esc_html_e( 'Edit song', 'choir-rehearsal' ); ?>
+						</a>
+					<?php endif; ?>
+				</div>
 			</div>
 			<?php if ( $song->post_content ) : ?>
 				<div class="choir-song-notes"><?php echo wp_kses_post( wpautop( $song->post_content ) ); ?></div>
