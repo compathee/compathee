@@ -56,6 +56,10 @@ final class Choir_Rehearsal_Updater {
 	}
 
 	public static function handle_check_updates(): void {
+		// #region agent log
+		$__cr_can = current_user_can( 'update_plugins' );
+		@file_put_contents( '/opt/cursor/logs/debug.log', wp_json_encode( array( 'hypothesisId' => 'C', 'location' => 'class-updater.php:handle_check_updates', 'message' => 'check updates entry', 'data' => array( 'can_update_plugins' => $__cr_can ), 'timestamp' => (int) round( microtime( true ) * 1000 ) ) ) . "\n", FILE_APPEND );
+		// #endregion
 		if ( ! current_user_can( 'update_plugins' ) ) {
 			wp_die( esc_html__( 'Sorry, you are not allowed to update plugins.', 'choir-rehearsal' ) );
 		}
@@ -69,6 +73,10 @@ final class Choir_Rehearsal_Updater {
 			wp_update_plugins();
 		}
 
+		// #region agent log
+		$__cr_meta = self::fetch_remote_metadata();
+		@file_put_contents( '/opt/cursor/logs/debug.log', wp_json_encode( array( 'hypothesisId' => 'A', 'location' => 'class-updater.php:handle_check_updates:after_rebuild', 'message' => 'metadata after check', 'data' => array( 'meta_null' => null === $__cr_meta, 'version' => is_array( $__cr_meta ) ? ( $__cr_meta['version'] ?? null ) : null, 'redirect' => 'plugins.php?choir_rehearsal_checked=1' ), 'timestamp' => (int) round( microtime( true ) * 1000 ) ) ) . "\n", FILE_APPEND );
+		// #endregion
 		wp_safe_redirect( admin_url( 'plugins.php?plugin_status=all&choir_rehearsal_checked=1' ) );
 		exit;
 	}
@@ -251,14 +259,24 @@ final class Choir_Rehearsal_Updater {
 
 		if ( null === $data ) {
 			$data = self::fetch_from_github();
+			// #region agent log
+			@file_put_contents( '/opt/cursor/logs/debug.log', wp_json_encode( array( 'hypothesisId' => 'A', 'location' => 'class-updater.php:fetch_remote_metadata:github', 'message' => 'after GitHub fetch', 'data' => array( 'github_null' => null === $data, 'keys' => is_array( $data ) ? array_keys( $data ) : null ), 'timestamp' => (int) round( microtime( true ) * 1000 ) ) ) . "\n", FILE_APPEND );
+			// #endregion
 		}
 
 		if ( null === $data ) {
-			$data = self::request_json( self::default_update_json_url() );
+			$__cr_fb = self::default_update_json_url();
+			$data = self::request_json( $__cr_fb );
+			// #region agent log
+			@file_put_contents( '/opt/cursor/logs/debug.log', wp_json_encode( array( 'hypothesisId' => 'A', 'location' => 'class-updater.php:fetch_remote_metadata:fallback', 'message' => 'after update.json fallback', 'data' => array( 'fallback_url' => $__cr_fb, 'fallback_null' => null === $data ), 'timestamp' => (int) round( microtime( true ) * 1000 ) ) ) . "\n", FILE_APPEND );
+			// #endregion
 		}
 
 		$normalized = self::normalize_metadata( $data );
 		if ( null === $normalized ) {
+			// #region agent log
+			@file_put_contents( '/opt/cursor/logs/debug.log', wp_json_encode( array( 'hypothesisId' => 'A', 'location' => 'class-updater.php:fetch_remote_metadata:normalize', 'message' => 'normalize failed → silent null', 'data' => array( 'had_data' => null !== $data ), 'timestamp' => (int) round( microtime( true ) * 1000 ) ) ) . "\n", FILE_APPEND );
+			// #endregion
 			return null;
 		}
 
@@ -317,8 +335,16 @@ final class Choir_Rehearsal_Updater {
 		);
 
 		if ( is_wp_error( $response ) ) {
+			// #region agent log
+			@file_put_contents( '/opt/cursor/logs/debug.log', wp_json_encode( array( 'hypothesisId' => 'A', 'location' => 'class-updater.php:fetch_latest_choir_release_from_list', 'message' => 'GitHub list wp_error', 'data' => array( 'url' => $url ), 'timestamp' => (int) round( microtime( true ) * 1000 ) ) ) . "\n", FILE_APPEND );
+			// #endregion
 			return null;
 		}
+
+		// #region agent log
+		$__cr_status = (int) wp_remote_retrieve_response_code( $response );
+		@file_put_contents( '/opt/cursor/logs/debug.log', wp_json_encode( array( 'hypothesisId' => 'A', 'location' => 'class-updater.php:fetch_latest_choir_release_from_list', 'message' => 'GitHub list response', 'data' => array( 'status' => $__cr_status, 'body_prefix' => substr( (string) wp_remote_retrieve_body( $response ), 0, 100 ), 'checks_http_status' => false ), 'timestamp' => (int) round( microtime( true ) * 1000 ) ) ) . "\n", FILE_APPEND );
+		// #endregion
 
 		$releases = json_decode( wp_remote_retrieve_body( $response ), true );
 		if ( ! is_array( $releases ) ) {
@@ -344,6 +370,10 @@ final class Choir_Rehearsal_Updater {
 				$best_version = $version;
 			}
 		}
+
+		// #region agent log
+		@file_put_contents( '/opt/cursor/logs/debug.log', wp_json_encode( array( 'hypothesisId' => 'E', 'location' => 'class-updater.php:fetch_latest_choir_release_from_list:selected', 'message' => 'selected release', 'data' => array( 'best_version' => $best_version, 'release_count' => count( $releases ), 'is_list' => array_is_list( $releases ) ), 'timestamp' => (int) round( microtime( true ) * 1000 ) ) ) . "\n", FILE_APPEND );
+		// #endregion
 
 		return is_array( $best_release ) ? self::map_github_release( $best_release ) : null;
 	}
