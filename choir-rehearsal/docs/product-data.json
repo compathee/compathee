@@ -1,0 +1,364 @@
+{
+  "title": "Choir Rehearsal",
+  "tagline": "A private rehearsal library for choirs: songs, voice tracks, PDF scores, and easy listening on phone or desktop.",
+  "overview": "Choir Rehearsal helps choir members learn new pieces by voice part. Editors upload PDF scores and audio for each voice. Singers visit /rehearsal/, pick a song, and listen. Lite is free from GitHub; Pro is a separate add-on from shop.compath.ee (keep Lite installed — do not replace it).",
+  "requirements": "WordPress 6.4+, PHP 8.0+",
+  "owner": "Compath OÜ, Tallinn, Estonia",
+  "firstCustomer": {
+    "name": "Cappella Veneta",
+    "url": "https://veneta.ee"
+  },
+  "features": [
+    "Song library — paginated list on your choir website with shortcode embedding",
+    "PDF scores — attach sheet music and flip pages in the built-in viewer",
+    "Voice tracks — bass, tenor, alto, soprano and more",
+    "Sticky player — listen while reading the score",
+    "Private access — optional login-only rehearsal pages",
+    "Editor & singer roles — editors manage, singers listen",
+    "Lite (free) — up to 4 tracks per song, audio upload, GitHub updates",
+    "Pro add-on — unlimited tracks, mic recording, search, editor Play, embedded PDF in the editor"
+  ],
+  "featureCards": [
+    {
+      "icon": "library",
+      "title": "Song library",
+      "text": "Paginated song list on your choir website with shortcode embedding."
+    },
+    {
+      "icon": "pdf",
+      "title": "PDF scores",
+      "text": "Attach sheet music and flip pages in the built-in viewer."
+    },
+    {
+      "icon": "voices",
+      "title": "Voice tracks",
+      "text": "Bass, tenor, alto, soprano and more — one audio part per voice."
+    },
+    {
+      "icon": "player",
+      "title": "Sticky player",
+      "text": "Listen while reading the score — player stays at the bottom of the screen."
+    },
+    {
+      "icon": "lock",
+      "title": "Private access",
+      "text": "Optional login-only rehearsal pages for your choir members."
+    },
+    {
+      "icon": "users",
+      "title": "Editor & singer roles",
+      "text": "Editors manage the library; singers browse, listen, and view PDFs."
+    },
+    {
+      "icon": "lite",
+      "title": "Lite — free",
+      "text": "Up to 4 tracks per song, audio upload, GitHub updates."
+    },
+    {
+      "icon": "pro",
+      "title": "Pro add-on",
+      "text": "Unlimited tracks, mic recording, search by title, Play preview, and embedded PDF preview in the editor."
+    }
+  ],
+  "pricing": [
+    {
+      "name": "Lite",
+      "price": "Free",
+      "featured": false,
+      "items": [
+        "Download from GitHub Releases",
+        "Up to 4 voice tracks per song",
+        "PDF scores and sticky player",
+        "Upload audio (no microphone recording)",
+        "Updates via WordPress (Check for updates)"
+      ]
+    },
+    {
+      "name": "Pro — subscription",
+      "price": "€49 / year",
+      "featured": true,
+      "ctaUrl": "https://shop.compath.ee/products/choir-rehearsal-pro/",
+      "ctaLabel": "Order Pro",
+      "items": [
+        "Install beside Lite (separate add-on)",
+        "Unlimited voice tracks per song",
+        "Microphone recording in the admin",
+        "Play preview of voice tracks in the song editor",
+        "Embedded PDF score in the song editor (swipe pages)",
+        "Search songs by title",
+        "PDF icon on songs that have a score attached",
+        "1 choir website",
+        "Priority email support"
+      ]
+    },
+    {
+      "name": "Done-for-you setup",
+      "price": "from €120",
+      "featured": false,
+      "items": [
+        "One-time setup on your WordPress site",
+        "/rehearsal/ page created",
+        "Roles and access configured",
+        "Editor training (1 session)",
+        "First year of Pro included"
+      ]
+    }
+  ],
+  "orderEmail": "order@compath.ee",
+  "orderSteps": [
+    "Open https://shop.compath.ee/products/choir-rehearsal-pro/ (or email order@compath.ee for setup services).",
+    "After payment, download choir-rehearsal-pro.zip from your SureCart customer dashboard.",
+    "Keep Choir Rehearsal (Lite) installed. Upload and activate the Pro add-on beside it — do not replace Lite."
+  ],
+  "installSteps": [
+    "Download choir-rehearsal.zip (Lite) from GitHub Releases.",
+    "In WordPress: Plugins → Add New → Upload Plugin — activate Lite.",
+    "Pro customers: upload choir-rehearsal-pro.zip next and activate it. Settings should show Edition: Pro.",
+    "The plugin creates a /rehearsal/ page with the [choir_rehearsal] shortcode.",
+    "Add a song: Choir Rehearsal → Add Song — title, PDF, voice tracks.",
+    "Give singers WordPress accounts (Subscriber). Editors need Editor or Administrator."
+  ],
+  "changelog": [
+    {
+      "version": "0.4.19",
+      "summary": "Share UX and Play icon fixes",
+      "items": [
+        "Share button copies the song link in one tap and shows a confirmation",
+        "Mobile Share confirmation stays on screen",
+        "Song editor Play icon is a clear white triangle"
+      ],
+      "open": true
+    },
+    {
+      "version": "0.4.18",
+      "summary": "Latin song permalinks",
+      "items": [
+        "Song URLs are auto-generated in Latin letters from any language title",
+        "Permalink edits in the song editor save correctly",
+        "Existing non-Latin song URLs are migrated on upgrade"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.17",
+      "summary": "Share song links",
+      "items": [
+        "Song view: Share icon button",
+        "Copy public or private (login-required) link to the song"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.16",
+      "summary": "Public songs for guests",
+      "items": [
+        "Song editor: Make public button (icon-only on mobile)",
+        "Guests see a public songs list and can listen without signing in",
+        "Private songs remain login-gated when require-login is on"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.15",
+      "summary": "Editor song card + swipe PDF",
+      "items": [
+        "Song editor matches the public song card with an embedded PDF viewer",
+        "Swipe left/right on the score to change pages",
+        "Voice tracks use listen-style rows with Upload / Record / Play icons",
+        "Removed the floating PDF panel"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.14",
+      "summary": "Player close + PDF list icon",
+      "items": [
+        "Sticky player: close (×) on the right so mobile Update and content stay reachable",
+        "Pro: PDF icon after song titles that have an attached score"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.13",
+      "summary": "Editor back link + PDF panel",
+      "items": [
+        "Mobile song editor: Back to song list stays at the top (not under sticky player)",
+        "Pro: View PDF floating panel in song editor — record while reading the score"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.12",
+      "summary": "Editor Play is Pro",
+      "items": [
+        "Song editor Play preview is a Pro feature",
+        "Pro benefits copy updated (Settings, product page, docs)"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.11",
+      "summary": "Editor track Play",
+      "items": [
+        "Voice Tracks: Play button after Upload/Record opens the sticky player"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.10",
+      "summary": "Demo title sorting",
+      "items": [
+        "Demo song titles use zero-padded numbers (01, 02, …) so the list sorts in numeric order"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.9",
+      "summary": "Demo pagination",
+      "items": [
+        "Load demo songs creates 25 songs so the public list shows page navigation (20 per page)"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.8",
+      "summary": "Demo library tools",
+      "items": [
+        "Settings: Load demo songs (10 songs × 4 tracks with demo voice audio)",
+        "Settings: Delete all songs with Yes/No confirmation"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.7",
+      "summary": "Unicode song search",
+      "items": [
+        "Pro search matches Cyrillic and other Unicode titles"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.6",
+      "summary": "One-click plugin update",
+      "items": [
+        "Fix needing two Update now clicks after Check for updates"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.5",
+      "summary": "Remove Lite license key field",
+      "items": [
+        "License key removed from Lite Settings (Pro licensing will live in the Pro add-on)"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.4",
+      "summary": "Buy Pro product URL",
+      "items": [
+        "Buy Pro opens https://shop.compath.ee/products/choir-rehearsal-pro/"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.3",
+      "summary": "Buy Pro and Lite→Pro process",
+      "items": [
+        "Buy Pro button in Lite (Settings, Plugins list, library toolbar)",
+        "Keep Lite installed; Pro is a separate add-on"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.2",
+      "summary": "Pagination and mobile search",
+      "items": [
+        "Paginated song list (20 per page) for large libraries",
+        "Pro search filters the full library across pages",
+        "Mobile layout: full-width search above the list"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.1",
+      "summary": "Song search (Pro)",
+      "items": [
+        "Search songs by title in the rehearsal library list (Pro only)"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.0",
+      "summary": "Lite and Pro editions",
+      "items": [
+        "Lite: up to 4 voice tracks, upload only",
+        "Pro add-on: unlimited tracks and microphone recording",
+        "shop.compath.ee subscriptions via SureCart"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.3.11",
+      "summary": "Mobile player",
+      "items": [
+        "Wider sticky player with large play button and seek bar on phone"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.3.10",
+      "summary": "Plugin author",
+      "items": [
+        "Plugin list shows By Compath OÜ"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.3.9",
+      "summary": "Product website",
+      "items": [
+        "Product page: rehearsal.compath.ee"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.3.8",
+      "summary": "Documentation page",
+      "items": [
+        "Product page: order, install, pricing, changelog",
+        "Documentation link in plugin settings"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.3.0–0.3.7",
+      "summary": "Recording and editor",
+      "items": [
+        "Microphone recording in song editor",
+        "Simplified mobile-friendly song editor",
+        "Version shown in Settings"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.2.x",
+      "summary": "Frontend & updates",
+      "items": [
+        "Frontend login and role toolbar",
+        "/rehearsal/ page via shortcode",
+        "Updates via GitHub Releases",
+        "PDF scores and page viewer"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.1.0",
+      "summary": "Initial release",
+      "items": [
+        "Songs, tracks, sticky player, REST API"
+      ],
+      "open": false
+    }
+  ]
+}

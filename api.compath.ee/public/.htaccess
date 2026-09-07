@@ -1,0 +1,8 @@
+RewriteEngine On
+
+# Route everything through public/index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^ index.php [L]
+
+# Protect config and data
+RewriteRule ^(config|data|src)/ - [F,L]

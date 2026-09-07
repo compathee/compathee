@@ -1,0 +1,428 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Choir Rehearsal 0.1.0\n"
+"Language: ru_RU\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+msgid "Songs"
+msgstr "Песни"
+
+msgid "Song"
+msgstr "Песня"
+
+msgid "Add Song"
+msgstr "Добавить песню"
+
+msgid "Add New Song"
+msgstr "Добавить новую песню"
+
+msgid "Edit Song"
+msgstr "Редактировать песню"
+
+msgid "Choir Rehearsal"
+msgstr "Репетиции хора"
+
+msgid "Tracks"
+msgstr "Треки"
+
+msgid "Track"
+msgstr "Трек"
+
+msgid "Backing track"
+msgstr "Фонограмма"
+
+msgid "Bass 1"
+msgstr "Бас 1"
+
+msgid "Bass 2"
+msgstr "Бас 2"
+
+msgid "Baritone 1"
+msgstr "Баритон 1"
+
+msgid "Baritone 2"
+msgstr "Баритон 2"
+
+msgid "Tenor 1"
+msgstr "Тенор 1"
+
+msgid "Tenor 2"
+msgstr "Тенор 2"
+
+msgid "Alto 1"
+msgstr "Альт 1"
+
+msgid "Alto 2"
+msgstr "Альт 2"
+
+msgid "Soprano 1"
+msgstr "Сопрано 1"
+
+msgid "Soprano 2"
+msgstr "Сопрано 2"
+
+msgid "Other"
+msgstr "Прочее"
+
+msgid "Voice Types"
+msgstr "Типы голосов"
+
+msgid "Voice Type"
+msgstr "Тип голоса"
+
+msgid "Settings"
+msgstr "Настройки"
+
+msgid "Choir Rehearsal Settings"
+msgstr "Настройки репетиций"
+
+msgid "Require login"
+msgstr "Только для авторизованных"
+
+msgid "Only logged-in users can view rehearsal pages."
+msgstr "Только авторизованные пользователи могут видеть страницы репетиций."
+
+msgid "Song list URL: %s"
+msgstr "URL списка песен: %s"
+
+msgid "Voice Tracks"
+msgstr "Треки по голосам"
+
+msgid "Add one row per voice part. Upload an MP3/WAV file or pick one from the Media Library."
+msgstr "Добавьте строку для каждого голоса. Загрузите MP3/WAV или выберите файл из медиатеки."
+
+msgid "Voice"
+msgstr "Голос"
+
+msgid "Audio"
+msgstr "Аудио"
+
+msgid "Actions"
+msgstr "Действия"
+
+msgid "No audio selected"
+msgstr "Аудио не выбрано"
+
+msgid "Upload / Select"
+msgstr "Загрузить / Выбрать"
+
+msgid "Remove"
+msgstr "Удалить"
+
+msgid "Add track"
+msgstr "Добавить трек"
+
+msgid "Select audio"
+msgstr "Выбрать аудио"
+
+msgid "Use this audio"
+msgstr "Использовать это аудио"
+
+msgid "Rehearsal Library"
+msgstr "Библиотека репетиций"
+
+msgid "No songs yet."
+msgstr "Песен пока нет."
+
+msgid "%d track"
+msgid_plural "%d tracks"
+msgstr[0] "%d трек"
+msgstr[1] "%d трека"
+msgstr[2] "%d треков"
+
+msgid "All songs"
+msgstr "Все песни"
+
+msgid "No tracks uploaded yet."
+msgstr "Треки ещё не загружены."
+
+msgid "Play"
+msgstr "▶"
+
+msgid "Pause"
+msgstr "Пауза"
+
+msgid "Seek"
+msgstr "Перемотка"
+
+msgid "Now playing"
+msgstr "Сейчас играет"
+
+msgid "Close player"
+msgstr "Закрыть плеер"
+
+msgid "PDF score attached"
+msgstr "Прикреплён PDF с нотами"
+
+msgid "Song not found."
+msgstr "Песня не найдена."
+
+msgid "List choir songs"
+msgstr "Список песен хора"
+
+msgid "Returns published rehearsal songs with track counts."
+msgstr "Возвращает опубликованные песни с количеством треков."
+
+msgid "Get choir song details"
+msgstr "Детали песни хора"
+
+msgid "Returns one song with all voice tracks and audio URLs."
+msgstr "Возвращает одну песню со всеми голосами и URL аудио."
+
+msgid "%1$s — %2$s"
+msgstr "%1$s — %2$s"
+
+msgid "Score"
+msgstr "Ноты"
+
+msgid "Sheet Music (PDF)"
+msgstr "Ноты (PDF)"
+
+msgid "Upload a PDF score for this song. Singers will see it with page navigation on the song page."
+msgstr "Загрузите PDF с нотами. Певцы увидят его с пролистыванием страниц на странице песни."
+
+msgid "Upload / Select PDF"
+msgstr "Загрузить / Выбрать PDF"
+
+msgid "Select PDF"
+msgstr "Выбрать PDF"
+
+msgid "Use this PDF"
+msgstr "Использовать этот PDF"
+
+msgid "No PDF selected"
+msgstr "PDF не выбран"
+
+msgid "Remove PDF"
+msgstr "Удалить PDF"
+
+msgid "Sheet music"
+msgstr "Ноты"
+
+msgid "Previous page"
+msgstr "Предыдущая страница"
+
+msgid "Previous"
+msgstr "Назад"
+
+msgid "Next page"
+msgstr "Следующая страница"
+
+msgid "Next"
+msgstr "Вперёд"
+
+msgid "Voice tracks"
+msgstr "Треки по голосам"
+
+msgid "Security check failed. Please try again."
+msgstr "Ошибка проверки безопасности. Попробуйте снова."
+
+msgid "Please enter your username and password."
+msgstr "Введите имя пользователя и пароль."
+
+msgid "Sign in with your WordPress account to access songs, sheet music, and voice tracks."
+msgstr "Войдите через учётную запись WordPress, чтобы открыть песни, ноты и треки по голосам."
+
+msgid "Username or email"
+msgstr "Имя пользователя или email"
+
+msgid "Password"
+msgstr "Пароль"
+
+msgid "Remember me"
+msgstr "Запомнить меня"
+
+msgid "Sign in"
+msgstr "Войти"
+
+msgid "Forgot your password?"
+msgstr "Забыли пароль?"
+
+msgid "Signed in as"
+msgstr "Вы вошли как"
+
+msgid "Editor"
+msgstr "Редактор"
+
+msgid "Singer"
+msgstr "Певец"
+
+msgid "Add song"
+msgstr "Добавить песню"
+
+msgid "Manage library"
+msgstr "Управление библиотекой"
+
+msgid "Sign out"
+msgstr "Выйти"
+
+msgid "Add the first song"
+msgstr "Добавить первую песню"
+
+msgid "Edit"
+msgstr "Редактировать"
+
+msgid "Edit song"
+msgstr "Редактировать песню"
+
+msgid "Rehearsal page"
+msgstr "Страница репетиций"
+
+msgid "— Select —"
+msgstr "— Выберите —"
+
+msgid "WordPress page that shows the song list. Must contain the [choir_rehearsal] shortcode. You can add this page to your site menu under Appearance → Menus."
+msgstr "Страница WordPress со списком песен. Должна содержать шорткод [choir_rehearsal]. Её можно добавить в меню сайта: Внешний вид → Меню."
+
+msgid "Refresh permalinks"
+msgstr "Обновить постоянные ссылки"
+
+msgid "Permalinks refreshed and rehearsal page verified."
+msgstr "Постоянные ссылки обновлены, страница репетиций проверена."
+
+msgid "Edit rehearsal page"
+msgstr "Редактировать страницу репетиций"
+
+msgid "Appearance → Menus"
+msgstr "Внешний вид → Меню"
+
+msgid "Record"
+msgstr "Запись"
+
+msgid "Start recording"
+msgstr "Начать запись"
+
+msgid "Stop"
+msgstr "Стоп"
+
+msgid "Use recording"
+msgstr "Использовать запись"
+
+msgid "Cancel"
+msgstr "Отмена"
+
+msgid "Recording…"
+msgstr "Запись…"
+
+msgid "Click start and sing your voice part."
+msgstr "Нажмите «Начать запись» и спойте свою партию."
+
+msgid "Uploading…"
+msgstr "Загрузка…"
+
+msgid "Microphone access was denied."
+msgstr "Доступ к микрофону запрещён."
+
+msgid "Microphone recording is not supported in this browser."
+msgstr "Запись с микрофона не поддерживается в этом браузере."
+
+msgid "Upload failed. Please try again."
+msgstr "Ошибка загрузки. Попробуйте снова."
+
+msgid "Save the song first, then you can record voice tracks."
+msgstr "Сначала сохраните песню, затем можно записывать треки."
+
+msgid "Add one row per voice part. Upload an audio file, record from your microphone, or pick one from the Media Library."
+msgstr "Добавьте строку для каждого голоса: загрузите файл, запишите с микрофона или выберите из медиатеки."
+
+msgid "Plugin version"
+msgstr "Версия плагина"
+
+msgid "Updates are published at %s"
+msgstr "Обновления публикуются на %s"
+
+msgid "Security check failed. Reload the page and try again."
+msgstr "Ошибка проверки безопасности. Перезагрузите страницу и попробуйте снова."
+
+msgid "Recording upload was blocked by the server."
+msgstr "Сервер заблокировал загрузку записи."
+
+msgid "Recording is too large for the server upload limit."
+msgstr "Запись слишком большая для лимита загрузки на сервере."
+
+msgid "Recording was only partially uploaded."
+msgstr "Запись загружена только частично."
+
+msgid "No recording file was received."
+msgstr "Файл записи не был получен сервером."
+
+msgid "Add the song title, upload a PDF score, then record or upload each voice part."
+msgstr "Укажите название песни, загрузите PDF с нотами и запишите или загрузите каждый голос."
+
+msgid "Back to song list"
+msgstr "К списку песен"
+
+msgid "Documentation"
+msgstr "Документация"
+
+msgid "Product page: order, install, pricing, changelog"
+msgstr "Страница продукта: заказ, установка, цены, история версий"
+
+msgid "Demo library"
+msgstr "Демо-библиотека"
+
+msgid "Load sample songs with four voice tracks and a short demo recording, or wipe the whole rehearsal library."
+msgstr "Загрузите демо-песни с четырьмя голосовыми треками и короткой записью или очистите всю библиотеку."
+
+msgid "Load demo songs"
+msgstr "Загрузить демо-песни"
+
+msgid "Delete all songs"
+msgstr "Удалить все песни"
+
+msgid "All songs will be deleted from the library. Do you agree?"
+msgstr "Все песни из библиотеки будут удалены. Вы согласны?"
+
+msgid "Yes"
+msgstr "Да"
+
+msgid "No"
+msgstr "Нет"
+
+msgid "Could not create the demo audio file in the Media Library."
+msgstr "Не удалось создать демо-аудиофайл в медиатеке."
+
+msgid "Loaded demo songs %1$d–%2$d (%3$d songs, %4$d tracks)."
+msgstr "Загружены демо-песни %1$d–%2$d (%3$d песен, %4$d треков)."
+
+msgid "Deleted %1$d songs, %2$d tracks, and %3$d media files."
+msgstr "Удалено: %1$d песен, %2$d треков и %3$d медиафайлов."
+
+msgid "Load %1$d sample songs (4 voice tracks each) so the public library shows pagination (%2$d songs per page), or wipe the whole rehearsal library."
+msgstr "Загружает %1$d демо-песен (по 4 голосовых трека), чтобы в публичном списке появилась пагинация (%2$d песен на странице), или очищает всю библиотеку."
+
+msgid "Lite: up to %d voice tracks per song, no microphone recording, no song search, no Play preview in the editor."
+msgstr "Lite: до %d голосовых треков на песню, без записи с микрофона, без поиска и без Play в редакторе."
+
+msgid "Unlimited voice tracks, microphone recording, song search, and Play preview in the song editor."
+msgstr "Безлимитные треки, запись с микрофона, поиск по названию и Play в редакторе песни."
+
+msgid "Unlimited tracks, microphone recording, search by song title, and Play preview in the song editor. Keep this Lite plugin installed — Pro is a separate add-on."
+msgstr "Безлимитные треки, запись с микрофона, поиск по названию и Play в редакторе. Не удаляйте Lite — Pro это отдельное дополнение."
+
+msgid "Lite edition allows up to %d voice tracks per song. Upgrade to Pro for unlimited tracks, microphone recording, and Play preview in the editor."
+msgstr "В Lite — до %d голосовых треков на песню. В Pro: безлимит, запись с микрофона и Play в редакторе."
+
+msgid "Add one row per voice part. Upload an audio file, record from your microphone, or pick one from the Media Library. Use Play to preview the track in the sticky player."
+msgstr "Добавьте строку для каждого голоса: загрузите файл, запишите с микрофона или выберите из медиатеки. Play открывает трек в нижнем плеере."
+
+msgid "View PDF"
+msgstr "Смотреть PDF"
+
+msgid "Upload a PDF score for this song. Use View PDF to keep the score open while you record voice tracks."
+msgstr "Загрузите PDF с нотами. «Смотреть PDF» оставляет партитуру открытой, пока вы записываете голос."
+
+msgid "Lite edition allows up to %d voice tracks per song. Upgrade to Pro for unlimited tracks, microphone recording, Play preview, and PDF view while recording."
+msgstr "В Lite — до %d голосовых треков. В Pro: безлимит, запись с микрофона, Play и просмотр PDF во время записи."
+
+msgid "Unlimited voice tracks, microphone recording, song search, Play preview, and PDF view while recording."
+msgstr "Безлимитные треки, запись с микрофона, поиск, Play и просмотр PDF во время записи."
+
+msgid "Unlimited tracks, microphone recording, search by song title, Play preview, and PDF view while recording. Keep this Lite plugin installed — Pro is a separate add-on."
+msgstr "Безлимитные треки, запись с микрофона, поиск, Play и PDF во время записи. Не удаляйте Lite — Pro это отдельное дополнение."
+
+msgid "Lite: up to %d voice tracks per song; no microphone recording, song search, editor Play, or PDF view while recording."
+msgstr "Lite: до %d голосовых треков; без записи с микрофона, поиска, Play и PDF в редакторе."
