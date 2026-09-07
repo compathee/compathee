@@ -308,9 +308,11 @@
 
 .choir-share {
 	position: relative;
+	display: inline-flex;
+	align-items: center;
 }
 
-.choir-share__toggle {
+.choir-share__button {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -324,10 +326,11 @@
 	cursor: pointer;
 }
 
-.choir-share__toggle:hover,
-.choir-share__toggle[aria-expanded="true"] {
+.choir-share__button:hover,
+.choir-share__button:focus-visible {
 	border-color: #1f4fd8;
 	color: #1f4fd8;
+	outline: none;
 }
 
 .choir-share__icon {
@@ -335,57 +338,43 @@
 	line-height: 0;
 }
 
-.choir-share__menu {
+.choir-share__status {
 	position: absolute;
-	top: calc(100% + 6px);
+	top: calc(100% + 8px);
 	right: 0;
 	z-index: 30;
-	min-width: min(280px, 82vw);
-	padding: 8px;
-	border: 1px solid rgba(0, 0, 0, 0.1);
-	border-radius: 12px;
-	background: #fff;
-	box-shadow: 0 10px 30px rgba(16, 24, 40, 0.12);
-}
-
-.choir-share__option {
-	display: flex;
-	flex-direction: column;
-	align-items: flex-start;
-	gap: 2px;
-	width: 100%;
+	max-width: min(260px, calc(100vw - 24px));
 	margin: 0;
-	padding: 10px 12px;
-	border: 0;
-	border-radius: 8px;
-	background: transparent;
-	color: inherit;
-	text-align: left;
-	cursor: pointer;
-}
-
-.choir-share__option:hover,
-.choir-share__option:focus-visible {
-	background: #f2f4f7;
-	outline: none;
-}
-
-.choir-share__option-label {
-	font-weight: 600;
-	font-size: 0.95rem;
-}
-
-.choir-share__option-hint {
-	font-size: 0.8rem;
-	line-height: 1.35;
-	color: #667085;
-}
-
-.choir-share__status {
-	min-height: 1.2em;
-	margin: 6px 4px 2px;
+	padding: 8px 12px;
+	border-radius: 10px;
+	background: #101828;
+	color: #fff;
 	font-size: 0.85rem;
-	color: #027a48;
+	line-height: 1.35;
+	box-shadow: 0 10px 24px rgba(16, 24, 40, 0.2);
+	white-space: normal;
+	pointer-events: none;
+}
+
+.choir-share__status.is-error {
+	background: #b42318;
+}
+
+.choir-share__status[hidden] {
+	display: none !important;
+}
+
+@media (max-width: 640px) {
+	.choir-share__status {
+		position: fixed;
+		top: auto;
+		right: 12px;
+		left: 12px;
+		bottom: max(16px, env(safe-area-inset-bottom));
+		max-width: none;
+		text-align: center;
+		z-index: 10050;
+	}
 }
 
 .choir-rehearsal-title {

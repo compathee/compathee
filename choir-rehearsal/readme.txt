@@ -4,7 +4,7 @@ Tags: choir, audio, rehearsal, voice parts, music
 Requires at least: 6.4
 Tested up to: 6.9
 Requires PHP: 8.0
-Stable tag: 0.4.18
+Stable tag: 0.4.19
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -42,6 +42,11 @@ By default only logged-in users can view `/rehearsal/`. Change this under **Choi
 Yes. Use the shortcode `[choir_rehearsal]`.
 
 == Changelog ==
+
+= 0.4.19 =
+* Share: one-tap copy link with on-screen confirmation (no dual public/private menu)
+* Fix mobile Share toast so it stays on screen
+* Song editor: fix Play icon (large white triangle in blue circle)
 
 = 0.4.18 =
 * Song permalinks: auto-transliterate any language title to a Latin slug

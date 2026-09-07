@@ -2,36 +2,10 @@
 	'use strict';
 
 	const i18n = window.choirRehearsalShare || {};
+	const HIDE_MS = 2400;
 
 	function closestShare(el) {
 		return el && el.closest ? el.closest('.choir-share') : null;
-	}
-
-	function setExpanded(root, open) {
-		const toggle = root.querySelector('.choir-share__toggle');
-		const menu = root.querySelector('.choir-share__menu');
-		if (!toggle || !menu) {
-			return;
-		}
-		toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-		if (open) {
-			menu.hidden = false;
-		} else {
-			menu.hidden = true;
-			const status = root.querySelector('.choir-share__status');
-			if (status) {
-				status.textContent = '';
-			}
-		}
-	}
-
-	function closeAll(except) {
-		document.querySelectorAll('.choir-share').forEach(function (root) {
-			if (except && root === except) {
-				return;
-			}
-			setExpanded(root, false);
-		});
 	}
 
 	function fallbackCopy(text) {
@@ -64,14 +38,32 @@
 		return Promise.resolve(fallbackCopy(text));
 	}
 
-	function statusMessage(type, isPublic) {
-		if (type === 'private') {
-			return i18n.copiedPrivate || 'Private link copied';
+	function clearHideTimer(root) {
+		if (root._choirShareHideTimer) {
+			window.clearTimeout(root._choirShareHideTimer);
+			root._choirShareHideTimer = null;
 		}
-		if (!isPublic) {
-			return i18n.copiedPublicPrivate || 'Link copied. Song is still private for guests.';
+	}
+
+	function showStatus(root, message, isError) {
+		const status = root.querySelector('.choir-share__status');
+		const button = root.querySelector('.choir-share__button');
+		if (!status) {
+			return;
 		}
-		return i18n.copiedPublic || 'Public link copied';
+		clearHideTimer(root);
+		status.textContent = message;
+		status.hidden = false;
+		status.classList.toggle('is-error', !!isError);
+		if (button) {
+			button.setAttribute('aria-describedby', status.id || '');
+		}
+		root._choirShareHideTimer = window.setTimeout(function () {
+			status.textContent = '';
+			status.hidden = true;
+			status.classList.remove('is-error');
+			root._choirShareHideTimer = null;
+		}, HIDE_MS);
 	}
 
 	document.addEventListener('click', function (event) {
@@ -80,50 +72,27 @@
 			return;
 		}
 
-		const toggle = target.closest('.choir-share__toggle');
-		if (toggle) {
-			const root = closestShare(toggle);
-			if (!root) {
-				return;
-			}
-			const open = toggle.getAttribute('aria-expanded') !== 'true';
-			closeAll(root);
-			setExpanded(root, open);
+		const button = target.closest('.choir-share__button');
+		if (!button) {
 			return;
 		}
 
-		const option = target.closest('.choir-share__option');
-		if (option) {
-			const root = closestShare(option);
-			if (!root) {
-				return;
-			}
-			const url = root.getAttribute('data-share-url') || '';
-			const type = option.getAttribute('data-share-type') || 'public';
-			const isPublic = root.getAttribute('data-is-public') === '1';
-			const status = root.querySelector('.choir-share__status');
-			if (!url) {
-				return;
-			}
-			copyText(url).then(function (ok) {
-				if (!status) {
-					return;
-				}
-				status.textContent = ok
-					? statusMessage(type, isPublic)
-					: (i18n.copyFailed || 'Could not copy the link.');
-			});
+		const root = closestShare(button);
+		if (!root) {
 			return;
 		}
 
-		if (!closestShare(target)) {
-			closeAll();
+		const url = root.getAttribute('data-share-url') || '';
+		if (!url) {
+			return;
 		}
-	});
 
-	document.addEventListener('keydown', function (event) {
-		if (event.key === 'Escape') {
-			closeAll();
-		}
+		copyText(url).then(function (ok) {
+			showStatus(
+				root,
+				ok ? (i18n.copied || 'Link copied to clipboard') : (i18n.copyFailed || 'Could not copy the link.'),
+				!ok
+			);
+		});
 	});
 })();

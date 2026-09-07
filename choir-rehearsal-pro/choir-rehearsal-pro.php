@@ -3,7 +3,7 @@
  * Plugin Name:       Choir Rehearsal Pro
  * Plugin URI:        https://rehearsal.compath.ee
  * Description:       Unlocks song search, unlimited voice tracks, microphone recording, Play preview, and floating PDF score view in the song editor for Choir Rehearsal.
- * Version:           0.4.18
+ * Version:           0.4.19
  * Requires at least: 6.4
  * Requires PHP:      8.0
  * Requires Plugins:  choir-rehearsal
@@ -21,7 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 define( 'CHOIR_REHEARSAL_PRO', true );
-define( 'CHOIR_REHEARSAL_PRO_VERSION', '0.4.18' );
+define( 'CHOIR_REHEARSAL_PRO_VERSION', '0.4.19' );
 define( 'CHOIR_REHEARSAL_PRO_FILE', __FILE__ );
 
 /**

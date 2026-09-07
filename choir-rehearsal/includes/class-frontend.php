@@ -126,10 +126,8 @@ final class Choir_Rehearsal_Frontend {
 				'choir-rehearsal-share',
 				'choirRehearsalShare',
 				array(
-					'copiedPublic'        => __( 'Public link copied', 'choir-rehearsal' ),
-					'copiedPrivate'       => __( 'Private link copied', 'choir-rehearsal' ),
-					'copiedPublicPrivate' => __( 'Link copied. Song is still private for guests.', 'choir-rehearsal' ),
-					'copyFailed'          => __( 'Could not copy the link. Please copy it from the address bar.', 'choir-rehearsal' ),
+					'copied'     => __( 'Link copied to clipboard', 'choir-rehearsal' ),
+					'copyFailed' => __( 'Could not copy the link. Please copy it from the address bar.', 'choir-rehearsal' ),
 				)
 			);
 
@@ -586,7 +584,6 @@ final class Choir_Rehearsal_Frontend {
 		$tracks     = Choir_Rehearsal_Post_Types::get_tracks_for_song( (int) $song->ID );
 		$pdf_url    = Choir_Rehearsal_Post_Types::get_score_pdf_url( (int) $song->ID );
 		$can_manage = Choir_Rehearsal_Access::can_manage();
-		$is_public  = Choir_Rehearsal_Post_Types::is_public( (int) $song->ID );
 		$share_url  = get_permalink( $song );
 		$share_url  = is_string( $share_url ) ? $share_url : '';
 		?>
@@ -596,17 +593,10 @@ final class Choir_Rehearsal_Frontend {
 				<h1 class="choir-rehearsal-title"><?php echo esc_html( get_the_title( $song ) ); ?></h1>
 				<div class="choir-song-header__actions">
 					<?php if ( '' !== $share_url ) : ?>
-						<div
-							class="choir-share"
-							data-share-url="<?php echo esc_url( $share_url ); ?>"
-							data-is-public="<?php echo $is_public ? '1' : '0'; ?>"
-						>
+						<div class="choir-share" data-share-url="<?php echo esc_url( $share_url ); ?>">
 							<button
 								type="button"
-								class="choir-share__toggle"
-								aria-expanded="false"
-								aria-haspopup="true"
-								aria-controls="choir-share-menu-<?php echo esc_attr( (string) $song->ID ); ?>"
+								class="choir-share__button"
 								title="<?php esc_attr_e( 'Share', 'choir-rehearsal' ); ?>"
 								aria-label="<?php esc_attr_e( 'Share', 'choir-rehearsal' ); ?>"
 							>
@@ -616,30 +606,13 @@ final class Choir_Rehearsal_Frontend {
 									</svg>
 								</span>
 							</button>
-							<div
-								id="choir-share-menu-<?php echo esc_attr( (string) $song->ID ); ?>"
-								class="choir-share__menu"
+							<p
+								id="choir-share-status-<?php echo esc_attr( (string) $song->ID ); ?>"
+								class="choir-share__status"
+								role="status"
+								aria-live="polite"
 								hidden
-								role="menu"
-							>
-								<button type="button" class="choir-share__option" data-share-type="public" role="menuitem">
-									<span class="choir-share__option-label"><?php esc_html_e( 'Copy public link', 'choir-rehearsal' ); ?></span>
-									<span class="choir-share__option-hint">
-										<?php
-										echo esc_html(
-											$is_public
-												? __( 'Anyone can open without signing in', 'choir-rehearsal' )
-												: __( 'Song is private — guests will see the login form', 'choir-rehearsal' )
-										);
-										?>
-									</span>
-								</button>
-								<button type="button" class="choir-share__option" data-share-type="private" role="menuitem">
-									<span class="choir-share__option-label"><?php esc_html_e( 'Copy private link', 'choir-rehearsal' ); ?></span>
-									<span class="choir-share__option-hint"><?php esc_html_e( 'Requires sign-in when login is required', 'choir-rehearsal' ); ?></span>
-								</button>
-								<p class="choir-share__status" role="status" aria-live="polite"></p>
-							</div>
+							></p>
 						</div>
 					<?php endif; ?>
 					<?php if ( $can_manage ) : ?>

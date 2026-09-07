@@ -180,6 +180,35 @@
 	box-shadow: 0 0 0 3px rgba(180, 35, 24, 0.18);
 }
 
+/* Override public .choir-play-track pill padding that crushed the SVG. */
+.choir-icon-btn.choir-play-track {
+	width: 40px;
+	height: 40px;
+	padding: 0;
+	border: 0;
+	background: #1f4fd8;
+	color: #fff;
+}
+
+.choir-icon-btn.choir-play-track:hover,
+.choir-icon-btn.choir-play-track:focus-visible {
+	background: #173ea8;
+	border-color: transparent;
+	color: #fff;
+	box-shadow: 0 0 0 3px rgba(31, 79, 216, 0.28);
+}
+
+.choir-icon-btn.choir-play-track:disabled {
+	opacity: 0.4;
+}
+
+.choir-icon-btn.choir-play-track svg {
+	width: 22px;
+	height: 22px;
+	display: block;
+	margin-left: 2px; /* optical center for play triangle */
+}
+
 .choir-icon-btn .choir-record-audio,
 .choir-icon-btn.choir-record-audio {
 	color: #b42318;
