@@ -120,6 +120,16 @@
   ],
   "changelog": [
     {
+      "version": "0.4.21",
+      "summary": "Reliable plugin updater",
+      "items": [
+        "Updater treats GitHub API errors (rate limit, non-2xx) as failures instead of empty release lists",
+        "Fallback reads update.json from the latest Lite release asset when the API is unavailable",
+        "Check for plugin updates returns to Settings with available / up to date / failed notices"
+      ],
+      "open": true
+    },
+    {
       "version": "0.4.20",
       "summary": "Editor PDF preview fix",
       "items": [
@@ -127,7 +137,7 @@
         "PDF.js prefers non-credentialed fetch first (avoids hung admin loads)",
         "Saving a song no longer drops the PDF when the metabox field is absent or mime is unexpected"
       ],
-      "open": true
+      "open": false
     },
     {
       "version": "0.4.19",

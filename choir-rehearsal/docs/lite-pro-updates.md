@@ -52,31 +52,37 @@ Deactivating Pro returns the site to Lite limits. Content is not deleted.
 
 ## Publisher: ship a new Lite version (GitHub)
 
-WordPress **Check for updates** only sees a newer **GitHub Release** whose asset is named exactly `choir-rehearsal.zip`.
-
-Current GitHub latest is `choir-rehearsal-v0.3.11`. Until a newer tagged release exists, the button will find nothing. That is expected.
+WordPress **Check for plugin updates** only sees a newer **GitHub Release** whose assets include **`choir-rehearsal.zip`** (required) and preferably **`update.json`** (API-failure fallback).
 
 ### Release checklist
 
 1. Bump `CHOIR_REHEARSAL_VERSION` in `choir-rehearsal/choir-rehearsal.php` (and changelog files).
 2. Build a zip whose **root folder is `choir-rehearsal/`** (not `choir-rehearsal-0.4.3/`).
-3. GitHub → **Releases → Draft a new release**:
+3. Update `choir-rehearsal/update.json` `version` and `download_url` to match the new tag.
+4. GitHub → **Releases → Draft a new release**:
    - Tag: `choir-rehearsal-vX.Y.Z` (example: `choir-rehearsal-v0.4.3`)
-   - Asset filename: **`choir-rehearsal.zip`** (required by the updater)
+   - Assets (required / recommended):
+     - **`choir-rehearsal.zip`** (required by the updater)
+     - **`update.json`** (recommended; used when the GitHub API is rate-limited or unreachable)
    - Do **not** attach `choir-rehearsal-pro.zip` to a public release
-4. Publish the release (not draft, not prerelease).
-5. Update `choir-rehearsal/update.json` `version` and `download_url` to the same tag, then merge to `main` (fallback if GitHub API fails).
+5. Publish the release (not draft, not prerelease).
+
+CLI example after creating the release:
+
+```bash
+gh release upload choir-rehearsal-vX.Y.Z choir-rehearsal.zip choir-rehearsal/update.json --clobber
+```
 
 ### How to test auto-update
 
 Use a **clean** WordPress site:
 
-1. Install an **older** Lite (for example current GitHub `0.3.11`, or this package if it is older than the new tag).
+1. Install an **older** Lite (for example the previous GitHub tag).
 2. Publish the new GitHub release as above.
-3. In WP: **Choir Rehearsal → Settings → Check for updates now**.
-4. **Plugins** should show an update to `X.Y.Z`. Update it. Songs must remain.
+3. In WP: **Choir Rehearsal → Settings → Check for plugin updates**.
+4. Settings should show a notice (update available / up to date / failed). If available, **Plugins** shows an update to `X.Y.Z`.
 
-If you install the *same* version that you just published, Check for updates correctly shows nothing.
+If you install the *same* version that you just published, Check for plugin updates correctly reports up to date.
 
 ---
 

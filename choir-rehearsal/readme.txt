@@ -4,7 +4,7 @@ Tags: choir, audio, rehearsal, voice parts, music
 Requires at least: 6.4
 Tested up to: 6.9
 Requires PHP: 8.0
-Stable tag: 0.4.20
+Stable tag: 0.4.21
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -42,6 +42,12 @@ By default only logged-in users can view `/rehearsal/`. Change this under **Choi
 Yes. Use the shortcode `[choir_rehearsal]`.
 
 == Changelog ==
+
+= 0.4.21 =
+* Fix: updater treats non-2xx GitHub API responses as failures (rate limits no longer look like empty release lists)
+* Fix: durable update.json fallback via GitHub release asset (/releases/latest/download/update.json)
+* Settings: Check for plugin updates redirects back with clear notices (available / up to date / failed)
+* Settings: show last update-check result under Plugin version
 
 = 0.4.20 =
 * Fix: PDF score preview no longer blanks in the song editor after the form loads
