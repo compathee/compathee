@@ -120,6 +120,15 @@
   ],
   "changelog": [
     {
+      "version": "0.4.23",
+      "summary": "WordPress.org Plugin Check fixes",
+      "items": [
+        "WordPress.org zip omits class-updater.php (plugin_updater_detected)",
+        "readme.txt Tested up to 7.1"
+      ],
+      "open": true
+    },
+    {
       "version": "0.4.22",
       "summary": "WordPress.org ready",
       "items": [
@@ -127,7 +136,7 @@
         "PDF.js bundled locally (guideline: no third-party CDN for JS)",
         "Settings explains WordPress.org updates on .org builds"
       ],
-      "open": true
+      "open": false
     },
     {
       "version": "0.4.21",
