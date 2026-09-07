@@ -49,6 +49,10 @@ final class Choir_Rehearsal_Pages {
 			self::normalize_page_content( $page_id );
 		}
 
+		if ( version_compare( $stored, '0.4.18', '<' ) ) {
+			Choir_Rehearsal_Slugs::migrate_existing_song_slugs();
+		}
+
 		if ( function_exists( 'flush_rewrite_rules' ) ) {
 			flush_rewrite_rules( false );
 		}

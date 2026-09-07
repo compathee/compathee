@@ -290,7 +290,6 @@ final class Choir_Rehearsal_Admin {
 			return;
 		}
 
-		remove_meta_box( 'slugdiv', Choir_Rehearsal_Post_Types::SONG, 'normal' );
 		remove_meta_box( 'authordiv', Choir_Rehearsal_Post_Types::SONG, 'normal' );
 		remove_meta_box( 'revisionsdiv', Choir_Rehearsal_Post_Types::SONG, 'normal' );
 		remove_meta_box( 'postcustom', Choir_Rehearsal_Post_Types::SONG, 'normal' );
@@ -300,6 +299,7 @@ final class Choir_Rehearsal_Admin {
 		remove_meta_box( 'postexcerpt', Choir_Rehearsal_Post_Types::SONG, 'normal' );
 		remove_meta_box( 'postimagediv', Choir_Rehearsal_Post_Types::SONG, 'side' );
 		remove_meta_box( 'pageparentdiv', Choir_Rehearsal_Post_Types::SONG, 'side' );
+		// Keep slugdiv so permalink edits remain visible and savable.
 	}
 
 	public static function render_back_to_list_link( WP_Post $post ): void {

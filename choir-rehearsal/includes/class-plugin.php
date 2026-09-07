@@ -11,6 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-edition.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-post-types.php';
+require_once CHOIR_REHEARSAL_PATH . 'includes/class-slugs.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-voice-types.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-pages.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-access.php';
@@ -54,6 +55,7 @@ final class Choir_Rehearsal_Plugin {
 
 	public function init(): void {
 		Choir_Rehearsal_Post_Types::register();
+		Choir_Rehearsal_Slugs::register();
 		Choir_Rehearsal_Voice_Types::register();
 		Choir_Rehearsal_Pages::register();
 		Choir_Rehearsal_Access::register();
