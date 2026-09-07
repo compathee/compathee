@@ -120,6 +120,45 @@
   ],
   "changelog": [
     {
+      "version": "0.4.23",
+      "summary": "WordPress.org Plugin Check fixes",
+      "items": [
+        "WordPress.org zip omits class-updater.php (plugin_updater_detected)",
+        "readme.txt Tested up to 7.1"
+      ],
+      "open": true
+    },
+    {
+      "version": "0.4.22",
+      "summary": "WordPress.org ready",
+      "items": [
+        "WordPress.org package disables GitHub self-updater",
+        "PDF.js bundled locally (guideline: no third-party CDN for JS)",
+        "Settings explains WordPress.org updates on .org builds"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.21",
+      "summary": "Reliable plugin updater",
+      "items": [
+        "Updater treats GitHub API errors (rate limit, non-2xx) as failures instead of empty release lists",
+        "Fallback reads update.json from the latest Lite release asset when the API is unavailable",
+        "Check for plugin updates returns to Settings with available / up to date / failed notices"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.20",
+      "summary": "Editor PDF preview fix",
+      "items": [
+        "PDF score preview stays visible in the song editor after the form loads",
+        "PDF.js prefers non-credentialed fetch first (avoids hung admin loads)",
+        "Saving a song no longer drops the PDF when the metabox field is absent or mime is unexpected"
+      ],
+      "open": false
+    },
+    {
       "version": "0.4.19",
       "summary": "Share UX and Play icon fixes",
       "items": [
@@ -127,7 +166,7 @@
         "Mobile Share confirmation stays on screen",
         "Song editor Play icon is a clear white triangle"
       ],
-      "open": true
+      "open": false
     },
     {
       "version": "0.4.18",
