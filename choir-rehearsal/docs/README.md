@@ -24,7 +24,7 @@
 2. **`update.json`** — версия для WordPress-updater
 3. **`readme.txt`** — changelog для WordPress.org / плагина
 
-Сайт сначала читает ветку `cursor/lite-pro-hub-setup-abc2`, затем `main`. Версия в hero берётся из **GitHub Releases** (`choir-rehearsal-v*`).
+Сайт читает ветки из `CONFIG.branches` в оболочке (сейчас сначала `main`, затем `cursor/lite-pro-hub-setup-abc2` / feature branches). Версия в hero берётся из **GitHub Releases** (`choir-rehearsal-v*`).
 
 ### Однократный деплой оболочки
 
@@ -49,7 +49,8 @@ FTP нужен только когда меняется сам `product-page.htm
 | Файл | Назначение |
 |------|------------|
 | [lite-pro-updates.md](lite-pro-updates.md) | Lite install, Buy Pro, Lite→Pro add-on, GitHub auto-update |
-| [product-page.html](product-page.html) | Оболочка (JS) — загрузить как `index.html` **один раз** |
+| [product-page.html](product-page.html) | Оболочка (JS) — загрузить на FTP как `index.html` |
+| [product-page-download.html](product-page-download.html) | Готовая копия оболочки для ручной загрузки на FTP (то же содержимое) |
 | [product-data.json](product-data.json) | **Контент страницы** — редактировать при каждом релизе |
 | [product-page.md](product-page.md) | Markdown-копия (справочно) |
 | [deploy/.htaccess](deploy/.htaccess) | Apache: index + права |
