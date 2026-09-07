@@ -117,6 +117,40 @@ final class Choir_Rehearsal_Admin {
 								);
 								?>
 							</p>
+							<?php
+							$last_check = Choir_Rehearsal_Updater::get_last_check_result();
+							if ( ! empty( $last_check['time'] ) && ! empty( $last_check['status'] ) ) :
+								$when = wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), (int) $last_check['time'] );
+								$remote_version = isset( $last_check['remote_version'] ) ? (string) $last_check['remote_version'] : '';
+								if ( 'available' === $last_check['status'] && '' !== $remote_version ) {
+									$last_summary = sprintf(
+										/* translators: 1: datetime, 2: version */
+										__( 'Last check: %1$s — update available (%2$s).', 'choir-rehearsal' ),
+										$when,
+										$remote_version
+									);
+								} elseif ( 'up_to_date' === $last_check['status'] ) {
+									$last_summary = sprintf(
+										/* translators: %s: datetime */
+										__( 'Last check: %s — up to date.', 'choir-rehearsal' ),
+										$when
+									);
+								} elseif ( 'failed' === $last_check['status'] ) {
+									$last_summary = sprintf(
+										/* translators: %s: datetime */
+										__( 'Last check: %s — could not reach the update server.', 'choir-rehearsal' ),
+										$when
+									);
+								} else {
+									$last_summary = sprintf(
+										/* translators: %s: datetime */
+										__( 'Last check: %s', 'choir-rehearsal' ),
+										$when
+									);
+								}
+								?>
+								<p class="description"><?php echo esc_html( $last_summary ); ?></p>
+							<?php endif; ?>
 						</td>
 					</tr>
 					<tr>
@@ -147,15 +181,15 @@ final class Choir_Rehearsal_Admin {
 					<tr>
 						<th scope="row"><?php esc_html_e( 'Update JSON URL', 'choir-rehearsal' ); ?></th>
 						<td>
-							<input type="url" class="regular-text" name="choir_rehearsal_update_json_url" value="<?php echo esc_attr( (string) get_option( 'choir_rehearsal_update_json_url', '' ) ); ?>" placeholder="https://raw.githubusercontent.com/compathee/compathee/main/choir-rehearsal/update.json" />
-							<p class="description"><?php esc_html_e( 'Optional. If empty, the plugin checks GitHub Releases. Fallback JSON: choir-rehearsal/update.json in the repository.', 'choir-rehearsal' ); ?></p>
+							<input type="url" class="regular-text" name="choir_rehearsal_update_json_url" value="<?php echo esc_attr( (string) get_option( 'choir_rehearsal_update_json_url', '' ) ); ?>" placeholder="https://github.com/compathee/compathee/releases/latest/download/update.json" />
+							<p class="description"><?php esc_html_e( 'Optional override. If empty, the plugin checks GitHub Releases, then falls back to the latest release asset update.json.', 'choir-rehearsal' ); ?></p>
 						</td>
 					</tr>
 					<tr>
 						<th scope="row"><?php esc_html_e( 'GitHub repository', 'choir-rehearsal' ); ?></th>
 						<td>
 							<input type="text" class="regular-text" name="choir_rehearsal_github_repo" value="<?php echo esc_attr( (string) get_option( 'choir_rehearsal_github_repo', 'compathee/compathee' ) ); ?>" />
-							<p class="description"><?php esc_html_e( 'Used when Update JSON URL is empty. Release asset must be named choir-rehearsal.zip.', 'choir-rehearsal' ); ?></p>
+							<p class="description"><?php esc_html_e( 'Used when Update JSON URL is empty. Each Lite release should include choir-rehearsal.zip and update.json assets.', 'choir-rehearsal' ); ?></p>
 						</td>
 					</tr>
 				</table>
@@ -176,8 +210,11 @@ final class Choir_Rehearsal_Admin {
 			<?php endif; ?>
 			<p>
 				<a class="button button-secondary" href="<?php echo esc_url( Choir_Rehearsal_Updater::get_check_updates_url() ); ?>">
-					<?php esc_html_e( 'Check for updates now', 'choir-rehearsal' ); ?>
+					<?php esc_html_e( 'Check for plugin updates', 'choir-rehearsal' ); ?>
 				</a>
+				<span class="description" style="margin-left:0.5em;"><?php esc_html_e( 'Contacts GitHub Releases and shows the result on this page.', 'choir-rehearsal' ); ?></span>
+			</p>
+			<p>
 				<a class="button button-secondary" href="<?php echo esc_url( Choir_Rehearsal_Pages::get_flush_rewrites_url() ); ?>">
 					<?php esc_html_e( 'Refresh permalinks', 'choir-rehearsal' ); ?>
 				</a>
@@ -736,17 +773,27 @@ final class Choir_Rehearsal_Admin {
 			return;
 		}
 
+		if ( ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) || wp_is_post_autosave( $post_id ) || wp_is_post_revision( $post_id ) ) {
+			return;
+		}
+
 		if ( isset( $_POST['choir_rehearsal_visibility_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['choir_rehearsal_visibility_nonce'] ) ), 'choir_rehearsal_save_visibility' ) ) {
 			$is_public = isset( $_POST['choir_is_public'] ) && '1' === (string) wp_unslash( $_POST['choir_is_public'] );
 			Choir_Rehearsal_Post_Types::set_public( $post_id, $is_public );
 		}
 
 		if ( isset( $_POST['choir_rehearsal_score_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['choir_rehearsal_score_nonce'] ) ), 'choir_rehearsal_save_score' ) ) {
-			$pdf_id = isset( $_POST['choir_score_pdf_id'] ) ? absint( wp_unslash( $_POST['choir_score_pdf_id'] ) ) : 0;
-			if ( $pdf_id > 0 && 'application/pdf' === get_post_mime_type( $pdf_id ) ) {
-				update_post_meta( $post_id, '_choir_score_pdf_id', $pdf_id );
-			} else {
-				delete_post_meta( $post_id, '_choir_score_pdf_id' );
+			// Only touch PDF meta when the metabox field is present in this request.
+			if ( isset( $_POST['choir_score_pdf_id'] ) ) {
+				$pdf_id = absint( wp_unslash( $_POST['choir_score_pdf_id'] ) );
+				if ( $pdf_id > 0 ) {
+					if ( 'application/pdf' === get_post_mime_type( $pdf_id ) ) {
+						update_post_meta( $post_id, '_choir_score_pdf_id', $pdf_id );
+					}
+					// Invalid mime: keep any existing score rather than deleting it.
+				} else {
+					delete_post_meta( $post_id, '_choir_score_pdf_id' );
+				}
 			}
 		}
 
