@@ -4,7 +4,7 @@ Tags: choir, audio, rehearsal, voice parts, music
 Requires at least: 6.4
 Tested up to: 6.9
 Requires PHP: 8.0
-Stable tag: 0.4.21
+Stable tag: 0.4.22
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -22,6 +22,19 @@ Choir Rehearsal helps choir members learn new pieces by voice part.
 * Sticky HTML5 player at the bottom of the page
 * Optional login-only access
 * REST API and MCP abilities for automation
+
+== External services ==
+
+This plugin can open an external product page when you choose to upgrade to **Choir Rehearsal Pro**:
+
+* Service: [shop.compath.ee](https://shop.compath.ee/products/choir-rehearsal-pro/) (Compath OÜ)
+* Purpose: optional paid Pro add-on purchase (unlimited tracks, microphone recording, search, editor Play, embedded PDF in the editor)
+* Data: the plugin does not send site or user data to the shop unless you click through and complete checkout there
+* Terms: see the shop site terms/privacy policy on shop.compath.ee
+
+PDF viewing uses **Mozilla PDF.js** bundled inside the plugin (Apache-2.0). No PDF.js CDN calls are made.
+
+WordPress.org builds receive plugin updates only through WordPress.org. GitHub-distributed builds may offer an optional GitHub Releases updater in Settings.
 
 == Installation ==
 
@@ -42,6 +55,12 @@ By default only logged-in users can view `/rehearsal/`. Change this under **Choi
 Yes. Use the shortcode `[choir_rehearsal]`.
 
 == Changelog ==
+
+= 0.4.22 =
+* WordPress.org ready: disable GitHub self-updater in .org packages
+* Bundle PDF.js locally (no third-party CDN for scripts)
+* Settings: WordPress.org builds show “Updates via WordPress.org”
+* Document external Pro storefront link in readme
 
 = 0.4.21 =
 * Fix: updater treats non-2xx GitHub API responses as failures (rate limits no longer look like empty release lists)

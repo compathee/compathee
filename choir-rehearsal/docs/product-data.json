@@ -120,6 +120,16 @@
   ],
   "changelog": [
     {
+      "version": "0.4.22",
+      "summary": "WordPress.org ready",
+      "items": [
+        "WordPress.org package disables GitHub self-updater",
+        "PDF.js bundled locally (guideline: no third-party CDN for JS)",
+        "Settings explains WordPress.org updates on .org builds"
+      ],
+      "open": true
+    },
+    {
       "version": "0.4.21",
       "summary": "Reliable plugin updater",
       "items": [
@@ -127,7 +137,7 @@
         "Fallback reads update.json from the latest Lite release asset when the API is unavailable",
         "Check for plugin updates returns to Settings with available / up to date / failed notices"
       ],
-      "open": true
+      "open": false
     },
     {
       "version": "0.4.20",

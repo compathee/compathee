@@ -9,6 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+require_once CHOIR_REHEARSAL_PATH . 'includes/class-distribution.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-edition.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-post-types.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-slugs.php';
@@ -42,7 +43,9 @@ final class Choir_Rehearsal_Plugin {
 		add_action( 'plugins_loaded', array( $this, 'load_textdomain' ) );
 		add_action( 'init', array( $this, 'maybe_upgrade' ), 20 );
 		add_action( 'init', array( $this, 'init' ), 5 );
-		Choir_Rehearsal_Updater::register();
+		if ( Choir_Rehearsal_Distribution::uses_github_updater() ) {
+			Choir_Rehearsal_Updater::register();
+		}
 	}
 
 	public function load_textdomain(): void {

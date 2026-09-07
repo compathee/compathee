@@ -135,7 +135,7 @@ final class Choir_Rehearsal_Frontend {
 			if ( '' !== $pdf_url ) {
 				wp_enqueue_script(
 					'pdfjs',
-					'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',
+					Choir_Rehearsal_Distribution::pdfjs_script_url(),
 					array(),
 					'3.11.174',
 					true
@@ -151,7 +151,7 @@ final class Choir_Rehearsal_Frontend {
 					'choir-rehearsal-pdf',
 					'choirRehearsalPdf',
 					array(
-						'workerSrc' => 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js',
+						'workerSrc' => Choir_Rehearsal_Distribution::pdfjs_worker_url(),
 						'prev'      => __( 'Previous page', 'choir-rehearsal' ),
 						'next'      => __( 'Next page', 'choir-rehearsal' ),
 					)
