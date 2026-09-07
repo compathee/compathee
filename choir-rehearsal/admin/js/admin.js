@@ -500,9 +500,19 @@
 		});
 
 		if (i18n.canViewPdf) {
-			// Ensure viewer is ready after pdf.js loads (script order: pdf then admin).
+			// Ensure viewer loads after DOM ready from the hidden URL field (canonical),
+			// not only data-pdf-url from the early pdf-viewer auto-init.
 			window.setTimeout(function () {
-				getEditorPdfApi();
+				const url = String(
+					$('#choir-score-pdf-url').val() ||
+						$('#choir-editor-pdf-viewer').attr('data-pdf-url') ||
+						''
+				);
+				if (url) {
+					setEditorPdf(url);
+				} else {
+					getEditorPdfApi();
+				}
 			}, 0);
 		}
 

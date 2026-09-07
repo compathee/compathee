@@ -4,7 +4,7 @@ Tags: choir, audio, rehearsal, voice parts, music
 Requires at least: 6.4
 Tested up to: 6.9
 Requires PHP: 8.0
-Stable tag: 0.4.19
+Stable tag: 0.4.20
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -42,6 +42,11 @@ By default only logged-in users can view `/rehearsal/`. Change this under **Choi
 Yes. Use the shortcode `[choir_rehearsal]`.
 
 == Changelog ==
+
+= 0.4.20 =
+* Fix: PDF score preview no longer blanks in the song editor after the form loads
+* PDF.js loads without credentials first (avoids hung credentialed fetches in wp-admin)
+* Song save no longer deletes an attached PDF when the metabox field is missing or mime is unexpected
 
 = 0.4.19 =
 * Share: one-tap copy link with on-screen confirmation (no dual public/private menu)

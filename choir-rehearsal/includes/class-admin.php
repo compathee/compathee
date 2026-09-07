@@ -736,17 +736,27 @@ final class Choir_Rehearsal_Admin {
 			return;
 		}
 
+		if ( ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) || wp_is_post_autosave( $post_id ) || wp_is_post_revision( $post_id ) ) {
+			return;
+		}
+
 		if ( isset( $_POST['choir_rehearsal_visibility_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['choir_rehearsal_visibility_nonce'] ) ), 'choir_rehearsal_save_visibility' ) ) {
 			$is_public = isset( $_POST['choir_is_public'] ) && '1' === (string) wp_unslash( $_POST['choir_is_public'] );
 			Choir_Rehearsal_Post_Types::set_public( $post_id, $is_public );
 		}
 
 		if ( isset( $_POST['choir_rehearsal_score_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['choir_rehearsal_score_nonce'] ) ), 'choir_rehearsal_save_score' ) ) {
-			$pdf_id = isset( $_POST['choir_score_pdf_id'] ) ? absint( wp_unslash( $_POST['choir_score_pdf_id'] ) ) : 0;
-			if ( $pdf_id > 0 && 'application/pdf' === get_post_mime_type( $pdf_id ) ) {
-				update_post_meta( $post_id, '_choir_score_pdf_id', $pdf_id );
-			} else {
-				delete_post_meta( $post_id, '_choir_score_pdf_id' );
+			// Only touch PDF meta when the metabox field is present in this request.
+			if ( isset( $_POST['choir_score_pdf_id'] ) ) {
+				$pdf_id = absint( wp_unslash( $_POST['choir_score_pdf_id'] ) );
+				if ( $pdf_id > 0 ) {
+					if ( 'application/pdf' === get_post_mime_type( $pdf_id ) ) {
+						update_post_meta( $post_id, '_choir_score_pdf_id', $pdf_id );
+					}
+					// Invalid mime: keep any existing score rather than deleting it.
+				} else {
+					delete_post_meta( $post_id, '_choir_score_pdf_id' );
+				}
 			}
 		}
 

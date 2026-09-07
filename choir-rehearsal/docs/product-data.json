@@ -120,6 +120,16 @@
   ],
   "changelog": [
     {
+      "version": "0.4.20",
+      "summary": "Editor PDF preview fix",
+      "items": [
+        "PDF score preview stays visible in the song editor after the form loads",
+        "PDF.js prefers non-credentialed fetch first (avoids hung admin loads)",
+        "Saving a song no longer drops the PDF when the metabox field is absent or mime is unexpected"
+      ],
+      "open": true
+    },
+    {
       "version": "0.4.19",
       "summary": "Share UX and Play icon fixes",
       "items": [
@@ -127,7 +137,7 @@
         "Mobile Share confirmation stays on screen",
         "Song editor Play icon is a clear white triangle"
       ],
-      "open": true
+      "open": false
     },
     {
       "version": "0.4.18",
