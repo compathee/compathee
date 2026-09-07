@@ -455,8 +455,12 @@ final class Choir_Rehearsal_Updater {
 			}
 
 			$tag     = (string) ( $release['tag_name'] ?? '' );
+			// Lite only: choir-rehearsal-vX.Y.Z (exclude choir-rehearsal-pro-v…).
+			if ( 1 !== preg_match( '/^choir-rehearsal-v\d/', $tag ) ) {
+				continue;
+			}
 			$version = self::parse_release_version( $tag );
-			if ( '' === $version || 0 !== strpos( $tag, 'choir-rehearsal-v' ) ) {
+			if ( '' === $version ) {
 				continue;
 			}
 
