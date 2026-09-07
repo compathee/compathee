@@ -16,7 +16,7 @@
     "Private access — optional login-only rehearsal pages",
     "Editor & singer roles — editors manage, singers listen",
     "Lite (free) — up to 4 tracks per song, audio upload, GitHub updates",
-    "Pro add-on — unlimited tracks, mic recording, search, editor Play, PDF view while recording"
+    "Pro add-on — unlimited tracks, mic recording, search, editor Play, embedded PDF in the editor"
   ],
   "featureCards": [
     {
@@ -57,7 +57,7 @@
     {
       "icon": "pro",
       "title": "Pro add-on",
-      "text": "Unlimited tracks, mic recording, search by title, Play preview, and floating PDF while you record."
+      "text": "Unlimited tracks, mic recording, search by title, Play preview, and embedded PDF preview in the editor."
     }
   ],
   "pricing": [
@@ -84,8 +84,9 @@
         "Unlimited voice tracks per song",
         "Microphone recording in the admin",
         "Play preview of voice tracks in the song editor",
-        "Floating PDF score view while recording",
+        "Embedded PDF score in the song editor (swipe pages)",
         "Search songs by title",
+        "PDF icon on songs that have a score attached",
         "1 choir website",
         "Priority email support"
       ]
@@ -105,7 +106,6 @@
   ],
   "orderEmail": "order@compath.ee",
   "orderSteps": [
-    "<a href=\"https://shop.compath.ee/products/choir-rehearsal-pro/\" target=\"_blank\" rel=\"noopener noreferrer\" style=\"display:inline-flex;align-items:center;justify-content:center;padding:12px 22px;border-radius:999px;background:#1f4fd8;color:#fff;font-weight:700;text-decoration:none\">Order Pro — €49 / year</a> <span style=\"color:#5c6578;margin-left:8px\">Opens shop.compath.ee checkout</span>",
     "Open https://shop.compath.ee/products/choir-rehearsal-pro/ (or email order@compath.ee for setup services).",
     "After payment, download choir-rehearsal-pro.zip from your SureCart customer dashboard.",
     "Keep Choir Rehearsal (Lite) installed. Upload and activate the Pro add-on beside it — do not replace Lite."
@@ -120,13 +120,92 @@
   ],
   "changelog": [
     {
+      "version": "0.4.21",
+      "summary": "Reliable plugin updater",
+      "items": [
+        "Updater treats GitHub API errors (rate limit, non-2xx) as failures instead of empty release lists",
+        "Fallback reads update.json from the latest Lite release asset when the API is unavailable",
+        "Check for plugin updates returns to Settings with available / up to date / failed notices"
+      ],
+      "open": true
+    },
+    {
+      "version": "0.4.20",
+      "summary": "Editor PDF preview fix",
+      "items": [
+        "PDF score preview stays visible in the song editor after the form loads",
+        "PDF.js prefers non-credentialed fetch first (avoids hung admin loads)",
+        "Saving a song no longer drops the PDF when the metabox field is absent or mime is unexpected"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.19",
+      "summary": "Share UX and Play icon fixes",
+      "items": [
+        "Share button copies the song link in one tap and shows a confirmation",
+        "Mobile Share confirmation stays on screen",
+        "Song editor Play icon is a clear white triangle"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.18",
+      "summary": "Latin song permalinks",
+      "items": [
+        "Song URLs are auto-generated in Latin letters from any language title",
+        "Permalink edits in the song editor save correctly",
+        "Existing non-Latin song URLs are migrated on upgrade"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.17",
+      "summary": "Share song links",
+      "items": [
+        "Song view: Share icon button",
+        "Copy public or private (login-required) link to the song"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.16",
+      "summary": "Public songs for guests",
+      "items": [
+        "Song editor: Make public button (icon-only on mobile)",
+        "Guests see a public songs list and can listen without signing in",
+        "Private songs remain login-gated when require-login is on"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.15",
+      "summary": "Editor song card + swipe PDF",
+      "items": [
+        "Song editor matches the public song card with an embedded PDF viewer",
+        "Swipe left/right on the score to change pages",
+        "Voice tracks use listen-style rows with Upload / Record / Play icons",
+        "Removed the floating PDF panel"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.14",
+      "summary": "Player close + PDF list icon",
+      "items": [
+        "Sticky player: close (×) on the right so mobile Update and content stay reachable",
+        "Pro: PDF icon after song titles that have an attached score"
+      ],
+      "open": false
+    },
+    {
       "version": "0.4.13",
       "summary": "Editor back link + PDF panel",
       "items": [
         "Mobile song editor: Back to song list stays at the top (not under sticky player)",
         "Pro: View PDF floating panel in song editor — record while reading the score"
       ],
-      "open": true
+      "open": false
     },
     {
       "version": "0.4.12",
