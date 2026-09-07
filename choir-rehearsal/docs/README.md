@@ -24,7 +24,7 @@
 2. **`update.json`** — версия для WordPress-updater
 3. **`readme.txt`** — changelog для WordPress.org / плагина
 
-Сайт читает ветки из `CONFIG.branches` в оболочке (сейчас сначала `cursor/rehearsal-site-copy-abc2`, затем `cursor/lite-pro-hub-setup-abc2`, затем `main`). Версия в hero берётся из **GitHub Releases** (`choir-rehearsal-v*`).
+Сайт читает ветки из `CONFIG.branches` в оболочке (сейчас сначала `main`, затем `cursor/lite-pro-hub-setup-abc2` / feature branches). Версия в hero берётся из **GitHub Releases** (`choir-rehearsal-v*`).
 
 ### Однократный деплой оболочки
 
