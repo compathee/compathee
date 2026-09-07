@@ -107,6 +107,17 @@
 			canvas.height = 1;
 		}
 
+		function getDocumentWithTimeout(url, withCredentials, timeoutMs) {
+			return Promise.race([
+				window.pdfjsLib.getDocument({ url: url, withCredentials: withCredentials }).promise,
+				new Promise(function (_, reject) {
+					window.setTimeout(function () {
+						reject(new Error('pdf-load-timeout'));
+					}, timeoutMs);
+				}),
+			]);
+		}
+
 		function loadDocument(url) {
 			const token = ++loadToken;
 			pdfDoc = null;
@@ -115,39 +126,41 @@
 			pageRendering = false;
 			viewer.setAttribute('data-pdf-url', url || '');
 			viewer.classList.toggle('is-empty', !url);
-			clearCanvas();
+			viewer.classList.remove('is-error');
 
 			if (!url) {
+				clearCanvas();
 				setStatus('—');
 				return;
 			}
 
 			setStatus('…');
+			// Do not clearCanvas() here: a hung credentialed fetch used to blank the
+			// admin viewer (1x1 canvas) while the public page still showed the PDF.
 
-			window.pdfjsLib.getDocument({ url: url, withCredentials: true }).promise.then(function (pdf) {
-				if (token !== loadToken) {
-					return;
-				}
-				pdfDoc = pdf;
-				pageNum = 1;
-				renderPage(pageNum);
-			}).catch(function () {
-				// Retry without credentials (some hosts reject credentialed PDF fetches).
-				return window.pdfjsLib.getDocument({ url: url, withCredentials: false }).promise.then(function (pdf) {
+			// Prefer non-credentialed first (typical public WP media). Credentialed
+			// requests can hang in wp-admin when auth cookies are present, which
+			// prevented the old catch/retry from ever running.
+			getDocumentWithTimeout(url, false, 8000)
+				.catch(function () {
+					return getDocumentWithTimeout(url, true, 8000);
+				})
+				.then(function (pdf) {
 					if (token !== loadToken) {
 						return;
 					}
 					pdfDoc = pdf;
 					pageNum = 1;
 					renderPage(pageNum);
+				})
+				.catch(function () {
+					if (token !== loadToken) {
+						return;
+					}
+					clearCanvas();
+					setStatus('—');
+					viewer.classList.add('is-error');
 				});
-			}).catch(function () {
-				if (token !== loadToken) {
-					return;
-				}
-				setStatus('—');
-				viewer.classList.add('is-error');
-			});
 		}
 
 		prevBtn.addEventListener('click', function () {
