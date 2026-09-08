@@ -116,6 +116,14 @@ final class Choir_Rehearsal_Frontend {
 			}
 
 			wp_enqueue_script(
+				'choir-rehearsal-waveform',
+				CHOIR_REHEARSAL_URL . 'public/js/waveform.js',
+				array(),
+				CHOIR_REHEARSAL_VERSION,
+				true
+			);
+
+			wp_enqueue_script(
 				'choir-rehearsal-share',
 				CHOIR_REHEARSAL_URL . 'public/js/share.js',
 				array(),
@@ -666,6 +674,9 @@ final class Choir_Rehearsal_Frontend {
 							?>
 							<li class="choir-track-item">
 								<span class="choir-track-voice"><?php echo esc_html( Choir_Rehearsal_Post_Types::get_voice_label( (int) $track->ID ) ); ?></span>
+								<div class="choir-track-waveform" data-audio-url="<?php echo esc_url( $audio_url ); ?>" aria-hidden="true">
+									<canvas class="choir-track-waveform__canvas"></canvas>
+								</div>
 								<button
 									type="button"
 									class="choir-play-track"

@@ -590,6 +590,43 @@ body.choir-pdf-fullscreen-open .choir-sticky-player {
 
 .choir-track-voice {
 	font-weight: 600;
+	flex: 0 1 auto;
+	min-width: 4.5rem;
+	max-width: 30%;
+}
+
+.choir-track-waveform {
+	flex: 1 1 auto;
+	min-width: 48px;
+	height: 36px;
+	position: relative;
+	background: transparent;
+	border-radius: 6px;
+	overflow: hidden;
+	align-self: center;
+}
+
+.choir-track-waveform.is-empty {
+	opacity: 0.35;
+}
+
+.choir-track-waveform.is-loading::after {
+	content: '';
+	position: absolute;
+	inset: 40% 8%;
+	border-radius: 999px;
+	background: rgba(31, 79, 216, 0.18);
+}
+
+.choir-track-waveform__canvas {
+	display: block;
+	width: 100%;
+	height: 100%;
+	background: transparent;
+}
+
+.choir-track-item .choir-play-track {
+	flex: 0 0 auto;
 }
 
 .choir-play-track,

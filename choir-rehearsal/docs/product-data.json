@@ -120,6 +120,16 @@
   ],
   "changelog": [
     {
+      "version": "0.4.25",
+      "summary": "Track waveforms",
+      "items": [
+        "Blue oscillogram on each voice track from audio file",
+        "Public song page: between voice name and Play",
+        "Song editor: between voice name and Upload"
+      ],
+      "open": true
+    },
+    {
       "version": "0.4.24",
       "summary": "PDF full screen and theme-proof Play",
       "items": [
@@ -127,7 +137,7 @@
         "PDF expand to almost full screen; player strip stays below",
         "Pinch-to-zoom on PDF scores"
       ],
-      "open": true
+      "open": false
     },
     {
       "version": "0.4.23",

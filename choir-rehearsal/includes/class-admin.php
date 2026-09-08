@@ -476,7 +476,14 @@ final class Choir_Rehearsal_Admin {
 			array( 'choir-rehearsal-admin' ),
 			CHOIR_REHEARSAL_VERSION
 		);
-		$admin_deps = array( 'jquery', 'wp-util' );
+		wp_enqueue_script(
+			'choir-rehearsal-waveform',
+			CHOIR_REHEARSAL_URL . 'public/js/waveform.js',
+			array(),
+			CHOIR_REHEARSAL_VERSION,
+			true
+		);
+		$admin_deps = array( 'jquery', 'wp-util', 'choir-rehearsal-waveform' );
 		if ( Choir_Rehearsal_Edition::can_view_score_in_editor() ) {
 			wp_enqueue_script(
 				'pdfjs',
@@ -728,6 +735,9 @@ final class Choir_Rehearsal_Admin {
 					<?php endforeach; ?>
 				</select>
 				<span class="choir-audio-name"><?php echo esc_html( $filename ?: __( 'No audio selected', 'choir-rehearsal' ) ); ?></span>
+			</div>
+			<div class="choir-track-waveform<?php echo '' === $audio_url ? ' is-empty' : ''; ?>" data-audio-url="<?php echo esc_url( $audio_url ); ?>" aria-hidden="true">
+				<canvas class="choir-track-waveform__canvas"></canvas>
 			</div>
 			<div class="choir-track-item__actions">
 				<button type="button" class="choir-icon-btn choir-select-audio" title="<?php esc_attr_e( 'Upload', 'choir-rehearsal' ); ?>" aria-label="<?php esc_attr_e( 'Upload', 'choir-rehearsal' ); ?>">
