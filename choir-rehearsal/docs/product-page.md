@@ -22,7 +22,8 @@ WordPress ships with most hostings. If your site is not on WordPress yet, add it
 
 - Song list on your choir website
 - PDF viewer with page navigation
-- Voice tracks: bass, tenor, alto, soprano, and more
+- Voice tracks: bass, tenor, alto, soprano, and more — each with a blue waveform from the audio
+- PDF: page flip, pinch-to-zoom, almost full-screen expand with the player below
 - Sticky player at the bottom of the screen
 - Login-only access (optional)
 - Roles: editors manage, singers listen
