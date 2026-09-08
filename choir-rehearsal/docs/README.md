@@ -14,13 +14,17 @@
 | `update.json` | Текущая версия и ссылка на zip |
 | GitHub Releases API | Резервная ссылка «Download» |
 
-**После релиза плагина** достаточно обновить JSON в репозитории и смержить в `main` — **перезагрузка FTP не нужна**.
+**После релиза плагина** достаточно обновить JSON в репозитории на ветке, которую читает сайт (`cursor/lite-pro-hub-setup-abc2`, после merge — `main`) — **перезагрузка FTP не нужна**.
+
+Оболочка `product-page.html` на FTP должна указывать актуальные ветки в `CONFIG.branches`. Если ветка сменилась — обновите HTML и задеплойте оболочку (workflow ниже).
 
 ### Что редактировать при обновлении
 
-1. **`product-data.json`** — текст страницы, changelog (главный файл)
+1. **`product-data.json`** — текст страницы, changelog (главный файл) → push в ветку из `CONFIG.branches`
 2. **`update.json`** — версия для WordPress-updater
 3. **`readme.txt`** — changelog для WordPress.org / плагина
+
+Сайт читает ветки из `CONFIG.branches` в оболочке (сейчас сначала `main`, затем `cursor/lite-pro-hub-setup-abc2` / feature branches). Версия в hero берётся из **GitHub Releases** (`choir-rehearsal-v*`).
 
 ### Однократный деплой оболочки
 
@@ -44,7 +48,9 @@ FTP нужен только когда меняется сам `product-page.htm
 
 | Файл | Назначение |
 |------|------------|
-| [product-page.html](product-page.html) | Оболочка (JS) — загрузить как `index.html` **один раз** |
+| [lite-pro-updates.md](lite-pro-updates.md) | Lite install, Buy Pro, Lite→Pro add-on, GitHub auto-update |
+| [product-page.html](product-page.html) | Оболочка (JS) — загрузить на FTP как `index.html` |
+| [product-page-download.html](product-page-download.html) | Готовая копия оболочки для ручной загрузки на FTP (то же содержимое) |
 | [product-data.json](product-data.json) | **Контент страницы** — редактировать при каждом релизе |
 | [product-page.md](product-page.md) | Markdown-копия (справочно) |
 | [deploy/.htaccess](deploy/.htaccess) | Apache: index + права |

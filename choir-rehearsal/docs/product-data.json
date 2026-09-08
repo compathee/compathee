@@ -1,8 +1,8 @@
 {
   "title": "Choir Rehearsal",
-  "tagline": "A private rehearsal library for choirs: songs, voice tracks, PDF scores, and easy listening on phone or desktop.",
-  "overview": "Choir Rehearsal helps choir members learn new pieces by voice part. Editors upload PDF scores and audio for each voice. Singers visit /rehearsal/, pick a song, and listen. Lite is free from GitHub; Pro is a separate add-on from shop.compath.ee (keep Lite installed — do not replace it).",
-  "requirements": "WordPress 6.4+, PHP 8.0+",
+  "tagline": "Practice tracks and sheet music for choirs — free Lite in the WordPress plugin directory, Pro from shop.compath.ee.",
+  "overview": "Choir Rehearsal helps choir members learn new pieces by voice part. Editors upload PDF scores and audio for each voice. Singers visit /rehearsal/, pick a song, and listen on phone or desktop — no separate app. Each voice track shows a blue waveform generated from its audio file, so singers can see the shape of the part at a glance. Lite is free in the WordPress.org plugin catalog (Plugins → Add New). Pro is a separate add-on from shop.compath.ee — keep Lite installed; do not replace it. WordPress ships with most hostings; if your site is not on WordPress yet, add it with your host’s one-click installer, then install Choir Rehearsal from the catalog.",
+  "requirements": "WordPress 6.4+, PHP 8.0+ — WordPress is available on virtually every hosting; use one-click install if it is not active yet",
   "owner": "Compath OÜ, Tallinn, Estonia",
   "firstCustomer": {
     "name": "Cappella Veneta",
@@ -10,12 +10,12 @@
   },
   "features": [
     "Song library — paginated list on your choir website with shortcode embedding",
-    "PDF scores — attach sheet music and flip pages in the built-in viewer",
-    "Voice tracks — bass, tenor, alto, soprano and more",
+    "PDF scores — attach sheet music, flip pages, pinch-to-zoom, and expand almost full screen",
+    "Voice tracks — bass, tenor, alto, soprano and more, each with a blue waveform from the audio",
     "Sticky player — listen while reading the score",
     "Private access — optional login-only rehearsal pages",
     "Editor & singer roles — editors manage, singers listen",
-    "Lite (free) — up to 4 tracks per song, audio upload, GitHub updates",
+    "Lite (free) — up to 4 tracks per song; install from WordPress.org",
     "Pro add-on — unlimited tracks, mic recording, search, editor Play, embedded PDF in the editor"
   ],
   "featureCards": [
@@ -27,17 +27,17 @@
     {
       "icon": "pdf",
       "title": "PDF scores",
-      "text": "Attach sheet music and flip pages in the built-in viewer."
+      "text": "Attach sheet music, flip pages, pinch-to-zoom, and expand the score almost full screen while the player stays below."
     },
     {
       "icon": "voices",
       "title": "Voice tracks",
-      "text": "Bass, tenor, alto, soprano and more — one audio part per voice."
+      "text": "Bass, tenor, alto, soprano and more — each track shows a blue waveform from its audio file."
     },
     {
       "icon": "player",
       "title": "Sticky player",
-      "text": "Listen while reading the score — player stays at the bottom of the screen."
+      "text": "Listen while reading the score — theme-proof blue Play controls and a sticky player at the bottom."
     },
     {
       "icon": "lock",
@@ -51,13 +51,13 @@
     },
     {
       "icon": "lite",
-      "title": "Lite — free",
-      "text": "Up to 4 tracks per song, audio upload, GitHub updates."
+      "title": "Lite — free on WordPress.org",
+      "text": "Up to 4 tracks per song, audio upload. Install from Plugins → Add New."
     },
     {
       "icon": "pro",
       "title": "Pro add-on",
-      "text": "Unlimited tracks, mic recording, search by title, Play preview, and embedded PDF preview in the editor."
+      "text": "Unlimited tracks, mic recording, search by title, Play preview, and embedded PDF preview in the editor — from shop.compath.ee."
     }
   ],
   "pricing": [
@@ -66,11 +66,12 @@
       "price": "Free",
       "featured": false,
       "items": [
-        "Download from GitHub Releases",
+        "Install from WordPress.org (Plugins → Add New)",
         "Up to 4 voice tracks per song",
         "PDF scores and sticky player",
+        "Blue waveform on each voice track",
         "Upload audio (no microphone recording)",
-        "Updates via WordPress (Check for updates)"
+        "Updates through WordPress like any directory plugin"
       ]
     },
     {
@@ -107,18 +108,66 @@
   "orderEmail": "order@compath.ee",
   "orderSteps": [
     "Open https://shop.compath.ee/products/choir-rehearsal-pro/ (or email order@compath.ee for setup services).",
-    "After payment, download choir-rehearsal-pro.zip from your SureCart customer dashboard.",
+    "After payment, download choir-rehearsal-pro.zip from your account at shop.compath.ee.",
     "Keep Choir Rehearsal (Lite) installed. Upload and activate the Pro add-on beside it — do not replace Lite."
   ],
   "installSteps": [
-    "Download choir-rehearsal.zip (Lite) from GitHub Releases.",
-    "In WordPress: Plugins → Add New → Upload Plugin — activate Lite.",
-    "Pro customers: upload choir-rehearsal-pro.zip next and activate it. Settings should show Edition: Pro.",
+    "If WordPress is not on your hosting yet, add it with your host’s one-click WordPress installer — WordPress is included on most plans.",
+    "Install Lite from WordPress.org: in wp-admin go to Plugins → Add New, search for “Choir Rehearsal”, then Install → Activate. (GitHub zip remains an alternative for advanced users.)",
+    "Pro customers: download choir-rehearsal-pro.zip from shop.compath.ee, then Plugins → Add New → Upload Plugin and activate. Settings should show Edition: Pro.",
     "The plugin creates a /rehearsal/ page with the [choir_rehearsal] shortcode.",
     "Add a song: Choir Rehearsal → Add Song — title, PDF, voice tracks.",
     "Give singers WordPress accounts (Subscriber). Editors need Editor or Administrator."
   ],
   "changelog": [
+    {
+      "version": "0.4.26",
+      "summary": "Editor and player waveforms",
+      "items": [
+        "Song editor shows the track waveform between voice name and Upload",
+        "Sticky player shows a waveform under the seek bar"
+      ],
+      "open": true
+    },
+    {
+      "version": "0.4.25",
+      "summary": "Track waveforms",
+      "items": [
+        "Blue oscillogram on each voice track, generated from the track audio file",
+        "Public song page: waveform between voice name and Play",
+        "Song editor: waveform between voice name and Upload"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.24",
+      "summary": "PDF full screen and theme-proof Play",
+      "items": [
+        "Play buttons always blue with white triangle/text on any theme",
+        "PDF expand almost full screen; sticky player stays visible below",
+        "Pinch-to-zoom on PDF scores"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.23",
+      "summary": "WordPress.org Plugin Check fixes",
+      "items": [
+        "WordPress.org package omits GitHub updater file (Plugin Check)",
+        "readme.txt Tested up to 7.1"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.22",
+      "summary": "WordPress.org ready",
+      "items": [
+        "WordPress.org package disables GitHub self-updater",
+        "PDF.js bundled locally (guideline: no third-party CDN for JS)",
+        "Settings explains WordPress.org updates on .org builds"
+      ],
+      "open": false
+    },
     {
       "version": "0.4.21",
       "summary": "Reliable plugin updater",
@@ -127,7 +176,7 @@
         "Fallback reads update.json from the latest Lite release asset when the API is unavailable",
         "Check for plugin updates returns to Settings with available / up to date / failed notices"
       ],
-      "open": true
+      "open": false
     },
     {
       "version": "0.4.20",
@@ -314,7 +363,7 @@
       "items": [
         "Lite: up to 4 voice tracks, upload only",
         "Pro add-on: unlimited tracks and microphone recording",
-        "shop.compath.ee subscriptions via SureCart"
+        "Pro subscriptions at shop.compath.ee"
       ],
       "open": false
     },
