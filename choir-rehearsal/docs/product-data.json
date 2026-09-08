@@ -121,6 +121,15 @@
   ],
   "changelog": [
     {
+      "version": "0.4.26",
+      "summary": "Editor and player waveforms",
+      "items": [
+        "Song editor shows the track waveform between voice name and Upload",
+        "Sticky player shows a waveform under the seek bar"
+      ],
+      "open": true
+    },
+    {
       "version": "0.4.25",
       "summary": "Track waveforms",
       "items": [
@@ -128,7 +137,7 @@
         "Public song page: waveform between voice name and Play",
         "Song editor: waveform between voice name and Upload"
       ],
-      "open": true
+      "open": false
     },
     {
       "version": "0.4.24",
