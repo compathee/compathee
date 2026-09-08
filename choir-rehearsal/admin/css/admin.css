@@ -249,7 +249,7 @@ button.choir-icon-btn.choir-play-track:focus-visible {
 
 /* Sticky player on song editor (reuses public player styles). */
 body.choir-rehearsal-song-edit {
-	padding-bottom: 110px;
+	padding-bottom: 72px;
 }
 
 body.choir-rehearsal-song-edit .choir-sticky-player {
@@ -538,11 +538,11 @@ body.choir-rehearsal-song-edit #choir-rehearsal-tracks .inside {
 
 	/* Lift Publish bar above sticky player when it is open. */
 	body.choir-rehearsal-song-edit.choir-sticky-player-open #submitdiv {
-		bottom: 96px;
+		bottom: 64px;
 	}
 
 	body.choir-rehearsal-song-edit.choir-sticky-player-open #wpbody-content {
-		padding-bottom: 180px;
+		padding-bottom: 120px;
 	}
 }
 

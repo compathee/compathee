@@ -120,13 +120,22 @@
   ],
   "changelog": [
     {
+      "version": "0.4.27",
+      "summary": "Compact sticky player",
+      "items": [
+        "Waveform fills the player as background from Play to the right edge",
+        "Scrubber overlays the waveform; bar height is minimal"
+      ],
+      "open": true
+    },
+    {
       "version": "0.4.26",
       "summary": "Editor and player waveforms",
       "items": [
         "Song editor shows the track waveform between voice name and Upload",
         "Sticky player shows a waveform under the seek bar"
       ],
-      "open": true
+      "open": false
     },
     {
       "version": "0.4.25",

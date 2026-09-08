@@ -702,29 +702,28 @@ final class Choir_Rehearsal_Frontend {
 	public static function render_sticky_player(): void {
 		?>
 		<div id="choir-sticky-player" class="choir-sticky-player is-hidden" aria-hidden="true">
-			<div class="choir-sticky-player__info">
-				<strong class="choir-sticky-player__label"><?php esc_html_e( 'Now playing', 'choir-rehearsal' ); ?></strong>
-				<span class="choir-sticky-player__title"></span>
-			</div>
-			<div class="choir-sticky-player__controls">
-				<button type="button" class="choir-sticky-player__play" aria-label="<?php esc_attr_e( 'Play', 'choir-rehearsal' ); ?>">
-					<span class="choir-sticky-player__play-icon" aria-hidden="true">
-						<svg class="choir-sticky-player__play-svg choir-sticky-player__play-svg--play" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" focusable="false"><path fill="#ffffff" d="M8 5.2v13.6L19.5 12 8 5.2z"/></svg>
-						<svg class="choir-sticky-player__play-svg choir-sticky-player__play-svg--pause" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" focusable="false"><path fill="#ffffff" d="M7 5h3.5v14H7V5zm6.5 0H17v14h-3.5V5z"/></svg>
-					</span>
-				</button>
-				<div class="choir-sticky-player__timeline">
-					<input type="range" class="choir-sticky-player__seek" min="0" max="100" value="0" step="0.1" aria-label="<?php esc_attr_e( 'Seek', 'choir-rehearsal' ); ?>" />
-					<div class="choir-sticky-player__wave choir-track-waveform is-empty" data-audio-url="" data-color="#60a5fa" aria-hidden="true">
-						<canvas class="choir-track-waveform__canvas"></canvas>
-					</div>
-					<span class="choir-sticky-player__time">0:00 / 0:00</span>
+			<button type="button" class="choir-sticky-player__play" aria-label="<?php esc_attr_e( 'Play', 'choir-rehearsal' ); ?>">
+				<span class="choir-sticky-player__play-icon" aria-hidden="true">
+					<svg class="choir-sticky-player__play-svg choir-sticky-player__play-svg--play" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" focusable="false"><path fill="#ffffff" d="M8 5.2v13.6L19.5 12 8 5.2z"/></svg>
+					<svg class="choir-sticky-player__play-svg choir-sticky-player__play-svg--pause" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" focusable="false"><path fill="#ffffff" d="M7 5h3.5v14H7V5zm6.5 0H17v14h-3.5V5z"/></svg>
+				</span>
+			</button>
+			<div class="choir-sticky-player__main">
+				<div class="choir-sticky-player__wave choir-track-waveform is-empty" data-audio-url="" data-color="#60a5fa" aria-hidden="true">
+					<canvas class="choir-track-waveform__canvas"></canvas>
 				</div>
-				<audio class="choir-sticky-player__audio" preload="none"></audio>
+				<div class="choir-sticky-player__overlay">
+					<div class="choir-sticky-player__meta">
+						<span class="choir-sticky-player__title"></span>
+						<span class="choir-sticky-player__time">0:00 / 0:00</span>
+					</div>
+					<input type="range" class="choir-sticky-player__seek" min="0" max="100" value="0" step="0.1" aria-label="<?php esc_attr_e( 'Seek', 'choir-rehearsal' ); ?>" />
+				</div>
 			</div>
 			<button type="button" class="choir-sticky-player__close" aria-label="<?php esc_attr_e( 'Close player', 'choir-rehearsal' ); ?>">
 				<span aria-hidden="true">&times;</span>
 			</button>
+			<audio class="choir-sticky-player__audio" preload="none"></audio>
 		</div>
 		<?php
 	}

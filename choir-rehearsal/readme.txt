@@ -4,7 +4,7 @@ Tags: choir, audio, rehearsal, voice parts, music
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 0.4.26
+Stable tag: 0.4.27
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -55,6 +55,9 @@ By default only logged-in users can view `/rehearsal/`. Change this under **Choi
 Yes. Use the shortcode `[choir_rehearsal]`.
 
 == Changelog ==
+
+= 0.4.27 =
+* Sticky player: waveform is the scrubber background (compact single-row bar)
 
 = 0.4.26 =
 * Song editor: show track waveform instead of the audio filename
