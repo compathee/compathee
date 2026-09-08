@@ -99,6 +99,7 @@
 		$row.find('.choir-audio-id').val(audioId || '');
 		$row.find('.choir-audio-name').text(filename || i18n.noAudio || 'No audio selected');
 		updatePlayButton($row, url || '');
+		updateWaveform($row, url || '');
 	}
 
 	function clearRowAudio($row) {
@@ -111,6 +112,18 @@
 		$play.attr('data-track-url', hasUrl ? url : '');
 		$play.attr('data-track-title', trackPlayTitle($row));
 		$play.prop('disabled', !hasUrl);
+	}
+
+	function updateWaveform($row, url) {
+		const $wave = $row.find('.choir-track-waveform');
+		if (!$wave.length) {
+			return;
+		}
+		$wave.attr('data-audio-url', url || '');
+		$wave.toggleClass('is-empty', !url);
+		if (window.choirWaveforms && typeof window.choirWaveforms.refresh === 'function') {
+			window.choirWaveforms.refresh($wave.get(0));
+		}
 	}
 
 	function syncPlayTitle($row) {
@@ -426,6 +439,9 @@
 				'<div class="choir-track-item__main">' +
 					'<select class="choir-voice-select choir-track-voice" name="choir_tracks[' + index + '][voice]" aria-label="Voice">' + options + '</select>' +
 					'<span class="choir-audio-name">' + (i18n.noAudio || 'No audio selected') + '</span>' +
+				'</div>' +
+				'<div class="choir-track-waveform is-empty" data-audio-url="" aria-hidden="true">' +
+					'<canvas class="choir-track-waveform__canvas"></canvas>' +
 				'</div>' +
 				'<div class="choir-track-item__actions">' +
 					iconButton('choir-select-audio', i18n.selectAudio || 'Upload', 'upload') +
