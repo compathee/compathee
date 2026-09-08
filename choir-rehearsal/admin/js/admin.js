@@ -24,7 +24,7 @@
 	const ICONS = {
 		upload: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12 3l4.5 4.5h-3V14h-3V7.5h-3L12 3zm-7 14h14v2H5v-2z"/></svg>',
 		record: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="7" fill="currentColor"/></svg>',
-		play: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><path fill="currentColor" d="M7 3.8v16.4L20.2 12 7 3.8z"/></svg>',
+		play: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><path fill="#ffffff" d="M7 3.8v16.4L20.2 12 7 3.8z"/></svg>',
 		remove: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path fill="currentColor" d="M6.4 6.4l1.2-1.2L12 9.6l4.4-4.4 1.2 1.2L13.2 12l4.4 4.4-1.2 1.2L12 14.4l-4.4 4.4-1.2-1.2L10.8 12 6.4 6.4z"/></svg>'
 	};
 
@@ -96,9 +96,12 @@
 	}
 
 	function setRowAudio($row, audioId, filename, url) {
+		const name = filename || i18n.noAudio || 'No audio selected';
 		$row.find('.choir-audio-id').val(audioId || '');
-		$row.find('.choir-audio-name').text(filename || i18n.noAudio || 'No audio selected');
+		$row.find('.choir-audio-name').text(name);
+		$row.find('.choir-track-waveform').attr('title', name);
 		updatePlayButton($row, url || '');
+		updateWaveform($row, url || '');
 	}
 
 	function clearRowAudio($row) {
@@ -111,6 +114,18 @@
 		$play.attr('data-track-url', hasUrl ? url : '');
 		$play.attr('data-track-title', trackPlayTitle($row));
 		$play.prop('disabled', !hasUrl);
+	}
+
+	function updateWaveform($row, url) {
+		const $wave = $row.find('.choir-track-waveform');
+		if (!$wave.length) {
+			return;
+		}
+		$wave.attr('data-audio-url', url || '');
+		$wave.toggleClass('is-empty', !url);
+		if (window.choirWaveforms && typeof window.choirWaveforms.refresh === 'function') {
+			window.choirWaveforms.refresh($wave.get(0));
+		}
 	}
 
 	function syncPlayTitle($row) {
@@ -298,7 +313,9 @@
 
 			self.$row.find('.choir-audio-id').val(response.data.id);
 			self.$row.find('.choir-audio-name').text(response.data.filename || i18n.useAudio || 'Use this audio');
+			self.$row.find('.choir-track-waveform').attr('title', response.data.filename || i18n.useAudio || 'Use this audio');
 			updatePlayButton(self.$row, response.data.url || '');
+			updateWaveform(self.$row, response.data.url || '');
 			self.close();
 		}).fail(function (xhr) {
 			let message = i18n.uploadFailed || 'Upload failed. Please try again.';
@@ -425,7 +442,10 @@
 				'<input type="hidden" class="choir-audio-id" name="choir_tracks[' + index + '][audio_id]" value="0" />' +
 				'<div class="choir-track-item__main">' +
 					'<select class="choir-voice-select choir-track-voice" name="choir_tracks[' + index + '][voice]" aria-label="Voice">' + options + '</select>' +
-					'<span class="choir-audio-name">' + (i18n.noAudio || 'No audio selected') + '</span>' +
+					'<span class="choir-audio-name screen-reader-text">' + (i18n.noAudio || 'No audio selected') + '</span>' +
+				'</div>' +
+				'<div class="choir-track-waveform is-empty" data-audio-url="" title="' + (i18n.noAudio || 'No audio selected') + '" aria-hidden="true">' +
+					'<canvas class="choir-track-waveform__canvas"></canvas>' +
 				'</div>' +
 				'<div class="choir-track-item__actions">' +
 					iconButton('choir-select-audio', i18n.selectAudio || 'Upload', 'upload') +
@@ -500,9 +520,19 @@
 		});
 
 		if (i18n.canViewPdf) {
-			// Ensure viewer is ready after pdf.js loads (script order: pdf then admin).
+			// Ensure viewer loads after DOM ready from the hidden URL field (canonical),
+			// not only data-pdf-url from the early pdf-viewer auto-init.
 			window.setTimeout(function () {
-				getEditorPdfApi();
+				const url = String(
+					$('#choir-score-pdf-url').val() ||
+						$('#choir-editor-pdf-viewer').attr('data-pdf-url') ||
+						''
+				);
+				if (url) {
+					setEditorPdf(url);
+				} else {
+					getEditorPdfApi();
+				}
 			}, 0);
 		}
 

@@ -92,9 +92,16 @@ final class Choir_Rehearsal_Frontend {
 		}
 
 		wp_enqueue_script(
+			'choir-rehearsal-waveform',
+			CHOIR_REHEARSAL_URL . 'public/js/waveform.js',
+			array(),
+			CHOIR_REHEARSAL_VERSION,
+			true
+		);
+		wp_enqueue_script(
 			'choir-rehearsal-player',
 			CHOIR_REHEARSAL_URL . 'public/js/player.js',
-			array(),
+			array( 'choir-rehearsal-waveform' ),
 			CHOIR_REHEARSAL_VERSION,
 			true
 		);
@@ -135,7 +142,7 @@ final class Choir_Rehearsal_Frontend {
 			if ( '' !== $pdf_url ) {
 				wp_enqueue_script(
 					'pdfjs',
-					'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',
+					Choir_Rehearsal_Distribution::pdfjs_script_url(),
 					array(),
 					'3.11.174',
 					true
@@ -151,9 +158,11 @@ final class Choir_Rehearsal_Frontend {
 					'choir-rehearsal-pdf',
 					'choirRehearsalPdf',
 					array(
-						'workerSrc' => 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js',
+						'workerSrc' => Choir_Rehearsal_Distribution::pdfjs_worker_url(),
 						'prev'      => __( 'Previous page', 'choir-rehearsal' ),
 						'next'      => __( 'Next page', 'choir-rehearsal' ),
+						'expand'    => __( 'Expand PDF', 'choir-rehearsal' ),
+						'closeFs'   => __( 'Close full screen', 'choir-rehearsal' ),
 					)
 				);
 			}
@@ -630,6 +639,14 @@ final class Choir_Rehearsal_Frontend {
 				<section class="choir-score-section" aria-label="<?php esc_attr_e( 'Sheet music', 'choir-rehearsal' ); ?>">
 					<h2 class="choir-section-title"><?php esc_html_e( 'Sheet music', 'choir-rehearsal' ); ?></h2>
 					<div class="choir-pdf-viewer" data-pdf-url="<?php echo esc_url( $pdf_url ); ?>">
+						<button type="button" class="choir-pdf-expand" aria-label="<?php esc_attr_e( 'Expand PDF', 'choir-rehearsal' ); ?>">
+							<span class="screen-reader-text"><?php esc_html_e( 'Expand PDF', 'choir-rehearsal' ); ?></span>
+							<svg class="choir-pdf-toolbar-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path fill="#ffffff" d="M4 9V4h5v2H6v3H4zm10-5h5v5h-2V6h-3V4zM4 15h2v3h3v2H4v-5zm16 0v5h-5v-2h3v-3h2z"/></svg>
+						</button>
+						<button type="button" class="choir-pdf-close-fs" hidden aria-label="<?php esc_attr_e( 'Close full screen', 'choir-rehearsal' ); ?>">
+							<span class="screen-reader-text"><?php esc_html_e( 'Close full screen', 'choir-rehearsal' ); ?></span>
+							<svg class="choir-pdf-toolbar-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path fill="#ffffff" d="M6.4 5l5.6 5.6L17.6 5 19 6.4 13.4 12 19 17.6 17.6 19 12 13.4 6.4 19 5 17.6 10.6 12 5 6.4 6.4 5z"/></svg>
+						</button>
 						<div class="choir-pdf-viewer__canvas-wrap">
 							<canvas class="choir-pdf-viewer__canvas"></canvas>
 						</div>
@@ -657,6 +674,9 @@ final class Choir_Rehearsal_Frontend {
 							?>
 							<li class="choir-track-item">
 								<span class="choir-track-voice"><?php echo esc_html( Choir_Rehearsal_Post_Types::get_voice_label( (int) $track->ID ) ); ?></span>
+								<div class="choir-track-waveform" data-audio-url="<?php echo esc_url( $audio_url ); ?>" aria-hidden="true">
+									<canvas class="choir-track-waveform__canvas"></canvas>
+								</div>
 								<button
 									type="button"
 									class="choir-play-track"
@@ -683,23 +703,28 @@ final class Choir_Rehearsal_Frontend {
 	public static function render_sticky_player(): void {
 		?>
 		<div id="choir-sticky-player" class="choir-sticky-player is-hidden" aria-hidden="true">
-			<div class="choir-sticky-player__info">
-				<strong class="choir-sticky-player__label"><?php esc_html_e( 'Now playing', 'choir-rehearsal' ); ?></strong>
-				<span class="choir-sticky-player__title"></span>
-			</div>
-			<div class="choir-sticky-player__controls">
-				<button type="button" class="choir-sticky-player__play" aria-label="<?php esc_attr_e( 'Play', 'choir-rehearsal' ); ?>">
-					<span class="choir-sticky-player__play-icon" aria-hidden="true">▶</span>
-				</button>
-				<div class="choir-sticky-player__timeline">
-					<input type="range" class="choir-sticky-player__seek" min="0" max="100" value="0" step="0.1" aria-label="<?php esc_attr_e( 'Seek', 'choir-rehearsal' ); ?>" />
-					<span class="choir-sticky-player__time">0:00 / 0:00</span>
-				</div>
-				<audio class="choir-sticky-player__audio" preload="none"></audio>
-			</div>
-			<button type="button" class="choir-sticky-player__close" aria-label="<?php esc_attr_e( 'Close player', 'choir-rehearsal' ); ?>">
-				<span aria-hidden="true">&times;</span>
+			<button type="button" class="choir-sticky-player__play" aria-label="<?php esc_attr_e( 'Play', 'choir-rehearsal' ); ?>">
+				<span class="choir-sticky-player__play-icon" aria-hidden="true">
+					<svg class="choir-sticky-player__play-svg choir-sticky-player__play-svg--play" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" focusable="false"><path fill="#ffffff" d="M8 5.2v13.6L19.5 12 8 5.2z"/></svg>
+					<svg class="choir-sticky-player__play-svg choir-sticky-player__play-svg--pause" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" focusable="false"><path fill="#ffffff" d="M7 5h3.5v14H7V5zm6.5 0H17v14h-3.5V5z"/></svg>
+				</span>
 			</button>
+			<div class="choir-sticky-player__main">
+				<div class="choir-sticky-player__wave choir-track-waveform is-empty" data-audio-url="" data-color="#60a5fa" aria-hidden="true">
+					<canvas class="choir-track-waveform__canvas"></canvas>
+				</div>
+				<input type="range" class="choir-sticky-player__seek" min="0" max="100" value="0" step="0.1" aria-label="<?php esc_attr_e( 'Seek', 'choir-rehearsal' ); ?>" />
+				<div class="choir-sticky-player__overlay">
+					<div class="choir-sticky-player__meta">
+						<span class="choir-sticky-player__title"></span>
+						<span class="choir-sticky-player__time">0:00 / 0:00</span>
+						<button type="button" class="choir-sticky-player__close" aria-label="<?php esc_attr_e( 'Close player', 'choir-rehearsal' ); ?>">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+				</div>
+			</div>
+			<audio class="choir-sticky-player__audio" preload="none"></audio>
 		</div>
 		<?php
 	}

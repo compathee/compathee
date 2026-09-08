@@ -81,7 +81,7 @@
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
-	justify-content: space-between;
+	justify-content: flex-start;
 	gap: 10px 12px;
 	padding: 14px 0;
 	border-bottom: 1px solid rgba(0, 0, 0, 0.08);
@@ -90,9 +90,19 @@
 .choir-track-item__main {
 	display: flex;
 	flex-direction: column;
-	gap: 4px;
+	justify-content: center;
+	gap: 0;
 	min-width: 0;
-	flex: 1 1 180px;
+	flex: 0 0 auto;
+	max-width: 140px;
+}
+
+.choir-track-list--editor .choir-track-waveform {
+	flex: 1 1 auto;
+	min-width: 100px;
+	width: auto;
+	height: 44px;
+	order: 0;
 }
 
 .choir-track-list--editor .choir-voice-select.choir-track-voice {
@@ -117,15 +127,17 @@
 	border-radius: 4px;
 }
 
+/* Filename kept for a11y / hover title on waveform — not shown in the row. */
 .choir-track-list--editor .choir-audio-name {
-	display: block;
-	max-width: 100%;
-	font-size: 0.85rem;
-	font-weight: 500;
-	color: #667085;
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
 	overflow: hidden;
-	text-overflow: ellipsis;
+	clip: rect(0, 0, 0, 0);
 	white-space: nowrap;
+	border: 0;
 }
 
 .choir-track-item__actions {
@@ -133,7 +145,7 @@
 	align-items: center;
 	gap: 6px;
 	flex: 0 0 auto;
-	margin-left: auto;
+	margin-left: 0;
 }
 
 .choir-icon-btn {
@@ -181,21 +193,28 @@
 }
 
 /* Override public .choir-play-track pill padding that crushed the SVG. */
-.choir-icon-btn.choir-play-track {
-	width: 40px;
-	height: 40px;
-	padding: 0;
-	border: 0;
-	background: #1f4fd8;
-	color: #fff;
+.choir-icon-btn.choir-play-track,
+button.choir-icon-btn.choir-play-track {
+	width: 40px !important;
+	height: 40px !important;
+	padding: 0 !important;
+	border: 0 !important;
+	background: #1f4fd8 !important;
+	background-color: #1f4fd8 !important;
+	color: #fff !important;
+	-webkit-text-fill-color: #fff !important;
 }
 
 .choir-icon-btn.choir-play-track:hover,
-.choir-icon-btn.choir-play-track:focus-visible {
-	background: #173ea8;
-	border-color: transparent;
-	color: #fff;
-	box-shadow: 0 0 0 3px rgba(31, 79, 216, 0.28);
+.choir-icon-btn.choir-play-track:focus-visible,
+button.choir-icon-btn.choir-play-track:hover,
+button.choir-icon-btn.choir-play-track:focus-visible {
+	background: #173ea8 !important;
+	background-color: #173ea8 !important;
+	border-color: transparent !important;
+	color: #fff !important;
+	-webkit-text-fill-color: #fff !important;
+	box-shadow: 0 0 0 3px rgba(31, 79, 216, 0.28) !important;
 }
 
 .choir-icon-btn.choir-play-track:disabled {
@@ -207,6 +226,12 @@
 	height: 22px;
 	display: block;
 	margin-left: 2px; /* optical center for play triangle */
+	fill: #fff !important;
+	color: #fff !important;
+}
+
+.choir-icon-btn.choir-play-track svg path {
+	fill: #ffffff !important;
 }
 
 .choir-icon-btn .choir-record-audio,
@@ -215,6 +240,8 @@
 }
 
 .choir-track-list--editor .choir-recorder-panel {
+	flex: 0 0 100%;
+	width: 100%;
 	flex: 1 1 100%;
 	width: 100%;
 	max-width: none;
@@ -222,7 +249,7 @@
 
 /* Sticky player on song editor (reuses public player styles). */
 body.choir-rehearsal-song-edit {
-	padding-bottom: 110px;
+	padding-bottom: 72px;
 }
 
 body.choir-rehearsal-song-edit .choir-sticky-player {
@@ -295,9 +322,23 @@ body.choir-rehearsal-song-edit #choir-rehearsal-tracks .inside {
 		padding: 12px 0;
 	}
 
-	.choir-track-item__actions {
+	.choir-track-item__main {
+		flex: 0 0 auto;
+		max-width: 120px;
+	}
+
+	.choir-track-list--editor .choir-track-waveform {
+		flex: 1 1 100%;
+		order: 2;
+		min-width: 0;
 		width: 100%;
+	}
+
+	.choir-track-item__actions {
+		width: auto;
+		margin-left: auto;
 		justify-content: flex-end;
+		order: 1;
 	}
 
 	.choir-icon-btn {
@@ -497,11 +538,11 @@ body.choir-rehearsal-song-edit #choir-rehearsal-tracks .inside {
 
 	/* Lift Publish bar above sticky player when it is open. */
 	body.choir-rehearsal-song-edit.choir-sticky-player-open #submitdiv {
-		bottom: 96px;
+		bottom: 64px;
 	}
 
 	body.choir-rehearsal-song-edit.choir-sticky-player-open #wpbody-content {
-		padding-bottom: 180px;
+		padding-bottom: 120px;
 	}
 }
 
@@ -558,4 +599,12 @@ body.choir-rehearsal-song-edit #choir-rehearsal-tracks .inside {
 	.choir-song-visibility__hint {
 		flex-basis: 100%;
 	}
+}
+
+/* Full-screen PDF in the song editor (above admin chrome, below sticky player). */
+body.choir-pdf-fullscreen-open #wpadminbar {
+	z-index: 99999;
+}
+.choir-pdf-viewer.is-fullscreen {
+	z-index: 100000;
 }

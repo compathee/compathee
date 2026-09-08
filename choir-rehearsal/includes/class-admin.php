@@ -53,7 +53,9 @@ final class Choir_Rehearsal_Admin {
 		);
 
 		Choir_Rehearsal_Pages::register_settings();
-		Choir_Rehearsal_Updater::register_settings();
+		if ( Choir_Rehearsal_Distribution::uses_github_updater() ) {
+			Choir_Rehearsal_Updater::register_settings();
+		}
 	}
 
 	public static function render_settings_page(): void {
@@ -108,15 +110,55 @@ final class Choir_Rehearsal_Admin {
 							<code><?php echo esc_html( CHOIR_REHEARSAL_VERSION ); ?></code>
 							<p class="description">
 								<?php
-								echo wp_kses_post(
-									sprintf(
-										/* translators: %s: GitHub releases link */
-										__( 'Updates are published at %s', 'choir-rehearsal' ),
-										'<a href="https://github.com/compathee/compathee/releases" target="_blank" rel="noopener noreferrer">GitHub Releases</a>'
-									)
-								);
+								if ( Choir_Rehearsal_Distribution::is_wporg() ) {
+									esc_html_e( 'Updates are delivered through WordPress.org.', 'choir-rehearsal' );
+								} else {
+									echo wp_kses_post(
+										sprintf(
+											/* translators: %s: GitHub releases link */
+											__( 'Updates are published at %s', 'choir-rehearsal' ),
+											'<a href="https://github.com/compathee/compathee/releases" target="_blank" rel="noopener noreferrer">GitHub Releases</a>'
+										)
+									);
+								}
 								?>
 							</p>
+							<?php
+							if ( Choir_Rehearsal_Distribution::uses_github_updater() ) :
+								$last_check = Choir_Rehearsal_Updater::get_last_check_result();
+								if ( ! empty( $last_check['time'] ) && ! empty( $last_check['status'] ) ) :
+									$when = wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), (int) $last_check['time'] );
+									$remote_version = isset( $last_check['remote_version'] ) ? (string) $last_check['remote_version'] : '';
+									if ( 'available' === $last_check['status'] && '' !== $remote_version ) {
+										$last_summary = sprintf(
+											/* translators: 1: datetime, 2: version */
+											__( 'Last check: %1$s — update available (%2$s).', 'choir-rehearsal' ),
+											$when,
+											$remote_version
+										);
+									} elseif ( 'up_to_date' === $last_check['status'] ) {
+										$last_summary = sprintf(
+											/* translators: %s: datetime */
+											__( 'Last check: %s — up to date.', 'choir-rehearsal' ),
+											$when
+										);
+									} elseif ( 'failed' === $last_check['status'] ) {
+										$last_summary = sprintf(
+											/* translators: %s: datetime */
+											__( 'Last check: %s — could not reach the update server.', 'choir-rehearsal' ),
+											$when
+										);
+									} else {
+										$last_summary = sprintf(
+											/* translators: %s: datetime */
+											__( 'Last check: %s', 'choir-rehearsal' ),
+											$when
+										);
+									}
+									?>
+									<p class="description"><?php echo esc_html( $last_summary ); ?></p>
+								<?php endif; ?>
+							<?php endif; ?>
 						</td>
 					</tr>
 					<tr>
@@ -144,20 +186,22 @@ final class Choir_Rehearsal_Admin {
 							</label>
 						</td>
 					</tr>
+					<?php if ( Choir_Rehearsal_Distribution::uses_github_updater() ) : ?>
 					<tr>
 						<th scope="row"><?php esc_html_e( 'Update JSON URL', 'choir-rehearsal' ); ?></th>
 						<td>
-							<input type="url" class="regular-text" name="choir_rehearsal_update_json_url" value="<?php echo esc_attr( (string) get_option( 'choir_rehearsal_update_json_url', '' ) ); ?>" placeholder="https://raw.githubusercontent.com/compathee/compathee/main/choir-rehearsal/update.json" />
-							<p class="description"><?php esc_html_e( 'Optional. If empty, the plugin checks GitHub Releases. Fallback JSON: choir-rehearsal/update.json in the repository.', 'choir-rehearsal' ); ?></p>
+							<input type="url" class="regular-text" name="choir_rehearsal_update_json_url" value="<?php echo esc_attr( (string) get_option( 'choir_rehearsal_update_json_url', '' ) ); ?>" placeholder="https://github.com/compathee/compathee/releases/latest/download/update.json" />
+							<p class="description"><?php esc_html_e( 'Optional override. If empty, the plugin checks GitHub Releases, then falls back to the latest release asset update.json.', 'choir-rehearsal' ); ?></p>
 						</td>
 					</tr>
 					<tr>
 						<th scope="row"><?php esc_html_e( 'GitHub repository', 'choir-rehearsal' ); ?></th>
 						<td>
 							<input type="text" class="regular-text" name="choir_rehearsal_github_repo" value="<?php echo esc_attr( (string) get_option( 'choir_rehearsal_github_repo', 'compathee/compathee' ) ); ?>" />
-							<p class="description"><?php esc_html_e( 'Used when Update JSON URL is empty. Release asset must be named choir-rehearsal.zip.', 'choir-rehearsal' ); ?></p>
+							<p class="description"><?php esc_html_e( 'Used when Update JSON URL is empty. Each Lite release should include choir-rehearsal.zip and update.json assets.', 'choir-rehearsal' ); ?></p>
 						</td>
 					</tr>
+					<?php endif; ?>
 				</table>
 				<?php submit_button(); ?>
 			</form>
@@ -175,9 +219,12 @@ final class Choir_Rehearsal_Admin {
 				</div>
 			<?php endif; ?>
 			<p>
-				<a class="button button-secondary" href="<?php echo esc_url( Choir_Rehearsal_Updater::get_check_updates_url() ); ?>">
-					<?php esc_html_e( 'Check for updates now', 'choir-rehearsal' ); ?>
-				</a>
+				<?php if ( Choir_Rehearsal_Distribution::uses_github_updater() ) : ?>
+					<a class="button button-secondary" href="<?php echo esc_url( Choir_Rehearsal_Updater::get_check_updates_url() ); ?>">
+						<?php esc_html_e( 'Check for plugin updates', 'choir-rehearsal' ); ?>
+					</a>
+					<span class="description" style="margin-left:0.5em;"><?php esc_html_e( 'Contacts GitHub Releases and shows the result on this page.', 'choir-rehearsal' ); ?></span>
+				<?php endif; ?>
 				<a class="button button-secondary" href="<?php echo esc_url( Choir_Rehearsal_Pages::get_flush_rewrites_url() ); ?>">
 					<?php esc_html_e( 'Refresh permalinks', 'choir-rehearsal' ); ?>
 				</a>
@@ -429,11 +476,18 @@ final class Choir_Rehearsal_Admin {
 			array( 'choir-rehearsal-admin' ),
 			CHOIR_REHEARSAL_VERSION
 		);
-		$admin_deps = array( 'jquery', 'wp-util' );
+		wp_enqueue_script(
+			'choir-rehearsal-waveform',
+			CHOIR_REHEARSAL_URL . 'public/js/waveform.js',
+			array(),
+			CHOIR_REHEARSAL_VERSION,
+			true
+		);
+		$admin_deps = array( 'jquery', 'wp-util', 'choir-rehearsal-waveform' );
 		if ( Choir_Rehearsal_Edition::can_view_score_in_editor() ) {
 			wp_enqueue_script(
 				'pdfjs',
-				'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',
+				Choir_Rehearsal_Distribution::pdfjs_script_url(),
 				array(),
 				'3.11.174',
 				true
@@ -445,11 +499,13 @@ final class Choir_Rehearsal_Admin {
 				CHOIR_REHEARSAL_VERSION,
 				true
 			);
-			wp_localize_script(
+				wp_localize_script(
 				'choir-rehearsal-pdf',
 				'choirRehearsalPdf',
 				array(
-					'workerSrc' => 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js',
+					'workerSrc' => Choir_Rehearsal_Distribution::pdfjs_worker_url(),
+					'expand'    => __( 'Expand PDF', 'choir-rehearsal' ),
+					'closeFs'   => __( 'Close full screen', 'choir-rehearsal' ),
 				)
 			);
 			$admin_deps[] = 'choir-rehearsal-pdf';
@@ -465,7 +521,7 @@ final class Choir_Rehearsal_Admin {
 			wp_enqueue_script(
 				'choir-rehearsal-player',
 				CHOIR_REHEARSAL_URL . 'public/js/player.js',
-				array(),
+				array( 'choir-rehearsal-waveform' ),
 				CHOIR_REHEARSAL_VERSION,
 				true
 			);
@@ -583,7 +639,15 @@ final class Choir_Rehearsal_Admin {
 					class="choir-pdf-viewer<?php echo '' === $pdf_url ? ' is-empty' : ''; ?>"
 					data-pdf-url="<?php echo esc_url( $pdf_url ); ?>"
 				>
-					<div class="choir-pdf-viewer__canvas-wrap" title="<?php esc_attr_e( 'Swipe left or right to change pages', 'choir-rehearsal' ); ?>">
+					<button type="button" class="choir-pdf-expand" aria-label="<?php esc_attr_e( 'Expand PDF', 'choir-rehearsal' ); ?>">
+						<span class="screen-reader-text"><?php esc_html_e( 'Expand PDF', 'choir-rehearsal' ); ?></span>
+						<svg class="choir-pdf-toolbar-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path fill="#ffffff" d="M4 9V4h5v2H6v3H4zm10-5h5v5h-2V6h-3V4zM4 15h2v3h3v2H4v-5zm16 0v5h-5v-2h3v-3h2z"/></svg>
+					</button>
+					<button type="button" class="choir-pdf-close-fs" hidden aria-label="<?php esc_attr_e( 'Close full screen', 'choir-rehearsal' ); ?>">
+						<span class="screen-reader-text"><?php esc_html_e( 'Close full screen', 'choir-rehearsal' ); ?></span>
+						<svg class="choir-pdf-toolbar-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path fill="#ffffff" d="M6.4 5l5.6 5.6L17.6 5 19 6.4 13.4 12 19 17.6 17.6 19 12 13.4 6.4 19 5 17.6 10.6 12 5 6.4 6.4 5z"/></svg>
+					</button>
+					<div class="choir-pdf-viewer__canvas-wrap" title="<?php esc_attr_e( 'Swipe to change pages · pinch to zoom', 'choir-rehearsal' ); ?>">
 						<canvas class="choir-pdf-viewer__canvas"></canvas>
 						<p class="choir-pdf-viewer__empty"><?php esc_html_e( 'No PDF selected yet.', 'choir-rehearsal' ); ?></p>
 					</div>
@@ -671,7 +735,15 @@ final class Choir_Rehearsal_Admin {
 						<option value="<?php echo esc_attr( $slug ); ?>" <?php selected( $voice_slug, $slug ); ?>><?php echo esc_html( $label ); ?></option>
 					<?php endforeach; ?>
 				</select>
-				<span class="choir-audio-name"><?php echo esc_html( $filename ?: __( 'No audio selected', 'choir-rehearsal' ) ); ?></span>
+				<span class="choir-audio-name screen-reader-text"><?php echo esc_html( $filename ?: __( 'No audio selected', 'choir-rehearsal' ) ); ?></span>
+			</div>
+			<div
+				class="choir-track-waveform<?php echo '' === $audio_url ? ' is-empty' : ''; ?>"
+				data-audio-url="<?php echo esc_url( $audio_url ); ?>"
+				title="<?php echo esc_attr( $filename ?: __( 'No audio selected', 'choir-rehearsal' ) ); ?>"
+				aria-hidden="true"
+			>
+				<canvas class="choir-track-waveform__canvas"></canvas>
 			</div>
 			<div class="choir-track-item__actions">
 				<button type="button" class="choir-icon-btn choir-select-audio" title="<?php esc_attr_e( 'Upload', 'choir-rehearsal' ); ?>" aria-label="<?php esc_attr_e( 'Upload', 'choir-rehearsal' ); ?>">
@@ -723,7 +795,7 @@ final class Choir_Rehearsal_Admin {
 		$icons = array(
 			'upload' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12 3l4.5 4.5h-3V14h-3V7.5h-3L12 3zm-7 14h14v2H5v-2z"/></svg>',
 			'record' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="7" fill="currentColor"/></svg>',
-			'play'   => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><path fill="currentColor" d="M7 3.8v16.4L20.2 12 7 3.8z"/></svg>',
+			'play'   => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><path fill="#ffffff" d="M7 3.8v16.4L20.2 12 7 3.8z"/></svg>',
 			'remove' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path fill="currentColor" d="M6.4 6.4l1.2-1.2L12 9.6l4.4-4.4 1.2 1.2L13.2 12l4.4 4.4-1.2 1.2L12 14.4l-4.4 4.4-1.2-1.2L10.8 12 6.4 6.4z"/></svg>',
 			'globe'  => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12 2a10 10 0 100 20 10 10 0 000-20zm6.9 9h-3.1a15.4 15.4 0 00-1.2-5 8.03 8.03 0 014.3 5zM12 4c.9 0 2.2 1.9 2.8 5H9.2C9.8 5.9 11.1 4 12 4zM4 12c0-.7.1-1.4.3-2h3.1a15.4 15.4 0 001.2 5H4.3A8 8 0 014 12zm1.1 3h3.1a15.4 15.4 0 001.2 5 8.03 8.03 0 01-4.3-5zm6.9 5c-.9 0-2.2-1.9-2.8-5h5.6c-.6 3.1-1.9 5-2.8 5zm2.8-2a15.4 15.4 0 001.2-5h3.1a8.03 8.03 0 01-4.3 5zM8.3 10A15.4 15.4 0 017.1 5a8.03 8.03 0 00-4.3 5h3.1z"/></svg>',
 		);
@@ -736,17 +808,27 @@ final class Choir_Rehearsal_Admin {
 			return;
 		}
 
+		if ( ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) || wp_is_post_autosave( $post_id ) || wp_is_post_revision( $post_id ) ) {
+			return;
+		}
+
 		if ( isset( $_POST['choir_rehearsal_visibility_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['choir_rehearsal_visibility_nonce'] ) ), 'choir_rehearsal_save_visibility' ) ) {
 			$is_public = isset( $_POST['choir_is_public'] ) && '1' === (string) wp_unslash( $_POST['choir_is_public'] );
 			Choir_Rehearsal_Post_Types::set_public( $post_id, $is_public );
 		}
 
 		if ( isset( $_POST['choir_rehearsal_score_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['choir_rehearsal_score_nonce'] ) ), 'choir_rehearsal_save_score' ) ) {
-			$pdf_id = isset( $_POST['choir_score_pdf_id'] ) ? absint( wp_unslash( $_POST['choir_score_pdf_id'] ) ) : 0;
-			if ( $pdf_id > 0 && 'application/pdf' === get_post_mime_type( $pdf_id ) ) {
-				update_post_meta( $post_id, '_choir_score_pdf_id', $pdf_id );
-			} else {
-				delete_post_meta( $post_id, '_choir_score_pdf_id' );
+			// Only touch PDF meta when the metabox field is present in this request.
+			if ( isset( $_POST['choir_score_pdf_id'] ) ) {
+				$pdf_id = absint( wp_unslash( $_POST['choir_score_pdf_id'] ) );
+				if ( $pdf_id > 0 ) {
+					if ( 'application/pdf' === get_post_mime_type( $pdf_id ) ) {
+						update_post_meta( $post_id, '_choir_score_pdf_id', $pdf_id );
+					}
+					// Invalid mime: keep any existing score rather than deleting it.
+				} else {
+					delete_post_meta( $post_id, '_choir_score_pdf_id' );
+				}
 			}
 		}
 
