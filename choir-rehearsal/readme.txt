@@ -4,7 +4,7 @@ Tags: choir, audio, rehearsal, voice parts, music
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 0.4.23
+Stable tag: 0.4.24
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -55,6 +55,11 @@ By default only logged-in users can view `/rehearsal/`. Change this under **Choi
 Yes. Use the shortcode `[choir_rehearsal]`.
 
 == Changelog ==
+
+= 0.4.24 =
+* Play buttons always blue with white icon/text (theme-proof)
+* PDF: full-screen expand with close control; sticky player stays visible below
+* PDF: pinch-to-zoom (and Ctrl/trackpad zoom)
 
 = 0.4.23 =
 * WordPress.org package: remove GitHub updater file entirely (Plugin Check)

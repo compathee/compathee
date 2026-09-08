@@ -120,13 +120,23 @@
   ],
   "changelog": [
     {
+      "version": "0.4.24",
+      "summary": "PDF full screen and theme-proof Play",
+      "items": [
+        "Play buttons always blue with white triangle/text",
+        "PDF expand to almost full screen; player strip stays below",
+        "Pinch-to-zoom on PDF scores"
+      ],
+      "open": true
+    },
+    {
       "version": "0.4.23",
       "summary": "WordPress.org Plugin Check fixes",
       "items": [
         "WordPress.org zip omits class-updater.php (plugin_updater_detected)",
         "readme.txt Tested up to 7.1"
       ],
-      "open": true
+      "open": false
     },
     {
       "version": "0.4.22",

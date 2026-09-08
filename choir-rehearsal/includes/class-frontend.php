@@ -154,6 +154,8 @@ final class Choir_Rehearsal_Frontend {
 						'workerSrc' => Choir_Rehearsal_Distribution::pdfjs_worker_url(),
 						'prev'      => __( 'Previous page', 'choir-rehearsal' ),
 						'next'      => __( 'Next page', 'choir-rehearsal' ),
+						'expand'    => __( 'Expand PDF', 'choir-rehearsal' ),
+						'closeFs'   => __( 'Close full screen', 'choir-rehearsal' ),
 					)
 				);
 			}
@@ -630,6 +632,13 @@ final class Choir_Rehearsal_Frontend {
 				<section class="choir-score-section" aria-label="<?php esc_attr_e( 'Sheet music', 'choir-rehearsal' ); ?>">
 					<h2 class="choir-section-title"><?php esc_html_e( 'Sheet music', 'choir-rehearsal' ); ?></h2>
 					<div class="choir-pdf-viewer" data-pdf-url="<?php echo esc_url( $pdf_url ); ?>">
+						<button type="button" class="choir-pdf-expand" aria-label="<?php esc_attr_e( 'Expand PDF', 'choir-rehearsal' ); ?>">
+							<span class="screen-reader-text"><?php esc_html_e( 'Expand PDF', 'choir-rehearsal' ); ?></span>
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path fill="#ffffff" d="M4 9V4h5v2H6v3H4zm10-5h5v5h-2V6h-3V4zM4 15h2v3h3v2H4v-5zm16 0v5h-5v-2h3v-3h2z"/></svg>
+						</button>
+						<button type="button" class="choir-pdf-close-fs" hidden aria-label="<?php esc_attr_e( 'Close full screen', 'choir-rehearsal' ); ?>">
+							<span aria-hidden="true">&times;</span>
+						</button>
 						<div class="choir-pdf-viewer__canvas-wrap">
 							<canvas class="choir-pdf-viewer__canvas"></canvas>
 						</div>
@@ -689,7 +698,10 @@ final class Choir_Rehearsal_Frontend {
 			</div>
 			<div class="choir-sticky-player__controls">
 				<button type="button" class="choir-sticky-player__play" aria-label="<?php esc_attr_e( 'Play', 'choir-rehearsal' ); ?>">
-					<span class="choir-sticky-player__play-icon" aria-hidden="true">▶</span>
+					<span class="choir-sticky-player__play-icon" aria-hidden="true">
+						<svg class="choir-sticky-player__play-svg choir-sticky-player__play-svg--play" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" focusable="false"><path fill="#ffffff" d="M8 5.2v13.6L19.5 12 8 5.2z"/></svg>
+						<svg class="choir-sticky-player__play-svg choir-sticky-player__play-svg--pause" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" focusable="false"><path fill="#ffffff" d="M7 5h3.5v14H7V5zm6.5 0H17v14h-3.5V5z"/></svg>
+					</span>
 				</button>
 				<div class="choir-sticky-player__timeline">
 					<input type="range" class="choir-sticky-player__seek" min="0" max="100" value="0" step="0.1" aria-label="<?php esc_attr_e( 'Seek', 'choir-rehearsal' ); ?>" />
