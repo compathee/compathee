@@ -92,9 +92,16 @@ final class Choir_Rehearsal_Frontend {
 		}
 
 		wp_enqueue_script(
+			'choir-rehearsal-waveform',
+			CHOIR_REHEARSAL_URL . 'public/js/waveform.js',
+			array(),
+			CHOIR_REHEARSAL_VERSION,
+			true
+		);
+		wp_enqueue_script(
 			'choir-rehearsal-player',
 			CHOIR_REHEARSAL_URL . 'public/js/player.js',
-			array(),
+			array( 'choir-rehearsal-waveform' ),
 			CHOIR_REHEARSAL_VERSION,
 			true
 		);
@@ -114,14 +121,6 @@ final class Choir_Rehearsal_Frontend {
 			if ( ! Choir_Rehearsal_Access::can_view_song( $song_id ) ) {
 				return;
 			}
-
-			wp_enqueue_script(
-				'choir-rehearsal-waveform',
-				CHOIR_REHEARSAL_URL . 'public/js/waveform.js',
-				array(),
-				CHOIR_REHEARSAL_VERSION,
-				true
-			);
 
 			wp_enqueue_script(
 				'choir-rehearsal-share',
@@ -716,6 +715,9 @@ final class Choir_Rehearsal_Frontend {
 				</button>
 				<div class="choir-sticky-player__timeline">
 					<input type="range" class="choir-sticky-player__seek" min="0" max="100" value="0" step="0.1" aria-label="<?php esc_attr_e( 'Seek', 'choir-rehearsal' ); ?>" />
+					<div class="choir-sticky-player__wave choir-track-waveform is-empty" data-audio-url="" data-color="#60a5fa" aria-hidden="true">
+						<canvas class="choir-track-waveform__canvas"></canvas>
+					</div>
 					<span class="choir-sticky-player__time">0:00 / 0:00</span>
 				</div>
 				<audio class="choir-sticky-player__audio" preload="none"></audio>
