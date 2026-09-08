@@ -14,6 +14,7 @@
 	const seek = player.querySelector('.choir-sticky-player__seek');
 	const timeEl = player.querySelector('.choir-sticky-player__time');
 	const closeBtn = player.querySelector('.choir-sticky-player__close');
+	const waveEl = player.querySelector('.choir-sticky-player__wave');
 
 	if (!audio || !playBtn || !seek || !timeEl) {
 		return;
@@ -47,6 +48,18 @@
 		}
 	}
 
+	function setPlayerWaveform(url) {
+		if (!waveEl) {
+			return;
+		}
+		const next = url || '';
+		waveEl.setAttribute('data-audio-url', next);
+		waveEl.classList.toggle('is-empty', !next);
+		if (window.choirWaveforms && typeof window.choirWaveforms.refresh === 'function') {
+			window.choirWaveforms.refresh(waveEl);
+		}
+	}
+
 	function closePlayer() {
 		audio.pause();
 		audio.removeAttribute('src');
@@ -57,6 +70,7 @@
 			title.textContent = '';
 		}
 		setPlaying(false);
+		setPlayerWaveform('');
 		player.classList.add('is-hidden');
 		player.setAttribute('aria-hidden', 'true');
 		document.body.classList.remove('choir-sticky-player-open');
@@ -72,6 +86,7 @@
 		player.classList.remove('is-hidden');
 		player.setAttribute('aria-hidden', 'false');
 		document.body.classList.add('choir-sticky-player-open');
+		setPlayerWaveform(url);
 		audio.src = url;
 		audio.play().catch(function () {
 			setPlaying(false);

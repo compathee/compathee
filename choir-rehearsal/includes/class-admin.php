@@ -521,7 +521,7 @@ final class Choir_Rehearsal_Admin {
 			wp_enqueue_script(
 				'choir-rehearsal-player',
 				CHOIR_REHEARSAL_URL . 'public/js/player.js',
-				array(),
+				array( 'choir-rehearsal-waveform' ),
 				CHOIR_REHEARSAL_VERSION,
 				true
 			);
@@ -734,9 +734,14 @@ final class Choir_Rehearsal_Admin {
 						<option value="<?php echo esc_attr( $slug ); ?>" <?php selected( $voice_slug, $slug ); ?>><?php echo esc_html( $label ); ?></option>
 					<?php endforeach; ?>
 				</select>
-				<span class="choir-audio-name"><?php echo esc_html( $filename ?: __( 'No audio selected', 'choir-rehearsal' ) ); ?></span>
+				<span class="choir-audio-name screen-reader-text"><?php echo esc_html( $filename ?: __( 'No audio selected', 'choir-rehearsal' ) ); ?></span>
 			</div>
-			<div class="choir-track-waveform<?php echo '' === $audio_url ? ' is-empty' : ''; ?>" data-audio-url="<?php echo esc_url( $audio_url ); ?>" aria-hidden="true">
+			<div
+				class="choir-track-waveform<?php echo '' === $audio_url ? ' is-empty' : ''; ?>"
+				data-audio-url="<?php echo esc_url( $audio_url ); ?>"
+				title="<?php echo esc_attr( $filename ?: __( 'No audio selected', 'choir-rehearsal' ) ); ?>"
+				aria-hidden="true"
+			>
 				<canvas class="choir-track-waveform__canvas"></canvas>
 			</div>
 			<div class="choir-track-item__actions">

@@ -96,8 +96,10 @@
 	}
 
 	function setRowAudio($row, audioId, filename, url) {
+		const name = filename || i18n.noAudio || 'No audio selected';
 		$row.find('.choir-audio-id').val(audioId || '');
-		$row.find('.choir-audio-name').text(filename || i18n.noAudio || 'No audio selected');
+		$row.find('.choir-audio-name').text(name);
+		$row.find('.choir-track-waveform').attr('title', name);
 		updatePlayButton($row, url || '');
 		updateWaveform($row, url || '');
 	}
@@ -311,7 +313,9 @@
 
 			self.$row.find('.choir-audio-id').val(response.data.id);
 			self.$row.find('.choir-audio-name').text(response.data.filename || i18n.useAudio || 'Use this audio');
+			self.$row.find('.choir-track-waveform').attr('title', response.data.filename || i18n.useAudio || 'Use this audio');
 			updatePlayButton(self.$row, response.data.url || '');
+			updateWaveform(self.$row, response.data.url || '');
 			self.close();
 		}).fail(function (xhr) {
 			let message = i18n.uploadFailed || 'Upload failed. Please try again.';
@@ -438,9 +442,9 @@
 				'<input type="hidden" class="choir-audio-id" name="choir_tracks[' + index + '][audio_id]" value="0" />' +
 				'<div class="choir-track-item__main">' +
 					'<select class="choir-voice-select choir-track-voice" name="choir_tracks[' + index + '][voice]" aria-label="Voice">' + options + '</select>' +
-					'<span class="choir-audio-name">' + (i18n.noAudio || 'No audio selected') + '</span>' +
+					'<span class="choir-audio-name screen-reader-text">' + (i18n.noAudio || 'No audio selected') + '</span>' +
 				'</div>' +
-				'<div class="choir-track-waveform is-empty" data-audio-url="" aria-hidden="true">' +
+				'<div class="choir-track-waveform is-empty" data-audio-url="" title="' + (i18n.noAudio || 'No audio selected') + '" aria-hidden="true">' +
 					'<canvas class="choir-track-waveform__canvas"></canvas>' +
 				'</div>' +
 				'<div class="choir-track-item__actions">' +

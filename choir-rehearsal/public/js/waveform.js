@@ -6,6 +6,11 @@
 	var peakCache = Object.create(null);
 	var audioCtx = null;
 
+	function waveColor(el) {
+		var custom = el && el.getAttribute && el.getAttribute('data-color');
+		return custom || COLOR;
+	}
+
 	function getAudioContext() {
 		if (audioCtx) {
 			return audioCtx;
@@ -67,7 +72,7 @@
 		return peakCache[url];
 	}
 
-	function drawPeaks(canvas, peaks) {
+	function drawPeaks(canvas, peaks, color) {
 		if (!canvas || !peaks || !peaks.length) {
 			return;
 		}
@@ -91,7 +96,7 @@
 		var mid = cssHeight / 2;
 		var i;
 
-		ctx.fillStyle = COLOR;
+		ctx.fillStyle = color || COLOR;
 
 		for (i = 0; i < barCount; i++) {
 			var peakIndex = Math.floor((i / barCount) * peaks.length);
@@ -147,7 +152,7 @@
 				return;
 			}
 			el._choirPeaks = peaks;
-			drawPeaks(canvas, peaks);
+			drawPeaks(canvas, peaks, waveColor(el));
 		});
 	}
 
@@ -179,7 +184,7 @@
 		if ('ResizeObserver' in window) {
 			var ro = new ResizeObserver(function () {
 				if (el._choirPeaks) {
-					drawPeaks(canvas, el._choirPeaks);
+					drawPeaks(canvas, el._choirPeaks, waveColor(el));
 				}
 			});
 			ro.observe(el);
