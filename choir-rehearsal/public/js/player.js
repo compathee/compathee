@@ -74,6 +74,9 @@
 		player.classList.add('is-hidden');
 		player.setAttribute('aria-hidden', 'true');
 		document.body.classList.remove('choir-sticky-player-open');
+		if (window.choirPiano && typeof window.choirPiano.close === 'function') {
+			window.choirPiano.close();
+		}
 	}
 
 	function playTrack(url, trackTitle) {

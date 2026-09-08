@@ -115,6 +115,21 @@ final class Choir_Rehearsal_Frontend {
 				'close'      => __( 'Close player', 'choir-rehearsal' ),
 			)
 		);
+		wp_enqueue_script(
+			'choir-rehearsal-piano',
+			CHOIR_REHEARSAL_URL . 'public/js/piano.js',
+			array(),
+			CHOIR_REHEARSAL_VERSION,
+			true
+		);
+		wp_localize_script(
+			'choir-rehearsal-piano',
+			'choirRehearsalPiano',
+			array(
+				'open'  => __( 'Open piano', 'choir-rehearsal' ),
+				'close' => __( 'Close piano', 'choir-rehearsal' ),
+			)
+		);
 
 		if ( is_singular( Choir_Rehearsal_Post_Types::SONG ) ) {
 			$song_id = get_queried_object_id();
@@ -718,6 +733,10 @@ final class Choir_Rehearsal_Frontend {
 					<div class="choir-sticky-player__meta">
 						<span class="choir-sticky-player__title"></span>
 						<span class="choir-sticky-player__time">0:00 / 0:00</span>
+						<button type="button" class="choir-sticky-player__piano" aria-label="<?php esc_attr_e( 'Open piano', 'choir-rehearsal' ); ?>" aria-expanded="false" aria-controls="choir-piano-sheet">
+							<span class="screen-reader-text"><?php esc_html_e( 'Open piano', 'choir-rehearsal' ); ?></span>
+							<svg class="choir-sticky-player__piano-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path fill="currentColor" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-9 16.5v-4.5h1V4.5h2v10.5h1v4.5h-4zM8 19.5H5.5c-.55 0-1-.45-1-1V5.5c0-.55.45-1 1-1H7v10.5h1v4.5zm8-4.5h1V4.5h1.5c.55 0 1 .45 1 1v13c0 .55-.45 1-1 1H16v-4.5z"/></svg>
+						</button>
 						<button type="button" class="choir-sticky-player__close" aria-label="<?php esc_attr_e( 'Close player', 'choir-rehearsal' ); ?>">
 							<span aria-hidden="true">&times;</span>
 						</button>
@@ -725,6 +744,17 @@ final class Choir_Rehearsal_Frontend {
 				</div>
 			</div>
 			<audio class="choir-sticky-player__audio" preload="none"></audio>
+		</div>
+		<div id="choir-piano-sheet" class="choir-piano-sheet is-hidden" hidden aria-hidden="true">
+			<div class="choir-piano-sheet__header">
+				<span class="choir-piano-sheet__title"><?php esc_html_e( 'Piano', 'choir-rehearsal' ); ?></span>
+				<button type="button" class="choir-piano-sheet__close" aria-label="<?php esc_attr_e( 'Close piano', 'choir-rehearsal' ); ?>">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="choir-piano-sheet__scroll" tabindex="0">
+				<div class="choir-piano-sheet__keyboard" data-start-midi="48" data-end-midi="71" role="group" aria-label="<?php esc_attr_e( 'Two octave piano keyboard', 'choir-rehearsal' ); ?>"></div>
+			</div>
 		</div>
 		<?php
 	}

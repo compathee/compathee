@@ -120,6 +120,16 @@
   ],
   "changelog": [
     {
+      "version": "0.4.29",
+      "summary": "Sticky player piano",
+      "items": [
+        "Piano icon on the sticky player opens a 2-octave keyboard",
+        "Scroll horizontally with finger or mouse; Web Audio electric-piano timbre",
+        "Track keeps playing while you play notes"
+      ],
+      "open": true
+    },
+    {
       "version": "0.4.28",
       "summary": "Player scrubber + PDF zoom fixes",
       "items": [
@@ -127,7 +137,7 @@
         "PDF expand fits the page to screen width",
         "Expand button becomes a matching X; pinch keeps the scale"
       ],
-      "open": true
+      "open": false
     },
     {
       "version": "0.4.27",

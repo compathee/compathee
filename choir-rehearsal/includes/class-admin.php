@@ -535,6 +535,21 @@ final class Choir_Rehearsal_Admin {
 					'close'      => __( 'Close player', 'choir-rehearsal' ),
 				)
 			);
+			wp_enqueue_script(
+				'choir-rehearsal-piano',
+				CHOIR_REHEARSAL_URL . 'public/js/piano.js',
+				array(),
+				CHOIR_REHEARSAL_VERSION,
+				true
+			);
+			wp_localize_script(
+				'choir-rehearsal-piano',
+				'choirRehearsalPiano',
+				array(
+					'open'  => __( 'Open piano', 'choir-rehearsal' ),
+					'close' => __( 'Close piano', 'choir-rehearsal' ),
+				)
+			);
 		}
 		wp_localize_script(
 			'choir-rehearsal-admin',
