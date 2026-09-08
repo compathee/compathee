@@ -1,9 +1,9 @@
 (function () {
 	'use strict';
 
-	var PLAYER_RESERVE_PX = 96;
-	var MIN_ZOOM = 1;
-	var MAX_ZOOM = 4;
+	var PLAYER_RESERVE_PX = 72;
+	var MIN_ZOOM = 0.35;
+	var MAX_ZOOM = 5;
 
 	function initChoirPdfViewer(viewer) {
 		if (!viewer || typeof window.pdfjsLib === 'undefined') {
@@ -36,10 +36,11 @@
 		var pageRendering = false;
 		var pageNumPending = null;
 		var loadToken = 0;
-		var baseScale = Math.min(window.devicePixelRatio || 1, 2) * 1.2;
+		/** User zoom relative to fit-width (1 = page fits container width). */
 		var zoom = 1;
 		var pinchLiveScale = 1;
 		var isFullscreen = false;
+		var resizeTimer = null;
 
 		function setStatus(text) {
 			pageLabel.textContent = text;
@@ -58,10 +59,17 @@
 			pageLabel.textContent = pageNum + ' / ' + pdfDoc.numPages;
 		}
 
+		function wrapContentWidth() {
+			var style = window.getComputedStyle(wrap);
+			var padL = parseFloat(style.paddingLeft) || 0;
+			var padR = parseFloat(style.paddingRight) || 0;
+			return Math.max(120, wrap.clientWidth - padL - padR);
+		}
+
 		function applyCanvasTransform() {
 			var live = pinchLiveScale;
 			canvas.style.transformOrigin = 'center top';
-			if (live !== 1) {
+			if (Math.abs(live - 1) > 0.001) {
 				canvas.style.transform = 'scale(' + live + ')';
 			} else {
 				canvas.style.transform = '';
@@ -76,12 +84,19 @@
 			pageRendering = true;
 
 			pdfDoc.getPage(num).then(function (page) {
-				var viewport = page.getViewport({ scale: baseScale * zoom });
+				var dpr = Math.min(window.devicePixelRatio || 1, 2);
+				var unscaled = page.getViewport({ scale: 1 });
+				var fitScale = wrapContentWidth() / unscaled.width;
+				var cssScale = fitScale * zoom;
+				var viewport = page.getViewport({ scale: cssScale * dpr });
 				var context = canvas.getContext('2d');
 
-				canvas.height = viewport.height;
-				canvas.width = viewport.width;
-				canvas.classList.toggle('is-zoomed', zoom > 1.01);
+				canvas.width = Math.floor(viewport.width);
+				canvas.height = Math.floor(viewport.height);
+				canvas.style.width = Math.floor(viewport.width / dpr) + 'px';
+				canvas.style.height = Math.floor(viewport.height / dpr) + 'px';
+				canvas.classList.toggle('is-zoomed', zoom > 1.02);
+				// Drop live CSS scale only after the new bitmap size is applied.
 				pinchLiveScale = 1;
 				applyCanvasTransform();
 
@@ -129,10 +144,12 @@
 				return;
 			}
 			zoom = clamped;
-			pinchLiveScale = 1;
-			applyCanvasTransform();
 			if (rerender !== false) {
+				// Keep pinchLiveScale until render paints, so the view does not flash/snap.
 				queueRenderPage(pageNum);
+			} else {
+				pinchLiveScale = 1;
+				applyCanvasTransform();
 			}
 		}
 
@@ -141,6 +158,8 @@
 			context.clearRect(0, 0, canvas.width || 1, canvas.height || 1);
 			canvas.width = 1;
 			canvas.height = 1;
+			canvas.style.width = '';
+			canvas.style.height = '';
 			pinchLiveScale = 1;
 			applyCanvasTransform();
 		}
@@ -208,21 +227,30 @@
 			document.documentElement.style.setProperty('--choir-pdf-player-reserve', reserve + 'px');
 		}
 
+		function syncToolbarButtons() {
+			if (expandBtn) {
+				expandBtn.hidden = isFullscreen;
+			}
+			if (closeFsBtn) {
+				closeFsBtn.hidden = !isFullscreen;
+			}
+		}
+
 		function enterFullscreen() {
 			if (isFullscreen || viewer.classList.contains('is-empty')) {
 				return;
 			}
 			isFullscreen = true;
+			zoom = 1;
+			pinchLiveScale = 1;
 			syncPlayerReserve();
 			viewer.classList.add('is-fullscreen');
 			document.body.classList.add('choir-pdf-fullscreen-open');
-			if (expandBtn) {
-				expandBtn.hidden = true;
-			}
-			if (closeFsBtn) {
-				closeFsBtn.hidden = false;
-			}
-			queueRenderPage(pageNum);
+			syncToolbarButtons();
+			// Wait a frame so fullscreen layout sizes are available for fit-width.
+			window.requestAnimationFrame(function () {
+				queueRenderPage(pageNum);
+			});
 		}
 
 		function exitFullscreen() {
@@ -230,15 +258,14 @@
 				return;
 			}
 			isFullscreen = false;
+			zoom = 1;
+			pinchLiveScale = 1;
 			viewer.classList.remove('is-fullscreen');
 			document.body.classList.remove('choir-pdf-fullscreen-open');
-			if (expandBtn) {
-				expandBtn.hidden = false;
-			}
-			if (closeFsBtn) {
-				closeFsBtn.hidden = true;
-			}
-			queueRenderPage(pageNum);
+			syncToolbarButtons();
+			window.requestAnimationFrame(function () {
+				queueRenderPage(pageNum);
+			});
 		}
 
 		prevBtn.addEventListener('click', function () {
@@ -323,7 +350,7 @@
 			tracking = false;
 		});
 
-		// Pinch-to-zoom (touch).
+		// Pinch-to-zoom (touch). Live CSS scale, then commit to zoom on release.
 		var pinchStartDistance = 0;
 		var pinchStartZoom = 1;
 		var pinching = false;
@@ -341,7 +368,7 @@
 					pinching = true;
 					tracking = false;
 					pinchStartDistance = touchDistance(event.touches);
-					pinchStartZoom = zoom;
+					pinchStartZoom = zoom * pinchLiveScale;
 					event.preventDefault();
 				}
 			},
@@ -369,7 +396,7 @@
 			}
 			pinching = false;
 			var nextZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, zoom * pinchLiveScale));
-			pinchLiveScale = 1;
+			// Keep the live visual until the re-render paints the committed zoom.
 			setZoom(nextZoom, true);
 		}
 
@@ -390,6 +417,22 @@
 			{ passive: false }
 		);
 
+		if (typeof ResizeObserver !== 'undefined') {
+			var ro = new ResizeObserver(function () {
+				if (!pdfDoc) {
+					return;
+				}
+				window.clearTimeout(resizeTimer);
+				resizeTimer = window.setTimeout(function () {
+					if (isFullscreen) {
+						syncPlayerReserve();
+					}
+					queueRenderPage(pageNum);
+				}, 120);
+			});
+			ro.observe(wrap);
+		}
+
 		var api = {
 			load: loadDocument,
 			reload: loadDocument,
@@ -404,6 +447,7 @@
 		};
 
 		viewer._choirPdfApi = api;
+		syncToolbarButtons();
 		loadDocument(viewer.getAttribute('data-pdf-url') || '');
 		return api;
 	}

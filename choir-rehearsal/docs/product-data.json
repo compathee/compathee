@@ -120,13 +120,23 @@
   ],
   "changelog": [
     {
+      "version": "0.4.28",
+      "summary": "Player scrubber + PDF zoom fixes",
+      "items": [
+        "Sticky player: blue waveform behind scrubber, white track removed",
+        "PDF expand fits the page to screen width",
+        "Expand button becomes a matching X; pinch keeps the scale"
+      ],
+      "open": true
+    },
+    {
       "version": "0.4.27",
       "summary": "Compact sticky player",
       "items": [
         "Waveform fills the player as background from Play to the right edge",
         "Scrubber overlays the waveform; bar height is minimal"
       ],
-      "open": true
+      "open": false
     },
     {
       "version": "0.4.26",

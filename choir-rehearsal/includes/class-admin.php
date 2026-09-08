@@ -641,10 +641,11 @@ final class Choir_Rehearsal_Admin {
 				>
 					<button type="button" class="choir-pdf-expand" aria-label="<?php esc_attr_e( 'Expand PDF', 'choir-rehearsal' ); ?>">
 						<span class="screen-reader-text"><?php esc_html_e( 'Expand PDF', 'choir-rehearsal' ); ?></span>
-						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path fill="#ffffff" d="M4 9V4h5v2H6v3H4zm10-5h5v5h-2V6h-3V4zM4 15h2v3h3v2H4v-5zm16 0v5h-5v-2h3v-3h2z"/></svg>
+						<svg class="choir-pdf-toolbar-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path fill="#ffffff" d="M4 9V4h5v2H6v3H4zm10-5h5v5h-2V6h-3V4zM4 15h2v3h3v2H4v-5zm16 0v5h-5v-2h3v-3h2z"/></svg>
 					</button>
 					<button type="button" class="choir-pdf-close-fs" hidden aria-label="<?php esc_attr_e( 'Close full screen', 'choir-rehearsal' ); ?>">
-						<span aria-hidden="true">&times;</span>
+						<span class="screen-reader-text"><?php esc_html_e( 'Close full screen', 'choir-rehearsal' ); ?></span>
+						<svg class="choir-pdf-toolbar-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path fill="#ffffff" d="M6.4 5l5.6 5.6L17.6 5 19 6.4 13.4 12 19 17.6 17.6 19 12 13.4 6.4 19 5 17.6 10.6 12 5 6.4 6.4 5z"/></svg>
 					</button>
 					<div class="choir-pdf-viewer__canvas-wrap" title="<?php esc_attr_e( 'Swipe to change pages · pinch to zoom', 'choir-rehearsal' ); ?>">
 						<canvas class="choir-pdf-viewer__canvas"></canvas>
