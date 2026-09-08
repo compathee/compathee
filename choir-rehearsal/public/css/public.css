@@ -1,6 +1,19 @@
+.choir-pdf-viewer .screen-reader-text {
+	border: 0;
+	clip: rect(1px, 1px, 1px, 1px);
+	clip-path: inset(50%);
+	height: 1px;
+	margin: -1px;
+	overflow: hidden;
+	padding: 0;
+	position: absolute;
+	width: 1px;
+	word-wrap: normal !important;
+}
+
 .choir-rehearsal-main {
 	max-width: 960px;
-	margin: 0 auto 120px;
+	margin: 0 auto 80px;
 	padding: 24px 16px;
 }
 
@@ -391,28 +404,86 @@
 }
 
 .choir-pdf-viewer {
+	position: relative;
 	border: 1px solid rgba(0, 0, 0, 0.08);
 	border-radius: 12px;
 	overflow: hidden;
 	background: #f8fafc;
 }
 
+.choir-pdf-expand,
+.choir-pdf-close-fs {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	z-index: 5;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 40px;
+	height: 40px;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	border-radius: 999px;
+	background: #1f4fd8 !important;
+	color: #fff !important;
+	cursor: pointer;
+	box-shadow: 0 4px 14px rgba(16, 24, 40, 0.2);
+}
+
+.choir-pdf-expand:hover,
+.choir-pdf-expand:focus-visible,
+.choir-pdf-close-fs:hover,
+.choir-pdf-close-fs:focus-visible {
+	background: #173ea8 !important;
+	color: #fff !important;
+	outline: none;
+	box-shadow: 0 0 0 3px rgba(31, 79, 216, 0.35);
+}
+
+.choir-pdf-close-fs {
+	z-index: 6;
+}
+
+.choir-pdf-expand .choir-pdf-toolbar-icon,
+.choir-pdf-close-fs .choir-pdf-toolbar-icon,
+.choir-pdf-expand svg,
+.choir-pdf-close-fs svg {
+	display: block;
+	width: 20px;
+	height: 20px;
+	fill: #fff !important;
+	color: #fff !important;
+}
+
+.choir-pdf-viewer.is-empty .choir-pdf-expand {
+	display: none;
+}
+
 .choir-pdf-viewer__canvas-wrap {
 	overflow: auto;
 	padding: 12px;
 	background: #eef2f7;
-	touch-action: pan-y;
+	touch-action: pan-x pan-y;
 	-webkit-user-select: none;
 	user-select: none;
+	overscroll-behavior: contain;
 }
 
 .choir-pdf-viewer__canvas {
 	display: block;
-	max-width: 100%;
+	width: auto;
+	max-width: none;
 	height: auto;
 	margin: 0 auto;
 	background: #fff;
 	box-shadow: 0 8px 24px rgba(16, 24, 40, 0.08);
+	transform-origin: center top;
+}
+
+.choir-pdf-viewer__canvas.is-zoomed {
+	max-width: none;
 }
 
 .choir-pdf-viewer__controls {
@@ -425,16 +496,24 @@
 	border-top: 1px solid rgba(0, 0, 0, 0.08);
 }
 
-.choir-pdf-viewer__controls button {
-	border: 0;
-	border-radius: 999px;
-	background: #1f4fd8;
-	color: #fff;
-	padding: 8px 16px;
+.choir-pdf-viewer__controls button,
+button.choir-pdf-prev,
+button.choir-pdf-next {
+	border: 0 !important;
+	border-radius: 999px !important;
+	background: #1f4fd8 !important;
+	background-color: #1f4fd8 !important;
+	color: #fff !important;
+	padding: 8px 16px !important;
 	cursor: pointer;
+	box-shadow: none !important;
+	text-shadow: none !important;
+	-webkit-text-fill-color: #fff !important;
 }
 
-.choir-pdf-viewer__controls button:disabled {
+.choir-pdf-viewer__controls button:disabled,
+button.choir-pdf-prev:disabled,
+button.choir-pdf-next:disabled {
 	opacity: 0.45;
 	cursor: not-allowed;
 }
@@ -443,6 +522,41 @@
 	min-width: 72px;
 	text-align: center;
 	font-weight: 600;
+	color: #101828;
+}
+
+/* Full-screen PDF: almost viewport height, reserve bottom strip for sticky player. */
+.choir-pdf-viewer.is-fullscreen {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: var(--choir-pdf-player-reserve, 96px);
+	z-index: 100000;
+	border-radius: 0;
+	border: 0;
+	display: flex;
+	flex-direction: column;
+	background: #eef2f7;
+	overflow: hidden;
+}
+
+.choir-pdf-viewer.is-fullscreen .choir-pdf-viewer__canvas-wrap {
+	flex: 1 1 auto;
+	min-height: 0;
+	padding: 8px;
+}
+
+.choir-pdf-viewer.is-fullscreen .choir-pdf-viewer__controls {
+	flex: 0 0 auto;
+}
+
+body.choir-pdf-fullscreen-open {
+	overflow: hidden;
+}
+
+body.choir-pdf-fullscreen-open .choir-sticky-player {
+	z-index: 100001;
 }
 
 .choir-song-list,
@@ -475,19 +589,73 @@
 
 .choir-track-voice {
 	font-weight: 600;
+	flex: 0 1 auto;
+	min-width: 4.5rem;
+	max-width: 30%;
 }
 
-.choir-play-track {
-	border: 0;
+.choir-track-waveform {
+	flex: 1 1 auto;
+	min-width: 48px;
+	height: 36px;
+	position: relative;
+	background: transparent;
+	border-radius: 6px;
+	overflow: hidden;
+	align-self: center;
+}
+
+.choir-track-waveform.is-empty {
+	opacity: 0.35;
+}
+
+.choir-track-waveform.is-loading::after {
+	content: '';
+	position: absolute;
+	inset: 40% 8%;
 	border-radius: 999px;
-	background: #1f4fd8;
-	color: #fff;
-	padding: 8px 18px;
-	cursor: pointer;
+	background: rgba(31, 79, 216, 0.18);
 }
 
-.choir-play-track:hover {
-	background: #173ea8;
+.choir-track-waveform__canvas {
+	display: block;
+	width: 100%;
+	height: 100%;
+	background: transparent;
+}
+
+.choir-track-item .choir-play-track {
+	flex: 0 0 auto;
+}
+
+.choir-play-track,
+button.choir-play-track {
+	border: 0 !important;
+	border-radius: 999px !important;
+	background: #1f4fd8 !important;
+	background-color: #1f4fd8 !important;
+	color: #fff !important;
+	-webkit-text-fill-color: #fff !important;
+	padding: 8px 18px !important;
+	cursor: pointer;
+	box-shadow: none !important;
+	text-shadow: none !important;
+}
+
+.choir-play-track:hover,
+.choir-play-track:focus-visible,
+button.choir-play-track:hover,
+button.choir-play-track:focus-visible {
+	background: #173ea8 !important;
+	background-color: #173ea8 !important;
+	color: #fff !important;
+	-webkit-text-fill-color: #fff !important;
+}
+
+.choir-play-track svg,
+.choir-play-track svg path {
+	fill: #ffffff !important;
+	color: #ffffff !important;
 }
 
 .choir-back-link {
@@ -500,160 +668,288 @@
 	right: 0;
 	bottom: 0;
 	z-index: 9999;
-	display: grid;
-	grid-template-columns: minmax(0, 1fr) minmax(0, 2.5fr) auto;
-	grid-template-areas: "info controls close";
-	gap: 12px 16px;
-	align-items: center;
-	padding: 14px 20px max(14px, env(safe-area-inset-bottom));
+	display: flex;
+	align-items: stretch;
+	gap: 8px;
+	padding: 6px 10px max(6px, env(safe-area-inset-bottom));
 	background: #101828;
 	color: #fff;
-	box-shadow: 0 -8px 24px rgba(16, 24, 40, 0.18);
+	box-shadow: 0 -6px 18px rgba(16, 24, 40, 0.2);
 }
 
 .choir-sticky-player.is-hidden {
 	display: none;
 }
 
-.choir-sticky-player__info {
-	grid-area: info;
-	min-width: 0;
-}
-
-.choir-sticky-player__label {
-	display: block;
-	font-size: 0.72rem;
-	text-transform: uppercase;
-	letter-spacing: 0.04em;
-	opacity: 0.75;
-	margin-bottom: 2px;
-}
-
-.choir-sticky-player__title {
-	display: block;
-	font-size: 0.95rem;
-	line-height: 1.35;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-}
-
-.choir-sticky-player__controls {
-	grid-area: controls;
-	display: flex;
-	align-items: center;
-	gap: 12px;
-	min-width: 0;
-	width: 100%;
-	position: relative;
-}
-
-.choir-sticky-player__close {
-	grid-area: close;
+.choir-sticky-player__play,
+button.choir-sticky-player__play {
 	flex: 0 0 auto;
+	align-self: center;
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
 	width: 40px;
 	height: 40px;
+	border: 0 !important;
+	border-radius: 50% !important;
+	background: #1f4fd8 !important;
+	background-color: #1f4fd8 !important;
+	color: #fff !important;
+	-webkit-text-fill-color: #fff !important;
+	cursor: pointer;
+	padding: 0 !important;
+	font-size: 1rem;
+	line-height: 1;
+	box-shadow: none !important;
+	text-shadow: none !important;
+}
+
+.choir-sticky-player__play:hover,
+.choir-sticky-player__play:focus-visible,
+button.choir-sticky-player__play:hover,
+button.choir-sticky-player__play:focus-visible {
+	background: #3b6ff0 !important;
+	background-color: #3b6ff0 !important;
+	color: #fff !important;
+	outline: none;
+	box-shadow: 0 0 0 3px rgba(31, 79, 216, 0.45) !important;
+}
+
+.choir-sticky-player__play-icon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 18px;
+	height: 18px;
+	transform: translateX(1px);
+	color: #fff !important;
+	-webkit-text-fill-color: #fff !important;
+}
+
+.choir-sticky-player__play-svg {
+	display: block;
+	width: 18px;
+	height: 18px;
+	fill: #fff !important;
+	color: #fff !important;
+}
+
+.choir-sticky-player__play-svg--pause {
+	display: none;
+}
+
+.choir-sticky-player__play.is-playing .choir-sticky-player__play-icon,
+.choir-sticky-player__play-icon.is-playing {
+	transform: none;
+}
+
+.choir-sticky-player__play.is-playing .choir-sticky-player__play-svg--play,
+.choir-sticky-player__play-icon.is-playing .choir-sticky-player__play-svg--play {
+	display: none;
+}
+
+.choir-sticky-player__play.is-playing .choir-sticky-player__play-svg--pause,
+.choir-sticky-player__play-icon.is-playing .choir-sticky-player__play-svg--pause {
+	display: block;
+}
+
+.choir-sticky-player__play svg path {
+	fill: #ffffff !important;
+}
+
+.choir-sticky-player__main {
+	position: relative;
+	flex: 1 1 auto;
+	min-width: 0;
+	height: 48px;
+	border-radius: 8px;
+	overflow: hidden;
+	background: rgba(255, 255, 255, 0.06);
+}
+
+.choir-sticky-player__wave {
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	width: 100%;
+	height: 100%;
+	pointer-events: none;
+	opacity: 0.95;
+}
+
+.choir-sticky-player__wave.is-empty {
+	opacity: 0.22;
+}
+
+.choir-sticky-player__wave .choir-track-waveform__canvas {
+	display: block;
+	width: 100%;
+	height: 100%;
+}
+
+.choir-sticky-player__seek {
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	z-index: 1;
+	width: 100%;
+	height: 100%;
 	margin: 0;
 	padding: 0;
 	border: 0;
-	border-radius: 10px;
-	background: rgba(255, 255, 255, 0.08);
+	cursor: pointer;
+	-webkit-appearance: none;
+	appearance: none;
+	background: transparent !important;
+	accent-color: transparent;
+}
+
+.choir-sticky-player__seek:focus {
+	outline: none;
+}
+
+.choir-sticky-player__seek:focus-visible {
+	box-shadow: inset 0 0 0 2px rgba(59, 130, 246, 0.65);
+}
+
+.choir-sticky-player__seek::-webkit-slider-runnable-track {
+	-webkit-appearance: none;
+	height: 48px;
+	background: transparent !important;
+	border: 0;
+	color: transparent;
+}
+
+.choir-sticky-player__seek::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	appearance: none;
+	width: 16px;
+	height: 16px;
+	margin-top: 16px;
+	border-radius: 50%;
+	background: #fff;
+	border: 2px solid #1f4fd8;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+	cursor: pointer;
+}
+
+.choir-sticky-player__seek::-moz-range-track {
+	height: 48px;
+	background: transparent !important;
+	border: 0;
+}
+
+.choir-sticky-player__seek::-moz-range-thumb {
+	width: 16px;
+	height: 16px;
+	border-radius: 50%;
+	background: #fff;
+	border: 2px solid #1f4fd8;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+	cursor: pointer;
+}
+
+.choir-sticky-player__overlay {
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	z-index: 2;
+	display: flex;
+	align-items: flex-start;
+	min-height: 0;
+	padding: 4px 8px 0;
+	box-sizing: border-box;
+	pointer-events: none;
+}
+
+.choir-sticky-player__meta {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+	min-width: 0;
+	width: 100%;
+}
+
+.choir-sticky-player__title {
+	flex: 1 1 auto;
+	min-width: 0;
+	font-size: 0.78rem;
+	line-height: 1.2;
+	font-weight: 600;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
+}
+
+.choir-sticky-player__time {
+	flex: 0 0 auto;
+	font-size: 0.7rem;
+	font-variant-numeric: tabular-nums;
+	opacity: 0.92;
+	white-space: nowrap;
+	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
+}
+
+.choir-sticky-player__piano {
+	flex: 0 0 auto;
+	align-self: center;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 36px;
+	height: 36px;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	border-radius: 8px;
+	background: rgba(255, 255, 255, 0.1);
 	color: #fff;
-	font-size: 1.6rem;
+	cursor: pointer;
+}
+
+.choir-sticky-player__piano:hover,
+.choir-sticky-player__piano:focus-visible,
+.choir-sticky-player__piano.is-open {
+	background: rgba(31, 79, 216, 0.9);
+	outline: none;
+	box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.35);
+}
+
+.choir-sticky-player__piano-icon {
+	display: block;
+	width: 18px;
+	height: 18px;
+}
+
+.choir-sticky-player__close {
+	flex: 0 0 auto;
+	pointer-events: auto;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 28px;
+	height: 28px;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	border-radius: 6px;
+	background: rgba(0, 0, 0, 0.4);
+	color: #fff;
+	font-size: 1.25rem;
 	line-height: 1;
 	cursor: pointer;
 }
 
 .choir-sticky-player__close:hover,
 .choir-sticky-player__close:focus-visible {
-	background: rgba(255, 255, 255, 0.18);
+	background: rgba(0, 0, 0, 0.55);
 	outline: none;
 	box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.25);
-}
-
-.choir-sticky-player__play {
-	flex: 0 0 auto;
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	width: 48px;
-	height: 48px;
-	border: 0;
-	border-radius: 50%;
-	background: #1f4fd8;
-	color: #fff;
-	cursor: pointer;
-	padding: 0;
-	font-size: 1.1rem;
-	line-height: 1;
-}
-
-.choir-sticky-player__play:hover,
-.choir-sticky-player__play:focus-visible {
-	background: #3b6ff0;
-	outline: none;
-	box-shadow: 0 0 0 3px rgba(31, 79, 216, 0.45);
-}
-
-.choir-sticky-player__play-icon {
-	display: block;
-	transform: translateX(1px);
-}
-
-.choir-sticky-player__play.is-playing .choir-sticky-player__play-icon {
-	transform: none;
-	font-size: 0.95rem;
-	letter-spacing: -0.12em;
-}
-
-.choir-sticky-player__timeline {
-	flex: 1 1 auto;
-	display: flex;
-	flex-direction: column;
-	gap: 6px;
-	min-width: 0;
-}
-
-.choir-sticky-player__seek {
-	width: 100%;
-	min-width: 0;
-	height: 8px;
-	margin: 0;
-	accent-color: #3b82f6;
-	cursor: pointer;
-	-webkit-appearance: none;
-	appearance: none;
-	background: rgba(255, 255, 255, 0.2);
-	border-radius: 999px;
-}
-
-.choir-sticky-player__seek::-webkit-slider-thumb {
-	-webkit-appearance: none;
-	width: 18px;
-	height: 18px;
-	border-radius: 50%;
-	background: #fff;
-	border: 2px solid #1f4fd8;
-	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
-}
-
-.choir-sticky-player__seek::-moz-range-thumb {
-	width: 18px;
-	height: 18px;
-	border-radius: 50%;
-	background: #fff;
-	border: 2px solid #1f4fd8;
-	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
-}
-
-.choir-sticky-player__time {
-	font-size: 0.78rem;
-	font-variant-numeric: tabular-nums;
-	opacity: 0.85;
-	text-align: center;
 }
 
 .choir-sticky-player__audio {
@@ -681,56 +977,51 @@
 	}
 
 	.choir-rehearsal-main {
-		margin-bottom: 148px;
+		margin-bottom: 88px;
 	}
 
 	.choir-sticky-player {
-		grid-template-columns: minmax(0, 1fr) auto;
-		grid-template-areas:
-			"info close"
-			"controls controls";
-		gap: 10px;
-		padding: 12px 14px max(12px, env(safe-area-inset-bottom));
+		gap: 6px;
+		padding: 6px 8px max(6px, env(safe-area-inset-bottom));
+	}
+
+	.choir-sticky-player__play,
+	button.choir-sticky-player__play {
+		width: 44px;
+		height: 44px;
 	}
 
 	.choir-sticky-player__close {
-		width: 44px;
-		height: 44px;
-		font-size: 1.75rem;
-		align-self: start;
+		width: 32px;
+		height: 32px;
+		font-size: 1.35rem;
 	}
 
-	.choir-sticky-player__title {
-		font-size: 1rem;
-		white-space: normal;
-		display: -webkit-box;
-		-webkit-line-clamp: 2;
-		-webkit-box-orient: vertical;
-		overflow: hidden;
-	}
-
-	.choir-sticky-player__play {
-		width: 52px;
+	.choir-sticky-player__main {
 		height: 52px;
-		font-size: 1.15rem;
 	}
 
-	.choir-sticky-player__seek {
-		height: 10px;
+	.choir-sticky-player__seek::-webkit-slider-runnable-track {
+		height: 52px;
+	}
+
+	.choir-sticky-player__seek::-moz-range-track {
+		height: 52px;
 	}
 
 	.choir-sticky-player__seek::-webkit-slider-thumb {
-		width: 22px;
-		height: 22px;
+		width: 18px;
+		height: 18px;
+		margin-top: 17px;
 	}
 
 	.choir-sticky-player__seek::-moz-range-thumb {
-		width: 22px;
-		height: 22px;
+		width: 18px;
+		height: 18px;
 	}
 
-	.choir-sticky-player__time {
-		font-size: 0.82rem;
+	.choir-sticky-player__title {
+		font-size: 0.8rem;
 	}
 }
 
@@ -751,3 +1042,154 @@
 .choir-rehearsal-login--after-public .choir-rehearsal-title {
 	font-size: 1.35rem;
 }
+
+/* Chorister tools: piano sheet above sticky player. */
+.choir-piano-sheet {
+	position: fixed;
+	left: 0;
+	right: 0;
+	bottom: calc(56px + env(safe-area-inset-bottom, 0px));
+	z-index: 100050;
+	display: flex;
+	flex-direction: column;
+	gap: 0;
+	max-height: min(42vh, 280px);
+	background: #0f172a;
+	color: #fff;
+	box-shadow: 0 -10px 28px rgba(15, 23, 42, 0.28);
+	border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.choir-piano-sheet.is-hidden,
+.choir-piano-sheet[hidden] {
+	display: none;
+}
+
+.choir-piano-sheet__header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	padding: 8px 12px 4px;
+}
+
+.choir-piano-sheet__title {
+	font-size: 0.85rem;
+	font-weight: 600;
+	letter-spacing: 0.02em;
+}
+
+.choir-piano-sheet__close {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 32px;
+	height: 32px;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	border-radius: 8px;
+	background: rgba(255, 255, 255, 0.1);
+	color: #fff;
+	font-size: 1.4rem;
+	line-height: 1;
+	cursor: pointer;
+}
+
+.choir-piano-sheet__close:hover,
+.choir-piano-sheet__close:focus-visible {
+	background: rgba(255, 255, 255, 0.2);
+	outline: none;
+}
+
+.choir-piano-sheet__scroll {
+	overflow-x: auto;
+	overflow-y: hidden;
+	-webkit-overflow-scrolling: touch;
+	touch-action: pan-x;
+	padding: 0 10px 12px;
+	scrollbar-width: thin;
+}
+
+.choir-piano-sheet__keyboard {
+	position: relative;
+	width: max(720px, 100%);
+	height: 148px;
+	user-select: none;
+	-webkit-user-select: none;
+}
+
+.choir-piano-sheet__whites {
+	display: flex;
+	height: 100%;
+	width: 100%;
+	gap: 2px;
+}
+
+.choir-piano-sheet__blacks {
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	height: 62%;
+	pointer-events: none;
+}
+
+.choir-piano-key {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	appearance: none;
+	-webkit-appearance: none;
+	cursor: pointer;
+	touch-action: manipulation;
+}
+
+.choir-piano-key--white {
+	flex: 1 1 0;
+	min-width: 0;
+	height: 100%;
+	border-radius: 0 0 8px 8px;
+	background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%);
+	box-shadow: inset 0 -2px 0 rgba(15, 23, 42, 0.12);
+}
+
+.choir-piano-key--white.is-active,
+.choir-piano-key--white:active {
+	background: linear-gradient(180deg, #dbeafe 0%, #93c5fd 100%);
+}
+
+.choir-piano-key--black {
+	pointer-events: auto;
+	position: absolute;
+	top: 0;
+	width: calc(100% / var(--choir-piano-white-count, 14) * 0.62);
+	height: 100%;
+	border-radius: 0 0 6px 6px;
+	background: linear-gradient(180deg, #334155 0%, #0f172a 100%);
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.35);
+	z-index: 2;
+}
+
+.choir-piano-key--black.is-active,
+.choir-piano-key--black:active {
+	background: linear-gradient(180deg, #1f4fd8 0%, #172554 100%);
+}
+
+body.choir-piano-open .choir-sticky-player {
+	/* Keep player above page content but below piano sheet chrome interaction */
+	z-index: 9999;
+}
+
+@media (max-width: 640px) {
+	.choir-piano-sheet {
+		bottom: calc(62px + env(safe-area-inset-bottom, 0px));
+		max-height: min(46vh, 300px);
+	}
+
+	.choir-piano-sheet__keyboard {
+		width: max(820px, 100%);
+		height: 160px;
+	}
+}
+
