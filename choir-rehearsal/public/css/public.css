@@ -803,9 +803,9 @@ button.choir-sticky-player__play:focus-visible {
 
 .choir-sticky-player__meta {
 	display: flex;
-	align-items: baseline;
+	align-items: center;
 	justify-content: space-between;
-	gap: 10px;
+	gap: 8px;
 	min-width: 0;
 }
 
@@ -879,26 +879,25 @@ button.choir-sticky-player__play:focus-visible {
 
 .choir-sticky-player__close {
 	flex: 0 0 auto;
-	align-self: center;
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	width: 36px;
-	height: 36px;
+	width: 28px;
+	height: 28px;
 	margin: 0;
 	padding: 0;
 	border: 0;
-	border-radius: 8px;
-	background: rgba(255, 255, 255, 0.08);
+	border-radius: 6px;
+	background: rgba(0, 0, 0, 0.35);
 	color: #fff;
-	font-size: 1.45rem;
+	font-size: 1.25rem;
 	line-height: 1;
 	cursor: pointer;
 }
 
 .choir-sticky-player__close:hover,
 .choir-sticky-player__close:focus-visible {
-	background: rgba(255, 255, 255, 0.18);
+	background: rgba(0, 0, 0, 0.55);
 	outline: none;
 	box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.25);
 }
@@ -943,9 +942,9 @@ button.choir-sticky-player__play:focus-visible {
 	}
 
 	.choir-sticky-player__close {
-		width: 40px;
-		height: 40px;
-		font-size: 1.55rem;
+		width: 32px;
+		height: 32px;
+		font-size: 1.35rem;
 	}
 
 	.choir-sticky-player__main,

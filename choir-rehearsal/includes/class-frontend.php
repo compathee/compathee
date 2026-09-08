@@ -716,13 +716,13 @@ final class Choir_Rehearsal_Frontend {
 					<div class="choir-sticky-player__meta">
 						<span class="choir-sticky-player__title"></span>
 						<span class="choir-sticky-player__time">0:00 / 0:00</span>
+						<button type="button" class="choir-sticky-player__close" aria-label="<?php esc_attr_e( 'Close player', 'choir-rehearsal' ); ?>">
+							<span aria-hidden="true">&times;</span>
+						</button>
 					</div>
 					<input type="range" class="choir-sticky-player__seek" min="0" max="100" value="0" step="0.1" aria-label="<?php esc_attr_e( 'Seek', 'choir-rehearsal' ); ?>" />
 				</div>
 			</div>
-			<button type="button" class="choir-sticky-player__close" aria-label="<?php esc_attr_e( 'Close player', 'choir-rehearsal' ); ?>">
-				<span aria-hidden="true">&times;</span>
-			</button>
 			<audio class="choir-sticky-player__audio" preload="none"></audio>
 		</div>
 		<?php
