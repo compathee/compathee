@@ -724,6 +724,10 @@ final class Choir_Rehearsal_Frontend {
 					<svg class="choir-sticky-player__play-svg choir-sticky-player__play-svg--pause" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" focusable="false"><path fill="#ffffff" d="M7 5h3.5v14H7V5zm6.5 0H17v14h-3.5V5z"/></svg>
 				</span>
 			</button>
+			<button type="button" class="choir-sticky-player__piano" aria-label="<?php esc_attr_e( 'Open piano', 'choir-rehearsal' ); ?>" aria-expanded="false" aria-controls="choir-piano-sheet">
+				<span class="screen-reader-text"><?php esc_html_e( 'Open piano', 'choir-rehearsal' ); ?></span>
+				<svg class="choir-sticky-player__piano-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path fill="currentColor" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-9 16.5v-4.5h1V4.5h2v10.5h1v4.5h-4zM8 19.5H5.5c-.55 0-1-.45-1-1V5.5c0-.55.45-1 1-1H7v10.5h1v4.5zm8-4.5h1V4.5h1.5c.55 0 1 .45 1 1v13c0 .55-.45 1-1 1H16v-4.5z"/></svg>
+			</button>
 			<div class="choir-sticky-player__main">
 				<div class="choir-sticky-player__wave choir-track-waveform is-empty" data-audio-url="" data-color="#60a5fa" aria-hidden="true">
 					<canvas class="choir-track-waveform__canvas"></canvas>
@@ -733,10 +737,6 @@ final class Choir_Rehearsal_Frontend {
 					<div class="choir-sticky-player__meta">
 						<span class="choir-sticky-player__title"></span>
 						<span class="choir-sticky-player__time">0:00 / 0:00</span>
-						<button type="button" class="choir-sticky-player__piano" aria-label="<?php esc_attr_e( 'Open piano', 'choir-rehearsal' ); ?>" aria-expanded="false" aria-controls="choir-piano-sheet">
-							<span class="screen-reader-text"><?php esc_html_e( 'Open piano', 'choir-rehearsal' ); ?></span>
-							<svg class="choir-sticky-player__piano-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path fill="currentColor" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-9 16.5v-4.5h1V4.5h2v10.5h1v4.5h-4zM8 19.5H5.5c-.55 0-1-.45-1-1V5.5c0-.55.45-1 1-1H7v10.5h1v4.5zm8-4.5h1V4.5h1.5c.55 0 1 .45 1 1v13c0 .55-.45 1-1 1H16v-4.5z"/></svg>
-						</button>
 						<button type="button" class="choir-sticky-player__close" aria-label="<?php esc_attr_e( 'Close player', 'choir-rehearsal' ); ?>">
 							<span aria-hidden="true">&times;</span>
 						</button>

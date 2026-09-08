@@ -897,17 +897,17 @@ button.choir-sticky-player__play:focus-visible {
 
 .choir-sticky-player__piano {
 	flex: 0 0 auto;
-	pointer-events: auto;
+	align-self: center;
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	width: 28px;
-	height: 28px;
+	width: 36px;
+	height: 36px;
 	margin: 0;
 	padding: 0;
 	border: 0;
-	border-radius: 6px;
-	background: rgba(0, 0, 0, 0.4);
+	border-radius: 8px;
+	background: rgba(255, 255, 255, 0.1);
 	color: #fff;
 	cursor: pointer;
 }
@@ -915,15 +915,15 @@ button.choir-sticky-player__play:focus-visible {
 .choir-sticky-player__piano:hover,
 .choir-sticky-player__piano:focus-visible,
 .choir-sticky-player__piano.is-open {
-	background: rgba(31, 79, 216, 0.85);
+	background: rgba(31, 79, 216, 0.9);
 	outline: none;
 	box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.35);
 }
 
 .choir-sticky-player__piano-icon {
 	display: block;
-	width: 16px;
-	height: 16px;
+	width: 18px;
+	height: 18px;
 }
 
 .choir-sticky-player__close {
@@ -1049,7 +1049,7 @@ button.choir-sticky-player__play:focus-visible {
 	left: 0;
 	right: 0;
 	bottom: calc(56px + env(safe-area-inset-bottom, 0px));
-	z-index: 10000;
+	z-index: 100050;
 	display: flex;
 	flex-direction: column;
 	gap: 0;
