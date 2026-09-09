@@ -120,13 +120,22 @@
   ],
   "changelog": [
     {
+      "version": "0.4.31",
+      "summary": "Cleaner sticky player scrubber",
+      "items": [
+        "Track title no longer overlays the waveform",
+        "Time and close sit to the right of a narrower scrubber"
+      ],
+      "open": true
+    },
+    {
       "version": "0.4.30",
       "summary": "Piano in recording panel",
       "items": [
         "Song editor: piano icon to the right of Start recording",
         "Start recording and piano share one row (70% / 30%)"
       ],
-      "open": true
+      "open": false
     },
     {
       "version": "0.4.29",

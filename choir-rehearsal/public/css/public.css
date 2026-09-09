@@ -1,4 +1,5 @@
-.choir-pdf-viewer .screen-reader-text {
+.choir-pdf-viewer .screen-reader-text,
+.choir-sticky-player .screen-reader-text {
 	border: 0;
 	clip: rect(1px, 1px, 1px, 1px);
 	clip-path: inset(50%);
@@ -757,11 +758,43 @@ button.choir-sticky-player__play:focus-visible {
 	fill: #ffffff !important;
 }
 
+.choir-sticky-player__piano {
+	flex: 0 0 auto;
+	align-self: center;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 36px;
+	height: 36px;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	border-radius: 8px;
+	background: rgba(255, 255, 255, 0.1);
+	color: #fff;
+	cursor: pointer;
+}
+
+.choir-sticky-player__piano:hover,
+.choir-sticky-player__piano:focus-visible,
+.choir-sticky-player__piano.is-open {
+	background: rgba(31, 79, 216, 0.9);
+	outline: none;
+	box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.35);
+}
+
+.choir-sticky-player__piano-icon {
+	display: block;
+	width: 18px;
+	height: 18px;
+}
+
 .choir-sticky-player__main {
 	position: relative;
 	flex: 1 1 auto;
 	min-width: 0;
-	height: 48px;
+	height: 44px;
+	align-self: center;
 	border-radius: 8px;
 	overflow: hidden;
 	background: rgba(255, 255, 255, 0.06);
@@ -816,7 +849,7 @@ button.choir-sticky-player__play:focus-visible {
 
 .choir-sticky-player__seek::-webkit-slider-runnable-track {
 	-webkit-appearance: none;
-	height: 48px;
+	height: 44px;
 	background: transparent !important;
 	border: 0;
 	color: transparent;
@@ -827,7 +860,7 @@ button.choir-sticky-player__play:focus-visible {
 	appearance: none;
 	width: 16px;
 	height: 16px;
-	margin-top: 16px;
+	margin-top: 14px;
 	border-radius: 50%;
 	background: #fff;
 	border: 2px solid #1f4fd8;
@@ -836,7 +869,7 @@ button.choir-sticky-player__play:focus-visible {
 }
 
 .choir-sticky-player__seek::-moz-range-track {
-	height: 48px;
+	height: 44px;
 	background: transparent !important;
 	border: 0;
 }
@@ -851,103 +884,45 @@ button.choir-sticky-player__play:focus-visible {
 	cursor: pointer;
 }
 
-.choir-sticky-player__overlay {
-	position: absolute;
-	left: 0;
-	right: 0;
-	top: 0;
-	z-index: 2;
-	display: flex;
-	align-items: flex-start;
-	min-height: 0;
-	padding: 4px 8px 0;
-	box-sizing: border-box;
-	pointer-events: none;
-}
-
-.choir-sticky-player__meta {
+.choir-sticky-player__side {
+	flex: 0 0 auto;
+	align-self: center;
 	display: flex;
 	align-items: center;
-	justify-content: space-between;
-	gap: 8px;
+	gap: 6px;
 	min-width: 0;
-	width: 100%;
-}
-
-.choir-sticky-player__title {
-	flex: 1 1 auto;
-	min-width: 0;
-	font-size: 0.78rem;
-	line-height: 1.2;
-	font-weight: 600;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
 }
 
 .choir-sticky-player__time {
 	flex: 0 0 auto;
-	font-size: 0.7rem;
+	font-size: 0.72rem;
 	font-variant-numeric: tabular-nums;
 	opacity: 0.92;
 	white-space: nowrap;
-	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
-}
-
-.choir-sticky-player__piano {
-	flex: 0 0 auto;
-	align-self: center;
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	width: 36px;
-	height: 36px;
-	margin: 0;
-	padding: 0;
-	border: 0;
-	border-radius: 8px;
-	background: rgba(255, 255, 255, 0.1);
-	color: #fff;
-	cursor: pointer;
-}
-
-.choir-sticky-player__piano:hover,
-.choir-sticky-player__piano:focus-visible,
-.choir-sticky-player__piano.is-open {
-	background: rgba(31, 79, 216, 0.9);
-	outline: none;
-	box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.35);
-}
-
-.choir-sticky-player__piano-icon {
-	display: block;
-	width: 18px;
-	height: 18px;
+	line-height: 1;
 }
 
 .choir-sticky-player__close {
 	flex: 0 0 auto;
-	pointer-events: auto;
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	width: 28px;
-	height: 28px;
+	width: 32px;
+	height: 32px;
 	margin: 0;
 	padding: 0;
 	border: 0;
 	border-radius: 6px;
-	background: rgba(0, 0, 0, 0.4);
+	background: rgba(255, 255, 255, 0.1);
 	color: #fff;
-	font-size: 1.25rem;
+	font-size: 1.35rem;
 	line-height: 1;
 	cursor: pointer;
 }
 
 .choir-sticky-player__close:hover,
 .choir-sticky-player__close:focus-visible {
-	background: rgba(0, 0, 0, 0.55);
+	background: rgba(255, 255, 255, 0.2);
 	outline: none;
 	box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.25);
 }
@@ -998,30 +973,30 @@ button.choir-sticky-player__play:focus-visible {
 	}
 
 	.choir-sticky-player__main {
-		height: 52px;
+		height: 44px;
 	}
 
 	.choir-sticky-player__seek::-webkit-slider-runnable-track {
-		height: 52px;
+		height: 44px;
 	}
 
 	.choir-sticky-player__seek::-moz-range-track {
-		height: 52px;
+		height: 44px;
 	}
 
 	.choir-sticky-player__seek::-webkit-slider-thumb {
 		width: 18px;
 		height: 18px;
-		margin-top: 17px;
+		margin-top: 13px;
+	}
+
+	.choir-sticky-player__time {
+		font-size: 0.68rem;
 	}
 
 	.choir-sticky-player__seek::-moz-range-thumb {
 		width: 18px;
 		height: 18px;
-	}
-
-	.choir-sticky-player__title {
-		font-size: 0.8rem;
 	}
 }
 
