@@ -2,9 +2,9 @@
 Contributors: compath
 Tags: choir, audio, rehearsal, voice parts, music
 Requires at least: 6.4
-Tested up to: 6.9
+Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 0.4.19
+Stable tag: 0.4.30
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -22,6 +22,19 @@ Choir Rehearsal helps choir members learn new pieces by voice part.
 * Sticky HTML5 player at the bottom of the page
 * Optional login-only access
 * REST API and MCP abilities for automation
+
+== External services ==
+
+This plugin can open an external product page when you choose to upgrade to **Choir Rehearsal Pro**:
+
+* Service: [shop.compath.ee](https://shop.compath.ee/products/choir-rehearsal-pro/) (Compath OÜ)
+* Purpose: optional paid Pro add-on purchase (unlimited tracks, microphone recording, search, editor Play, embedded PDF in the editor)
+* Data: the plugin does not send site or user data to the shop unless you click through and complete checkout there
+* Terms: see the shop site terms/privacy policy on shop.compath.ee
+
+PDF viewing uses **Mozilla PDF.js** bundled inside the plugin (Apache-2.0). No PDF.js CDN calls are made.
+
+WordPress.org builds receive plugin updates only through WordPress.org. GitHub-distributed builds may offer an optional GitHub Releases updater in Settings.
 
 == Installation ==
 
@@ -42,6 +55,54 @@ By default only logged-in users can view `/rehearsal/`. Change this under **Choi
 Yes. Use the shortcode `[choir_rehearsal]`.
 
 == Changelog ==
+
+= 0.4.30 =
+* Song editor: piano icon beside Start recording (70% / 30% row)
+
+= 0.4.29 =
+* Sticky player: open a scrollable 2-octave Web Audio piano above the player
+
+= 0.4.28 =
+* Sticky player: waveform only behind scrubber (no white seek track)
+* PDF expand fits page to screen width; expand toggles to matching X control
+* Pinch-zoom keeps the chosen scale instead of snapping to 100%
+
+= 0.4.27 =
+* Sticky player: waveform is the scrubber background (compact single-row bar)
+
+= 0.4.26 =
+* Song editor: show track waveform instead of the audio filename
+* Sticky player: waveform under the seek bar
+
+= 0.4.25 =
+* Voice tracks show a blue waveform from the track name to Play/Upload
+* Waveforms are generated from each track’s audio file in the browser
+
+= 0.4.24 =
+* Play buttons always blue with white icon/text (theme-proof)
+* PDF: full-screen expand with close control; sticky player stays visible below
+* PDF: pinch-to-zoom (and Ctrl/trackpad zoom)
+
+= 0.4.23 =
+* WordPress.org package: remove GitHub updater file entirely (Plugin Check)
+* readme.txt: Tested up to 7.1
+
+= 0.4.22 =
+* WordPress.org ready: disable GitHub self-updater in .org packages
+* Bundle PDF.js locally (no third-party CDN for scripts)
+* Settings: WordPress.org builds show “Updates via WordPress.org”
+* Document external Pro storefront link in readme
+
+= 0.4.21 =
+* Fix: updater treats non-2xx GitHub API responses as failures (rate limits no longer look like empty release lists)
+* Fix: durable update.json fallback via GitHub release asset (/releases/latest/download/update.json)
+* Settings: Check for plugin updates redirects back with clear notices (available / up to date / failed)
+* Settings: show last update-check result under Plugin version
+
+= 0.4.20 =
+* Fix: PDF score preview no longer blanks in the song editor after the form loads
+* PDF.js loads without credentials first (avoids hung credentialed fetches in wp-admin)
+* Song save no longer deletes an attached PDF when the metabox field is missing or mime is unexpected
 
 = 0.4.19 =
 * Share: one-tap copy link with on-screen confirmation (no dual public/private menu)

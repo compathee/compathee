@@ -120,6 +120,112 @@
   ],
   "changelog": [
     {
+      "version": "0.4.30",
+      "summary": "Piano in recording panel",
+      "items": [
+        "Song editor: piano icon to the right of Start recording",
+        "Start recording and piano share one row (70% / 30%)"
+      ],
+      "open": true
+    },
+    {
+      "version": "0.4.29",
+      "summary": "Sticky player piano",
+      "items": [
+        "Piano icon on the sticky player opens a 2-octave keyboard",
+        "Scroll horizontally with finger or mouse; Web Audio electric-piano timbre",
+        "Track keeps playing while you play notes"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.28",
+      "summary": "Player scrubber + PDF zoom fixes",
+      "items": [
+        "Sticky player: blue waveform behind scrubber, white track removed",
+        "PDF expand fits the page to screen width",
+        "Expand button becomes a matching X; pinch keeps the scale"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.27",
+      "summary": "Compact sticky player",
+      "items": [
+        "Waveform fills the player as background from Play to the right edge",
+        "Scrubber overlays the waveform; bar height is minimal"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.26",
+      "summary": "Editor and player waveforms",
+      "items": [
+        "Song editor shows the track waveform between voice name and Upload",
+        "Sticky player shows a waveform under the seek bar"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.25",
+      "summary": "Track waveforms",
+      "items": [
+        "Blue oscillogram on each voice track from audio file",
+        "Public song page: between voice name and Play",
+        "Song editor: between voice name and Upload"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.24",
+      "summary": "PDF full screen and theme-proof Play",
+      "items": [
+        "Play buttons always blue with white triangle/text",
+        "PDF expand to almost full screen; player strip stays below",
+        "Pinch-to-zoom on PDF scores"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.23",
+      "summary": "WordPress.org Plugin Check fixes",
+      "items": [
+        "WordPress.org zip omits class-updater.php (plugin_updater_detected)",
+        "readme.txt Tested up to 7.1"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.22",
+      "summary": "WordPress.org ready",
+      "items": [
+        "WordPress.org package disables GitHub self-updater",
+        "PDF.js bundled locally (guideline: no third-party CDN for JS)",
+        "Settings explains WordPress.org updates on .org builds"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.21",
+      "summary": "Reliable plugin updater",
+      "items": [
+        "Updater treats GitHub API errors (rate limit, non-2xx) as failures instead of empty release lists",
+        "Fallback reads update.json from the latest Lite release asset when the API is unavailable",
+        "Check for plugin updates returns to Settings with available / up to date / failed notices"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.20",
+      "summary": "Editor PDF preview fix",
+      "items": [
+        "PDF score preview stays visible in the song editor after the form loads",
+        "PDF.js prefers non-credentialed fetch first (avoids hung admin loads)",
+        "Saving a song no longer drops the PDF when the metabox field is absent or mime is unexpected"
+      ],
+      "open": false
+    },
+    {
       "version": "0.4.19",
       "summary": "Share UX and Play icon fixes",
       "items": [
@@ -127,7 +233,7 @@
         "Mobile Share confirmation stays on screen",
         "Song editor Play icon is a clear white triangle"
       ],
-      "open": true
+      "open": false
     },
     {
       "version": "0.4.18",
