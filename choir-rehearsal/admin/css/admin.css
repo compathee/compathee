@@ -316,17 +316,17 @@ body.choir-rehearsal-song-edit #choir-rehearsal-tracks .inside {
 }
 
 .choir-recorder-panel__start-row .choir-recorder-start {
-	flex: 1 1 70%;
-	width: 70%;
-	max-width: 70%;
+	flex: 7 1 0;
+	width: auto;
+	max-width: none;
 	min-width: 0;
 	box-sizing: border-box;
 }
 
 .choir-recorder-panel__start-row .choir-recorder-piano {
-	flex: 0 0 calc(30% - 8px);
-	width: calc(30% - 8px);
-	max-width: calc(30% - 8px);
+	flex: 3 1 0;
+	width: auto;
+	max-width: none;
 	min-width: 0;
 	display: inline-flex;
 	align-items: center;
