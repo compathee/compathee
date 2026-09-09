@@ -588,6 +588,7 @@ final class Choir_Rehearsal_Admin {
 				'stopRecording'  => __( 'Stop', 'choir-rehearsal' ),
 				'useRecording'   => __( 'Use recording', 'choir-rehearsal' ),
 				'cancelRecording'=> __( 'Cancel', 'choir-rehearsal' ),
+				'openPiano'      => __( 'Open piano', 'choir-rehearsal' ),
 				'recording'      => __( 'Recording…', 'choir-rehearsal' ),
 				'readyToRecord'  => __( 'Click start and sing your voice part.', 'choir-rehearsal' ),
 				'uploading'      => __( 'Uploading…', 'choir-rehearsal' ),
@@ -792,7 +793,19 @@ final class Choir_Rehearsal_Admin {
 				<p class="choir-recorder-panel__timer">00:00</p>
 				<audio class="choir-recorder-panel__preview" controls hidden></audio>
 				<div class="choir-recorder-panel__actions">
-					<button type="button" class="button button-primary choir-recorder-start"><?php esc_html_e( 'Start recording', 'choir-rehearsal' ); ?></button>
+					<div class="choir-recorder-panel__start-row">
+						<button type="button" class="button button-primary choir-recorder-start"><?php esc_html_e( 'Start recording', 'choir-rehearsal' ); ?></button>
+						<button
+							type="button"
+							class="button choir-recorder-piano"
+							title="<?php esc_attr_e( 'Open piano', 'choir-rehearsal' ); ?>"
+							aria-label="<?php esc_attr_e( 'Open piano', 'choir-rehearsal' ); ?>"
+							aria-expanded="false"
+							aria-controls="choir-piano-sheet"
+						>
+							<?php echo self::icon_svg( 'piano' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+						</button>
+					</div>
 					<button type="button" class="button choir-recorder-stop" disabled><?php esc_html_e( 'Stop', 'choir-rehearsal' ); ?></button>
 					<button type="button" class="button button-primary choir-recorder-use" disabled><?php esc_html_e( 'Use recording', 'choir-rehearsal' ); ?></button>
 					<button type="button" class="button choir-recorder-cancel"><?php esc_html_e( 'Cancel', 'choir-rehearsal' ); ?></button>
@@ -812,6 +825,7 @@ final class Choir_Rehearsal_Admin {
 			'record' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="7" fill="currentColor"/></svg>',
 			'play'   => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><path fill="#ffffff" d="M7 3.8v16.4L20.2 12 7 3.8z"/></svg>',
 			'remove' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path fill="currentColor" d="M6.4 6.4l1.2-1.2L12 9.6l4.4-4.4 1.2 1.2L13.2 12l4.4 4.4-1.2 1.2L12 14.4l-4.4 4.4-1.2-1.2L10.8 12 6.4 6.4z"/></svg>',
+			'piano'  => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path fill="currentColor" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-9 16.5v-4.5h1V4.5h2v10.5h1v4.5h-4zM8 19.5H5.5c-.55 0-1-.45-1-1V5.5c0-.55.45-1 1-1H7v10.5h1v4.5zm8-4.5h1V4.5h1.5c.55 0 1 .45 1 1v13c0 .55-.45 1-1 1H16v-4.5z"/></svg>',
 			'globe'  => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12 2a10 10 0 100 20 10 10 0 000-20zm6.9 9h-3.1a15.4 15.4 0 00-1.2-5 8.03 8.03 0 014.3 5zM12 4c.9 0 2.2 1.9 2.8 5H9.2C9.8 5.9 11.1 4 12 4zM4 12c0-.7.1-1.4.3-2h3.1a15.4 15.4 0 001.2 5H4.3A8 8 0 014 12zm1.1 3h3.1a15.4 15.4 0 001.2 5 8.03 8.03 0 01-4.3-5zm6.9 5c-.9 0-2.2-1.9-2.8-5h5.6c-.6 3.1-1.9 5-2.8 5zm2.8-2a15.4 15.4 0 001.2-5h3.1a8.03 8.03 0 01-4.3 5zM8.3 10A15.4 15.4 0 017.1 5a8.03 8.03 0 00-4.3 5h3.1z"/></svg>',
 		);
 

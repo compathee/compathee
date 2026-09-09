@@ -306,6 +306,49 @@ body.choir-rehearsal-song-edit #choir-rehearsal-tracks .inside {
 	min-width: 0;
 }
 
+.choir-recorder-panel__start-row {
+	display: flex;
+	align-items: stretch;
+	gap: 8px;
+	flex: 1 1 100%;
+	width: 100%;
+	min-width: 0;
+}
+
+.choir-recorder-panel__start-row .choir-recorder-start {
+	flex: 1 1 70%;
+	width: 70%;
+	max-width: 70%;
+	min-width: 0;
+	box-sizing: border-box;
+}
+
+.choir-recorder-panel__start-row .choir-recorder-piano {
+	flex: 0 0 calc(30% - 8px);
+	width: calc(30% - 8px);
+	max-width: calc(30% - 8px);
+	min-width: 0;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0 6px;
+	line-height: 1;
+	box-sizing: border-box;
+}
+
+.choir-recorder-panel__start-row .choir-recorder-piano svg {
+	display: block;
+	width: 18px;
+	height: 18px;
+}
+
+.choir-recorder-panel__start-row .choir-recorder-piano.is-open,
+.choir-recorder-panel__start-row .choir-recorder-piano[aria-expanded="true"] {
+	background: #1f4fd8;
+	border-color: #1f4fd8;
+	color: #fff;
+}
+
 .choir-icon-btn.choir-record-audio {
 	color: #b42318;
 }
@@ -356,6 +399,10 @@ body.choir-rehearsal-song-edit #choir-rehearsal-tracks .inside {
 		gap: 6px;
 	}
 
+	.choir-recorder-panel__start-row {
+		grid-column: 1 / -1;
+	}
+
 	.choir-recorder-panel__actions .button {
 		width: 100%;
 		margin: 0;
@@ -364,6 +411,11 @@ body.choir-rehearsal-song-edit #choir-rehearsal-tracks .inside {
 		text-align: center;
 		white-space: normal;
 		height: auto;
+		min-height: 36px;
+	}
+
+	.choir-recorder-panel__start-row .choir-recorder-piano {
+		padding: 0 4px;
 		min-height: 36px;
 	}
 }

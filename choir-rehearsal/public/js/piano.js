@@ -200,6 +200,15 @@
 		keyboard.style.setProperty('--choir-piano-white-count', String(whiteIndex));
 	}
 
+	function syncToggleButtons() {
+		var label = isOpen ? (i18n.close || 'Close piano') : (i18n.open || 'Open piano');
+		document.querySelectorAll('.choir-sticky-player__piano, .choir-recorder-piano').forEach(function (btn) {
+			btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+			btn.setAttribute('aria-label', label);
+			btn.classList.toggle('is-open', isOpen);
+		});
+	}
+
 	function openSheet() {
 		if (isOpen) {
 			return;
@@ -209,9 +218,7 @@
 		sheet.classList.remove('is-hidden');
 		sheet.setAttribute('aria-hidden', 'false');
 		document.body.classList.add('choir-piano-open');
-		openBtn.setAttribute('aria-expanded', 'true');
-		openBtn.setAttribute('aria-label', i18n.close || 'Close piano');
-		openBtn.classList.add('is-open');
+		syncToggleButtons();
 		ensureAudio();
 		if (scrollEl) {
 			// Center roughly on middle C area.
@@ -229,9 +236,7 @@
 		sheet.hidden = true;
 		sheet.setAttribute('aria-hidden', 'true');
 		document.body.classList.remove('choir-piano-open');
-		openBtn.setAttribute('aria-expanded', 'false');
-		openBtn.setAttribute('aria-label', i18n.open || 'Open piano');
-		openBtn.classList.remove('is-open');
+		syncToggleButtons();
 	}
 
 	function toggleSheet() {
@@ -312,6 +317,15 @@
 		toggleSheet();
 	});
 
+	document.addEventListener('click', function (event) {
+		var btn = event.target && event.target.closest ? event.target.closest('.choir-recorder-piano') : null;
+		if (!btn) {
+			return;
+		}
+		event.preventDefault();
+		toggleSheet();
+	});
+
 	closeBtn.addEventListener('click', function (event) {
 		event.preventDefault();
 		closeSheet();
@@ -328,6 +342,7 @@
 	window.choirPiano = {
 		open: openSheet,
 		close: closeSheet,
+		toggle: toggleSheet,
 		isOpen: function () {
 			return isOpen;
 		},

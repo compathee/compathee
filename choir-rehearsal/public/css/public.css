@@ -1181,6 +1181,10 @@ body.choir-piano-open .choir-sticky-player {
 	z-index: 9999;
 }
 
+body.choir-piano-open:not(.choir-sticky-player-open) .choir-piano-sheet {
+	bottom: env(safe-area-inset-bottom, 0px);
+}
+
 @media (max-width: 640px) {
 	.choir-piano-sheet {
 		bottom: calc(62px + env(safe-area-inset-bottom, 0px));

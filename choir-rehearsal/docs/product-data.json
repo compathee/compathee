@@ -120,6 +120,15 @@
   ],
   "changelog": [
     {
+      "version": "0.4.30",
+      "summary": "Piano in recording panel",
+      "items": [
+        "Song editor: piano icon to the right of Start recording",
+        "Start recording and piano share one row (70% / 30%)"
+      ],
+      "open": true
+    },
+    {
       "version": "0.4.29",
       "summary": "Sticky player piano",
       "items": [
@@ -127,7 +136,7 @@
         "Scroll horizontally with finger or mouse; Web Audio electric-piano timbre",
         "Track keeps playing while you play notes"
       ],
-      "open": true
+      "open": false
     },
     {
       "version": "0.4.28",
