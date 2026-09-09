@@ -77,6 +77,9 @@
 		if (window.choirPiano && typeof window.choirPiano.close === 'function') {
 			window.choirPiano.close();
 		}
+		if (window.choirMetronome && typeof window.choirMetronome.close === 'function') {
+			window.choirMetronome.close();
+		}
 	}
 
 	function playTrack(url, trackTitle) {

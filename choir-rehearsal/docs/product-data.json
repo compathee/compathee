@@ -120,13 +120,22 @@
   ],
   "changelog": [
     {
+      "version": "0.4.32",
+      "summary": "Metronome tool",
+      "items": [
+        "Sticky player and recording panel open a metronome with tempo slider (40–208 BPM)",
+        "Recording start row: Start / piano / metronome (70% / 15% / 15%)"
+      ],
+      "open": true
+    },
+    {
       "version": "0.4.31",
       "summary": "Cleaner sticky player scrubber",
       "items": [
         "Track title no longer overlays the waveform",
         "Time and close sit to the right of a narrower scrubber"
       ],
-      "open": true
+      "open": false
     },
     {
       "version": "0.4.30",

@@ -213,6 +213,9 @@
 		if (isOpen) {
 			return;
 		}
+		if (window.choirMetronome && typeof window.choirMetronome.close === 'function') {
+			window.choirMetronome.close();
+		}
 		isOpen = true;
 		sheet.hidden = false;
 		sheet.classList.remove('is-hidden');
