@@ -229,10 +229,22 @@
 
 		function syncToolbarButtons() {
 			if (expandBtn) {
-				expandBtn.hidden = isFullscreen;
+				if (isFullscreen) {
+					expandBtn.setAttribute('hidden', 'hidden');
+					expandBtn.hidden = true;
+				} else {
+					expandBtn.removeAttribute('hidden');
+					expandBtn.hidden = false;
+				}
 			}
 			if (closeFsBtn) {
-				closeFsBtn.hidden = !isFullscreen;
+				if (isFullscreen) {
+					closeFsBtn.removeAttribute('hidden');
+					closeFsBtn.hidden = false;
+				} else {
+					closeFsBtn.setAttribute('hidden', 'hidden');
+					closeFsBtn.hidden = true;
+				}
 			}
 		}
 

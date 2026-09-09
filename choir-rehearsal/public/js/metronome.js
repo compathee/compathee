@@ -2,19 +2,17 @@
 	'use strict';
 
 	var sheet = document.getElementById('choir-metronome-sheet');
-	var player = document.getElementById('choir-sticky-player');
-	if (!sheet || !player) {
+	if (!sheet) {
 		return;
 	}
 
-	var openBtn = player.querySelector('.choir-sticky-player__metronome');
 	var closeBtn = sheet.querySelector('.choir-metronome-sheet__close');
 	var toggleBtn = sheet.querySelector('.choir-metronome-sheet__toggle');
 	var slider = sheet.querySelector('.choir-metronome-sheet__slider');
 	var bpmValue = sheet.querySelector('.choir-metronome-sheet__bpm-value');
 	var i18n = window.choirRehearsalMetronome || {};
 
-	if (!openBtn || !closeBtn || !toggleBtn || !slider || !bpmValue) {
+	if (!closeBtn || !toggleBtn || !slider || !bpmValue) {
 		return;
 	}
 
@@ -113,7 +111,7 @@
 
 	function syncToggleButtons() {
 		var label = isOpen ? (i18n.close || 'Close metronome') : (i18n.open || 'Open metronome');
-		document.querySelectorAll('.choir-sticky-player__metronome, .choir-recorder-metronome').forEach(function (btn) {
+		document.querySelectorAll('.choir-recorder-metronome').forEach(function (btn) {
 			btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
 			btn.setAttribute('aria-label', label);
 			btn.classList.toggle('is-open', isOpen);
@@ -156,12 +154,6 @@
 			openSheet();
 		}
 	}
-
-	openBtn.addEventListener('click', function (event) {
-		event.preventDefault();
-		event.stopPropagation();
-		toggleSheet();
-	});
 
 	document.addEventListener('click', function (event) {
 		var btn = event.target && event.target.closest ? event.target.closest('.choir-recorder-metronome') : null;

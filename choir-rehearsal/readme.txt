@@ -4,7 +4,7 @@ Tags: choir, audio, rehearsal, voice parts, music
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 0.4.32
+Stable tag: 0.4.33
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -55,6 +55,12 @@ By default only logged-in users can view `/rehearsal/`. Change this under **Choi
 Yes. Use the shortcode `[choir_rehearsal]`.
 
 == Changelog ==
+
+= 0.4.33 =
+* Recording: larger piano and metronome icons
+* Sticky player: metronome only in mic recording (removed from player bar)
+* Sticky player: remove white frame around waveform scrubber on the public song page
+* Song view: reliable X control to exit expanded PDF
 
 = 0.4.32 =
 * Sticky player and song editor: metronome panel with tempo slider (40–208 BPM)
