@@ -130,6 +130,23 @@ final class Choir_Rehearsal_Frontend {
 				'close' => __( 'Close piano', 'choir-rehearsal' ),
 			)
 		);
+		wp_enqueue_script(
+			'choir-rehearsal-metronome',
+			CHOIR_REHEARSAL_URL . 'public/js/metronome.js',
+			array(),
+			CHOIR_REHEARSAL_VERSION,
+			true
+		);
+		wp_localize_script(
+			'choir-rehearsal-metronome',
+			'choirRehearsalMetronome',
+			array(
+				'open'  => __( 'Open metronome', 'choir-rehearsal' ),
+				'close' => __( 'Close metronome', 'choir-rehearsal' ),
+				'start' => __( 'Start', 'choir-rehearsal' ),
+				'stop'  => __( 'Stop', 'choir-rehearsal' ),
+			)
+		);
 
 		if ( is_singular( Choir_Rehearsal_Post_Types::SONG ) ) {
 			$song_id = get_queried_object_id();
@@ -728,6 +745,10 @@ final class Choir_Rehearsal_Frontend {
 				<span class="screen-reader-text"><?php esc_html_e( 'Open piano', 'choir-rehearsal' ); ?></span>
 				<svg class="choir-sticky-player__piano-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path fill="currentColor" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-9 16.5v-4.5h1V4.5h2v10.5h1v4.5h-4zM8 19.5H5.5c-.55 0-1-.45-1-1V5.5c0-.55.45-1 1-1H7v10.5h1v4.5zm8-4.5h1V4.5h1.5c.55 0 1 .45 1 1v13c0 .55-.45 1-1 1H16v-4.5z"/></svg>
 			</button>
+			<button type="button" class="choir-sticky-player__metronome" aria-label="<?php esc_attr_e( 'Open metronome', 'choir-rehearsal' ); ?>" aria-expanded="false" aria-controls="choir-metronome-sheet">
+				<span class="screen-reader-text"><?php esc_html_e( 'Open metronome', 'choir-rehearsal' ); ?></span>
+				<svg class="choir-sticky-player__metronome-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12.5 2l7.5 18H5L12.5 2zm0 3.2L7.4 18h10.2L12.5 5.2zM11 10h1.5v5H11v-5zm0 6h1.5v1.5H11V16z"/></svg>
+			</button>
 			<div class="choir-sticky-player__main">
 				<div class="choir-sticky-player__wave choir-track-waveform is-empty" data-audio-url="" data-color="#60a5fa" aria-hidden="true">
 					<canvas class="choir-track-waveform__canvas"></canvas>
@@ -752,6 +773,23 @@ final class Choir_Rehearsal_Frontend {
 			</div>
 			<div class="choir-piano-sheet__scroll" tabindex="0">
 				<div class="choir-piano-sheet__keyboard" data-start-midi="48" data-end-midi="71" role="group" aria-label="<?php esc_attr_e( 'Two octave piano keyboard', 'choir-rehearsal' ); ?>"></div>
+			</div>
+		</div>
+		<div id="choir-metronome-sheet" class="choir-metronome-sheet is-hidden" hidden aria-hidden="true">
+			<div class="choir-metronome-sheet__header">
+				<span class="choir-metronome-sheet__title"><?php esc_html_e( 'Metronome', 'choir-rehearsal' ); ?></span>
+				<button type="button" class="choir-metronome-sheet__close" aria-label="<?php esc_attr_e( 'Close metronome', 'choir-rehearsal' ); ?>">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="choir-metronome-sheet__body">
+				<button type="button" class="choir-metronome-sheet__toggle" aria-pressed="false">
+					<?php esc_html_e( 'Start', 'choir-rehearsal' ); ?>
+				</button>
+				<label class="choir-metronome-sheet__tempo">
+					<span class="choir-metronome-sheet__bpm"><span class="choir-metronome-sheet__bpm-value">100</span> <?php esc_html_e( 'BPM', 'choir-rehearsal' ); ?></span>
+					<input type="range" class="choir-metronome-sheet__slider" min="40" max="208" value="100" step="1" aria-label="<?php esc_attr_e( 'Tempo', 'choir-rehearsal' ); ?>" />
+				</label>
 			</div>
 		</div>
 		<?php

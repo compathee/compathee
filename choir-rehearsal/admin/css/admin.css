@@ -323,27 +323,31 @@ body.choir-rehearsal-song-edit #choir-rehearsal-tracks .inside {
 	box-sizing: border-box;
 }
 
-.choir-recorder-panel__start-row .choir-recorder-piano {
-	flex: 3 1 0;
+.choir-recorder-panel__start-row .choir-recorder-piano,
+.choir-recorder-panel__start-row .choir-recorder-metronome {
+	flex: 1.5 1 0;
 	width: auto;
 	max-width: none;
 	min-width: 0;
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	padding: 0 6px;
+	padding: 0 4px;
 	line-height: 1;
 	box-sizing: border-box;
 }
 
-.choir-recorder-panel__start-row .choir-recorder-piano svg {
+.choir-recorder-panel__start-row .choir-recorder-piano svg,
+.choir-recorder-panel__start-row .choir-recorder-metronome svg {
 	display: block;
-	width: 18px;
-	height: 18px;
+	width: 14px;
+	height: 14px;
 }
 
 .choir-recorder-panel__start-row .choir-recorder-piano.is-open,
-.choir-recorder-panel__start-row .choir-recorder-piano[aria-expanded="true"] {
+.choir-recorder-panel__start-row .choir-recorder-piano[aria-expanded="true"],
+.choir-recorder-panel__start-row .choir-recorder-metronome.is-open,
+.choir-recorder-panel__start-row .choir-recorder-metronome[aria-expanded="true"] {
 	background: #1f4fd8;
 	border-color: #1f4fd8;
 	color: #fff;
