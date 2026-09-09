@@ -120,13 +120,24 @@
   ],
   "changelog": [
     {
+      "version": "0.4.33",
+      "summary": "Player and recorder UI polish",
+      "items": [
+        "Larger piano and metronome icons in the recording panel",
+        "Metronome removed from the sticky player (recording only)",
+        "Public player waveform no longer shows a white frame",
+        "Expanded PDF on song pages shows a clear X close control"
+      ],
+      "open": true
+    },
+    {
       "version": "0.4.32",
       "summary": "Metronome tool",
       "items": [
         "Sticky player and recording panel open a metronome with tempo slider (40–208 BPM)",
         "Recording start row: Start / piano / metronome (70% / 15% / 15%)"
       ],
-      "open": true
+      "open": false
     },
     {
       "version": "0.4.31",
