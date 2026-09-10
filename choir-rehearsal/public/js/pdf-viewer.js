@@ -90,11 +90,33 @@
 				var cssScale = fitScale * zoom;
 				var viewport = page.getViewport({ scale: cssScale * dpr });
 				var context = canvas.getContext('2d');
+				var nextCssW = Math.floor(viewport.width / dpr);
+				var nextCssH = Math.floor(viewport.height / dpr);
+				var nextBitmapW = Math.floor(viewport.width);
+				var nextBitmapH = Math.floor(viewport.height);
 
-				canvas.width = Math.floor(viewport.width);
-				canvas.height = Math.floor(viewport.height);
-				canvas.style.width = Math.floor(viewport.width / dpr) + 'px';
-				canvas.style.height = Math.floor(viewport.height / dpr) + 'px';
+				// Avoid ResizeObserver ↔ render feedback loops when size is unchanged.
+				if (
+					canvas.width === nextBitmapW &&
+					canvas.height === nextBitmapH &&
+					canvas.style.width === nextCssW + 'px' &&
+					canvas.style.height === nextCssH + 'px' &&
+					Math.abs(pinchLiveScale - 1) < 0.001
+				) {
+					pageRendering = false;
+					updateControls();
+					if (pageNumPending !== null) {
+						var pendingSame = pageNumPending;
+						pageNumPending = null;
+						renderPage(pendingSame);
+					}
+					return;
+				}
+
+				canvas.width = nextBitmapW;
+				canvas.height = nextBitmapH;
+				canvas.style.width = nextCssW + 'px';
+				canvas.style.height = nextCssH + 'px';
 				canvas.classList.toggle('is-zoomed', zoom > 1.02);
 				// Drop live CSS scale only after the new bitmap size is applied.
 				pinchLiveScale = 1;

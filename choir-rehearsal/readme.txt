@@ -4,7 +4,7 @@ Tags: choir, audio, rehearsal, voice parts, music
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 0.4.34
+Stable tag: 0.4.35
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -55,6 +55,10 @@ By default only logged-in users can view `/rehearsal/`. Change this under **Choi
 Yes. Use the shortcode `[choir_rehearsal]`.
 
 == Changelog ==
+
+= 0.4.35 =
+* Fix: song page / editor freeze caused by recording-dock body class observer
+* PDF viewer skips redundant re-renders that could lock the UI
 
 = 0.4.34 =
 * Mobile: floating recording bar (record / pause / stop / cancel) above the player when controls scroll away or PDF is expanded
