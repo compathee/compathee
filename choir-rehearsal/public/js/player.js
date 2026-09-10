@@ -21,6 +21,7 @@
 	}
 
 	let isSeeking = false;
+	let durationFixToken = 0;
 
 	function formatTime(seconds) {
 		if (!isFinite(seconds) || seconds < 0) {
@@ -31,13 +32,83 @@
 		return m + ':' + String(s).padStart(2, '0');
 	}
 
+	function finiteDuration() {
+		const duration = audio.duration;
+		return isFinite(duration) && duration > 0 ? duration : 0;
+	}
+
 	function updateTime() {
 		const current = audio.currentTime || 0;
-		const duration = audio.duration || 0;
+		const duration = finiteDuration();
 		timeEl.textContent = formatTime(current) + ' / ' + formatTime(duration);
 		if (!isSeeking && duration > 0) {
 			seek.value = String((current / duration) * 100);
 		}
+	}
+
+	/**
+	 * Chrome often reports duration=Infinity for MediaRecorder WebM until we
+	 * briefly seek near the end, then reset. Needed for desktop scrubbing.
+	 */
+	function ensureSeekableDuration() {
+		const token = ++durationFixToken;
+		const known = finiteDuration();
+		if (known > 0) {
+			return Promise.resolve(known);
+		}
+
+		return new Promise(function (resolve) {
+			let settled = false;
+
+			function finish() {
+				if (settled || token !== durationFixToken) {
+					return;
+				}
+				settled = true;
+				audio.removeEventListener('timeupdate', onTimeUpdate);
+				audio.removeEventListener('durationchange', onDurationChange);
+				audio.removeEventListener('error', onError);
+				const duration = finiteDuration();
+				try {
+					if (audio.currentTime !== 0) {
+						audio.currentTime = 0;
+					}
+				} catch (err) {
+					// Ignore reset failures.
+				}
+				resolve(duration);
+			}
+
+			function onTimeUpdate() {
+				if (finiteDuration() > 0) {
+					finish();
+				}
+			}
+
+			function onDurationChange() {
+				if (finiteDuration() > 0) {
+					finish();
+				}
+			}
+
+			function onError() {
+				finish();
+			}
+
+			audio.addEventListener('timeupdate', onTimeUpdate);
+			audio.addEventListener('durationchange', onDurationChange);
+			audio.addEventListener('error', onError);
+
+			try {
+				// Large seek forces Chromium to resolve MediaRecorder WebM duration.
+				audio.currentTime = 1e101;
+			} catch (err) {
+				finish();
+				return;
+			}
+
+			window.setTimeout(finish, 1500);
+		});
 	}
 
 	function setPlaying(playing) {
@@ -61,6 +132,7 @@
 	}
 
 	function closePlayer() {
+		durationFixToken += 1;
 		audio.pause();
 		audio.removeAttribute('src');
 		audio.load();
@@ -93,10 +165,50 @@
 		player.setAttribute('aria-hidden', 'false');
 		document.body.classList.add('choir-sticky-player-open');
 		setPlayerWaveform(url);
+		durationFixToken += 1;
+		const token = durationFixToken;
 		audio.src = url;
-		audio.play().catch(function () {
-			setPlaying(false);
-		});
+		audio.load();
+
+		const startPlayback = function () {
+			if (token !== durationFixToken) {
+				return;
+			}
+			updateTime();
+			audio.play().catch(function () {
+				setPlaying(false);
+			});
+		};
+
+		const afterMeta = function () {
+			if (token !== durationFixToken) {
+				return;
+			}
+			ensureSeekableDuration().then(function () {
+				if (token !== durationFixToken) {
+					return;
+				}
+				updateTime();
+				startPlayback();
+			});
+		};
+
+		if (audio.readyState >= 1) {
+			afterMeta();
+		} else {
+			audio.addEventListener('loadedmetadata', afterMeta, { once: true });
+			// Some WebM captures fire durationchange instead of a useful loadedmetadata.
+			audio.addEventListener('durationchange', function onDuration() {
+				if (token !== durationFixToken) {
+					audio.removeEventListener('durationchange', onDuration);
+					return;
+				}
+				if (finiteDuration() > 0) {
+					audio.removeEventListener('durationchange', onDuration);
+					updateTime();
+				}
+			});
+		}
 	}
 
 	playBtn.addEventListener('click', function () {
@@ -114,19 +226,27 @@
 
 	seek.addEventListener('input', function () {
 		isSeeking = true;
-		if (!audio.duration) {
+		const duration = finiteDuration();
+		if (!duration) {
 			return;
 		}
-		audio.currentTime = (parseFloat(seek.value, 10) / 100) * audio.duration;
+		audio.currentTime = (parseFloat(seek.value, 10) / 100) * duration;
 		updateTime();
 	});
 
 	seek.addEventListener('change', function () {
 		isSeeking = false;
+		const duration = finiteDuration();
+		if (!duration) {
+			return;
+		}
+		audio.currentTime = (parseFloat(seek.value, 10) / 100) * duration;
+		updateTime();
 	});
 
 	audio.addEventListener('timeupdate', updateTime);
 	audio.addEventListener('loadedmetadata', updateTime);
+	audio.addEventListener('durationchange', updateTime);
 	audio.addEventListener('play', function () {
 		setPlaying(true);
 	});

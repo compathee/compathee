@@ -71,7 +71,91 @@
 		if (mimeType.indexOf('mp4') !== -1) {
 			return 'm4a';
 		}
+		if (mimeType.indexOf('wav') !== -1) {
+			return 'wav';
+		}
 		return 'webm';
+	}
+
+	function writeString(view, offset, string) {
+		for (let i = 0; i < string.length; i += 1) {
+			view.setUint8(offset + i, string.charCodeAt(i));
+		}
+	}
+
+	function encodeWavBlob(audioBuffer) {
+		const channels = audioBuffer.numberOfChannels;
+		const sampleRate = audioBuffer.sampleRate;
+		const samples = audioBuffer.length;
+		const bitsPerSample = 16;
+		const blockAlign = channels * (bitsPerSample / 8);
+		const dataSize = samples * blockAlign;
+		const buffer = new ArrayBuffer(44 + dataSize);
+		const view = new DataView(buffer);
+		const channelData = [];
+
+		for (let c = 0; c < channels; c += 1) {
+			channelData.push(audioBuffer.getChannelData(c));
+		}
+
+		writeString(view, 0, 'RIFF');
+		view.setUint32(4, 36 + dataSize, true);
+		writeString(view, 8, 'WAVE');
+		writeString(view, 12, 'fmt ');
+		view.setUint32(16, 16, true);
+		view.setUint16(20, 1, true);
+		view.setUint16(22, channels, true);
+		view.setUint32(24, sampleRate, true);
+		view.setUint32(28, sampleRate * blockAlign, true);
+		view.setUint16(32, blockAlign, true);
+		view.setUint16(34, bitsPerSample, true);
+		writeString(view, 36, 'data');
+		view.setUint32(40, dataSize, true);
+
+		let offset = 44;
+		for (let i = 0; i < samples; i += 1) {
+			for (let c = 0; c < channels; c += 1) {
+				const sample = Math.max(-1, Math.min(1, channelData[c][i]));
+				view.setInt16(offset, sample < 0 ? sample * 0x8000 : sample * 0x7fff, true);
+				offset += 2;
+			}
+		}
+
+		return new Blob([buffer], { type: 'audio/wav' });
+	}
+
+	/**
+	 * MediaRecorder WebM/Ogg often lacks seek tables on desktop Chromium.
+	 * Re-encode to WAV before upload so scrubbing works everywhere.
+	 */
+	function maybeConvertRecordingBlob(blob, mimeType) {
+		const type = String(mimeType || blob.type || '');
+		if (type.indexOf('wav') !== -1 || type.indexOf('mp4') !== -1 || type.indexOf('mpeg') !== -1) {
+			return Promise.resolve({ blob: blob, mimeType: type || mimeType });
+		}
+
+		const Ctx = window.AudioContext || window.webkitAudioContext;
+		if (!Ctx || typeof blob.arrayBuffer !== 'function') {
+			return Promise.resolve({ blob: blob, mimeType: type || mimeType });
+		}
+
+		const ctx = new Ctx();
+		return blob.arrayBuffer().then(function (buffer) {
+			return ctx.decodeAudioData(buffer.slice(0));
+		}).then(function (audioBuffer) {
+			const wav = encodeWavBlob(audioBuffer);
+			return ctx.close().catch(function () {
+				return null;
+			}).then(function () {
+				return { blob: wav, mimeType: 'audio/wav' };
+			});
+		}).catch(function () {
+			return ctx.close().catch(function () {
+				return null;
+			}).then(function () {
+				return { blob: blob, mimeType: type || mimeType };
+			});
+		});
 	}
 
 	function songTitle() {
@@ -428,25 +512,34 @@
 			return;
 		}
 
-		const formData = new FormData();
-		const voice = this.$row.find('select[name*="[voice]"]').val() || 'other';
-		const filename = 'voice-recording.' + extensionFromMime(this.mimeType);
-
-		formData.append('action', 'choir_rehearsal_upload_recording');
-		formData.append('nonce', i18n.recordingNonce);
-		formData.append('post_id', String(i18n.postId));
-		formData.append('voice', voice);
-		formData.append('recording', this.blob, filename);
-
 		this.$use.prop('disabled', true).text(i18n.uploading || 'Uploading…');
 
-		$.ajax({
-			url: i18n.ajaxUrl,
-			type: 'POST',
-			data: formData,
-			processData: false,
-			contentType: false,
-		}).done(function (response) {
+		maybeConvertRecordingBlob(this.blob, this.mimeType).then(function (converted) {
+			const formData = new FormData();
+			const voice = self.$row.find('select[name*="[voice]"]').val() || 'other';
+			const mime = converted.mimeType || self.mimeType;
+			const filename = 'voice-recording.' + extensionFromMime(mime);
+
+			formData.append('action', 'choir_rehearsal_upload_recording');
+			formData.append('nonce', i18n.recordingNonce);
+			formData.append('post_id', String(i18n.postId));
+			formData.append('voice', voice);
+			formData.append('recording', converted.blob, filename);
+
+			return new Promise(function (resolve, reject) {
+				$.ajax({
+					url: i18n.ajaxUrl,
+					type: 'POST',
+					data: formData,
+					processData: false,
+					contentType: false,
+				}).done(function (response) {
+					resolve(response);
+				}).fail(function (xhr) {
+					reject(xhr);
+				});
+			});
+		}).then(function (response) {
 			if (!response || !response.success || !response.data) {
 				window.alert((response && response.data && response.data.message) || i18n.uploadFailed || 'Upload failed. Please try again.');
 				self.$use.prop('disabled', false).text(i18n.useRecording || 'Use recording');
@@ -459,9 +552,9 @@
 			updatePlayButton(self.$row, response.data.url || '');
 			updateWaveform(self.$row, response.data.url || '');
 			self.close();
-		}).fail(function (xhr) {
+		}).catch(function (xhr) {
 			let message = i18n.uploadFailed || 'Upload failed. Please try again.';
-			if (xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.message) {
+			if (xhr && xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.message) {
 				message = xhr.responseJSON.data.message;
 			}
 			window.alert(message);

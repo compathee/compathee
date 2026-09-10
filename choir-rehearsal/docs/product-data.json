@@ -120,13 +120,22 @@
   ],
   "changelog": [
     {
+      "version": "0.4.36",
+      "summary": "Fix mic recording scrubber on desktop",
+      "items": [
+        "Sticky player resolves MediaRecorder WebM duration so scrubbing works on desktop Chrome",
+        "New microphone uploads convert to WAV when the capture format is not seekable"
+      ],
+      "open": true
+    },
+    {
       "version": "0.4.35",
       "summary": "Fix song page freeze",
       "items": [
         "Remove body-class MutationObserver that froze the song editor",
         "PDF viewer skips no-op re-renders"
       ],
-      "open": true
+      "open": false
     },
     {
       "version": "0.4.34",
