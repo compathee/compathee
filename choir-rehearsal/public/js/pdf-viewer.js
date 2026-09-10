@@ -35,6 +35,7 @@
 		var pageNum = 1;
 		var pageRendering = false;
 		var pageNumPending = null;
+		var lastRenderedPageNum = 0;
 		var loadToken = 0;
 		/** User zoom relative to fit-width (1 = page fits container width). */
 		var zoom = 1;
@@ -95,8 +96,10 @@
 				var nextBitmapW = Math.floor(viewport.width);
 				var nextBitmapH = Math.floor(viewport.height);
 
-				// Avoid ResizeObserver ↔ render feedback loops when size is unchanged.
+				// Avoid ResizeObserver ↔ render feedback loops when size AND page
+				// are unchanged. Same-size pages must still re-render on navigation.
 				if (
+					lastRenderedPageNum === num &&
 					canvas.width === nextBitmapW &&
 					canvas.height === nextBitmapH &&
 					canvas.style.width === nextCssW + 'px' &&
@@ -129,6 +132,7 @@
 
 				return renderTask.promise.then(function () {
 					pageRendering = false;
+					lastRenderedPageNum = num;
 					updateControls();
 
 					if (pageNumPending !== null) {
@@ -203,6 +207,7 @@
 			pageNum = 1;
 			pageNumPending = null;
 			pageRendering = false;
+			lastRenderedPageNum = 0;
 			zoom = 1;
 			pinchLiveScale = 1;
 			viewer.setAttribute('data-pdf-url', url || '');

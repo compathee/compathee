@@ -120,13 +120,21 @@
   ],
   "changelog": [
     {
+      "version": "0.4.37",
+      "summary": "Fix PDF page navigation",
+      "items": [
+        "Previous/Next and swipe turn pages again when consecutive pages share the same size"
+      ],
+      "open": true
+    },
+    {
       "version": "0.4.36",
       "summary": "Fix mic recording scrubber on desktop",
       "items": [
         "Sticky player resolves MediaRecorder WebM duration so scrubbing works on desktop Chrome",
         "New microphone uploads convert to WAV when the capture format is not seekable"
       ],
-      "open": true
+      "open": false
     },
     {
       "version": "0.4.35",
