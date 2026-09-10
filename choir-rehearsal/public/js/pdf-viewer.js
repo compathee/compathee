@@ -21,6 +21,9 @@
 		var pageLabel = viewer.querySelector('.choir-pdf-page');
 		var expandBtn = viewer.querySelector('.choir-pdf-expand');
 		var closeFsBtn = viewer.querySelector('.choir-pdf-close-fs');
+		var exitFsBtn = viewer.querySelector('.choir-pdf-exit-fs');
+		var closeFsHome = closeFsBtn ? closeFsBtn.parentNode : null;
+		var closeFsNext = closeFsBtn ? closeFsBtn.nextSibling : null;
 		var i18n = window.choirRehearsalPdf || {};
 
 		if (!canvas || !wrap || !prevBtn || !nextBtn || !pageLabel) {
@@ -265,25 +268,45 @@
 			document.documentElement.style.setProperty('--choir-pdf-player-reserve', reserve + 'px');
 		}
 
+		function setBtnHidden(btn, hide) {
+			if (!btn) {
+				return;
+			}
+			if (hide) {
+				btn.setAttribute('hidden', 'hidden');
+				btn.hidden = true;
+			} else {
+				btn.removeAttribute('hidden');
+				btn.hidden = false;
+			}
+		}
+
+		/**
+		 * Close control must leave the viewer stacking context (z-index 100000).
+		 * Sticky player / recording dock sit above that layer on mobile.
+		 */
+		function portCloseButton(toBody) {
+			if (!closeFsBtn || !closeFsHome) {
+				return;
+			}
+			if (toBody) {
+				closeFsBtn.classList.add('choir-pdf-close-fs--floating');
+				if (closeFsBtn.parentNode !== document.body) {
+					document.body.appendChild(closeFsBtn);
+				}
+			} else {
+				closeFsBtn.classList.remove('choir-pdf-close-fs--floating');
+				if (closeFsBtn.parentNode !== closeFsHome) {
+					closeFsHome.insertBefore(closeFsBtn, closeFsNext);
+				}
+			}
+		}
+
 		function syncToolbarButtons() {
-			if (expandBtn) {
-				if (isFullscreen) {
-					expandBtn.setAttribute('hidden', 'hidden');
-					expandBtn.hidden = true;
-				} else {
-					expandBtn.removeAttribute('hidden');
-					expandBtn.hidden = false;
-				}
-			}
-			if (closeFsBtn) {
-				if (isFullscreen) {
-					closeFsBtn.removeAttribute('hidden');
-					closeFsBtn.hidden = false;
-				} else {
-					closeFsBtn.setAttribute('hidden', 'hidden');
-					closeFsBtn.hidden = true;
-				}
-			}
+			setBtnHidden(expandBtn, isFullscreen);
+			setBtnHidden(closeFsBtn, !isFullscreen);
+			setBtnHidden(exitFsBtn, !isFullscreen);
+			portCloseButton(isFullscreen);
 		}
 
 		function enterFullscreen() {
@@ -341,6 +364,16 @@
 				closeFsBtn.setAttribute('aria-label', i18n.closeFs);
 			}
 			closeFsBtn.addEventListener('click', function (event) {
+				event.preventDefault();
+				exitFullscreen();
+			});
+		}
+
+		if (exitFsBtn) {
+			if (i18n.closeFs) {
+				exitFsBtn.setAttribute('aria-label', i18n.closeFs);
+			}
+			exitFsBtn.addEventListener('click', function (event) {
 				event.preventDefault();
 				exitFullscreen();
 			});

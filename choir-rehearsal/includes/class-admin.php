@@ -692,6 +692,7 @@ final class Choir_Rehearsal_Admin {
 						<button type="button" class="choir-pdf-prev" aria-label="<?php esc_attr_e( 'Previous page', 'choir-rehearsal' ); ?>">&larr; <?php esc_html_e( 'Previous', 'choir-rehearsal' ); ?></button>
 						<span class="choir-pdf-page">1 / 1</span>
 						<button type="button" class="choir-pdf-next" aria-label="<?php esc_attr_e( 'Next page', 'choir-rehearsal' ); ?>"><?php esc_html_e( 'Next', 'choir-rehearsal' ); ?> &rarr;</button>
+						<button type="button" class="choir-pdf-exit-fs" hidden aria-label="<?php esc_attr_e( 'Close full screen', 'choir-rehearsal' ); ?>">&times; <?php esc_html_e( 'Close', 'choir-rehearsal' ); ?></button>
 					</div>
 				</div>
 			<?php endif; ?>

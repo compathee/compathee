@@ -463,16 +463,38 @@
 }
 
 .choir-pdf-close-fs[hidden],
-.choir-pdf-expand[hidden] {
+.choir-pdf-expand[hidden],
+.choir-pdf-exit-fs[hidden] {
 	display: none !important;
 }
 
-.choir-pdf-viewer.is-fullscreen .choir-pdf-close-fs:not([hidden]) {
+/* Floating close must sit on body (ported in JS) above sticky player / recording dock. */
+.choir-pdf-close-fs.choir-pdf-close-fs--floating:not([hidden]) {
+	display: inline-flex !important;
+	position: fixed !important;
+	top: max(12px, env(safe-area-inset-top, 0px));
+	right: max(12px, env(safe-area-inset-right, 0px));
+	z-index: 100300;
+	width: 48px;
+	height: 48px;
+	pointer-events: auto;
+}
+
+/* Legacy in-viewer rule (before port); keep as fallback if port fails. */
+.choir-pdf-viewer.is-fullscreen .choir-pdf-close-fs:not([hidden]):not(.choir-pdf-close-fs--floating) {
 	display: inline-flex !important;
 	position: fixed;
 	top: max(10px, env(safe-area-inset-top, 0px));
 	right: max(10px, env(safe-area-inset-right, 0px));
 	z-index: 100002;
+}
+
+.choir-pdf-viewer.is-fullscreen .choir-pdf-exit-fs:not([hidden]) {
+	display: inline-flex !important;
+	align-items: center;
+	justify-content: center;
+	min-width: 44px;
+	margin-left: 4px;
 }
 
 .choir-pdf-viewer__canvas-wrap {
@@ -504,6 +526,7 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	flex-wrap: wrap;
 	gap: 16px;
 	padding: 12px 16px;
 	background: #fff;
