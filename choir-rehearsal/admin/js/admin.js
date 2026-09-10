@@ -24,6 +24,9 @@
 	const ICONS = {
 		upload: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12 3l4.5 4.5h-3V14h-3V7.5h-3L12 3zm-7 14h14v2H5v-2z"/></svg>',
 		record: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="7" fill="currentColor"/></svg>',
+		pause: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path fill="currentColor" d="M7 5h3.5v14H7V5zm6.5 0H17v14h-3.5V5z"/></svg>',
+		stop: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><rect x="6" y="6" width="12" height="12" rx="1.5" fill="currentColor"/></svg>',
+		cancel: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path fill="currentColor" d="M6.4 6.4l1.2-1.2L12 9.6l4.4-4.4 1.2 1.2L13.2 12l4.4 4.4-1.2 1.2L12 14.4l-4.4 4.4-1.2-1.2L10.8 12 6.4 6.4z"/></svg>',
 		piano: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-9 16.5v-4.5h1V4.5h2v10.5h1v4.5h-4zM8 19.5H5.5c-.55 0-1-.45-1-1V5.5c0-.55.45-1 1-1H7v10.5h1v4.5zm8-4.5h1V4.5h1.5c.55 0 1 .45 1 1v13c0 .55-.45 1-1 1H16v-4.5z"/></svg>',
 		metronome: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12.5 2l7.5 18H5L12.5 2zm0 3.2L7.4 18h10.2L12.5 5.2zM11 10h1.5v5H11v-5zm0 6h1.5v1.5H11V16z"/></svg>',
 		play: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><path fill="#ffffff" d="M7 3.8v16.4L20.2 12 7 3.8z"/></svg>',
@@ -168,6 +171,7 @@
 		this.$stop = this.$panel.find('.choir-recorder-stop');
 		this.$use = this.$panel.find('.choir-recorder-use');
 		this.$cancel = this.$panel.find('.choir-recorder-cancel');
+		this.$actions = this.$panel.find('.choir-recorder-panel__actions');
 		this.stream = null;
 		this.mediaRecorder = null;
 		this.chunks = [];
@@ -175,22 +179,83 @@
 		this.mimeType = getSupportedMimeType();
 		this.timerId = null;
 		this.startedAt = 0;
+		this.pausedTotalMs = 0;
+		this.pauseStartedAt = 0;
+		this.sessionActive = false;
+		this.actionsVisible = true;
+		this._observer = null;
 	}
+
+	Recorder.prototype.getElapsedSeconds = function () {
+		if (!this.startedAt) {
+			return 0;
+		}
+		let paused = this.pausedTotalMs;
+		if (this.pauseStartedAt) {
+			paused += Date.now() - this.pauseStartedAt;
+		}
+		return Math.max(0, Math.floor((Date.now() - this.startedAt - paused) / 1000));
+	};
+
+	Recorder.prototype.updateTimerDisplay = function () {
+		this.$timer.text(formatTime(this.getElapsedSeconds()));
+	};
+
+	Recorder.prototype.isRecording = function () {
+		return !!(this.mediaRecorder && this.mediaRecorder.state === 'recording');
+	};
+
+	Recorder.prototype.isPaused = function () {
+		return !!(this.mediaRecorder && this.mediaRecorder.state === 'paused');
+	};
+
+	Recorder.prototype.isSessionActive = function () {
+		return this.sessionActive && this.mediaRecorder && this.mediaRecorder.state !== 'inactive';
+	};
+
+	Recorder.prototype.syncUi = function () {
+		const recording = this.isRecording();
+		const paused = this.isPaused();
+		const active = this.isSessionActive();
+
+		if (recording) {
+			this.$status.text(i18n.recording || 'Recording…');
+			this.$start.prop('disabled', true);
+			this.$stop.prop('disabled', false);
+		} else if (paused) {
+			this.$status.text(i18n.recordingPaused || 'Paused');
+			this.$start.prop('disabled', false).text(i18n.resumeRecording || 'Resume recording');
+			this.$stop.prop('disabled', false);
+		} else {
+			this.$start.prop('disabled', false).text(i18n.startRecording || 'Start recording');
+			this.$stop.prop('disabled', true);
+		}
+
+		if (!active && !this.blob) {
+			this.$use.prop('disabled', true);
+		}
+
+		RecordingDock.sync(this);
+	};
 
 	Recorder.prototype.resetState = function () {
 		this.chunks = [];
 		this.blob = null;
 		this.startedAt = 0;
+		this.pausedTotalMs = 0;
+		this.pauseStartedAt = 0;
+		this.sessionActive = false;
 		if (this.timerId) {
 			window.clearInterval(this.timerId);
 			this.timerId = null;
 		}
 		this.$timer.text('00:00');
 		this.$preview.prop('hidden', true).removeAttr('src');
-		this.$start.prop('disabled', false);
+		this.$start.prop('disabled', false).text(i18n.startRecording || 'Start recording');
 		this.$stop.prop('disabled', true);
 		this.$use.prop('disabled', true).text(i18n.useRecording || 'Use recording');
 		this.$status.text(i18n.readyToRecord || 'Click start and sing your voice part.');
+		RecordingDock.sync(this);
 	};
 
 	Recorder.prototype.stopStream = function () {
@@ -204,11 +269,18 @@
 
 	Recorder.prototype.close = function () {
 		if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
-			this.mediaRecorder.stop();
+			try {
+				this.mediaRecorder.onstop = null;
+				this.mediaRecorder.stop();
+			} catch (err) {
+				// Ignore stop failures while cancelling.
+			}
 		}
+		this.mediaRecorder = null;
 		this.stopStream();
 		this.resetState();
 		this.$panel.addClass('is-hidden').attr('aria-hidden', 'true');
+		RecordingDock.detach(this);
 	};
 
 	Recorder.prototype.open = function () {
@@ -231,15 +303,38 @@
 
 		this.resetState();
 		this.$panel.removeClass('is-hidden').attr('aria-hidden', 'false');
+		RecordingDock.attach(this);
+	};
+
+	Recorder.prototype.startTimer = function () {
+		const self = this;
+		if (this.timerId) {
+			window.clearInterval(this.timerId);
+		}
+		this.updateTimerDisplay();
+		this.timerId = window.setInterval(function () {
+			self.updateTimerDisplay();
+		}, 250);
 	};
 
 	Recorder.prototype.start = function () {
 		const self = this;
 
+		if (this.isPaused()) {
+			this.resume();
+			return;
+		}
+
+		if (this.isRecording()) {
+			return;
+		}
+
 		navigator.mediaDevices.getUserMedia({ audio: true }).then(function (stream) {
 			self.stream = stream;
 			self.chunks = [];
 			self.blob = null;
+			self.pausedTotalMs = 0;
+			self.pauseStartedAt = 0;
 			self.mediaRecorder = new MediaRecorder(stream, { mimeType: self.mimeType });
 			self.mediaRecorder.ondataavailable = function (event) {
 				if (event.data && event.data.size > 0) {
@@ -247,38 +342,83 @@
 				}
 			};
 			self.mediaRecorder.onstop = function () {
+				self.sessionActive = false;
 				self.blob = new Blob(self.chunks, { type: self.mimeType });
 				const url = URL.createObjectURL(self.blob);
 				self.$preview.attr('src', url).prop('hidden', false);
 				self.$use.prop('disabled', false);
 				self.$status.text(i18n.useRecording || 'Use recording');
+				self.$start.prop('disabled', false).text(i18n.startRecording || 'Start recording');
+				self.$stop.prop('disabled', true);
 				self.stopStream();
+				self.mediaRecorder = null;
+				RecordingDock.sync(self);
 			};
-			self.mediaRecorder.start();
+			self.mediaRecorder.start(1000);
+			self.sessionActive = true;
 			self.startedAt = Date.now();
-			self.$status.text(i18n.recording || 'Recording…');
-			self.$start.prop('disabled', true);
-			self.$stop.prop('disabled', false);
-			self.$use.prop('disabled', true);
-			self.timerId = window.setInterval(function () {
-				const elapsed = Math.floor((Date.now() - self.startedAt) / 1000);
-				self.$timer.text(formatTime(elapsed));
-			}, 250);
+			self.startTimer();
+			self.syncUi();
 		}).catch(function () {
 			window.alert(i18n.micDenied || 'Microphone access was denied.');
 		});
 	};
 
+	Recorder.prototype.pause = function () {
+		if (!this.mediaRecorder || this.mediaRecorder.state !== 'recording') {
+			return;
+		}
+		if (typeof this.mediaRecorder.pause !== 'function') {
+			return;
+		}
+		try {
+			this.mediaRecorder.pause();
+		} catch (err) {
+			return;
+		}
+		this.pauseStartedAt = Date.now();
+		this.syncUi();
+	};
+
+	Recorder.prototype.resume = function () {
+		if (!this.mediaRecorder || this.mediaRecorder.state !== 'paused') {
+			return;
+		}
+		if (typeof this.mediaRecorder.resume !== 'function') {
+			return;
+		}
+		try {
+			this.mediaRecorder.resume();
+		} catch (err) {
+			return;
+		}
+		if (this.pauseStartedAt) {
+			this.pausedTotalMs += Date.now() - this.pauseStartedAt;
+			this.pauseStartedAt = 0;
+		}
+		this.syncUi();
+	};
+
 	Recorder.prototype.stop = function () {
 		if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
-			this.mediaRecorder.stop();
+			if (this.pauseStartedAt) {
+				this.pausedTotalMs += Date.now() - this.pauseStartedAt;
+				this.pauseStartedAt = 0;
+			}
+			try {
+				this.mediaRecorder.stop();
+			} catch (err) {
+				// Ignore.
+			}
 		}
 		if (this.timerId) {
 			window.clearInterval(this.timerId);
 			this.timerId = null;
 		}
-		this.$start.prop('disabled', false);
+		this.sessionActive = false;
+		this.$start.prop('disabled', false).text(i18n.startRecording || 'Start recording');
 		this.$stop.prop('disabled', true);
+		RecordingDock.sync(this);
 	};
 
 	Recorder.prototype.upload = function () {
@@ -352,6 +492,195 @@
 			self.close();
 		});
 	};
+
+	const RecordingDock = {
+		$el: null,
+		active: null,
+		mq: null,
+
+		ensure: function () {
+			if (this.$el && this.$el.length) {
+				return this.$el;
+			}
+			const html =
+				'<div id="choir-recording-dock" class="choir-recording-dock" hidden aria-hidden="true" role="toolbar" aria-label="' +
+				(i18n.recording || 'Recording') +
+				'">' +
+					'<button type="button" class="choir-recording-dock__btn choir-recording-dock__record" aria-label="' + (i18n.resumeRecording || 'Resume recording') + '">' + ICONS.record + '</button>' +
+					'<button type="button" class="choir-recording-dock__btn choir-recording-dock__pause" aria-label="' + (i18n.pauseRecording || 'Pause recording') + '">' + ICONS.pause + '</button>' +
+					'<button type="button" class="choir-recording-dock__btn choir-recording-dock__stop" aria-label="' + (i18n.stopRecording || 'Stop') + '">' + ICONS.stop + '</button>' +
+					'<button type="button" class="choir-recording-dock__btn choir-recording-dock__cancel" aria-label="' + (i18n.cancelRecording || 'Cancel') + '">' + ICONS.cancel + '</button>' +
+				'</div>';
+			this.$el = $(html).appendTo(document.body);
+			const self = this;
+			this.$el.on('click', '.choir-recording-dock__record', function (event) {
+				event.preventDefault();
+				if (self.active) {
+					self.active.start();
+				}
+			});
+			this.$el.on('click', '.choir-recording-dock__pause', function (event) {
+				event.preventDefault();
+				if (self.active) {
+					self.active.pause();
+				}
+			});
+			this.$el.on('click', '.choir-recording-dock__stop', function (event) {
+				event.preventDefault();
+				if (self.active) {
+					self.active.stop();
+				}
+			});
+			this.$el.on('click', '.choir-recording-dock__cancel', function (event) {
+				event.preventDefault();
+				if (self.active) {
+					self.active.close();
+				}
+			});
+			this.mq = window.matchMedia('(max-width: 782px)');
+			if (this.mq.addEventListener) {
+				this.mq.addEventListener('change', function () {
+					self.sync(self.active);
+				});
+			} else if (this.mq.addListener) {
+				this.mq.addListener(function () {
+					self.sync(self.active);
+				});
+			}
+			return this.$el;
+		},
+
+		isMobile: function () {
+			return !!(this.mq && this.mq.matches);
+		},
+
+		attach: function (recorder) {
+			this.ensure();
+			this.active = recorder;
+			const self = this;
+			if (recorder._observer) {
+				recorder._observer.disconnect();
+			}
+			const target = recorder.$actions.get(0);
+			if (target && 'IntersectionObserver' in window) {
+				recorder._observer = new IntersectionObserver(function (entries) {
+					const entry = entries[0];
+					recorder.actionsVisible = !!(entry && entry.isIntersecting && entry.intersectionRatio > 0.15);
+					self.sync(recorder);
+				}, { threshold: [0, 0.15, 1] });
+				recorder._observer.observe(target);
+				const rect = target.getBoundingClientRect();
+				recorder.actionsVisible = rect.bottom > 0 && rect.top < window.innerHeight;
+			} else {
+				recorder.actionsVisible = true;
+			}
+			this.sync(recorder);
+		},
+
+		detach: function (recorder) {
+			if (recorder && recorder._observer) {
+				recorder._observer.disconnect();
+				recorder._observer = null;
+			}
+			if (this.active === recorder) {
+				this.active = null;
+			}
+			this.hide();
+		},
+
+		shouldShow: function (recorder) {
+			if (!recorder || !this.isMobile()) {
+				return false;
+			}
+			if (!recorder.isSessionActive()) {
+				return false;
+			}
+			const pdfFullscreen = document.body.classList.contains('choir-pdf-fullscreen-open');
+			return pdfFullscreen || !recorder.actionsVisible;
+		},
+
+		hide: function () {
+			if (!this.$el) {
+				return;
+			}
+			this.$el.removeClass('is-visible is-recording is-paused').attr({ hidden: true, 'aria-hidden': 'true' });
+			document.body.classList.remove('choir-recording-dock-open');
+			document.documentElement.style.removeProperty('--choir-recording-dock-height');
+		},
+
+		sync: function (recorder) {
+			this.ensure();
+			if (!recorder || this.active !== recorder || !this.shouldShow(recorder)) {
+				if (!recorder || this.active !== recorder || !recorder.isSessionActive()) {
+					this.hide();
+				} else {
+					this.hide();
+				}
+				return;
+			}
+
+			const recording = recorder.isRecording();
+			const paused = recorder.isPaused();
+			this.$el.addClass('is-visible')
+				.toggleClass('is-recording', recording)
+				.toggleClass('is-paused', paused)
+				.removeAttr('hidden')
+				.attr('aria-hidden', 'false');
+			document.body.classList.add('choir-recording-dock-open');
+
+			this.$el.find('.choir-recording-dock__record').prop('disabled', recording);
+			this.$el.find('.choir-recording-dock__pause').prop('disabled', !recording);
+			this.$el.find('.choir-recording-dock__stop').prop('disabled', !(recording || paused));
+
+			const height = Math.ceil(this.$el.outerHeight() || 52);
+			document.documentElement.style.setProperty('--choir-recording-dock-height', height + 'px');
+			this.updateOffset();
+		},
+
+		updateOffset: function () {
+			if (!this.$el || !this.$el.hasClass('is-visible')) {
+				return;
+			}
+			const player = document.getElementById('choir-sticky-player');
+			let bottom = 0;
+			if (player && !player.classList.contains('is-hidden') && document.body.classList.contains('choir-sticky-player-open')) {
+				bottom = Math.ceil(player.getBoundingClientRect().height) || 56;
+			}
+			const piano = document.getElementById('choir-piano-sheet');
+			const metro = document.getElementById('choir-metronome-sheet');
+			if (piano && !piano.hidden && !piano.classList.contains('is-hidden')) {
+				bottom = Math.max(bottom, Math.ceil(window.innerHeight - piano.getBoundingClientRect().top));
+			}
+			if (metro && !metro.hidden && !metro.classList.contains('is-hidden')) {
+				bottom = Math.max(bottom, Math.ceil(window.innerHeight - metro.getBoundingClientRect().top));
+			}
+			this.$el.css('bottom', 'calc(' + bottom + 'px + env(safe-area-inset-bottom, 0px))');
+
+			if (document.body.classList.contains('choir-pdf-fullscreen-open')) {
+				const dockHeight = Math.ceil(this.$el.outerHeight() || 52);
+				document.documentElement.style.setProperty(
+					'--choir-pdf-player-reserve',
+					(bottom + dockHeight + 8) + 'px'
+				);
+			}
+		},
+	};
+
+	window.addEventListener('resize', function () {
+		RecordingDock.updateOffset();
+		RecordingDock.sync(RecordingDock.active);
+	});
+	document.addEventListener('scroll', function () {
+		RecordingDock.updateOffset();
+	}, true);
+
+	// Keep dock visibility in sync when PDF fullscreen toggles.
+	const pdfClassObserver = new MutationObserver(function () {
+		RecordingDock.sync(RecordingDock.active);
+		RecordingDock.updateOffset();
+	});
+	pdfClassObserver.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+
 
 	function bindRow($row) {
 		if (i18n.isPro) {

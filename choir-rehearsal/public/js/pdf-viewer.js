@@ -224,6 +224,17 @@
 			if (player && !player.classList.contains('is-hidden')) {
 				reserve = Math.max(PLAYER_RESERVE_PX, Math.ceil(player.getBoundingClientRect().height) + 8);
 			}
+			var dockVar = getComputedStyle(document.documentElement).getPropertyValue('--choir-recording-dock-height').trim();
+			var dockHeight = dockVar ? parseInt(dockVar, 10) : 0;
+			if (!dockHeight && document.body.classList.contains('choir-recording-dock-open')) {
+				var dock = document.getElementById('choir-recording-dock');
+				if (dock && !dock.hidden) {
+					dockHeight = Math.ceil(dock.getBoundingClientRect().height) || 52;
+				}
+			}
+			if (dockHeight > 0) {
+				reserve += dockHeight + 8;
+			}
 			document.documentElement.style.setProperty('--choir-pdf-player-reserve', reserve + 'px');
 		}
 
