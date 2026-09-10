@@ -120,6 +120,16 @@
   ],
   "changelog": [
     {
+      "version": "0.4.34",
+      "summary": "Mobile floating recording controls",
+      "items": [
+        "While recording on mobile, a floating bar with record, pause, stop, and cancel stays above the player",
+        "Appears when the recording panel scrolls off-screen or PDF is expanded",
+        "Pause and resume continue the same take"
+      ],
+      "open": true
+    },
+    {
       "version": "0.4.33",
       "summary": "Player and recorder UI polish",
       "items": [
@@ -128,7 +138,7 @@
         "Public player waveform no longer shows a white frame",
         "Expanded PDF on song pages shows a clear X close control"
       ],
-      "open": true
+      "open": false
     },
     {
       "version": "0.4.32",

@@ -665,3 +665,96 @@ body.choir-pdf-fullscreen-open #wpadminbar {
 .choir-pdf-viewer.is-fullscreen {
 	z-index: 100000;
 }
+
+/* Mobile floating recording controls — above sticky player / tool sheets. */
+.choir-recording-dock {
+	position: fixed;
+	left: 0;
+	right: 0;
+	bottom: env(safe-area-inset-bottom, 0px);
+	z-index: 100200;
+	display: none;
+	align-items: center;
+	justify-content: space-evenly;
+	gap: 8px;
+	min-height: 48px;
+	padding: 6px 12px;
+	background: #0f172a;
+	border-top: 1px solid rgba(255, 255, 255, 0.12);
+	box-shadow: 0 -8px 24px rgba(15, 23, 42, 0.28);
+	color: #fff;
+}
+
+.choir-recording-dock.is-visible {
+	display: flex;
+}
+
+.choir-recording-dock[hidden] {
+	display: none !important;
+}
+
+.choir-recording-dock__btn {
+	flex: 1 1 0;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 0;
+	height: 40px;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	border-radius: 10px;
+	background: rgba(255, 255, 255, 0.1);
+	color: #fff;
+	cursor: pointer;
+	line-height: 1;
+}
+
+.choir-recording-dock__btn svg {
+	display: block;
+	width: 20px;
+	height: 20px;
+}
+
+.choir-recording-dock__btn:hover,
+.choir-recording-dock__btn:focus-visible {
+	background: rgba(255, 255, 255, 0.18);
+	outline: none;
+}
+
+.choir-recording-dock__btn:disabled {
+	opacity: 0.35;
+	cursor: default;
+}
+
+.choir-recording-dock__record {
+	color: #f97066;
+}
+
+.choir-recording-dock.is-paused .choir-recording-dock__record {
+	background: rgba(249, 112, 102, 0.22);
+	color: #fda29b;
+}
+
+.choir-recording-dock.is-recording .choir-recording-dock__record {
+	background: rgba(249, 112, 102, 0.18);
+}
+
+.choir-recording-dock.is-recording .choir-recording-dock__pause {
+	background: rgba(31, 79, 216, 0.9);
+}
+
+.choir-recording-dock__stop {
+	color: #fff;
+}
+
+.choir-recording-dock__cancel {
+	color: #e4e7ec;
+}
+
+@media screen and (min-width: 783px) {
+	.choir-recording-dock {
+		display: none !important;
+	}
+}
+
