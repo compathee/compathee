@@ -120,6 +120,15 @@
   ],
   "changelog": [
     {
+      "version": "0.4.35",
+      "summary": "Fix song page freeze",
+      "items": [
+        "Remove body-class MutationObserver that froze the song editor",
+        "PDF viewer skips no-op re-renders"
+      ],
+      "open": true
+    },
+    {
       "version": "0.4.34",
       "summary": "Mobile floating recording controls",
       "items": [
@@ -127,7 +136,7 @@
         "Appears when the recording panel scrolls off-screen or PDF is expanded",
         "Pause and resume continue the same take"
       ],
-      "open": true
+      "open": false
     },
     {
       "version": "0.4.33",

@@ -609,32 +609,38 @@
 		},
 
 		sync: function (recorder) {
-			this.ensure();
-			if (!recorder || this.active !== recorder || !this.shouldShow(recorder)) {
-				if (!recorder || this.active !== recorder || !recorder.isSessionActive()) {
-					this.hide();
-				} else {
-					this.hide();
-				}
+			if (this._syncing) {
 				return;
 			}
+			this._syncing = true;
+			try {
+				if (!recorder || this.active !== recorder || !this.shouldShow(recorder)) {
+					this.hide();
+					return;
+				}
 
-			const recording = recorder.isRecording();
-			const paused = recorder.isPaused();
-			this.$el.addClass('is-visible')
-				.toggleClass('is-recording', recording)
-				.toggleClass('is-paused', paused)
-				.removeAttr('hidden')
-				.attr('aria-hidden', 'false');
-			document.body.classList.add('choir-recording-dock-open');
+				this.ensure();
+				const recording = recorder.isRecording();
+				const paused = recorder.isPaused();
+				this.$el.addClass('is-visible')
+					.toggleClass('is-recording', recording)
+					.toggleClass('is-paused', paused)
+					.removeAttr('hidden')
+					.attr('aria-hidden', 'false');
+				if (!document.body.classList.contains('choir-recording-dock-open')) {
+					document.body.classList.add('choir-recording-dock-open');
+				}
 
-			this.$el.find('.choir-recording-dock__record').prop('disabled', recording);
-			this.$el.find('.choir-recording-dock__pause').prop('disabled', !recording);
-			this.$el.find('.choir-recording-dock__stop').prop('disabled', !(recording || paused));
+				this.$el.find('.choir-recording-dock__record').prop('disabled', recording);
+				this.$el.find('.choir-recording-dock__pause').prop('disabled', !recording);
+				this.$el.find('.choir-recording-dock__stop').prop('disabled', !(recording || paused));
 
-			const height = Math.ceil(this.$el.outerHeight() || 52);
-			document.documentElement.style.setProperty('--choir-recording-dock-height', height + 'px');
-			this.updateOffset();
+				const height = Math.ceil(this.$el.outerHeight() || 52);
+				document.documentElement.style.setProperty('--choir-recording-dock-height', height + 'px');
+				this.updateOffset();
+			} finally {
+				this._syncing = false;
+			}
 		},
 
 		updateOffset: function () {
@@ -654,32 +660,51 @@
 			if (metro && !metro.hidden && !metro.classList.contains('is-hidden')) {
 				bottom = Math.max(bottom, Math.ceil(window.innerHeight - metro.getBoundingClientRect().top));
 			}
-			this.$el.css('bottom', 'calc(' + bottom + 'px + env(safe-area-inset-bottom, 0px))');
+			const nextBottom = 'calc(' + bottom + 'px + env(safe-area-inset-bottom, 0px))';
+			if (this.$el[0].style.bottom !== nextBottom) {
+				this.$el.css('bottom', nextBottom);
+			}
 
 			if (document.body.classList.contains('choir-pdf-fullscreen-open')) {
 				const dockHeight = Math.ceil(this.$el.outerHeight() || 52);
-				document.documentElement.style.setProperty(
-					'--choir-pdf-player-reserve',
-					(bottom + dockHeight + 8) + 'px'
-				);
+				const reserve = (bottom + dockHeight + 8) + 'px';
+				if (document.documentElement.style.getPropertyValue('--choir-pdf-player-reserve') !== reserve) {
+					document.documentElement.style.setProperty('--choir-pdf-player-reserve', reserve);
+				}
 			}
 		},
 	};
 
 	window.addEventListener('resize', function () {
+		if (!RecordingDock.active) {
+			return;
+		}
 		RecordingDock.updateOffset();
 		RecordingDock.sync(RecordingDock.active);
 	});
+
 	document.addEventListener('scroll', function () {
+		if (!RecordingDock.active || !RecordingDock.$el || !RecordingDock.$el.hasClass('is-visible')) {
+			return;
+		}
 		RecordingDock.updateOffset();
 	}, true);
 
-	// Keep dock visibility in sync when PDF fullscreen toggles.
-	const pdfClassObserver = new MutationObserver(function () {
-		RecordingDock.sync(RecordingDock.active);
-		RecordingDock.updateOffset();
+	// PDF expand/collapse toggles body class; refresh dock without a MutationObserver
+	// (observing body.class + mutating it caused freezes on the song editor).
+	document.addEventListener('click', function (event) {
+		if (!RecordingDock.active) {
+			return;
+		}
+		var t = event.target && event.target.closest ? event.target.closest('.choir-pdf-expand, .choir-pdf-close-fs') : null;
+		if (!t) {
+			return;
+		}
+		window.setTimeout(function () {
+			RecordingDock.sync(RecordingDock.active);
+			RecordingDock.updateOffset();
+		}, 0);
 	});
-	pdfClassObserver.observe(document.body, { attributes: true, attributeFilter: ['class'] });
 
 
 	function bindRow($row) {
