@@ -789,7 +789,7 @@
 		if (!RecordingDock.active) {
 			return;
 		}
-		var t = event.target && event.target.closest ? event.target.closest('.choir-pdf-expand, .choir-pdf-close-fs') : null;
+		var t = event.target && event.target.closest ? event.target.closest('.choir-pdf-expand, .choir-pdf-close-fs, .choir-pdf-exit-fs') : null;
 		if (!t) {
 			return;
 		}

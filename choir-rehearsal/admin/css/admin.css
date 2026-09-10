@@ -658,7 +658,7 @@ body.choir-rehearsal-song-edit #choir-rehearsal-tracks .inside {
 	}
 }
 
-/* Full-screen PDF in the song editor (above admin chrome, below sticky player). */
+/* Full-screen PDF in the song editor (above admin chrome; floating close ports above player). */
 body.choir-pdf-fullscreen-open #wpadminbar {
 	z-index: 99999;
 }

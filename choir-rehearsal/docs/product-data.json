@@ -120,12 +120,21 @@
   ],
   "changelog": [
     {
+      "version": "0.4.38",
+      "summary": "Mobile PDF fullscreen close button",
+      "items": [
+        "Fullscreen close (X) is ported to the document body above the sticky player and recording dock",
+        "Toolbar Close control remains available in expanded PDF on mobile"
+      ],
+      "open": true
+    },
+    {
       "version": "0.4.37",
       "summary": "Fix PDF page navigation",
       "items": [
         "Previous/Next and swipe turn pages again when consecutive pages share the same size"
       ],
-      "open": true
+      "open": false
     },
     {
       "version": "0.4.36",
