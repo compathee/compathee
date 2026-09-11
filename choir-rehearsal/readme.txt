@@ -4,7 +4,7 @@ Tags: choir, audio, rehearsal, voice parts, music
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 0.4.39
+Stable tag: 0.4.40
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -56,9 +56,14 @@ Yes. Use the shortcode `[choir_rehearsal]`.
 
 == Changelog ==
 
+= 0.4.40 =
+* Fix: Plugin Check errors (escaping, translators comments, wp_delete_file)
+* Fix: Plugin Check warnings (sanitization, prefixed uninstall vars, textdomain)
+
 = 0.4.39 =
 * Brand: plugin renamed to Compath Choir Rehearsal (slug compath-choir-rehearsal) for WordPress.org
 * Package folder and GitHub release zip use compath-choir-rehearsal
+
 
 = 0.4.38 =
 * Fix: mobile fullscreen PDF close (X) appears above sticky player and recording dock

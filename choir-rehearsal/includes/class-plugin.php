@@ -52,11 +52,7 @@ final class Choir_Rehearsal_Plugin {
 	}
 
 	public function load_textdomain(): void {
-		load_plugin_textdomain(
-			'choir-rehearsal',
-			false,
-			dirname( plugin_basename( CHOIR_REHEARSAL_FILE ) ) . '/languages'
-		);
+		// Translations load automatically (WP 4.6+ / Domain Path). Avoid load_plugin_textdomain() for Plugin Check.
 	}
 
 	public function init(): void {

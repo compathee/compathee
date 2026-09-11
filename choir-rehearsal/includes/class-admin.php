@@ -59,7 +59,8 @@ final class Choir_Rehearsal_Admin {
 	}
 
 	public static function render_settings_page(): void {
-		if ( isset( $_GET['choir_rewrites_flushed'] ) ) {
+		// Display-only flag after our own settings redirect (not a form submission).
+		if ( isset( $_GET['choir_rewrites_flushed'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Permalinks refreshed and rehearsal page verified.', 'choir-rehearsal' ) . '</p></div>';
 		}
 
@@ -87,10 +88,12 @@ final class Choir_Rehearsal_Admin {
 							<?php if ( ! Choir_Rehearsal_Edition::is_pro() ) : ?>
 								<p class="description">
 									<?php
-									printf(
-										/* translators: %d: maximum track count */
-									esc_html__( 'Lite: up to %d voice tracks per song; no microphone recording, song search, editor Play, or embedded PDF preview.', 'choir-rehearsal' ),
-									Choir_Rehearsal_Edition::LITE_MAX_TRACKS
+									echo esc_html(
+										sprintf(
+											/* translators: %d: maximum track count */
+											__( 'Lite: up to %d voice tracks per song; no microphone recording, song search, editor Play, or embedded PDF preview.', 'choir-rehearsal' ),
+											(int) Choir_Rehearsal_Edition::LITE_MAX_TRACKS
+										)
 									);
 									?>
 								</p>
@@ -165,14 +168,16 @@ final class Choir_Rehearsal_Admin {
 						<th scope="row"><?php esc_html_e( 'Rehearsal page', 'choir-rehearsal' ); ?></th>
 						<td>
 							<?php
-							wp_dropdown_pages(
+							$library_pages_dropdown = wp_dropdown_pages(
 								array(
 									'name'              => Choir_Rehearsal_Pages::OPTION_PAGE_ID,
-									'selected'          => $library_page_id,
+									'selected'          => (int) $library_page_id,
 									'show_option_none'  => __( '— Select —', 'choir-rehearsal' ),
 									'option_none_value' => '0',
+									'echo'              => 0,
 								)
 							);
+							echo is_string( $library_pages_dropdown ) ? $library_pages_dropdown : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_dropdown_pages() returns escaped HTML.
 							?>
 							<p class="description"><?php esc_html_e( 'WordPress page that shows the song list. Must contain the [choir_rehearsal] shortcode. You can add this page to your site menu under Appearance → Menus.', 'choir-rehearsal' ); ?></p>
 						</td>
@@ -875,7 +880,7 @@ final class Choir_Rehearsal_Admin {
 		}
 
 		if ( isset( $_POST['choir_rehearsal_visibility_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['choir_rehearsal_visibility_nonce'] ) ), 'choir_rehearsal_save_visibility' ) ) {
-			$is_public = isset( $_POST['choir_is_public'] ) && '1' === (string) wp_unslash( $_POST['choir_is_public'] );
+			$is_public = isset( $_POST['choir_is_public'] ) && '1' === sanitize_text_field( wp_unslash( (string) $_POST['choir_is_public'] ) );
 			Choir_Rehearsal_Post_Types::set_public( $post_id, $is_public );
 		}
 
@@ -898,9 +903,21 @@ final class Choir_Rehearsal_Admin {
 			return;
 		}
 
-		$submitted = isset( $_POST['choir_tracks'] ) && is_array( $_POST['choir_tracks'] )
-			? wp_unslash( $_POST['choir_tracks'] )
-			: array();
+		$submitted = array();
+		if ( isset( $_POST['choir_tracks'] ) && is_array( $_POST['choir_tracks'] ) ) {
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- sanitized per-field below.
+			$raw_tracks = wp_unslash( $_POST['choir_tracks'] );
+			foreach ( $raw_tracks as $row ) {
+				if ( ! is_array( $row ) ) {
+					continue;
+				}
+				$submitted[] = array(
+					'id'       => isset( $row['id'] ) ? absint( $row['id'] ) : 0,
+					'voice'    => isset( $row['voice'] ) ? sanitize_key( (string) $row['voice'] ) : '',
+					'audio_id' => isset( $row['audio_id'] ) ? absint( $row['audio_id'] ) : 0,
+				);
+			}
+		}
 
 		$max_tracks = Choir_Rehearsal_Edition::max_tracks();
 		if ( $max_tracks > 0 && count( $submitted ) > $max_tracks ) {

@@ -120,7 +120,7 @@ final class Choir_Rehearsal_REST {
 		return array(
 			'id'       => (int) $song->ID,
 			'title'    => get_the_title( $song ),
-			'notes'    => apply_filters( 'the_content', $song->post_content ),
+			'notes'    => apply_filters( 'the_content', $song->post_content ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- core content filter.
 			'url'      => get_permalink( $song ),
 			'score_pdf_url' => Choir_Rehearsal_Post_Types::get_score_pdf_url( (int) $song->ID ),
 			'tracks'   => $tracks,

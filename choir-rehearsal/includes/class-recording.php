@@ -102,7 +102,15 @@ final class Choir_Rehearsal_Recording {
 			);
 		}
 
-		$file = $_FILES['recording'];
+		// $_FILES is populated by PHP; sanitize scalar fields before use.
+		$uploaded = wp_unslash( $_FILES['recording'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- file array sanitized field-by-field.
+		$file     = array(
+			'name'     => isset( $uploaded['name'] ) ? sanitize_file_name( (string) $uploaded['name'] ) : '',
+			'type'     => isset( $uploaded['type'] ) ? sanitize_mime_type( (string) $uploaded['type'] ) : '',
+			'tmp_name' => isset( $uploaded['tmp_name'] ) ? (string) $uploaded['tmp_name'] : '',
+			'error'    => isset( $uploaded['error'] ) ? (int) $uploaded['error'] : UPLOAD_ERR_NO_FILE,
+			'size'     => isset( $uploaded['size'] ) ? (int) $uploaded['size'] : 0,
+		);
 		if ( ! empty( $file['error'] ) ) {
 			wp_send_json_error(
 				array( 'message' => self::upload_error_message( (int) $file['error'] ) ),

@@ -120,6 +120,15 @@
   ],
   "changelog": [
     {
+      "version": "0.4.40",
+      "summary": "WordPress.org Plugin Check fixes",
+      "items": [
+        "Fix Plugin Check errors (output escaping, translators comments, wp_delete_file)",
+        "Address Plugin Check warnings (input sanitization, uninstall prefixes, textdomain)"
+      ],
+      "open": true
+    },
+    {
       "version": "0.4.39",
       "summary": "Compath Choir Rehearsal brand and package slug",
       "items": [
@@ -127,7 +136,7 @@
         "Release zip and WordPress.org folder slug: compath-choir-rehearsal",
         "Text domain and database keys unchanged (no song data migration)"
       ],
-      "open": true
+      "open": false
     },
     {
       "version": "0.4.38",

@@ -299,7 +299,7 @@ final class Choir_Rehearsal_Slugs {
 	}
 
 	private static function is_song_slug_context(): bool {
-		if ( isset( $_POST['post_type'] ) && Choir_Rehearsal_Post_Types::SONG === (string) wp_unslash( $_POST['post_type'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		if ( isset( $_POST['post_type'] ) && Choir_Rehearsal_Post_Types::SONG === sanitize_key( wp_unslash( (string) $_POST['post_type'] ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
 			return true;
 		}
 
