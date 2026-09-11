@@ -1,31 +1,33 @@
 #!/usr/bin/env bash
-# Build a WordPress.org–compliant zip of Choir Rehearsal (Lite).
+# Build a WordPress.org–compliant zip of Compath Choir Rehearsal (Lite).
+# Package slug/folder: compath-choir-rehearsal
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 SRC="$ROOT/choir-rehearsal"
+SLUG="compath-choir-rehearsal"
 OUT_DIR="${1:-$ROOT/dist}"
 STAGE="$(mktemp -d)"
 trap 'rm -rf "$STAGE"' EXIT
 
 mkdir -p "$OUT_DIR"
-mkdir -p "$STAGE/choir-rehearsal"
+mkdir -p "$STAGE/$SLUG"
 
 # Copy plugin tree, then remove paths that must not ship to wordpress.org.
-cp -a "$SRC/." "$STAGE/choir-rehearsal/"
+cp -a "$SRC/." "$STAGE/$SLUG/"
 rm -rf \
-  "$STAGE/choir-rehearsal/tests" \
-  "$STAGE/choir-rehearsal/updates" \
-  "$STAGE/choir-rehearsal/docs/deploy" \
-  "$STAGE/choir-rehearsal/docs/shop-setup.md" \
-  "$STAGE/choir-rehearsal/docs/product-page.html" \
-  "$STAGE/choir-rehearsal/docs/product-data.json"
-rm -f "$STAGE/choir-rehearsal/update.json"
+  "$STAGE/$SLUG/tests" \
+  "$STAGE/$SLUG/updates" \
+  "$STAGE/$SLUG/docs/deploy" \
+  "$STAGE/$SLUG/docs/shop-setup.md" \
+  "$STAGE/$SLUG/docs/product-page.html" \
+  "$STAGE/$SLUG/docs/product-data.json"
+rm -f "$STAGE/$SLUG/update.json"
 # Plugin Check fails if custom updater code is present, even when disabled at runtime.
-rm -f "$STAGE/choir-rehearsal/includes/class-updater.php"
+rm -f "$STAGE/$SLUG/includes/class-updater.php"
 
 # Mark package as WordPress.org distribution (disables GitHub self-updater).
-cat > "$STAGE/choir-rehearsal/includes/distribution-wporg.php" <<'PHP'
+cat > "$STAGE/$SLUG/includes/distribution-wporg.php" <<'PHP'
 <?php
 /**
  * Present only in WordPress.org builds.
@@ -43,11 +45,11 @@ if ( ! defined( 'CHOIR_REHEARSAL_DISTRIBUTION' ) ) {
 }
 PHP
 
-VERSION="$(grep -E "^\s*\* Version:" "$STAGE/choir-rehearsal/choir-rehearsal.php" | head -1 | sed -E 's/.*Version:[[:space:]]*//')"
-ZIP="$OUT_DIR/choir-rehearsal-wporg-${VERSION}.zip"
+VERSION="$(grep -E "^\s*\* Version:" "$STAGE/$SLUG/choir-rehearsal.php" | head -1 | sed -E 's/.*Version:[[:space:]]*//')"
+ZIP="$OUT_DIR/${SLUG}-wporg-${VERSION}.zip"
 
 rm -f "$ZIP"
-( cd "$STAGE" && zip -rq "$ZIP" choir-rehearsal -x '*.DS_Store' )
+( cd "$STAGE" && zip -rq "$ZIP" "$SLUG" -x '*.DS_Store' )
 
 echo "Built $ZIP"
 unzip -l "$ZIP" | grep -E 'distribution-wporg|pdf\.min\.js' | head -5
@@ -59,7 +61,7 @@ if unzip -l "$ZIP" | grep -qE '(^|/)update\.json$|tests/|shop-setup\.md|class-up
   unzip -l "$ZIP" | grep -E 'update\.json|tests/|shop-setup|class-updater' || true
   exit 1
 fi
-if unzip -p "$ZIP" choir-rehearsal/includes/class-frontend.php | grep -q 'cdnjs'; then
+if unzip -p "$ZIP" "$SLUG/includes/class-frontend.php" | grep -q 'cdnjs'; then
   echo "ERROR: CDN reference still present" >&2
   exit 1
 fi
@@ -70,9 +72,18 @@ done | grep -Eiq 'pre_set_site_transient_update_plugins|site_transient_update_pl
   echo "ERROR: plugin updater identifiers still present in wporg zip PHP" >&2
   exit 1
 fi
-if ! unzip -p "$ZIP" choir-rehearsal/readme.txt | grep -Eq '^Tested up to:[[:space:]]*7\.1[[:space:]]*$'; then
+if ! unzip -p "$ZIP" "$SLUG/readme.txt" | grep -Eq '^Tested up to:[[:space:]]*7\.1[[:space:]]*$'; then
   echo "ERROR: readme.txt Tested up to must be 7.1 for Plugin Check" >&2
-  unzip -p "$ZIP" choir-rehearsal/readme.txt | grep -E '^Tested up to:' || true
+  unzip -p "$ZIP" "$SLUG/readme.txt" | grep -E '^Tested up to:' || true
+  exit 1
+fi
+if ! unzip -p "$ZIP" "$SLUG/choir-rehearsal.php" | grep -q 'Plugin Name:       Compath Choir Rehearsal'; then
+  echo "ERROR: Plugin Name must be Compath Choir Rehearsal" >&2
+  exit 1
+fi
+if ! unzip -l "$ZIP" | grep -q "^.* ${SLUG}/choir-rehearsal.php$"; then
+  echo "ERROR: zip root folder must be ${SLUG}/" >&2
+  unzip -l "$ZIP" | head -20
   exit 1
 fi
 echo "OK wporg package checks passed"

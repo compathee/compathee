@@ -198,7 +198,7 @@ final class Choir_Rehearsal_Admin {
 						<th scope="row"><?php esc_html_e( 'GitHub repository', 'choir-rehearsal' ); ?></th>
 						<td>
 							<input type="text" class="regular-text" name="choir_rehearsal_github_repo" value="<?php echo esc_attr( (string) get_option( 'choir_rehearsal_github_repo', 'compathee/compathee' ) ); ?>" />
-							<p class="description"><?php esc_html_e( 'Used when Update JSON URL is empty. Each Lite release should include choir-rehearsal.zip and update.json assets.', 'choir-rehearsal' ); ?></p>
+							<p class="description"><?php esc_html_e( 'Used when Update JSON URL is empty. Each Lite release should include compath-choir-rehearsal.zip and update.json assets.', 'choir-rehearsal' ); ?></p>
 						</td>
 					</tr>
 					<?php endif; ?>
