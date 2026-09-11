@@ -120,13 +120,22 @@
   ],
   "changelog": [
     {
+      "version": "0.4.41",
+      "summary": "Final Plugin Check cleanup",
+      "items": [
+        "Escape wp_dropdown_pages arguments and output via wp_kses",
+        "Verify login nonce when reading redirect_to"
+      ],
+      "open": true
+    },
+    {
       "version": "0.4.40",
       "summary": "WordPress.org Plugin Check fixes",
       "items": [
         "Fix Plugin Check errors (output escaping, translators comments, wp_delete_file)",
         "Address Plugin Check warnings (input sanitization, uninstall prefixes, textdomain)"
       ],
-      "open": true
+      "open": false
     },
     {
       "version": "0.4.39",

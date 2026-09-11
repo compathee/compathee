@@ -168,16 +168,33 @@ final class Choir_Rehearsal_Admin {
 						<th scope="row"><?php esc_html_e( 'Rehearsal page', 'choir-rehearsal' ); ?></th>
 						<td>
 							<?php
+							$page_select_name = esc_attr( (string) Choir_Rehearsal_Pages::OPTION_PAGE_ID );
+							$page_none_label  = esc_html__( '— Select —', 'choir-rehearsal' );
 							$library_pages_dropdown = wp_dropdown_pages(
 								array(
-									'name'              => Choir_Rehearsal_Pages::OPTION_PAGE_ID,
+									'name'              => $page_select_name,
 									'selected'          => (int) $library_page_id,
-									'show_option_none'  => __( '— Select —', 'choir-rehearsal' ),
+									'show_option_none'  => $page_none_label,
 									'option_none_value' => '0',
 									'echo'              => 0,
 								)
 							);
-							echo is_string( $library_pages_dropdown ) ? $library_pages_dropdown : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_dropdown_pages() returns escaped HTML.
+							if ( is_string( $library_pages_dropdown ) && '' !== $library_pages_dropdown ) {
+								echo wp_kses(
+									$library_pages_dropdown,
+									array(
+										'select' => array(
+											'name'  => true,
+											'id'    => true,
+											'class' => true,
+										),
+										'option' => array(
+											'value'    => true,
+											'selected' => true,
+										),
+									)
+								);
+							}
 							?>
 							<p class="description"><?php esc_html_e( 'WordPress page that shows the song list. Must contain the [choir_rehearsal] shortcode. You can add this page to your site menu under Appearance → Menus.', 'choir-rehearsal' ); ?></p>
 						</td>

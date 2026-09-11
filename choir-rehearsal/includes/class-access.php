@@ -163,7 +163,10 @@ final class Choir_Rehearsal_Access {
 	}
 
 	public static function get_requested_redirect_url(): string {
-		if ( isset( $_POST['redirect_to'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- caller verified choir_rehearsal_login nonce.
+		if (
+			isset( $_POST['redirect_to'], $_POST['choir_rehearsal_login_nonce'] )
+			&& wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['choir_rehearsal_login_nonce'] ) ), 'choir_rehearsal_login' )
+		) {
 			$redirect = esc_url_raw( wp_unslash( (string) $_POST['redirect_to'] ) );
 			if ( '' !== $redirect ) {
 				return $redirect;
