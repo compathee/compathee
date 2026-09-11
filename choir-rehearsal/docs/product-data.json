@@ -120,13 +120,21 @@
   ],
   "changelog": [
     {
+      "version": "0.4.42",
+      "summary": "Plugin Check: custom page select",
+      "items": [
+        "Replace wp_dropdown_pages with a fully escaped custom select"
+      ],
+      "open": true
+    },
+    {
       "version": "0.4.41",
       "summary": "Final Plugin Check cleanup",
       "items": [
         "Escape wp_dropdown_pages arguments and output via wp_kses",
         "Verify login nonce when reading redirect_to"
       ],
-      "open": true
+      "open": false
     },
     {
       "version": "0.4.40",
