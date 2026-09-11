@@ -77,3 +77,24 @@ python scripts/combine_excellent_reports.py \
   --object-prefix KP_ \
   --output output/excellent-combined-report.xlsx
 ```
+
+### Interactive client mode
+
+For a client who should choose files manually, use the interactive mode:
+
+```bash
+python scripts/combine_excellent_reports.py --interactive
+```
+
+On Windows, the client can double-click:
+
+```text
+run_combine_excellent_reports.bat
+```
+
+The script will ask for:
+
+1. Source `.xlsx` report exports.
+2. Optional object lookup file (`.csv` or `.xlsx`).
+3. Output file path for the combined report.
+4. Object column prefixes, default `HK_`.

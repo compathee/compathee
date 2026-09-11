@@ -400,6 +400,91 @@ def write_xlsx(path: Path, rows: list[dict[str, Any]], summary: list[dict[str, A
     workbook.save(path)
 
 
+def prompt_text_paths() -> list[Path]:
+    print("Enter source Excel .xlsx files one per line. Press Enter on an empty line when done.")
+    files: list[Path] = []
+    while True:
+        value = input("Source file path: ").strip().strip('"')
+        if not value:
+            break
+        files.append(Path(value))
+    return files
+
+
+def prompt_interactive(args: argparse.Namespace) -> argparse.Namespace:
+    try:
+        import tkinter as tk
+        from tkinter import filedialog, messagebox, simpledialog
+
+        root = tk.Tk()
+        root.withdraw()
+        messagebox.showinfo(
+            "Excellent Books report combiner",
+            "Choose Standard/Excellent Books Excel exports to combine.",
+        )
+        selected_files = filedialog.askopenfilenames(
+            title="Choose source Excel reports",
+            filetypes=[("Excel files", "*.xlsx"), ("All files", "*.*")],
+        )
+        if not selected_files:
+            raise SystemExit("No source files selected.")
+
+        object_lookup = filedialog.askopenfilename(
+            title="Optional: choose object lookup CSV/XLSX, or Cancel to skip",
+            filetypes=[
+                ("Object lookup", "*.csv *.xlsx"),
+                ("CSV files", "*.csv"),
+                ("Excel files", "*.xlsx"),
+                ("All files", "*.*"),
+            ],
+        )
+
+        output_file = filedialog.asksaveasfilename(
+            title="Save combined report as",
+            defaultextension=".xlsx",
+            initialfile="excellent-combined-report.xlsx",
+            filetypes=[("Excel workbook", "*.xlsx"), ("CSV file", "*.csv")],
+        )
+        if not output_file:
+            raise SystemExit("No output file selected.")
+
+        prefixes_text = simpledialog.askstring(
+            "Object column prefixes",
+            "Comma-separated object column prefixes:",
+            initialvalue=",".join(args.object_prefix),
+        )
+        root.destroy()
+
+        args.files = [Path(path) for path in selected_files]
+        args.objects = Path(object_lookup) if object_lookup else None
+        args.output = Path(output_file)
+        if prefixes_text is not None:
+            args.object_prefix = [part.strip() for part in prefixes_text.split(",")]
+        return args
+    except ModuleNotFoundError:
+        print("tkinter is not available; falling back to console prompts.")
+    except tk.TclError:  # type: ignore[name-defined]  # pragma: no cover - GUI-specific
+        print("GUI is not available; falling back to console prompts.")
+
+    selected_files = prompt_text_paths()
+    if not selected_files:
+        raise SystemExit("No source files selected.")
+    object_lookup_text = input(
+        "Optional object lookup CSV/XLSX path (press Enter to skip): "
+    ).strip().strip('"')
+    output_text = input(
+        "Output path [output/excellent-combined-report.xlsx]: "
+    ).strip().strip('"')
+    prefixes_text = input("Object prefixes comma-separated [HK_]: ").strip()
+
+    args.files = selected_files
+    args.objects = Path(object_lookup_text) if object_lookup_text else None
+    args.output = Path(output_text) if output_text else Path("output/excellent-combined-report.xlsx")
+    if prefixes_text:
+        args.object_prefix = [part.strip() for part in prefixes_text.split(",")]
+    return args
+
+
 def parse_args(argv: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Combine Standard/Excellent Books XLSX exports into one normalized report."
@@ -409,6 +494,11 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
         type=Path,
         default=Path("excellent-exports"),
         help="Folder with exported .xlsx files. Ignored when --file is used.",
+    )
+    parser.add_argument(
+        "--interactive",
+        action="store_true",
+        help="Ask the user to choose source files and output path using dialogs or console prompts.",
     )
     parser.add_argument(
         "--file",
@@ -467,6 +557,8 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv or sys.argv[1:])
+    if args.interactive:
+        args = prompt_interactive(args)
     object_lookup = load_object_lookup(args.objects)
     object_regex = re.compile(args.object_pattern)
     prefixes = tuple(prefix.upper() for prefix in args.object_prefix if prefix)
