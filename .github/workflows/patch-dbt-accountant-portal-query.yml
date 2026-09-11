@@ -1,0 +1,126 @@
+name: Patch DBT Accountant Portal Query Tool
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - cursor/water-meter-smtp-attachments-f8f3
+    paths:
+      - ".github/workflows/patch-dbt-accountant-portal-query.yml"
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  DBT_WORKFLOW_ID: vQnGxLzinMZR6Vhg
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Fetch live DBT workflow
+        run: |
+          set -euo pipefail
+          test -n "${N8N_BASE_URL}"
+          test -n "${N8N_API_KEY}"
+
+          curl --fail-with-body "${N8N_BASE_URL%/}/api/v1/workflows/${DBT_WORKFLOW_ID}" \
+            -H "X-N8N-API-KEY: ${N8N_API_KEY}" \
+            -H "Accept: application/json" \
+            -o /tmp/dbt-workflow-live.json
+
+          jq -e '.nodes[] | select(.name == "Standard_Books_Portal_Query")' /tmp/dbt-workflow-live.json >/dev/null
+        env:
+          N8N_BASE_URL: ${{ secrets.N8N_BASE_URL }}
+          N8N_API_KEY: ${{ secrets.N8N_API_KEY }}
+
+      - name: Build patched workflow payload
+        run: |
+          set -euo pipefail
+          cat > /tmp/patch-dbt-workflow.jq <<'JQ'
+          def allowed_settings:
+            (.settings // {})
+            | with_entries(
+                select(
+                  .key as $key
+                  | [
+                      "executionOrder",
+                      "timezone",
+                      "saveDataErrorExecution",
+                      "saveDataSuccessExecution",
+                      "saveExecutionProgress",
+                      "saveManualExecutions",
+                      "executionTimeout",
+                      "errorWorkflow"
+                    ]
+                  | index($key)
+                )
+              );
+
+          def patch_portal_query_tool:
+            if .name == "Standard_Books_Portal_Query" then
+              .parameters.workflowInputs.value.http_method =
+                "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('http_method', 'GET or POST. Defaults to GET.', 'string', 'GET') }}"
+              | .parameters.workflowInputs.value.request_body_json =
+                "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('request_body_json', 'JSON POST body if POST. Empty string if not needed.', 'string', '') }}"
+              | .parameters.workflowInputs.value.request_body_xml =
+                "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('request_body_xml', 'XML POST body if POST. Empty string if not needed.', 'string', '') }}"
+              | .parameters.workflowInputs.value.content_type =
+                "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('content_type', 'Content-Type override if needed. Empty string if not needed.', 'string', '') }}"
+            else
+              .
+            end;
+
+          (
+            .nodes |= map(patch_portal_query_tool)
+          )
+          | {
+              name,
+              nodes,
+              connections,
+              settings: allowed_settings
+            }
+            + (if has("staticData") then {staticData} else {} end)
+          JQ
+
+          jq -f /tmp/patch-dbt-workflow.jq /tmp/dbt-workflow-live.json > /tmp/dbt-workflow-payload.json
+
+          EXPECTED_XML_DEFAULT="'string', '')"
+          jq --arg expected "${EXPECTED_XML_DEFAULT}" -e '.nodes[] | select(.name == "Standard_Books_Portal_Query") | .parameters.workflowInputs.value.request_body_xml | contains($expected)' /tmp/dbt-workflow-payload.json >/dev/null
+          jq -e '(.settings | keys - ["executionOrder", "timezone", "saveDataErrorExecution", "saveDataSuccessExecution", "saveExecutionProgress", "saveManualExecutions", "executionTimeout", "errorWorkflow"]) == []' /tmp/dbt-workflow-payload.json >/dev/null
+
+      - name: Update live DBT workflow
+        run: |
+          set -euo pipefail
+          curl --fail-with-body -X PUT "${N8N_BASE_URL%/}/api/v1/workflows/${DBT_WORKFLOW_ID}" \
+            -H "X-N8N-API-KEY: ${N8N_API_KEY}" \
+            -H "Content-Type: application/json" \
+            --data-binary @/tmp/dbt-workflow-payload.json
+        env:
+          N8N_BASE_URL: ${{ secrets.N8N_BASE_URL }}
+          N8N_API_KEY: ${{ secrets.N8N_API_KEY }}
+
+      - name: Ensure workflow remains active
+        run: |
+          set -euo pipefail
+          curl --fail-with-body -X POST "${N8N_BASE_URL%/}/api/v1/workflows/${DBT_WORKFLOW_ID}/activate" \
+            -H "X-N8N-API-KEY: ${N8N_API_KEY}" || true
+        env:
+          N8N_BASE_URL: ${{ secrets.N8N_BASE_URL }}
+          N8N_API_KEY: ${{ secrets.N8N_API_KEY }}
+
+      - name: Verify live DBT workflow patch
+        run: |
+          set -euo pipefail
+          curl --fail-with-body "${N8N_BASE_URL%/}/api/v1/workflows/${DBT_WORKFLOW_ID}" \
+            -H "X-N8N-API-KEY: ${N8N_API_KEY}" \
+            -H "Accept: application/json" \
+            -o /tmp/dbt-workflow-after.json
+
+          EXPECTED_XML_DEFAULT="'string', '')"
+          jq --arg expected "${EXPECTED_XML_DEFAULT}" -e '.nodes[] | select(.name == "Standard_Books_Portal_Query") | .parameters.workflowInputs.value.request_body_xml | contains($expected)' /tmp/dbt-workflow-after.json >/dev/null
+        env:
+          N8N_BASE_URL: ${{ secrets.N8N_BASE_URL }}
+          N8N_API_KEY: ${{ secrets.N8N_API_KEY }}
