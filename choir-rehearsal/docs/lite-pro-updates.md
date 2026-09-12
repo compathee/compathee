@@ -4,8 +4,8 @@ Choir Rehearsal uses the WordPress add-on model (same pattern as WooCommerce, AC
 
 | Plugin | What it is | Who installs it |
 |--------|------------|-----------------|
-| **Choir Rehearsal** (`choir-rehearsal.zip`) | Base library. Always Lite until Pro is active. | Everyone |
-| **Choir Rehearsal Pro** (`choir-rehearsal-pro.zip`) | Add-on. Unlocks search, unlimited tracks, microphone recording, Play preview, and embedded PDF in the editor. | Paying customers only |
+| **Compath Choir Rehearsal** (`compath-choir-rehearsal.zip`) | Base library. Always Lite until Pro is active. | Everyone |
+| **Compath Choir Rehearsal Pro** (`choir-rehearsal-pro.zip`) | Add-on. Unlocks search, unlimited tracks, microphone recording, Play preview, and embedded PDF in the editor. | Paying customers only |
 
 **Never replace Lite with Pro.** Pro is an extra plugin next to Lite. Songs, tracks, and PDFs stay in WordPress; the add-on only turns features on.
 
@@ -13,7 +13,7 @@ Choir Rehearsal uses the WordPress add-on model (same pattern as WooCommerce, AC
 
 ## Customer: clean Lite install (test or production)
 
-1. Download `choir-rehearsal.zip` (GitHub Release or this package).
+1. Download `compath-choir-rehearsal.zip` (GitHub Release or this package).
 2. WordPress → **Plugins → Add New → Upload Plugin** → install → **Activate**.
 3. Open **Choir Rehearsal → Settings**.
 4. Confirm:
@@ -52,7 +52,7 @@ Deactivating Pro returns the site to Lite limits. Content is not deleted.
 
 ## Publisher: ship a new Lite version (GitHub)
 
-WordPress **Check for plugin updates** only sees a newer **GitHub Release** whose assets include **`choir-rehearsal.zip`** (required) and preferably **`update.json`** (API-failure fallback).
+WordPress **Check for plugin updates** only sees a newer **GitHub Release** whose assets include **`compath-choir-rehearsal.zip`** (required) and preferably **`update.json`** (API-failure fallback).
 
 ### Release checklist
 
@@ -60,9 +60,9 @@ WordPress **Check for plugin updates** only sees a newer **GitHub Release** whos
 2. Build a zip whose **root folder is `choir-rehearsal/`** (not `choir-rehearsal-0.4.3/`).
 3. Update `choir-rehearsal/update.json` `version` and `download_url` to match the new tag.
 4. GitHub → **Releases → Draft a new release**:
-   - Tag: `choir-rehearsal-vX.Y.Z` (example: `choir-rehearsal-v0.4.3`)
+   - Tag: `compath-choir-rehearsal-vX.Y.Z` (example: `choir-rehearsal-v0.4.3`)
    - Assets (required / recommended):
-     - **`choir-rehearsal.zip`** (required by the updater)
+     - **`compath-choir-rehearsal.zip`** (required by the updater)
      - **`update.json`** (recommended; used when the GitHub API is rate-limited or unreachable)
    - Do **not** attach `choir-rehearsal-pro.zip` to a public release
 5. Publish the release (not draft, not prerelease).
@@ -70,7 +70,7 @@ WordPress **Check for plugin updates** only sees a newer **GitHub Release** whos
 CLI example after creating the release:
 
 ```bash
-gh release upload choir-rehearsal-vX.Y.Z choir-rehearsal.zip choir-rehearsal/update.json --clobber
+gh release upload compath-choir-rehearsal-vX.Y.Z choir-rehearsal.zip choir-rehearsal/update.json --clobber
 ```
 
 ### How to test auto-update
@@ -101,7 +101,7 @@ Pro customers update Pro by downloading the new zip from their SureCart account 
 
 | File | Folder inside zip | Channel |
 |------|-------------------|---------|
-| `choir-rehearsal.zip` | `choir-rehearsal/` | GitHub / wordpress.org |
+| `compath-choir-rehearsal.zip` | `choir-rehearsal/` | GitHub / wordpress.org |
 | `choir-rehearsal-pro.zip` | `choir-rehearsal-pro/` | SureCart customer download |
 
 A Pro buyer who does not have Lite yet: install Lite first, then Pro. SureCart can attach both zips to the product; the install order is still Lite, then Pro.

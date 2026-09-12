@@ -425,7 +425,7 @@ JS;
 		}
 
 		if ( ! copy( $source, $tmp ) ) {
-			@unlink( $tmp );
+			wp_delete_file( $tmp );
 			return 0;
 		}
 
@@ -439,7 +439,7 @@ JS;
 
 		$attachment_id = media_handle_sideload( $file_array, 0, 'Choir Rehearsal demo voice track' );
 		if ( is_wp_error( $attachment_id ) ) {
-			@unlink( $tmp );
+			wp_delete_file( $tmp );
 			return 0;
 		}
 
@@ -450,17 +450,19 @@ JS;
 	}
 
 	public static function render_settings_notices(): void {
+		// Admin redirect query args are display-only (set by our own admin-post handlers).
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended
 		if ( isset( $_GET['choir_demo_error'] ) ) {
-			$message = rawurldecode( (string) wp_unslash( $_GET['choir_demo_error'] ) );
+			$message = rawurldecode( sanitize_text_field( wp_unslash( (string) $_GET['choir_demo_error'] ) ) );
 			echo '<div class="notice notice-error is-dismissible"><p>' . esc_html( $message ) . '</p></div>';
 			return;
 		}
 
 		if ( isset( $_GET['choir_demo_loaded'] ) ) {
-			$from   = isset( $_GET['choir_demo_from'] ) ? (int) $_GET['choir_demo_from'] : 0;
-			$to     = isset( $_GET['choir_demo_to'] ) ? (int) $_GET['choir_demo_to'] : 0;
-			$songs  = isset( $_GET['choir_demo_songs'] ) ? (int) $_GET['choir_demo_songs'] : 0;
-			$tracks = isset( $_GET['choir_demo_tracks'] ) ? (int) $_GET['choir_demo_tracks'] : 0;
+			$from   = isset( $_GET['choir_demo_from'] ) ? absint( $_GET['choir_demo_from'] ) : 0;
+			$to     = isset( $_GET['choir_demo_to'] ) ? absint( $_GET['choir_demo_to'] ) : 0;
+			$songs  = isset( $_GET['choir_demo_songs'] ) ? absint( $_GET['choir_demo_songs'] ) : 0;
+			$tracks = isset( $_GET['choir_demo_tracks'] ) ? absint( $_GET['choir_demo_tracks'] ) : 0;
 			echo '<div class="notice notice-success is-dismissible"><p>';
 			echo esc_html(
 				sprintf(
@@ -476,9 +478,9 @@ JS;
 		}
 
 		if ( isset( $_GET['choir_demo_deleted'] ) ) {
-			$songs  = isset( $_GET['choir_demo_del_songs'] ) ? (int) $_GET['choir_demo_del_songs'] : 0;
-			$tracks = isset( $_GET['choir_demo_del_tracks'] ) ? (int) $_GET['choir_demo_del_tracks'] : 0;
-			$media  = isset( $_GET['choir_demo_del_media'] ) ? (int) $_GET['choir_demo_del_media'] : 0;
+			$songs  = isset( $_GET['choir_demo_del_songs'] ) ? absint( $_GET['choir_demo_del_songs'] ) : 0;
+			$tracks = isset( $_GET['choir_demo_del_tracks'] ) ? absint( $_GET['choir_demo_del_tracks'] ) : 0;
+			$media  = isset( $_GET['choir_demo_del_media'] ) ? absint( $_GET['choir_demo_del_media'] ) : 0;
 			echo '<div class="notice notice-success is-dismissible"><p>';
 			echo esc_html(
 				sprintf(
@@ -491,6 +493,7 @@ JS;
 			);
 			echo '</p></div>';
 		}
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 	}
 
 	public static function render_settings_buttons(): void {
@@ -499,11 +502,13 @@ JS;
 		<h2><?php esc_html_e( 'Demo library', 'choir-rehearsal' ); ?></h2>
 		<p class="description">
 			<?php
-			printf(
-				/* translators: 1: songs created per click, 2: songs shown per library page */
-				esc_html__( 'Load %1$d sample songs (4 voice tracks each) so the public library shows pagination (%2$d songs per page), or wipe the whole rehearsal library.', 'choir-rehearsal' ),
-				self::SONGS_PER_LOAD,
-				Choir_Rehearsal_Frontend::songs_per_page()
+			echo esc_html(
+				sprintf(
+					/* translators: 1: songs created per click, 2: songs shown per library page */
+					__( 'Load %1$d sample songs (4 voice tracks each) so the public library shows pagination (%2$d songs per page), or wipe the whole rehearsal library.', 'choir-rehearsal' ),
+					self::SONGS_PER_LOAD,
+					Choir_Rehearsal_Frontend::songs_per_page()
+				)
 			);
 			?>
 		</p>

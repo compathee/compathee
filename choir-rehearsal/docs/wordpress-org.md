@@ -1,6 +1,21 @@
 # WordPress.org distribution
 
+## Plugin name and slug
+
+WordPress.org listing:
+
+* **Plugin Name:** Compath Choir Rehearsal
+* **Slug / folder in the zip:** `compath-choir-rehearsal`
+* Text domain stays `choir-rehearsal` (translations and DB keys unchanged)
+
+Migrating from an older GitHub install in `wp-content/plugins/choir-rehearsal/`:
+
+1. Deactivate the plugin
+2. Rename the folder on disk to `compath-choir-rehearsal` (do not use Delete in wp-admin — uninstall removes songs)
+3. Activate again, then install/update the new zip into that folder
+
 ## Build the catalog zip
+
 
 From the repository root:
 
@@ -8,7 +23,7 @@ From the repository root:
 ./scripts/build-wporg-zip.sh
 ```
 
-Output: `dist/choir-rehearsal-wporg-X.Y.Z.zip`
+Output: `dist/compath-choir-rehearsal-wporg-X.Y.Z.zip`
 
 That zip:
 
@@ -21,7 +36,7 @@ That zip:
 
 ## GitHub zip (optional self-updater)
 
-Continue shipping `choir-rehearsal.zip` from GitHub Releases **without** `distribution-wporg.php` and **with** `class-updater.php` so Settings can still check GitHub for updates.
+Continue shipping `compath-choir-rehearsal.zip` from GitHub Releases **without** `distribution-wporg.php` and **with** `class-updater.php` so Settings can still check GitHub for updates.
 
 ## Reviewer notes
 

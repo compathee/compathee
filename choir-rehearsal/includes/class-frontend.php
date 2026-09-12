@@ -78,8 +78,10 @@ final class Choir_Rehearsal_Frontend {
 			$song_list_data = array(
 				'songs' => self::get_songs_search_index( Choir_Rehearsal_Access::can_manage(), $public_only ),
 				'i18n'  => array(
-					'edit'          => __( 'Edit', 'choir-rehearsal' ),
+					'edit' => __( 'Edit', 'choir-rehearsal' ),
+					/* translators: %d: number of tracks */
 					'trackSingular' => __( '%d track', 'choir-rehearsal' ),
+					/* translators: %d: number of tracks */
 					'trackPlural'   => __( '%d tracks', 'choir-rehearsal' ),
 					'pdfAttached'   => __( 'PDF score attached', 'choir-rehearsal' ),
 				),
@@ -552,10 +554,12 @@ final class Choir_Rehearsal_Frontend {
 				</div>
 				<span class="choir-track-count">
 					<?php
-					printf(
-						/* translators: %d: number of tracks */
-						esc_html( _n( '%d track', '%d tracks', $track_count, 'choir-rehearsal' ) ),
-						$track_count
+					echo esc_html(
+						sprintf(
+							/* translators: %d: number of tracks */
+							_n( '%d track', '%d tracks', $track_count, 'choir-rehearsal' ),
+							$track_count
+						)
 					);
 					?>
 				</span>
@@ -607,12 +611,14 @@ final class Choir_Rehearsal_Frontend {
 		<nav class="choir-song-pagination" aria-label="<?php esc_attr_e( 'Song list pages', 'choir-rehearsal' ); ?>">
 			<p class="choir-song-pagination__summary">
 				<?php
-				printf(
-					/* translators: 1: first song number on page, 2: last song number on page, 3: total songs */
-					esc_html__( 'Showing %1$d–%2$d of %3$d songs', 'choir-rehearsal' ),
-					( ( $current_page - 1 ) * self::SONGS_PER_PAGE ) + 1,
-					min( $current_page * self::SONGS_PER_PAGE, $total_songs ),
-					$total_songs
+				echo esc_html(
+					sprintf(
+						/* translators: 1: first song number on page, 2: last song number on page, 3: total songs */
+						__( 'Showing %1$d–%2$d of %3$d songs', 'choir-rehearsal' ),
+						( ( $current_page - 1 ) * self::SONGS_PER_PAGE ) + 1,
+						min( $current_page * self::SONGS_PER_PAGE, $total_songs ),
+						$total_songs
+					)
 				);
 				?>
 			</p>

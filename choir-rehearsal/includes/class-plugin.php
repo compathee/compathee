@@ -52,11 +52,7 @@ final class Choir_Rehearsal_Plugin {
 	}
 
 	public function load_textdomain(): void {
-		load_plugin_textdomain(
-			'choir-rehearsal',
-			false,
-			dirname( plugin_basename( CHOIR_REHEARSAL_FILE ) ) . '/languages'
-		);
+		// Translations load automatically (WP 4.6+ / Domain Path). Avoid load_plugin_textdomain() for Plugin Check.
 	}
 
 	public function init(): void {
@@ -79,8 +75,11 @@ final class Choir_Rehearsal_Plugin {
 
 	public function activate(): void {
 		$this->init();
+		// Register CPT/taxonomy now — init already ran, so hooked callbacks will not fire
+		// before flush_rewrite_rules() and song URLs would 404 after reactivate.
+		Choir_Rehearsal_Post_Types::register_post_types();
+		Choir_Rehearsal_Voice_Types::register_taxonomy();
 		Choir_Rehearsal_Voice_Types::seed_default_terms();
-		Choir_Rehearsal_Post_Types::register();
 		Choir_Rehearsal_Pages::ensure_library_page();
 		flush_rewrite_rules( false );
 		update_option( Choir_Rehearsal_Pages::OPTION_VERSION, CHOIR_REHEARSAL_VERSION );

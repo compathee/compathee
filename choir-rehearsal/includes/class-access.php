@@ -96,7 +96,7 @@ final class Choir_Rehearsal_Access {
 			return;
 		}
 
-		if ( 'POST' !== ( $_SERVER['REQUEST_METHOD'] ?? '' ) || ! isset( $_POST['choir_rehearsal_login'] ) ) {
+		if ( 'POST' !== strtoupper( sanitize_text_field( wp_unslash( $_SERVER['REQUEST_METHOD'] ?? '' ) ) ) || ! isset( $_POST['choir_rehearsal_login'] ) ) {
 			return;
 		}
 
@@ -106,7 +106,8 @@ final class Choir_Rehearsal_Access {
 		}
 
 		$username = isset( $_POST['log'] ) ? sanitize_user( wp_unslash( (string) $_POST['log'] ) ) : '';
-		$password = isset( $_POST['pwd'] ) ? (string) wp_unslash( $_POST['pwd'] ) : '';
+		// Passwords must not be sanitized beyond unslash; wp_signon expects the raw password.
+		$password = isset( $_POST['pwd'] ) ? (string) wp_unslash( $_POST['pwd'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- password value.
 		$remember = ! empty( $_POST['rememberme'] );
 
 		if ( '' === $username || '' === $password ) {
@@ -162,7 +163,10 @@ final class Choir_Rehearsal_Access {
 	}
 
 	public static function get_requested_redirect_url(): string {
-		if ( isset( $_POST['redirect_to'] ) ) {
+		if (
+			isset( $_POST['redirect_to'], $_POST['choir_rehearsal_login_nonce'] )
+			&& wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['choir_rehearsal_login_nonce'] ) ), 'choir_rehearsal_login' )
+		) {
 			$redirect = esc_url_raw( wp_unslash( (string) $_POST['redirect_to'] ) );
 			if ( '' !== $redirect ) {
 				return $redirect;

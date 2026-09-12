@@ -11,9 +11,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 final class Choir_Rehearsal_Updater {
 
-	private const PLUGIN_SLUG = 'choir-rehearsal/choir-rehearsal.php';
-
 	private const LAST_CHECK_OPTION = 'choir_rehearsal_last_update_check';
+
+	/**
+	 * Installed plugin basename (folder may be choir-rehearsal or compath-choir-rehearsal).
+	 */
+	private static function plugin_basename_slug(): string {
+		return plugin_basename( CHOIR_REHEARSAL_FILE );
+	}
 
 	public static function register(): void {
 		if ( ! is_admin() ) {
@@ -132,10 +137,10 @@ final class Choir_Rehearsal_Updater {
 			$message = '' !== $version
 				? sprintf(
 					/* translators: %s: new plugin version */
-					__( 'Update available: Choir Rehearsal %s. Open Plugins to install it, or use WordPress update now.', 'choir-rehearsal' ),
+					__( 'Update available: Compath Choir Rehearsal %s. Open Plugins to install it, or use WordPress update now.', 'choir-rehearsal' ),
 					$version
 				)
-				: __( 'An update is available for Choir Rehearsal. Open Plugins to install it.', 'choir-rehearsal' );
+				: __( 'An update is available for Compath Choir Rehearsal. Open Plugins to install it.', 'choir-rehearsal' );
 			echo '<div class="notice notice-success is-dismissible"><p>' . esc_html( $message ) . '</p></div>';
 			return;
 		}
@@ -144,10 +149,10 @@ final class Choir_Rehearsal_Updater {
 			$message = '' !== $version
 				? sprintf(
 					/* translators: %s: installed plugin version */
-					__( 'Choir Rehearsal is up to date (version %s).', 'choir-rehearsal' ),
+					__( 'Compath Choir Rehearsal is up to date (version %s).', 'choir-rehearsal' ),
 					$version
 				)
-				: __( 'Choir Rehearsal is up to date.', 'choir-rehearsal' );
+				: __( 'Compath Choir Rehearsal is up to date.', 'choir-rehearsal' );
 			echo '<div class="notice notice-success is-dismissible"><p>' . esc_html( $message ) . '</p></div>';
 			return;
 		}
@@ -190,7 +195,7 @@ final class Choir_Rehearsal_Updater {
 			$updated = array( $options['plugin'] );
 		}
 
-		if ( ! in_array( self::PLUGIN_SLUG, $updated, true ) ) {
+		if ( ! in_array( self::plugin_basename_slug(), $updated, true ) ) {
 			return;
 		}
 
@@ -198,14 +203,14 @@ final class Choir_Rehearsal_Updater {
 
 		$transient = get_site_transient( 'update_plugins' );
 		if ( is_object( $transient ) ) {
-			if ( isset( $transient->response[ self::PLUGIN_SLUG ] ) ) {
-				unset( $transient->response[ self::PLUGIN_SLUG ] );
+			if ( isset( $transient->response[ self::plugin_basename_slug() ] ) ) {
+				unset( $transient->response[ self::plugin_basename_slug() ] );
 			}
 			$installed = self::get_installed_version();
 			if ( '' !== $installed ) {
-				$transient->no_update[ self::PLUGIN_SLUG ] = (object) array(
+				$transient->no_update[ self::plugin_basename_slug() ] = (object) array(
 					'slug'        => 'choir-rehearsal',
-					'plugin'      => self::PLUGIN_SLUG,
+					'plugin'      => self::plugin_basename_slug(),
 					'new_version' => $installed,
 					'url'         => 'https://rehearsal.compath.ee',
 				);
@@ -227,7 +232,7 @@ final class Choir_Rehearsal_Updater {
 	 * Installed version from disk (not the in-memory constant — that stays old mid-upgrade).
 	 */
 	private static function get_installed_version(): string {
-		$plugin_file = WP_PLUGIN_DIR . '/' . self::PLUGIN_SLUG;
+		$plugin_file = WP_PLUGIN_DIR . '/' . self::plugin_basename_slug();
 		if ( ! is_readable( $plugin_file ) ) {
 			return defined( 'CHOIR_REHEARSAL_VERSION' ) ? (string) CHOIR_REHEARSAL_VERSION : '';
 		}
@@ -256,8 +261,8 @@ final class Choir_Rehearsal_Updater {
 			return $transient;
 		}
 
-		$current = isset( $transient->checked[ self::PLUGIN_SLUG ] )
-			? (string) $transient->checked[ self::PLUGIN_SLUG ]
+		$current = isset( $transient->checked[ self::plugin_basename_slug() ] )
+			? (string) $transient->checked[ self::plugin_basename_slug() ]
 			: self::get_installed_version();
 
 		if ( '' === $current ) {
@@ -270,19 +275,19 @@ final class Choir_Rehearsal_Updater {
 		}
 
 		if ( version_compare( $current, $remote['version'], '>=' ) ) {
-			unset( $transient->response[ self::PLUGIN_SLUG ] );
-			$transient->no_update[ self::PLUGIN_SLUG ] = (object) array(
+			unset( $transient->response[ self::plugin_basename_slug() ] );
+			$transient->no_update[ self::plugin_basename_slug() ] = (object) array(
 				'slug'        => 'choir-rehearsal',
-				'plugin'      => self::PLUGIN_SLUG,
+				'plugin'      => self::plugin_basename_slug(),
 				'new_version' => $current,
 				'url'         => $remote['homepage'],
 			);
 			return $transient;
 		}
 
-		$transient->response[ self::PLUGIN_SLUG ] = (object) array(
+		$transient->response[ self::plugin_basename_slug() ] = (object) array(
 			'slug'         => 'choir-rehearsal',
-			'plugin'       => self::PLUGIN_SLUG,
+			'plugin'       => self::plugin_basename_slug(),
 			'new_version'  => $remote['version'],
 			'url'          => $remote['homepage'],
 			'package'      => $remote['download_url'],
@@ -455,8 +460,11 @@ final class Choir_Rehearsal_Updater {
 			}
 
 			$tag     = (string) ( $release['tag_name'] ?? '' );
-			// Lite only: choir-rehearsal-vX.Y.Z (exclude choir-rehearsal-pro-v…).
-			if ( 1 !== preg_match( '/^choir-rehearsal-v\d/', $tag ) ) {
+			// Lite only: (compath-)choir-rehearsal-vX.Y.Z (exclude *-pro-v…).
+			if ( str_contains( $tag, '-pro-v' ) ) {
+				continue;
+			}
+			if ( 1 !== preg_match( '/^(?:compath-)?choir-rehearsal-v\d/', $tag ) ) {
 				continue;
 			}
 			$version = self::parse_release_version( $tag );
@@ -487,9 +495,13 @@ final class Choir_Rehearsal_Updater {
 				if ( ! is_array( $asset ) ) {
 					continue;
 				}
-				if ( ( $asset['name'] ?? '' ) === 'choir-rehearsal.zip' ) {
+				$asset_name = (string) ( $asset['name'] ?? '' );
+				if ( in_array( $asset_name, array( 'compath-choir-rehearsal.zip', 'choir-rehearsal.zip' ), true ) ) {
 					$download_url = (string) ( $asset['browser_download_url'] ?? '' );
-					break;
+					if ( 'compath-choir-rehearsal.zip' === $asset_name ) {
+						break;
+					}
+					// Keep scanning so branded zip wins over legacy name.
 				}
 			}
 		}
@@ -499,7 +511,7 @@ final class Choir_Rehearsal_Updater {
 		}
 
 		return array(
-			'name'         => 'Choir Rehearsal',
+			'name'         => 'Compath Choir Rehearsal',
 			'version'      => $version,
 			'download_url' => $download_url,
 			'homepage'     => 'https://rehearsal.compath.ee',
@@ -573,7 +585,7 @@ final class Choir_Rehearsal_Updater {
 		$sections = isset( $data['sections'] ) && is_array( $data['sections'] ) ? $data['sections'] : array();
 
 		return array(
-			'name'         => (string) ( $data['name'] ?? 'Choir Rehearsal' ),
+			'name'         => (string) ( $data['name'] ?? 'Compath Choir Rehearsal' ),
 			'version'      => ltrim( $version, 'v' ),
 			'download_url' => $package,
 			'homepage'     => (string) ( $data['homepage'] ?? 'https://rehearsal.compath.ee' ),

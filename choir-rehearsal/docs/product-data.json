@@ -1,5 +1,5 @@
 {
-  "title": "Choir Rehearsal",
+  "title": "Compath Choir Rehearsal",
   "tagline": "A private rehearsal library for choirs: songs, voice tracks, PDF scores, and easy listening on phone or desktop.",
   "overview": "Choir Rehearsal helps choir members learn new pieces by voice part. Editors upload PDF scores and audio for each voice. Singers visit /rehearsal/, pick a song, and listen. Lite is free from GitHub; Pro is a separate add-on from shop.compath.ee (keep Lite installed — do not replace it).",
   "requirements": "WordPress 6.4+, PHP 8.0+",
@@ -120,13 +120,58 @@
   ],
   "changelog": [
     {
+      "version": "0.4.43",
+      "summary": "Safe activate beside old plugin folder",
+      "items": [
+        "Activating a second copy no longer causes a fatal error",
+        "Admin notice explains keeping a single compath-choir-rehearsal folder"
+      ],
+      "open": true
+    },
+    {
+      "version": "0.4.42",
+      "summary": "Plugin Check: custom page select",
+      "items": [
+        "Replace wp_dropdown_pages with a fully escaped custom select"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.41",
+      "summary": "Final Plugin Check cleanup",
+      "items": [
+        "Escape wp_dropdown_pages arguments and output via wp_kses",
+        "Verify login nonce when reading redirect_to"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.40",
+      "summary": "WordPress.org Plugin Check fixes",
+      "items": [
+        "Fix Plugin Check errors (output escaping, translators comments, wp_delete_file)",
+        "Address Plugin Check warnings (input sanitization, uninstall prefixes, textdomain)"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.39",
+      "summary": "Compath Choir Rehearsal brand and package slug",
+      "items": [
+        "Display name: Compath Choir Rehearsal",
+        "Release zip and WordPress.org folder slug: compath-choir-rehearsal",
+        "Text domain and database keys unchanged (no song data migration)"
+      ],
+      "open": false
+    },
+    {
       "version": "0.4.38",
       "summary": "Mobile PDF fullscreen close button",
       "items": [
         "Fullscreen close (X) is ported to the document body above the sticky player and recording dock",
         "Toolbar Close control remains available in expanded PDF on mobile"
       ],
-      "open": true
+      "open": false
     },
     {
       "version": "0.4.37",
