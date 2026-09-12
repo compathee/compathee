@@ -120,12 +120,21 @@
   ],
   "changelog": [
     {
+      "version": "0.4.43",
+      "summary": "Safe activate beside old plugin folder",
+      "items": [
+        "Activating a second copy no longer causes a fatal error",
+        "Admin notice explains keeping a single compath-choir-rehearsal folder"
+      ],
+      "open": true
+    },
+    {
       "version": "0.4.42",
       "summary": "Plugin Check: custom page select",
       "items": [
         "Replace wp_dropdown_pages with a fully escaped custom select"
       ],
-      "open": true
+      "open": false
     },
     {
       "version": "0.4.41",
