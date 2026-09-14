@@ -3,7 +3,7 @@
  * Plugin Name:       Compath Choir Rehearsal
  * Plugin URI:        https://rehearsal.compath.ee
  * Description:       Private rehearsal library for choirs: songs, voice parts, audio tracks, and a sticky player.
- * Version:           0.4.44
+ * Version:           0.4.45
  * Requires at least: 6.4
  * Requires PHP:      8.0
  * Author:            Compath OÜ
@@ -33,7 +33,7 @@ if ( defined( 'CHOIR_REHEARSAL_VERSION' ) || function_exists( 'choir_rehearsal' 
 			}
 			echo '<div class="notice notice-error"><p>';
 			echo esc_html__(
-				'Compath Choir Rehearsal is already loaded from another folder. Deactivate and remove the old “choir-rehearsal” plugin copy (do not use Delete if you need to keep songs — rename the folder on disk instead), then activate only one copy.',
+				'Compath Choir Rehearsal is already loaded from another folder. Deactivate the duplicate copy, then remove its folder on disk (for example choir-rehearsal-OLD or compath-choir-rehearsal). Do not use Delete in wp-admin if you need to keep songs — delete the folder via FTP instead. Only one Lite folder should remain active.',
 				'choir-rehearsal'
 			);
 			echo '</p></div>';
@@ -42,7 +42,7 @@ if ( defined( 'CHOIR_REHEARSAL_VERSION' ) || function_exists( 'choir_rehearsal' 
 	return;
 }
 
-define( 'CHOIR_REHEARSAL_VERSION', '0.4.44' );
+define( 'CHOIR_REHEARSAL_VERSION', '0.4.45' );
 define( 'CHOIR_REHEARSAL_FILE', __FILE__ );
 define( 'CHOIR_REHEARSAL_PATH', plugin_dir_path( __FILE__ ) );
 define( 'CHOIR_REHEARSAL_URL', plugin_dir_url( __FILE__ ) );

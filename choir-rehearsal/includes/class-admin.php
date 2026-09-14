@@ -239,6 +239,7 @@ final class Choir_Rehearsal_Admin {
 				</a>
 			</p>
 			<?php Choir_Rehearsal_Demo_Data::render_settings_buttons(); ?>
+			<?php do_action( 'choir_rehearsal_settings_tools' ); ?>
 			<p>
 				<?php
 				printf(
