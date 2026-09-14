@@ -445,7 +445,10 @@ def prompt_text_paths() -> list[Path]:
     print("Enter source Excel .xlsx files one per line. Press Enter on an empty line when done.")
     files: list[Path] = []
     while True:
-        value = input("Source file path: ").strip().strip('"')
+        try:
+            value = input("Source file path: ").strip().strip('"')
+        except EOFError:
+            break
         if not value:
             break
         files.append(Path(value))
@@ -517,13 +520,16 @@ def prompt_interactive(args: argparse.Namespace) -> argparse.Namespace:
     selected_files = prompt_text_paths()
     if not selected_files:
         raise SystemExit("Исходные файлы не выбраны.\nNo source files selected.")
-    object_lookup_text = input(
-        "Optional object lookup CSV/XLSX path (press Enter to skip): "
-    ).strip().strip('"')
-    output_text = input(
-        f"Output path [{default_output}]: "
-    ).strip().strip('"')
-    prefixes_text = input("Object prefixes comma-separated [HK_]: ").strip()
+    try:
+        object_lookup_text = input(
+            "Optional object lookup CSV/XLSX path (press Enter to skip): "
+        ).strip().strip('"')
+        output_text = input(
+            f"Output path [{default_output}]: "
+        ).strip().strip('"')
+        prefixes_text = input("Object prefixes comma-separated [HK_]: ").strip()
+    except EOFError as exc:
+        raise SystemExit("Ввод отменен.\nInput cancelled.") from exc
 
     args.files = selected_files
     args.objects = Path(object_lookup_text) if object_lookup_text else None

@@ -3,8 +3,9 @@ import io
 import sys
 import tempfile
 import unittest
-from contextlib import redirect_stdout
+from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
+from unittest.mock import patch
 
 from openpyxl import Workbook
 
@@ -47,7 +48,8 @@ class ExcellentClientUxTests(unittest.TestCase):
             missing = Path(tmp) / "no-xlsx-here"
             missing.mkdir()
             output = Path(tmp) / "out.xlsx"
-            code = client.main(["--input-dir", str(missing), "--output", str(output)])
+            with redirect_stderr(io.StringIO()):
+                code = client.main(["--input-dir", str(missing), "--output", str(output)])
             self.assertNotEqual(code, 0)
 
     def test_main_success_prints_resolved_path_and_row_count(self):
@@ -80,6 +82,22 @@ class ExcellentClientUxTests(unittest.TestCase):
             self.assertIn("Отчет сохранен", text)
             self.assertIn("Строк: 2", text)
             self.assertIn(str(output.resolve()), text)
+
+    def test_interactive_console_cancel_returns_nonzero(self):
+        client = load_client()
+        stdin = io.StringIO("\n")
+        stdout = io.StringIO()
+        stderr = io.StringIO()
+        old_stdin = sys.stdin
+        sys.stdin = stdin
+        try:
+            with patch.dict(sys.modules, {"tkinter": None}):
+                with redirect_stdout(stdout), redirect_stderr(stderr):
+                    code = client.main(["--interactive"])
+        finally:
+            sys.stdin = old_stdin
+        self.assertNotEqual(code, 0)
+        self.assertIn("Исходные файлы не выбраны", stderr.getvalue())
 
 
 if __name__ == "__main__":
