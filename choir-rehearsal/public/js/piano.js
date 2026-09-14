@@ -59,6 +59,18 @@
 		return 440 * Math.pow(2, (midi - 69) / 12);
 	}
 
+	function setKeyActive(midi, active) {
+		var key = keyboard.querySelector('[data-midi="' + String(midi) + '"]');
+		if (!key) {
+			return;
+		}
+		key.classList.toggle('is-active', !!active);
+		// Clear sticky :active/focus styling on <button> keys after release.
+		if (!active && document.activeElement === key) {
+			key.blur();
+		}
+	}
+
 	function noteOn(midi) {
 		var ctx = ensureAudio();
 		if (!ctx || !masterGain) {
@@ -99,25 +111,19 @@
 		osc2.start(now);
 
 		activeVoices[midi] = { osc1: osc1, osc2: osc2, gain: gain, filter: filter };
-
-		var key = keyboard.querySelector('[data-midi="' + midi + '"]');
-		if (key) {
-			key.classList.add('is-active');
-		}
+		setKeyActive(midi, true);
 	}
 
 	function noteOff(midi, immediate) {
 		midi = String(midi);
+		// Always clear the pressed look, even if the voice was already released.
+		setKeyActive(midi, false);
+
 		var voice = activeVoices[midi];
 		if (!voice) {
 			return;
 		}
 		delete activeVoices[midi];
-
-		var key = keyboard.querySelector('[data-midi="' + midi + '"]');
-		if (key) {
-			key.classList.remove('is-active');
-		}
 
 		var ctx = audioCtx;
 		if (!ctx) {
@@ -148,6 +154,9 @@
 		});
 		Object.keys(pointerNotes).forEach(function (id) {
 			delete pointerNotes[id];
+		});
+		keyboard.querySelectorAll('.choir-piano-key.is-active').forEach(function (key) {
+			key.classList.remove('is-active');
 		});
 	}
 
@@ -257,12 +266,30 @@
 		return target.closest('.choir-piano-key');
 	}
 
+	function releasePointer(pointerId) {
+		var midi = pointerNotes[pointerId];
+		if (!midi) {
+			return;
+		}
+		delete pointerNotes[pointerId];
+		noteOff(midi, false);
+	}
+
+	function onPointerEnd(event) {
+		releasePointer(event.pointerId);
+	}
+
 	keyboard.addEventListener('pointerdown', function (event) {
 		var key = keyFromEventTarget(event.target);
 		if (!key) {
 			return;
 		}
+		// Keep the gesture on the key; prevents scroll/player/PDF from eating pointerup
+		// and leaving .is-active stuck (reproduced on the public song player, not admin).
 		event.preventDefault();
+		if (typeof event.stopPropagation === 'function') {
+			event.stopPropagation();
+		}
 		var midi = key.getAttribute('data-midi');
 		if (!midi) {
 			return;
@@ -276,23 +303,13 @@
 		noteOn(midi);
 	});
 
-	keyboard.addEventListener('pointerup', function (event) {
-		var midi = pointerNotes[event.pointerId];
-		if (!midi) {
-			return;
-		}
-		delete pointerNotes[event.pointerId];
-		noteOff(midi, false);
-	});
+	keyboard.addEventListener('pointerup', onPointerEnd);
+	keyboard.addEventListener('pointercancel', onPointerEnd);
+	keyboard.addEventListener('lostpointercapture', onPointerEnd);
 
-	keyboard.addEventListener('pointercancel', function (event) {
-		var midi = pointerNotes[event.pointerId];
-		if (!midi) {
-			return;
-		}
-		delete pointerNotes[event.pointerId];
-		noteOff(midi, false);
-	});
+	// Safety net when capture is stolen by sticky player / PDF layers.
+	window.addEventListener('pointerup', onPointerEnd);
+	window.addEventListener('pointercancel', onPointerEnd);
 
 	// Glide to neighbouring key while dragging with a pressed pointer.
 	keyboard.addEventListener('pointermove', function (event) {
