@@ -24,17 +24,17 @@ final class Choir_Rehearsal_Post_Types {
 			self::SONG,
 			array(
 				'labels'              => array(
-					'name'               => __( 'Songs', 'choir-rehearsal' ),
-					'singular_name'      => __( 'Song', 'choir-rehearsal' ),
-					'add_new'            => __( 'Add Song', 'choir-rehearsal' ),
-					'add_new_item'       => __( 'Add New Song', 'choir-rehearsal' ),
-					'edit_item'          => __( 'Edit Song', 'choir-rehearsal' ),
-					'new_item'           => __( 'New Song', 'choir-rehearsal' ),
-					'view_item'          => __( 'View Song', 'choir-rehearsal' ),
-					'search_items'       => __( 'Search Songs', 'choir-rehearsal' ),
-					'not_found'          => __( 'No songs found.', 'choir-rehearsal' ),
-					'not_found_in_trash' => __( 'No songs found in Trash.', 'choir-rehearsal' ),
-					'menu_name'          => __( 'Choir Rehearsal', 'choir-rehearsal' ),
+					'name'               => __( 'Songs', 'compath-choir-rehearsal' ),
+					'singular_name'      => __( 'Song', 'compath-choir-rehearsal' ),
+					'add_new'            => __( 'Add Song', 'compath-choir-rehearsal' ),
+					'add_new_item'       => __( 'Add New Song', 'compath-choir-rehearsal' ),
+					'edit_item'          => __( 'Edit Song', 'compath-choir-rehearsal' ),
+					'new_item'           => __( 'New Song', 'compath-choir-rehearsal' ),
+					'view_item'          => __( 'View Song', 'compath-choir-rehearsal' ),
+					'search_items'       => __( 'Search Songs', 'compath-choir-rehearsal' ),
+					'not_found'          => __( 'No songs found.', 'compath-choir-rehearsal' ),
+					'not_found_in_trash' => __( 'No songs found in Trash.', 'compath-choir-rehearsal' ),
+					'menu_name'          => __( 'Choir Rehearsal', 'compath-choir-rehearsal' ),
 				),
 				'public'              => true,
 				'publicly_queryable'  => true,
@@ -58,8 +58,8 @@ final class Choir_Rehearsal_Post_Types {
 			self::TRACK,
 			array(
 				'labels'              => array(
-					'name'          => __( 'Tracks', 'choir-rehearsal' ),
-					'singular_name' => __( 'Track', 'choir-rehearsal' ),
+					'name'          => __( 'Tracks', 'compath-choir-rehearsal' ),
+					'singular_name' => __( 'Track', 'compath-choir-rehearsal' ),
 				),
 				'public'              => false,
 				'show_ui'             => false,
@@ -207,7 +207,7 @@ final class Choir_Rehearsal_Post_Types {
 	public static function get_voice_label( int $track_id ): string {
 		$slug = (string) get_post_meta( $track_id, '_choir_voice_slug', true );
 		if ( '' === $slug ) {
-			return __( 'Other', 'choir-rehearsal' );
+			return __( 'Other', 'compath-choir-rehearsal' );
 		}
 
 		return Choir_Rehearsal_Voice_Types::get_label( $slug );

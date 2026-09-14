@@ -52,7 +52,7 @@ final class Choir_Rehearsal_Edition {
 
 	public static function edition_label(): string {
 		return self::is_pro()
-			? __( 'Pro', 'choir-rehearsal' )
-			: __( 'Lite', 'choir-rehearsal' );
+			? __( 'Pro', 'compath-choir-rehearsal' )
+			: __( 'Lite', 'compath-choir-rehearsal' );
 	}
 }

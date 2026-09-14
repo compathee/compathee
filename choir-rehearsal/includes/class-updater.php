@@ -65,7 +65,7 @@ final class Choir_Rehearsal_Updater {
 
 	public static function handle_check_updates(): void {
 		if ( ! current_user_can( 'update_plugins' ) ) {
-			wp_die( esc_html__( 'Sorry, you are not allowed to update plugins.', 'choir-rehearsal' ) );
+			wp_die( esc_html__( 'Sorry, you are not allowed to update plugins.', 'compath-choir-rehearsal' ) );
 		}
 
 		check_admin_referer( 'choir_rehearsal_check_updates' );
@@ -137,10 +137,10 @@ final class Choir_Rehearsal_Updater {
 			$message = '' !== $version
 				? sprintf(
 					/* translators: %s: new plugin version */
-					__( 'Update available: Compath Choir Rehearsal %s. Open Plugins to install it, or use WordPress update now.', 'choir-rehearsal' ),
+					__( 'Update available: Compath Choir Rehearsal %s. Open Plugins to install it, or use WordPress update now.', 'compath-choir-rehearsal' ),
 					$version
 				)
-				: __( 'An update is available for Compath Choir Rehearsal. Open Plugins to install it.', 'choir-rehearsal' );
+				: __( 'An update is available for Compath Choir Rehearsal. Open Plugins to install it.', 'compath-choir-rehearsal' );
 			echo '<div class="notice notice-success is-dismissible"><p>' . esc_html( $message ) . '</p></div>';
 			return;
 		}
@@ -149,17 +149,17 @@ final class Choir_Rehearsal_Updater {
 			$message = '' !== $version
 				? sprintf(
 					/* translators: %s: installed plugin version */
-					__( 'Compath Choir Rehearsal is up to date (version %s).', 'choir-rehearsal' ),
+					__( 'Compath Choir Rehearsal is up to date (version %s).', 'compath-choir-rehearsal' ),
 					$version
 				)
-				: __( 'Compath Choir Rehearsal is up to date.', 'choir-rehearsal' );
+				: __( 'Compath Choir Rehearsal is up to date.', 'compath-choir-rehearsal' );
 			echo '<div class="notice notice-success is-dismissible"><p>' . esc_html( $message ) . '</p></div>';
 			return;
 		}
 
 		if ( 'failed' === $status ) {
 			echo '<div class="notice notice-error is-dismissible"><p>' .
-				esc_html__( 'Could not reach the update server. Check your connection or try again later. If this keeps happening, verify GitHub Releases are reachable from this site.', 'choir-rehearsal' ) .
+				esc_html__( 'Could not reach the update server. Check your connection or try again later. If this keeps happening, verify GitHub Releases are reachable from this site.', 'compath-choir-rehearsal' ) .
 				'</p></div>';
 		}
 	}

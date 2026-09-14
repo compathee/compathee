@@ -33,8 +33,8 @@ final class Choir_Rehearsal_Admin {
 	public static function register_settings_page(): void {
 		add_submenu_page(
 			'edit.php?post_type=' . Choir_Rehearsal_Post_Types::SONG,
-			__( 'Settings', 'choir-rehearsal' ),
-			__( 'Settings', 'choir-rehearsal' ),
+			__( 'Settings', 'compath-choir-rehearsal' ),
+			__( 'Settings', 'compath-choir-rehearsal' ),
 			'manage_options',
 			'choir-rehearsal-settings',
 			array( self::class, 'render_settings_page' )
@@ -61,7 +61,7 @@ final class Choir_Rehearsal_Admin {
 	public static function render_settings_page(): void {
 		// Display-only flag after our own settings redirect (not a form submission).
 		if ( isset( $_GET['choir_rewrites_flushed'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Permalinks refreshed and rehearsal page verified.', 'choir-rehearsal' ) . '</p></div>';
+			echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Permalinks refreshed and rehearsal page verified.', 'compath-choir-rehearsal' ) . '</p></div>';
 		}
 
 		Choir_Rehearsal_Demo_Data::render_settings_notices();
@@ -69,20 +69,20 @@ final class Choir_Rehearsal_Admin {
 		$library_page_id = Choir_Rehearsal_Pages::get_page_id();
 		?>
 		<div class="wrap">
-			<h1><?php esc_html_e( 'Choir Rehearsal Settings', 'choir-rehearsal' ); ?></h1>
+			<h1><?php esc_html_e( 'Choir Rehearsal Settings', 'compath-choir-rehearsal' ); ?></h1>
 			<form method="post" action="options.php">
 				<?php settings_fields( 'choir_rehearsal_settings' ); ?>
 				<table class="form-table" role="presentation">
 					<tr>
-						<th scope="row"><?php esc_html_e( 'Documentation', 'choir-rehearsal' ); ?></th>
+						<th scope="row"><?php esc_html_e( 'Documentation', 'compath-choir-rehearsal' ); ?></th>
 						<td>
 							<a href="<?php echo esc_url( CHOIR_REHEARSAL_DOCS_URL ); ?>" target="_blank" rel="noopener noreferrer">
-								<?php esc_html_e( 'Product page: order, install, pricing, changelog', 'choir-rehearsal' ); ?>
+								<?php esc_html_e( 'Product page: order, install, pricing, changelog', 'compath-choir-rehearsal' ); ?>
 							</a>
 						</td>
 					</tr>
 					<tr>
-						<th scope="row"><?php esc_html_e( 'Edition', 'choir-rehearsal' ); ?></th>
+						<th scope="row"><?php esc_html_e( 'Edition', 'compath-choir-rehearsal' ); ?></th>
 						<td>
 							<code><?php echo esc_html( Choir_Rehearsal_Edition::edition_label() ); ?></code>
 							<?php if ( ! Choir_Rehearsal_Edition::is_pro() ) : ?>
@@ -91,7 +91,7 @@ final class Choir_Rehearsal_Admin {
 									echo esc_html(
 										sprintf(
 											/* translators: %d: maximum track count */
-											__( 'Lite: up to %d voice tracks per song; no microphone recording, song search, editor Play, or embedded PDF preview.', 'choir-rehearsal' ),
+											__( 'Lite: up to %d voice tracks per song; no microphone recording, song search, editor Play, or embedded PDF preview.', 'compath-choir-rehearsal' ),
 											(int) Choir_Rehearsal_Edition::LITE_MAX_TRACKS
 										)
 									);
@@ -99,27 +99,27 @@ final class Choir_Rehearsal_Admin {
 								</p>
 								<p>
 									<a class="button button-primary" href="<?php echo esc_url( Choir_Rehearsal_Edition::upgrade_url() ); ?>" target="_blank" rel="noopener noreferrer">
-										<?php esc_html_e( 'Buy Pro', 'choir-rehearsal' ); ?>
+										<?php esc_html_e( 'Buy Pro', 'compath-choir-rehearsal' ); ?>
 									</a>
 								</p>
 							<?php else : ?>
-								<p class="description"><?php esc_html_e( 'Unlimited voice tracks, microphone recording, song search, Play preview, and embedded PDF in the editor.', 'choir-rehearsal' ); ?></p>
+								<p class="description"><?php esc_html_e( 'Unlimited voice tracks, microphone recording, song search, Play preview, and embedded PDF in the editor.', 'compath-choir-rehearsal' ); ?></p>
 							<?php endif; ?>
 						</td>
 					</tr>
 					<tr>
-						<th scope="row"><?php esc_html_e( 'Plugin version', 'choir-rehearsal' ); ?></th>
+						<th scope="row"><?php esc_html_e( 'Plugin version', 'compath-choir-rehearsal' ); ?></th>
 						<td>
 							<code><?php echo esc_html( CHOIR_REHEARSAL_VERSION ); ?></code>
 							<p class="description">
 								<?php
 								if ( Choir_Rehearsal_Distribution::is_wporg() ) {
-									esc_html_e( 'Updates are delivered through WordPress.org.', 'choir-rehearsal' );
+									esc_html_e( 'Updates are delivered through WordPress.org.', 'compath-choir-rehearsal' );
 								} else {
 									echo wp_kses_post(
 										sprintf(
 											/* translators: %s: GitHub releases link */
-											__( 'Updates are published at %s', 'choir-rehearsal' ),
+											__( 'Updates are published at %s', 'compath-choir-rehearsal' ),
 											'<a href="https://github.com/compathee/compathee/releases" target="_blank" rel="noopener noreferrer">GitHub Releases</a>'
 										)
 									);
@@ -135,26 +135,26 @@ final class Choir_Rehearsal_Admin {
 									if ( 'available' === $last_check['status'] && '' !== $remote_version ) {
 										$last_summary = sprintf(
 											/* translators: 1: datetime, 2: version */
-											__( 'Last check: %1$s — update available (%2$s).', 'choir-rehearsal' ),
+											__( 'Last check: %1$s — update available (%2$s).', 'compath-choir-rehearsal' ),
 											$when,
 											$remote_version
 										);
 									} elseif ( 'up_to_date' === $last_check['status'] ) {
 										$last_summary = sprintf(
 											/* translators: %s: datetime */
-											__( 'Last check: %s — up to date.', 'choir-rehearsal' ),
+											__( 'Last check: %s — up to date.', 'compath-choir-rehearsal' ),
 											$when
 										);
 									} elseif ( 'failed' === $last_check['status'] ) {
 										$last_summary = sprintf(
 											/* translators: %s: datetime */
-											__( 'Last check: %s — could not reach the update server.', 'choir-rehearsal' ),
+											__( 'Last check: %s — could not reach the update server.', 'compath-choir-rehearsal' ),
 											$when
 										);
 									} else {
 										$last_summary = sprintf(
 											/* translators: %s: datetime */
-											__( 'Last check: %s', 'choir-rehearsal' ),
+											__( 'Last check: %s', 'compath-choir-rehearsal' ),
 											$when
 										);
 									}
@@ -165,7 +165,7 @@ final class Choir_Rehearsal_Admin {
 						</td>
 					</tr>
 					<tr>
-						<th scope="row"><?php esc_html_e( 'Rehearsal page', 'choir-rehearsal' ); ?></th>
+						<th scope="row"><?php esc_html_e( 'Rehearsal page', 'compath-choir-rehearsal' ); ?></th>
 						<td>
 							<?php
 							$library_pages = get_pages(
@@ -176,38 +176,38 @@ final class Choir_Rehearsal_Admin {
 							);
 							?>
 							<select name="<?php echo esc_attr( Choir_Rehearsal_Pages::OPTION_PAGE_ID ); ?>" id="<?php echo esc_attr( Choir_Rehearsal_Pages::OPTION_PAGE_ID ); ?>">
-								<option value="0"><?php esc_html_e( '— Select —', 'choir-rehearsal' ); ?></option>
+								<option value="0"><?php esc_html_e( '— Select —', 'compath-choir-rehearsal' ); ?></option>
 								<?php foreach ( $library_pages as $library_page ) : ?>
 									<option value="<?php echo esc_attr( (string) $library_page->ID ); ?>" <?php selected( (int) $library_page_id, (int) $library_page->ID ); ?>>
 										<?php echo esc_html( $library_page->post_title ); ?>
 									</option>
 								<?php endforeach; ?>
 							</select>
-							<p class="description"><?php esc_html_e( 'WordPress page that shows the song list. Must contain the [choir_rehearsal] shortcode. You can add this page to your site menu under Appearance → Menus.', 'choir-rehearsal' ); ?></p>
+							<p class="description"><?php esc_html_e( 'WordPress page that shows the song list. Must contain the [choir_rehearsal] shortcode. You can add this page to your site menu under Appearance → Menus.', 'compath-choir-rehearsal' ); ?></p>
 						</td>
 					</tr>
 					<tr>
-						<th scope="row"><?php esc_html_e( 'Require login', 'choir-rehearsal' ); ?></th>
+						<th scope="row"><?php esc_html_e( 'Require login', 'compath-choir-rehearsal' ); ?></th>
 						<td>
 							<label>
 								<input type="checkbox" name="choir_rehearsal_require_login" value="1" <?php checked( Choir_Rehearsal_Access::requires_login() ); ?> />
-								<?php esc_html_e( 'Only logged-in users can view rehearsal pages.', 'choir-rehearsal' ); ?>
+								<?php esc_html_e( 'Only logged-in users can view rehearsal pages.', 'compath-choir-rehearsal' ); ?>
 							</label>
 						</td>
 					</tr>
 					<?php if ( Choir_Rehearsal_Distribution::uses_github_updater() ) : ?>
 					<tr>
-						<th scope="row"><?php esc_html_e( 'Update JSON URL', 'choir-rehearsal' ); ?></th>
+						<th scope="row"><?php esc_html_e( 'Update JSON URL', 'compath-choir-rehearsal' ); ?></th>
 						<td>
 							<input type="url" class="regular-text" name="choir_rehearsal_update_json_url" value="<?php echo esc_attr( (string) get_option( 'choir_rehearsal_update_json_url', '' ) ); ?>" placeholder="https://github.com/compathee/compathee/releases/latest/download/update.json" />
-							<p class="description"><?php esc_html_e( 'Optional override. If empty, the plugin checks GitHub Releases, then falls back to the latest release asset update.json.', 'choir-rehearsal' ); ?></p>
+							<p class="description"><?php esc_html_e( 'Optional override. If empty, the plugin checks GitHub Releases, then falls back to the latest release asset update.json.', 'compath-choir-rehearsal' ); ?></p>
 						</td>
 					</tr>
 					<tr>
-						<th scope="row"><?php esc_html_e( 'GitHub repository', 'choir-rehearsal' ); ?></th>
+						<th scope="row"><?php esc_html_e( 'GitHub repository', 'compath-choir-rehearsal' ); ?></th>
 						<td>
 							<input type="text" class="regular-text" name="choir_rehearsal_github_repo" value="<?php echo esc_attr( (string) get_option( 'choir_rehearsal_github_repo', 'compathee/compathee' ) ); ?>" />
-							<p class="description"><?php esc_html_e( 'Used when Update JSON URL is empty. Each Lite release should include compath-choir-rehearsal.zip and update.json assets.', 'choir-rehearsal' ); ?></p>
+							<p class="description"><?php esc_html_e( 'Used when Update JSON URL is empty. Each Lite release should include compath-choir-rehearsal.zip and update.json assets.', 'compath-choir-rehearsal' ); ?></p>
 						</td>
 					</tr>
 					<?php endif; ?>
@@ -217,12 +217,12 @@ final class Choir_Rehearsal_Admin {
 			<?php if ( ! Choir_Rehearsal_Edition::is_pro() ) : ?>
 				<div class="choir-buy-pro-banner">
 					<p>
-						<strong><?php esc_html_e( 'Choir Rehearsal Pro', 'choir-rehearsal' ); ?></strong>
-						<?php esc_html_e( 'Unlimited tracks, microphone recording, search by song title, Play preview, and embedded PDF in the editor. Keep this Lite plugin installed — Pro is a separate add-on.', 'choir-rehearsal' ); ?>
+						<strong><?php esc_html_e( 'Choir Rehearsal Pro', 'compath-choir-rehearsal' ); ?></strong>
+						<?php esc_html_e( 'Unlimited tracks, microphone recording, search by song title, Play preview, and embedded PDF in the editor. Keep this Lite plugin installed — Pro is a separate add-on.', 'compath-choir-rehearsal' ); ?>
 					</p>
 					<p>
 						<a class="button button-primary" href="<?php echo esc_url( Choir_Rehearsal_Edition::upgrade_url() ); ?>" target="_blank" rel="noopener noreferrer">
-							<?php esc_html_e( 'Buy Pro', 'choir-rehearsal' ); ?>
+							<?php esc_html_e( 'Buy Pro', 'compath-choir-rehearsal' ); ?>
 						</a>
 					</p>
 				</div>
@@ -230,12 +230,12 @@ final class Choir_Rehearsal_Admin {
 			<p>
 				<?php if ( Choir_Rehearsal_Distribution::uses_github_updater() ) : ?>
 					<a class="button button-secondary" href="<?php echo esc_url( Choir_Rehearsal_Updater::get_check_updates_url() ); ?>">
-						<?php esc_html_e( 'Check for plugin updates', 'choir-rehearsal' ); ?>
+						<?php esc_html_e( 'Check for plugin updates', 'compath-choir-rehearsal' ); ?>
 					</a>
-					<span class="description" style="margin-left:0.5em;"><?php esc_html_e( 'Contacts GitHub Releases and shows the result on this page.', 'choir-rehearsal' ); ?></span>
+					<span class="description" style="margin-left:0.5em;"><?php esc_html_e( 'Contacts GitHub Releases and shows the result on this page.', 'compath-choir-rehearsal' ); ?></span>
 				<?php endif; ?>
 				<a class="button button-secondary" href="<?php echo esc_url( Choir_Rehearsal_Pages::get_flush_rewrites_url() ); ?>">
-					<?php esc_html_e( 'Refresh permalinks', 'choir-rehearsal' ); ?>
+					<?php esc_html_e( 'Refresh permalinks', 'compath-choir-rehearsal' ); ?>
 				</a>
 			</p>
 			<?php Choir_Rehearsal_Demo_Data::render_settings_buttons(); ?>
@@ -244,16 +244,16 @@ final class Choir_Rehearsal_Admin {
 				<?php
 				printf(
 					/* translators: %s: library page URL */
-					esc_html__( 'Song list URL: %s', 'choir-rehearsal' ),
+					esc_html__( 'Song list URL: %s', 'compath-choir-rehearsal' ),
 					'<code>' . esc_html( Choir_Rehearsal_Pages::get_library_url() ) . '</code>'
 				);
 				?>
 			</p>
 			<?php if ( $library_page_id > 0 ) : ?>
 				<p>
-					<a href="<?php echo esc_url( get_edit_post_link( $library_page_id, 'raw' ) ?: '' ); ?>"><?php esc_html_e( 'Edit rehearsal page', 'choir-rehearsal' ); ?></a>
+					<a href="<?php echo esc_url( get_edit_post_link( $library_page_id, 'raw' ) ?: '' ); ?>"><?php esc_html_e( 'Edit rehearsal page', 'compath-choir-rehearsal' ); ?></a>
 					|
-					<a href="<?php echo esc_url( admin_url( 'nav-menus.php' ) ); ?>"><?php esc_html_e( 'Appearance → Menus', 'choir-rehearsal' ); ?></a>
+					<a href="<?php echo esc_url( admin_url( 'nav-menus.php' ) ); ?>"><?php esc_html_e( 'Appearance → Menus', 'compath-choir-rehearsal' ); ?></a>
 				</p>
 			<?php endif; ?>
 		</div>
@@ -268,7 +268,7 @@ final class Choir_Rehearsal_Admin {
 		$settings = sprintf(
 			'<a href="%s">%s</a>',
 			esc_url( admin_url( 'edit.php?post_type=' . Choir_Rehearsal_Post_Types::SONG . '&page=choir-rehearsal-settings' ) ),
-			esc_html__( 'Settings', 'choir-rehearsal' )
+			esc_html__( 'Settings', 'compath-choir-rehearsal' )
 		);
 
 		$extra = array( 'settings' => $settings );
@@ -277,7 +277,7 @@ final class Choir_Rehearsal_Admin {
 			$extra['buy_pro'] = sprintf(
 				'<a href="%s" target="_blank" rel="noopener noreferrer" style="font-weight:600;">%s</a>',
 				esc_url( Choir_Rehearsal_Edition::upgrade_url() ),
-				esc_html__( 'Buy Pro', 'choir-rehearsal' )
+				esc_html__( 'Buy Pro', 'compath-choir-rehearsal' )
 			);
 		}
 
@@ -289,9 +289,9 @@ final class Choir_Rehearsal_Admin {
 		foreach ( $columns as $key => $label ) {
 			$new[ $key ] = $label;
 			if ( 'title' === $key ) {
-				$new['choir_tracks']  = __( 'Tracks', 'choir-rehearsal' );
-				$new['choir_score']   = __( 'Score', 'choir-rehearsal' );
-				$new['choir_public']  = __( 'Visibility', 'choir-rehearsal' );
+				$new['choir_tracks']  = __( 'Tracks', 'compath-choir-rehearsal' );
+				$new['choir_score']   = __( 'Score', 'compath-choir-rehearsal' );
+				$new['choir_public']  = __( 'Visibility', 'compath-choir-rehearsal' );
 			}
 		}
 		return $new;
@@ -311,8 +311,8 @@ final class Choir_Rehearsal_Admin {
 		if ( 'choir_public' === $column ) {
 			echo esc_html(
 				Choir_Rehearsal_Post_Types::is_public( $post_id )
-					? __( 'Public', 'choir-rehearsal' )
-					: __( 'Private', 'choir-rehearsal' )
+					? __( 'Public', 'compath-choir-rehearsal' )
+					: __( 'Private', 'compath-choir-rehearsal' )
 			);
 		}
 	}
@@ -366,7 +366,7 @@ final class Choir_Rehearsal_Admin {
 		?>
 		<p class="choir-song-back-link">
 			<a class="button choir-back-to-list choir-back-to-list--top" href="<?php echo esc_url( Choir_Rehearsal_Pages::get_library_url() ); ?>">
-				&larr; <?php esc_html_e( 'Back to song list', 'choir-rehearsal' ); ?>
+				&larr; <?php esc_html_e( 'Back to song list', 'compath-choir-rehearsal' ); ?>
 			</a>
 		</p>
 		<?php
@@ -379,7 +379,7 @@ final class Choir_Rehearsal_Admin {
 		?>
 		<div class="choir-submitbox-back">
 			<a class="button choir-back-to-list choir-back-to-list--sticky" href="<?php echo esc_url( Choir_Rehearsal_Pages::get_library_url() ); ?>">
-				&larr; <?php esc_html_e( 'Back to song list', 'choir-rehearsal' ); ?>
+				&larr; <?php esc_html_e( 'Back to song list', 'compath-choir-rehearsal' ); ?>
 			</a>
 		</div>
 		<?php
@@ -395,9 +395,9 @@ final class Choir_Rehearsal_Admin {
 		<p class="choir-song-edit-intro description">
 			<?php
 			if ( Choir_Rehearsal_Edition::can_record() ) {
-				esc_html_e( 'Add the song title, upload a PDF score, then record or upload each voice part.', 'choir-rehearsal' );
+				esc_html_e( 'Add the song title, upload a PDF score, then record or upload each voice part.', 'compath-choir-rehearsal' );
 			} else {
-				esc_html_e( 'Add the song title, upload a PDF score, then upload each voice part (up to 4 tracks in Lite).', 'choir-rehearsal' );
+				esc_html_e( 'Add the song title, upload a PDF score, then upload each voice part (up to 4 tracks in Lite).', 'compath-choir-rehearsal' );
 			}
 			?>
 		</p>
@@ -409,21 +409,21 @@ final class Choir_Rehearsal_Admin {
 				id="choir-toggle-public"
 				class="button choir-make-public<?php echo $is_public ? ' is-public' : ''; ?>"
 				aria-pressed="<?php echo $is_public ? 'true' : 'false'; ?>"
-				title="<?php echo esc_attr( $is_public ? __( 'Make private', 'choir-rehearsal' ) : __( 'Make public', 'choir-rehearsal' ) ); ?>"
+				title="<?php echo esc_attr( $is_public ? __( 'Make private', 'compath-choir-rehearsal' ) : __( 'Make public', 'compath-choir-rehearsal' ) ); ?>"
 			>
 				<span class="choir-make-public__icon" aria-hidden="true">
 					<?php echo self::icon_svg( 'globe' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 				</span>
 				<span class="choir-make-public__label">
-					<?php echo esc_html( $is_public ? __( 'Make private', 'choir-rehearsal' ) : __( 'Make public', 'choir-rehearsal' ) ); ?>
+					<?php echo esc_html( $is_public ? __( 'Make private', 'compath-choir-rehearsal' ) : __( 'Make public', 'compath-choir-rehearsal' ) ); ?>
 				</span>
 			</button>
 			<span class="choir-song-visibility__hint description">
 				<?php
 				echo esc_html(
 					$is_public
-						? __( 'Anyone can view and listen without signing in.', 'choir-rehearsal' )
-						: __( 'Only signed-in users can access this song (when login is required).', 'choir-rehearsal' )
+						? __( 'Anyone can view and listen without signing in.', 'compath-choir-rehearsal' )
+						: __( 'Only signed-in users can access this song (when login is required).', 'compath-choir-rehearsal' )
 				);
 				?>
 			</span>
@@ -434,7 +434,7 @@ final class Choir_Rehearsal_Admin {
 	public static function add_meta_boxes(): void {
 		add_meta_box(
 			'choir-rehearsal-score',
-			__( 'Sheet Music (PDF)', 'choir-rehearsal' ),
+			__( 'Sheet Music (PDF)', 'compath-choir-rehearsal' ),
 			array( self::class, 'render_score_metabox' ),
 			Choir_Rehearsal_Post_Types::SONG,
 			'normal',
@@ -443,7 +443,7 @@ final class Choir_Rehearsal_Admin {
 
 		add_meta_box(
 			'choir-rehearsal-tracks',
-			__( 'Voice Tracks', 'choir-rehearsal' ),
+			__( 'Voice Tracks', 'compath-choir-rehearsal' ),
 			array( self::class, 'render_tracks_metabox' ),
 			Choir_Rehearsal_Post_Types::SONG,
 			'normal',
@@ -514,8 +514,8 @@ final class Choir_Rehearsal_Admin {
 				'choirRehearsalPdf',
 				array(
 					'workerSrc' => Choir_Rehearsal_Distribution::pdfjs_worker_url(),
-					'expand'    => __( 'Expand PDF', 'choir-rehearsal' ),
-					'closeFs'   => __( 'Close full screen', 'choir-rehearsal' ),
+					'expand'    => __( 'Expand PDF', 'compath-choir-rehearsal' ),
+					'closeFs'   => __( 'Close full screen', 'compath-choir-rehearsal' ),
 				)
 			);
 			$admin_deps[] = 'choir-rehearsal-pdf';
@@ -539,10 +539,10 @@ final class Choir_Rehearsal_Admin {
 				'choir-rehearsal-player',
 				'choirRehearsalPlayer',
 				array(
-					'nowPlaying' => __( 'Now playing', 'choir-rehearsal' ),
-					'play'       => __( 'Play', 'choir-rehearsal' ),
-					'pause'      => __( 'Pause', 'choir-rehearsal' ),
-					'close'      => __( 'Close player', 'choir-rehearsal' ),
+					'nowPlaying' => __( 'Now playing', 'compath-choir-rehearsal' ),
+					'play'       => __( 'Play', 'compath-choir-rehearsal' ),
+					'pause'      => __( 'Pause', 'compath-choir-rehearsal' ),
+					'close'      => __( 'Close player', 'compath-choir-rehearsal' ),
 				)
 			);
 			wp_enqueue_script(
@@ -556,8 +556,8 @@ final class Choir_Rehearsal_Admin {
 				'choir-rehearsal-piano',
 				'choirRehearsalPiano',
 				array(
-					'open'  => __( 'Open piano', 'choir-rehearsal' ),
-					'close' => __( 'Close piano', 'choir-rehearsal' ),
+					'open'  => __( 'Open piano', 'compath-choir-rehearsal' ),
+					'close' => __( 'Close piano', 'compath-choir-rehearsal' ),
 				)
 			);
 			wp_enqueue_script(
@@ -571,10 +571,10 @@ final class Choir_Rehearsal_Admin {
 				'choir-rehearsal-metronome',
 				'choirRehearsalMetronome',
 				array(
-					'open'  => __( 'Open metronome', 'choir-rehearsal' ),
-					'close' => __( 'Close metronome', 'choir-rehearsal' ),
-					'start' => __( 'Start', 'choir-rehearsal' ),
-					'stop'  => __( 'Stop', 'choir-rehearsal' ),
+					'open'  => __( 'Open metronome', 'compath-choir-rehearsal' ),
+					'close' => __( 'Close metronome', 'compath-choir-rehearsal' ),
+					'start' => __( 'Start', 'compath-choir-rehearsal' ),
+					'stop'  => __( 'Stop', 'compath-choir-rehearsal' ),
 				)
 			);
 		}
@@ -593,44 +593,44 @@ final class Choir_Rehearsal_Admin {
 				'upgradeUrl'     => Choir_Rehearsal_Edition::upgrade_url(),
 				'trackLimitMsg'  => sprintf(
 					/* translators: %d: maximum track count */
-					__( 'Lite edition allows up to %d voice tracks per song. Upgrade to Pro for unlimited tracks, microphone recording, Play preview, and embedded PDF in the editor.', 'choir-rehearsal' ),
+					__( 'Lite edition allows up to %d voice tracks per song. Upgrade to Pro for unlimited tracks, microphone recording, Play preview, and embedded PDF in the editor.', 'compath-choir-rehearsal' ),
 					Choir_Rehearsal_Edition::LITE_MAX_TRACKS
 				),
-				'selectAudio'    => __( 'Upload', 'choir-rehearsal' ),
-				'recordAudio'    => __( 'Record', 'choir-rehearsal' ),
-				'playAudio'      => __( 'Play', 'choir-rehearsal' ),
-				'useAudio'       => __( 'Use this audio', 'choir-rehearsal' ),
-				'removeTrack'    => __( 'Remove', 'choir-rehearsal' ),
-				'trackLabel'     => __( 'Track', 'choir-rehearsal' ),
-				'noAudio'        => __( 'No audio selected', 'choir-rehearsal' ),
-				'selectPdf'      => __( 'Select PDF', 'choir-rehearsal' ),
-				'usePdf'         => __( 'Use this PDF', 'choir-rehearsal' ),
-				'noPdf'          => __( 'No PDF selected', 'choir-rehearsal' ),
-				'removePdf'      => __( 'Remove PDF', 'choir-rehearsal' ),
-				'sheetMusic'     => __( 'Sheet music', 'choir-rehearsal' ),
-				'prevPage'       => __( 'Previous', 'choir-rehearsal' ),
-				'nextPage'       => __( 'Next', 'choir-rehearsal' ),
-				'swipeHint'      => __( 'Swipe left or right to change pages', 'choir-rehearsal' ),
-				'startRecording' => __( 'Start recording', 'choir-rehearsal' ),
-				'stopRecording'  => __( 'Stop', 'choir-rehearsal' ),
-				'pauseRecording' => __( 'Pause recording', 'choir-rehearsal' ),
-				'resumeRecording'=> __( 'Resume recording', 'choir-rehearsal' ),
-				'useRecording'   => __( 'Use recording', 'choir-rehearsal' ),
-				'cancelRecording'=> __( 'Cancel', 'choir-rehearsal' ),
-				'openPiano'      => __( 'Open piano', 'choir-rehearsal' ),
-				'openMetronome'  => __( 'Open metronome', 'choir-rehearsal' ),
-				'recording'      => __( 'Recording…', 'choir-rehearsal' ),
-				'recordingPaused'=> __( 'Paused', 'choir-rehearsal' ),
-				'readyToRecord'  => __( 'Click start and sing your voice part.', 'choir-rehearsal' ),
-				'uploading'      => __( 'Uploading…', 'choir-rehearsal' ),
-				'micDenied'      => __( 'Microphone access was denied.', 'choir-rehearsal' ),
-				'micUnavailable' => __( 'Microphone recording is not supported in this browser.', 'choir-rehearsal' ),
-				'uploadFailed'   => __( 'Upload failed. Please try again.', 'choir-rehearsal' ),
-				'saveSongFirst'  => __( 'Save the song first, then you can record voice tracks.', 'choir-rehearsal' ),
-				'makePublic'     => __( 'Make public', 'choir-rehearsal' ),
-				'makePrivate'    => __( 'Make private', 'choir-rehearsal' ),
-				'publicHint'     => __( 'Anyone can view and listen without signing in.', 'choir-rehearsal' ),
-				'privateHint'    => __( 'Only signed-in users can access this song (when login is required).', 'choir-rehearsal' ),
+				'selectAudio'    => __( 'Upload', 'compath-choir-rehearsal' ),
+				'recordAudio'    => __( 'Record', 'compath-choir-rehearsal' ),
+				'playAudio'      => __( 'Play', 'compath-choir-rehearsal' ),
+				'useAudio'       => __( 'Use this audio', 'compath-choir-rehearsal' ),
+				'removeTrack'    => __( 'Remove', 'compath-choir-rehearsal' ),
+				'trackLabel'     => __( 'Track', 'compath-choir-rehearsal' ),
+				'noAudio'        => __( 'No audio selected', 'compath-choir-rehearsal' ),
+				'selectPdf'      => __( 'Select PDF', 'compath-choir-rehearsal' ),
+				'usePdf'         => __( 'Use this PDF', 'compath-choir-rehearsal' ),
+				'noPdf'          => __( 'No PDF selected', 'compath-choir-rehearsal' ),
+				'removePdf'      => __( 'Remove PDF', 'compath-choir-rehearsal' ),
+				'sheetMusic'     => __( 'Sheet music', 'compath-choir-rehearsal' ),
+				'prevPage'       => __( 'Previous', 'compath-choir-rehearsal' ),
+				'nextPage'       => __( 'Next', 'compath-choir-rehearsal' ),
+				'swipeHint'      => __( 'Swipe left or right to change pages', 'compath-choir-rehearsal' ),
+				'startRecording' => __( 'Start recording', 'compath-choir-rehearsal' ),
+				'stopRecording'  => __( 'Stop', 'compath-choir-rehearsal' ),
+				'pauseRecording' => __( 'Pause recording', 'compath-choir-rehearsal' ),
+				'resumeRecording'=> __( 'Resume recording', 'compath-choir-rehearsal' ),
+				'useRecording'   => __( 'Use recording', 'compath-choir-rehearsal' ),
+				'cancelRecording'=> __( 'Cancel', 'compath-choir-rehearsal' ),
+				'openPiano'      => __( 'Open piano', 'compath-choir-rehearsal' ),
+				'openMetronome'  => __( 'Open metronome', 'compath-choir-rehearsal' ),
+				'recording'      => __( 'Recording…', 'compath-choir-rehearsal' ),
+				'recordingPaused'=> __( 'Paused', 'compath-choir-rehearsal' ),
+				'readyToRecord'  => __( 'Click start and sing your voice part.', 'compath-choir-rehearsal' ),
+				'uploading'      => __( 'Uploading…', 'compath-choir-rehearsal' ),
+				'micDenied'      => __( 'Microphone access was denied.', 'compath-choir-rehearsal' ),
+				'micUnavailable' => __( 'Microphone recording is not supported in this browser.', 'compath-choir-rehearsal' ),
+				'uploadFailed'   => __( 'Upload failed. Please try again.', 'compath-choir-rehearsal' ),
+				'saveSongFirst'  => __( 'Save the song first, then you can record voice tracks.', 'compath-choir-rehearsal' ),
+				'makePublic'     => __( 'Make public', 'compath-choir-rehearsal' ),
+				'makePrivate'    => __( 'Make private', 'compath-choir-rehearsal' ),
+				'publicHint'     => __( 'Anyone can view and listen without signing in.', 'compath-choir-rehearsal' ),
+				'privateHint'    => __( 'Only signed-in users can access this song (when login is required).', 'compath-choir-rehearsal' ),
 			)
 		);
 	}
@@ -665,19 +665,19 @@ final class Choir_Rehearsal_Admin {
 			<p class="description">
 				<?php
 				if ( $can_view ) {
-					esc_html_e( 'Upload a PDF score. It appears below like on the public song page — swipe left/right to change pages while you record.', 'choir-rehearsal' );
+					esc_html_e( 'Upload a PDF score. It appears below like on the public song page — swipe left/right to change pages while you record.', 'compath-choir-rehearsal' );
 				} else {
-					esc_html_e( 'Upload a PDF score for this song. Singers will see it with page navigation on the song page. Pro embeds the score here in the editor.', 'choir-rehearsal' );
+					esc_html_e( 'Upload a PDF score for this song. Singers will see it with page navigation on the song page. Pro embeds the score here in the editor.', 'compath-choir-rehearsal' );
 				}
 				?>
 			</p>
 			<input type="hidden" id="choir-score-pdf-id" name="choir_score_pdf_id" value="<?php echo esc_attr( (string) $pdf_id ); ?>" />
 			<input type="hidden" id="choir-score-pdf-url" value="<?php echo esc_url( $pdf_url ); ?>" />
 			<div class="choir-score-toolbar">
-				<span id="choir-score-pdf-name" class="choir-score-pdf-name"><?php echo esc_html( $filename ?: __( 'No PDF selected', 'choir-rehearsal' ) ); ?></span>
+				<span id="choir-score-pdf-name" class="choir-score-pdf-name"><?php echo esc_html( $filename ?: __( 'No PDF selected', 'compath-choir-rehearsal' ) ); ?></span>
 				<div class="choir-score-toolbar__actions">
-					<button type="button" class="button" id="choir-select-pdf"><?php esc_html_e( 'Upload / Select PDF', 'choir-rehearsal' ); ?></button>
-					<button type="button" class="button-link-delete" id="choir-remove-pdf"><?php esc_html_e( 'Remove PDF', 'choir-rehearsal' ); ?></button>
+					<button type="button" class="button" id="choir-select-pdf"><?php esc_html_e( 'Upload / Select PDF', 'compath-choir-rehearsal' ); ?></button>
+					<button type="button" class="button-link-delete" id="choir-remove-pdf"><?php esc_html_e( 'Remove PDF', 'compath-choir-rehearsal' ); ?></button>
 				</div>
 			</div>
 			<?php if ( $can_view ) : ?>
@@ -686,23 +686,23 @@ final class Choir_Rehearsal_Admin {
 					class="choir-pdf-viewer<?php echo '' === $pdf_url ? ' is-empty' : ''; ?>"
 					data-pdf-url="<?php echo esc_url( $pdf_url ); ?>"
 				>
-					<button type="button" class="choir-pdf-expand" aria-label="<?php esc_attr_e( 'Expand PDF', 'choir-rehearsal' ); ?>">
-						<span class="screen-reader-text"><?php esc_html_e( 'Expand PDF', 'choir-rehearsal' ); ?></span>
+					<button type="button" class="choir-pdf-expand" aria-label="<?php esc_attr_e( 'Expand PDF', 'compath-choir-rehearsal' ); ?>">
+						<span class="screen-reader-text"><?php esc_html_e( 'Expand PDF', 'compath-choir-rehearsal' ); ?></span>
 						<svg class="choir-pdf-toolbar-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path fill="#ffffff" d="M4 9V4h5v2H6v3H4zm10-5h5v5h-2V6h-3V4zM4 15h2v3h3v2H4v-5zm16 0v5h-5v-2h3v-3h2z"/></svg>
 					</button>
-					<button type="button" class="choir-pdf-close-fs" hidden aria-label="<?php esc_attr_e( 'Close full screen', 'choir-rehearsal' ); ?>">
-						<span class="screen-reader-text"><?php esc_html_e( 'Close full screen', 'choir-rehearsal' ); ?></span>
+					<button type="button" class="choir-pdf-close-fs" hidden aria-label="<?php esc_attr_e( 'Close full screen', 'compath-choir-rehearsal' ); ?>">
+						<span class="screen-reader-text"><?php esc_html_e( 'Close full screen', 'compath-choir-rehearsal' ); ?></span>
 						<svg class="choir-pdf-toolbar-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path fill="#ffffff" d="M6.4 5l5.6 5.6L17.6 5 19 6.4 13.4 12 19 17.6 17.6 19 12 13.4 6.4 19 5 17.6 10.6 12 5 6.4 6.4 5z"/></svg>
 					</button>
-					<div class="choir-pdf-viewer__canvas-wrap" title="<?php esc_attr_e( 'Swipe to change pages · pinch to zoom', 'choir-rehearsal' ); ?>">
+					<div class="choir-pdf-viewer__canvas-wrap" title="<?php esc_attr_e( 'Swipe to change pages · pinch to zoom', 'compath-choir-rehearsal' ); ?>">
 						<canvas class="choir-pdf-viewer__canvas"></canvas>
-						<p class="choir-pdf-viewer__empty"><?php esc_html_e( 'No PDF selected yet.', 'choir-rehearsal' ); ?></p>
+						<p class="choir-pdf-viewer__empty"><?php esc_html_e( 'No PDF selected yet.', 'compath-choir-rehearsal' ); ?></p>
 					</div>
 					<div class="choir-pdf-viewer__controls">
-						<button type="button" class="choir-pdf-prev" aria-label="<?php esc_attr_e( 'Previous page', 'choir-rehearsal' ); ?>">&larr; <?php esc_html_e( 'Previous', 'choir-rehearsal' ); ?></button>
+						<button type="button" class="choir-pdf-prev" aria-label="<?php esc_attr_e( 'Previous page', 'compath-choir-rehearsal' ); ?>">&larr; <?php esc_html_e( 'Previous', 'compath-choir-rehearsal' ); ?></button>
 						<span class="choir-pdf-page">1 / 1</span>
-						<button type="button" class="choir-pdf-next" aria-label="<?php esc_attr_e( 'Next page', 'choir-rehearsal' ); ?>"><?php esc_html_e( 'Next', 'choir-rehearsal' ); ?> &rarr;</button>
-						<button type="button" class="choir-pdf-exit-fs" hidden aria-label="<?php esc_attr_e( 'Close full screen', 'choir-rehearsal' ); ?>">&times; <?php esc_html_e( 'Close', 'choir-rehearsal' ); ?></button>
+						<button type="button" class="choir-pdf-next" aria-label="<?php esc_attr_e( 'Next page', 'compath-choir-rehearsal' ); ?>"><?php esc_html_e( 'Next', 'compath-choir-rehearsal' ); ?> &rarr;</button>
+						<button type="button" class="choir-pdf-exit-fs" hidden aria-label="<?php esc_attr_e( 'Close full screen', 'compath-choir-rehearsal' ); ?>">&times; <?php esc_html_e( 'Close', 'compath-choir-rehearsal' ); ?></button>
 					</div>
 				</div>
 			<?php endif; ?>
@@ -719,14 +719,14 @@ final class Choir_Rehearsal_Admin {
 			<p class="description">
 				<?php
 				if ( Choir_Rehearsal_Edition::can_record() ) {
-					esc_html_e( 'Voice parts look like the public song page. Use the icons on the right to upload, record, or play.', 'choir-rehearsal' );
+					esc_html_e( 'Voice parts look like the public song page. Use the icons on the right to upload, record, or play.', 'compath-choir-rehearsal' );
 				} else {
 					echo wp_kses_post(
 						sprintf(
 							/* translators: 1: max tracks, 2: upgrade link HTML */
-							__( 'Add one voice part per row (up to %1$d in Lite). Upload audio with the icon on the right. %2$s', 'choir-rehearsal' ),
+							__( 'Add one voice part per row (up to %1$d in Lite). Upload audio with the icon on the right. %2$s', 'compath-choir-rehearsal' ),
 							Choir_Rehearsal_Edition::LITE_MAX_TRACKS,
-							'<a class="button button-small" href="' . esc_url( Choir_Rehearsal_Edition::upgrade_url() ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Buy Pro', 'choir-rehearsal' ) . '</a>'
+							'<a class="button button-small" href="' . esc_url( Choir_Rehearsal_Edition::upgrade_url() ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Buy Pro', 'compath-choir-rehearsal' ) . '</a>'
 						)
 					);
 				}
@@ -749,7 +749,7 @@ final class Choir_Rehearsal_Admin {
 					<?php endforeach; ?>
 				<?php endif; ?>
 			</ul>
-			<p><button type="button" class="button" id="choir-add-track"><?php esc_html_e( 'Add track', 'choir-rehearsal' ); ?></button></p>
+			<p><button type="button" class="button" id="choir-add-track"><?php esc_html_e( 'Add track', 'compath-choir-rehearsal' ); ?></button></p>
 		</div>
 		<?php
 	}
@@ -778,27 +778,27 @@ final class Choir_Rehearsal_Admin {
 			<input type="hidden" name="choir_tracks[<?php echo esc_attr( (string) $index ); ?>][id]" value="<?php echo esc_attr( (string) $track_id ); ?>" />
 			<input type="hidden" class="choir-audio-id" name="choir_tracks[<?php echo esc_attr( (string) $index ); ?>][audio_id]" value="<?php echo esc_attr( (string) $audio_id ); ?>" />
 			<div class="choir-track-item__main">
-				<select class="choir-voice-select choir-track-voice" name="choir_tracks[<?php echo esc_attr( (string) $index ); ?>][voice]" aria-label="<?php esc_attr_e( 'Voice', 'choir-rehearsal' ); ?>">
+				<select class="choir-voice-select choir-track-voice" name="choir_tracks[<?php echo esc_attr( (string) $index ); ?>][voice]" aria-label="<?php esc_attr_e( 'Voice', 'compath-choir-rehearsal' ); ?>">
 					<?php foreach ( $voices as $slug => $label ) : ?>
 						<option value="<?php echo esc_attr( $slug ); ?>" <?php selected( $voice_slug, $slug ); ?>><?php echo esc_html( $label ); ?></option>
 					<?php endforeach; ?>
 				</select>
-				<span class="choir-audio-name screen-reader-text"><?php echo esc_html( $filename ?: __( 'No audio selected', 'choir-rehearsal' ) ); ?></span>
+				<span class="choir-audio-name screen-reader-text"><?php echo esc_html( $filename ?: __( 'No audio selected', 'compath-choir-rehearsal' ) ); ?></span>
 			</div>
 			<div
 				class="choir-track-waveform<?php echo '' === $audio_url ? ' is-empty' : ''; ?>"
 				data-audio-url="<?php echo esc_url( $audio_url ); ?>"
-				title="<?php echo esc_attr( $filename ?: __( 'No audio selected', 'choir-rehearsal' ) ); ?>"
+				title="<?php echo esc_attr( $filename ?: __( 'No audio selected', 'compath-choir-rehearsal' ) ); ?>"
 				aria-hidden="true"
 			>
 				<canvas class="choir-track-waveform__canvas"></canvas>
 			</div>
 			<div class="choir-track-item__actions">
-				<button type="button" class="choir-icon-btn choir-select-audio" title="<?php esc_attr_e( 'Upload', 'choir-rehearsal' ); ?>" aria-label="<?php esc_attr_e( 'Upload', 'choir-rehearsal' ); ?>">
+				<button type="button" class="choir-icon-btn choir-select-audio" title="<?php esc_attr_e( 'Upload', 'compath-choir-rehearsal' ); ?>" aria-label="<?php esc_attr_e( 'Upload', 'compath-choir-rehearsal' ); ?>">
 					<?php echo self::icon_svg( 'upload' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 				</button>
 				<?php if ( Choir_Rehearsal_Edition::can_record() ) : ?>
-					<button type="button" class="choir-icon-btn choir-record-audio" title="<?php esc_attr_e( 'Record', 'choir-rehearsal' ); ?>" aria-label="<?php esc_attr_e( 'Record', 'choir-rehearsal' ); ?>">
+					<button type="button" class="choir-icon-btn choir-record-audio" title="<?php esc_attr_e( 'Record', 'compath-choir-rehearsal' ); ?>" aria-label="<?php esc_attr_e( 'Record', 'compath-choir-rehearsal' ); ?>">
 						<?php echo self::icon_svg( 'record' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 					</button>
 				<?php endif; ?>
@@ -806,8 +806,8 @@ final class Choir_Rehearsal_Admin {
 					<button
 						type="button"
 						class="choir-icon-btn choir-play-track"
-						title="<?php esc_attr_e( 'Play', 'choir-rehearsal' ); ?>"
-						aria-label="<?php esc_attr_e( 'Play', 'choir-rehearsal' ); ?>"
+						title="<?php esc_attr_e( 'Play', 'compath-choir-rehearsal' ); ?>"
+						aria-label="<?php esc_attr_e( 'Play', 'compath-choir-rehearsal' ); ?>"
 						data-track-url="<?php echo esc_url( $audio_url ); ?>"
 						data-track-title="<?php echo esc_attr( $play_title ); ?>"
 						<?php disabled( ! $can_play ); ?>
@@ -815,23 +815,23 @@ final class Choir_Rehearsal_Admin {
 						<?php echo self::icon_svg( 'play' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 					</button>
 				<?php endif; ?>
-				<button type="button" class="choir-icon-btn choir-icon-btn--danger choir-remove-track" title="<?php esc_attr_e( 'Remove', 'choir-rehearsal' ); ?>" aria-label="<?php esc_attr_e( 'Remove', 'choir-rehearsal' ); ?>">
+				<button type="button" class="choir-icon-btn choir-icon-btn--danger choir-remove-track" title="<?php esc_attr_e( 'Remove', 'compath-choir-rehearsal' ); ?>" aria-label="<?php esc_attr_e( 'Remove', 'compath-choir-rehearsal' ); ?>">
 					<?php echo self::icon_svg( 'remove' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 				</button>
 			</div>
 			<?php if ( Choir_Rehearsal_Edition::can_record() ) : ?>
 			<div class="choir-recorder-panel is-hidden" aria-hidden="true">
-				<p class="choir-recorder-panel__status"><?php esc_html_e( 'Click start and sing your voice part.', 'choir-rehearsal' ); ?></p>
+				<p class="choir-recorder-panel__status"><?php esc_html_e( 'Click start and sing your voice part.', 'compath-choir-rehearsal' ); ?></p>
 				<p class="choir-recorder-panel__timer">00:00</p>
 				<audio class="choir-recorder-panel__preview" controls hidden></audio>
 				<div class="choir-recorder-panel__actions">
 					<div class="choir-recorder-panel__start-row">
-						<button type="button" class="button button-primary choir-recorder-start"><?php esc_html_e( 'Start recording', 'choir-rehearsal' ); ?></button>
+						<button type="button" class="button button-primary choir-recorder-start"><?php esc_html_e( 'Start recording', 'compath-choir-rehearsal' ); ?></button>
 						<button
 							type="button"
 							class="button choir-recorder-piano"
-							title="<?php esc_attr_e( 'Open piano', 'choir-rehearsal' ); ?>"
-							aria-label="<?php esc_attr_e( 'Open piano', 'choir-rehearsal' ); ?>"
+							title="<?php esc_attr_e( 'Open piano', 'compath-choir-rehearsal' ); ?>"
+							aria-label="<?php esc_attr_e( 'Open piano', 'compath-choir-rehearsal' ); ?>"
 							aria-expanded="false"
 							aria-controls="choir-piano-sheet"
 						>
@@ -840,17 +840,17 @@ final class Choir_Rehearsal_Admin {
 						<button
 							type="button"
 							class="button choir-recorder-metronome"
-							title="<?php esc_attr_e( 'Open metronome', 'choir-rehearsal' ); ?>"
-							aria-label="<?php esc_attr_e( 'Open metronome', 'choir-rehearsal' ); ?>"
+							title="<?php esc_attr_e( 'Open metronome', 'compath-choir-rehearsal' ); ?>"
+							aria-label="<?php esc_attr_e( 'Open metronome', 'compath-choir-rehearsal' ); ?>"
 							aria-expanded="false"
 							aria-controls="choir-metronome-sheet"
 						>
 							<?php echo self::icon_svg( 'metronome' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 						</button>
 					</div>
-					<button type="button" class="button choir-recorder-stop" disabled><?php esc_html_e( 'Stop', 'choir-rehearsal' ); ?></button>
-					<button type="button" class="button button-primary choir-recorder-use" disabled><?php esc_html_e( 'Use recording', 'choir-rehearsal' ); ?></button>
-					<button type="button" class="button choir-recorder-cancel"><?php esc_html_e( 'Cancel', 'choir-rehearsal' ); ?></button>
+					<button type="button" class="button choir-recorder-stop" disabled><?php esc_html_e( 'Stop', 'compath-choir-rehearsal' ); ?></button>
+					<button type="button" class="button button-primary choir-recorder-use" disabled><?php esc_html_e( 'Use recording', 'compath-choir-rehearsal' ); ?></button>
+					<button type="button" class="button choir-recorder-cancel"><?php esc_html_e( 'Cancel', 'compath-choir-rehearsal' ); ?></button>
 				</div>
 			</div>
 			<?php endif; ?>
@@ -957,7 +957,7 @@ final class Choir_Rehearsal_Admin {
 				'post_parent' => $post_id,
 				'post_title'  => sprintf(
 					/* translators: 1: song title, 2: voice label */
-					__( '%1$s — %2$s', 'choir-rehearsal' ),
+					__( '%1$s — %2$s', 'compath-choir-rehearsal' ),
 					$post->post_title,
 					$voice_lbl
 				),

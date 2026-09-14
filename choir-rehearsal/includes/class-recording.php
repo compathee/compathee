@@ -75,14 +75,14 @@ final class Choir_Rehearsal_Recording {
 	public static function handle_upload(): void {
 		if ( ! Choir_Rehearsal_Edition::can_record() ) {
 			wp_send_json_error(
-				array( 'message' => __( 'Microphone recording is available in Choir Rehearsal Pro.', 'choir-rehearsal' ) ),
+				array( 'message' => __( 'Microphone recording is available in Choir Rehearsal Pro.', 'compath-choir-rehearsal' ) ),
 				403
 			);
 		}
 
 		if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( (string) $_POST['nonce'] ) ), 'choir_rehearsal_recording' ) ) {
 			wp_send_json_error(
-				array( 'message' => __( 'Security check failed. Reload the page and try again.', 'choir-rehearsal' ) ),
+				array( 'message' => __( 'Security check failed. Reload the page and try again.', 'compath-choir-rehearsal' ) ),
 				403
 			);
 		}
@@ -90,14 +90,14 @@ final class Choir_Rehearsal_Recording {
 		$post_id = isset( $_POST['post_id'] ) ? absint( wp_unslash( $_POST['post_id'] ) ) : 0;
 		if ( $post_id <= 0 || ! current_user_can( 'edit_post', $post_id ) ) {
 			wp_send_json_error(
-				array( 'message' => __( 'You are not allowed to upload recordings for this song.', 'choir-rehearsal' ) ),
+				array( 'message' => __( 'You are not allowed to upload recordings for this song.', 'compath-choir-rehearsal' ) ),
 				403
 			);
 		}
 
 		if ( empty( $_FILES['recording'] ) || ! is_array( $_FILES['recording'] ) ) {
 			wp_send_json_error(
-				array( 'message' => __( 'No recording was uploaded.', 'choir-rehearsal' ) ),
+				array( 'message' => __( 'No recording was uploaded.', 'compath-choir-rehearsal' ) ),
 				400
 			);
 		}
@@ -120,7 +120,7 @@ final class Choir_Rehearsal_Recording {
 
 		if ( empty( $file['tmp_name'] ) || ! is_uploaded_file( (string) $file['tmp_name'] ) ) {
 			wp_send_json_error(
-				array( 'message' => __( 'Recording upload was blocked by the server.', 'choir-rehearsal' ) ),
+				array( 'message' => __( 'Recording upload was blocked by the server.', 'compath-choir-rehearsal' ) ),
 				400
 			);
 		}
@@ -131,7 +131,7 @@ final class Choir_Rehearsal_Recording {
 
 		$voice_slug = isset( $_POST['voice'] ) ? sanitize_key( wp_unslash( (string) $_POST['voice'] ) ) : 'other';
 		$song       = get_post( $post_id );
-		$song_title = $song instanceof WP_Post ? $song->post_title : __( 'Song', 'choir-rehearsal' );
+		$song_title = $song instanceof WP_Post ? $song->post_title : __( 'Song', 'compath-choir-rehearsal' );
 		$voice_lbl  = Choir_Rehearsal_Voice_Types::get_label( $voice_slug );
 		$extension  = self::extension_from_filename( (string) ( $file['name'] ?? '' ), (string) ( $file['type'] ?? '' ) );
 		$filename   = self::build_filename( $song_title, $voice_lbl, $extension );
@@ -168,7 +168,7 @@ final class Choir_Rehearsal_Recording {
 
 		if ( is_wp_error( $attachment_id ) || ! $attachment_id ) {
 			wp_send_json_error(
-				array( 'message' => __( 'Could not save the recording in the Media Library.', 'choir-rehearsal' ) ),
+				array( 'message' => __( 'Could not save the recording in the Media Library.', 'compath-choir-rehearsal' ) ),
 				500
 			);
 		}
@@ -228,10 +228,10 @@ final class Choir_Rehearsal_Recording {
 
 	private static function upload_error_message( int $code ): string {
 		return match ( $code ) {
-			UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE => __( 'Recording is too large for the server upload limit.', 'choir-rehearsal' ),
-			UPLOAD_ERR_PARTIAL  => __( 'Recording was only partially uploaded.', 'choir-rehearsal' ),
-			UPLOAD_ERR_NO_FILE  => __( 'No recording file was received.', 'choir-rehearsal' ),
-			default             => __( 'Recording upload failed.', 'choir-rehearsal' ),
+			UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE => __( 'Recording is too large for the server upload limit.', 'compath-choir-rehearsal' ),
+			UPLOAD_ERR_PARTIAL  => __( 'Recording was only partially uploaded.', 'compath-choir-rehearsal' ),
+			UPLOAD_ERR_NO_FILE  => __( 'No recording file was received.', 'compath-choir-rehearsal' ),
+			default             => __( 'Recording upload failed.', 'compath-choir-rehearsal' ),
 		};
 	}
 

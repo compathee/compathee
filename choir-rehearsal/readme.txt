@@ -4,7 +4,7 @@ Tags: choir, audio, rehearsal, voice parts, music
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 0.4.45
+Stable tag: 0.4.46
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -38,7 +38,7 @@ WordPress.org builds receive plugin updates only through WordPress.org. GitHub-d
 
 == Installation ==
 
-1. Upload the plugin folder to `/wp-content/plugins/choir-rehearsal`
+1. Upload the plugin folder to `/wp-content/plugins/compath-choir-rehearsal`
 2. Activate the plugin through the 'Plugins' menu in WordPress
 3. Go to **Choir Rehearsal → Add Song**
 4. Add voice tracks and upload audio files
@@ -55,6 +55,10 @@ By default only logged-in users can view `/rehearsal/`. Change this under **Choi
 Yes. Use the shortcode `[choir_rehearsal]`.
 
 == Changelog ==
+
+= 0.4.46 =
+
+* Align text domain with WordPress.org slug (`compath-choir-rehearsal`)
 
 = 0.4.45 =
 
