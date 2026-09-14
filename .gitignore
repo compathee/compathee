@@ -4,3 +4,5 @@ __pycache__/
 .venv/
 venv/
 output/
+!excellent/output/
+!excellent/output/.gitkeep

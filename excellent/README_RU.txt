@@ -12,6 +12,14 @@ Excellent Books - объединение Excel отчетов
 - scripts/combine_excellent_reports.py
   Основной Python-скрипт.
 
+- input/
+  Необязательная папка для исходных .xlsx. Диалог выбора файлов
+  может открыться здесь, но файлы можно выбрать из любой папки.
+
+- output/
+  Папка для готового отчета. По умолчанию файл сохраняется как
+  output/excellent-combined-report.xlsx.
+
 
 Как установить клиенту
 ----------------------
@@ -25,6 +33,8 @@ Excellent Books - объединение Excel отчетов
   C:\temp\excellent\run_combine_excellent_reports.bat
   C:\temp\excellent\requirements.txt
   C:\temp\excellent\scripts\combine_excellent_reports.py
+  C:\temp\excellent\input\
+  C:\temp\excellent\output\
 
 
 Как запускать
@@ -35,11 +45,19 @@ Excellent Books - объединение Excel отчетов
 
    C:\temp\excellent\run_combine_excellent_reports.bat
 
-3. Скрипт спросит:
-   - какие исходные .xlsx файлы выбрать;
+3. Скрипт создаст папки input\ и output\, если их еще нет, и спросит:
+   - какие исходные .xlsx файлы выбрать (можно из любой папки,
+     не только из input\);
    - нужен ли справочник объектов .csv/.xlsx;
-   - куда сохранить общий отчет;
+   - куда сохранить общий отчет (по умолчанию
+     output\excellent-combined-report.xlsx);
    - какие префиксы объектных колонок использовать, по умолчанию HK_.
+
+4. После успешного объединения появится окно с числом строк и
+   полным путем к сохраненному файлу. Тот же путь печатается в консоли.
+
+5. Если отменить выбор файлов или произойдет ошибка, появится
+   понятное сообщение, а программа завершится с ошибкой.
 
 
 Что делает скрипт
