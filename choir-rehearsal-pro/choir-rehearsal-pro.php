@@ -3,7 +3,7 @@
  * Plugin Name:       Compath Choir Rehearsal Pro
  * Plugin URI:        https://rehearsal.compath.ee
  * Description:       Unlocks song search, unlimited voice tracks, microphone recording, Play preview, floating PDF score view, and song library backup for Choir Rehearsal.
- * Version:           0.4.47
+ * Version:           0.4.48
  * Requires at least: 6.4
  * Requires PHP:      8.0
  * Author:            Compath OÜ
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 define( 'CHOIR_REHEARSAL_PRO', true );
-define( 'CHOIR_REHEARSAL_PRO_VERSION', '0.4.47' );
+define( 'CHOIR_REHEARSAL_PRO_VERSION', '0.4.48' );
 define( 'CHOIR_REHEARSAL_PRO_FILE', __FILE__ );
 define( 'CHOIR_REHEARSAL_PRO_PATH', plugin_dir_path( __FILE__ ) );
 
@@ -42,6 +42,22 @@ choir_rehearsal_pro_load_includes();
 add_action(
 	'plugins_loaded',
 	static function (): void {
+		if ( class_exists( 'Choir_Rehearsal_Pro_Backup', false ) ) {
+			Choir_Rehearsal_Pro_Backup::register();
+		} else {
+			add_action(
+				'admin_notices',
+				static function (): void {
+					if ( ! current_user_can( 'manage_options' ) ) {
+						return;
+					}
+					echo '<div class="notice notice-warning"><p>';
+					esc_html_e( 'Compath Choir Rehearsal Pro is missing includes/class-backup.php. Re-upload the full Pro plugin folder to enable backup.', 'choir-rehearsal-pro' );
+					echo '</p></div>';
+				}
+			);
+		}
+
 		if ( defined( 'CHOIR_REHEARSAL_VERSION' ) ) {
 			return;
 		}
@@ -54,33 +70,6 @@ add_action(
 				}
 				echo '<div class="notice notice-error"><p>';
 				esc_html_e( 'Compath Choir Rehearsal Pro requires Compath Choir Rehearsal to be installed and active.', 'choir-rehearsal-pro' );
-				echo '</p></div>';
-			}
-		);
-	},
-	5
-);
-
-add_action(
-	'plugins_loaded',
-	static function (): void {
-		if ( ! defined( 'CHOIR_REHEARSAL_VERSION' ) ) {
-			return;
-		}
-
-		if ( class_exists( 'Choir_Rehearsal_Pro_Backup', false ) ) {
-			Choir_Rehearsal_Pro_Backup::register();
-			return;
-		}
-
-		add_action(
-			'admin_notices',
-			static function (): void {
-				if ( ! current_user_can( 'manage_options' ) ) {
-					return;
-				}
-				echo '<div class="notice notice-warning"><p>';
-				esc_html_e( 'Compath Choir Rehearsal Pro is missing includes/class-backup.php. Re-upload the full Pro plugin folder to enable backup.', 'choir-rehearsal-pro' );
 				echo '</p></div>';
 			}
 		);

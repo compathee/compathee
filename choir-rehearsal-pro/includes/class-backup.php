@@ -15,10 +15,67 @@ final class Choir_Rehearsal_Pro_Backup {
 
 	private const FORMAT_VERSION = 1;
 
+	/** @var bool */
+	private static $section_rendered = false;
+
 	public static function register(): void {
 		add_action( 'choir_rehearsal_settings_tools', array( self::class, 'render_settings_section' ) );
+		add_action( 'admin_enqueue_scripts', array( self::class, 'maybe_register_settings_fallback' ) );
+		add_action( 'admin_notices', array( self::class, 'maybe_notice_lite_too_old' ) );
 		add_action( 'admin_post_choir_rehearsal_pro_export_songs', array( self::class, 'handle_export' ) );
 		add_action( 'admin_post_choir_rehearsal_pro_import_songs', array( self::class, 'handle_import' ) );
+	}
+
+	/**
+	 * Old Lite builds (< 0.4.45) never fire choir_rehearsal_settings_tools.
+	 * Render the same section in admin_footer on the Settings screen as a fallback.
+	 */
+	public static function maybe_register_settings_fallback( string $hook ): void {
+		if ( 'choir_song_page_choir-rehearsal-settings' !== $hook ) {
+			return;
+		}
+
+		add_action( 'admin_footer', array( self::class, 'render_settings_section_fallback' ) );
+	}
+
+	public static function render_settings_section_fallback(): void {
+		if ( self::$section_rendered ) {
+			return;
+		}
+
+		echo '<div class="wrap" style="max-width:720px;">';
+		self::render_settings_section();
+		echo '</div>';
+	}
+
+	public static function maybe_notice_lite_too_old(): void {
+		if ( ! self::can_manage_backup() ) {
+			return;
+		}
+
+		$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+		if ( ! $screen || 'choir_song_page_choir-rehearsal-settings' !== $screen->id ) {
+			return;
+		}
+
+		if ( ! defined( 'CHOIR_REHEARSAL_VERSION' ) ) {
+			echo '<div class="notice notice-error"><p>';
+			esc_html_e( 'Backup songs needs Compath Choir Rehearsal (Lite) active and fully loaded.', 'choir-rehearsal-pro' );
+			echo '</p></div>';
+			return;
+		}
+
+		if ( version_compare( (string) CHOIR_REHEARSAL_VERSION, '0.4.45', '<' ) ) {
+			echo '<div class="notice notice-warning"><p>';
+			echo esc_html(
+				sprintf(
+					/* translators: %s: installed Lite version */
+					__( 'Backup songs needs Lite 0.4.45 or newer (you have %s). Update Compath Choir Rehearsal, then reload Settings.', 'choir-rehearsal-pro' ),
+					(string) CHOIR_REHEARSAL_VERSION
+				)
+			);
+			echo '</p></div>';
+		}
 	}
 
 	private static function can_manage_backup(): bool {
@@ -26,21 +83,30 @@ final class Choir_Rehearsal_Pro_Backup {
 	}
 
 	public static function render_settings_section(): void {
+		if ( self::$section_rendered ) {
+			return;
+		}
+
 		if ( ! self::can_manage_backup() ) {
 			return;
 		}
 
-		self::render_notices();
-
-		if ( ! class_exists( 'ZipArchive' ) ) {
-			echo '<div class="notice notice-warning"><p>' . esc_html__( 'ZIP backup requires the PHP Zip extension (ZipArchive). Ask your host to enable it.', 'choir-rehearsal-pro' ) . '</p></div>';
+		if ( ! defined( 'CHOIR_REHEARSAL_VERSION' ) || ! class_exists( 'Choir_Rehearsal_Post_Types', false ) ) {
 			return;
 		}
 
+		self::$section_rendered = true;
+
+		self::render_notices();
+
+		$zip_ok = class_exists( 'ZipArchive' );
 		$song_count = self::count_songs();
 		?>
 		<hr />
 		<h2><?php esc_html_e( 'Backup songs', 'choir-rehearsal-pro' ); ?></h2>
+		<?php if ( ! $zip_ok ) : ?>
+			<div class="notice notice-warning inline"><p><?php esc_html_e( 'ZIP backup requires the PHP Zip extension (ZipArchive). Ask your host to enable it.', 'choir-rehearsal-pro' ); ?></p></div>
+		<?php else : ?>
 		<p class="description">
 			<?php esc_html_e( 'Export the full rehearsal library (songs, voice tracks, audio, and PDF scores) to a .zip file on your computer. Import adds songs from a backup without removing unrelated songs.', 'choir-rehearsal-pro' ); ?>
 		</p>
@@ -85,6 +151,7 @@ final class Choir_Rehearsal_Pro_Backup {
 				<button type="submit" class="button button-secondary"><?php esc_html_e( 'Import', 'choir-rehearsal-pro' ); ?></button>
 			</p>
 		</form>
+		<?php endif; ?>
 		<?php
 	}
 
