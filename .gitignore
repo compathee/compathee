@@ -3,6 +3,5 @@ __pycache__/
 .pytest_cache/
 .venv/
 venv/
-output/
-!excellent/output/
-!excellent/output/.gitkeep
+**/output/**
+!**/output/.gitkeep
