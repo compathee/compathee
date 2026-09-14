@@ -60,6 +60,34 @@ def ensure_work_dirs(root: Path | None = None) -> tuple[Path, Path]:
     return input_dir, output_dir
 
 
+def notify_user(
+    title: str,
+    message: str,
+    *,
+    error: bool = False,
+    use_gui: bool = False,
+) -> None:
+    stream = sys.stderr if error else sys.stdout
+    print(message, file=stream)
+    if not use_gui:
+        return
+    try:
+        import tkinter as tk
+        from tkinter import messagebox
+
+        root = tk.Tk()
+        root.withdraw()
+        try:
+            if error:
+                messagebox.showerror(title, message)
+            else:
+                messagebox.showinfo(title, message)
+        finally:
+            root.destroy()
+    except Exception:
+        return
+
+
 @dataclass(frozen=True)
 class ObjectColumn:
     index: int
@@ -425,6 +453,8 @@ def prompt_text_paths() -> list[Path]:
 
 
 def prompt_interactive(args: argparse.Namespace) -> argparse.Namespace:
+    input_dir, output_dir = ensure_work_dirs()
+    default_output = output_dir / "excellent-combined-report.xlsx"
     try:
         import tkinter as tk
         from tkinter import filedialog, messagebox, simpledialog
@@ -437,13 +467,16 @@ def prompt_interactive(args: argparse.Namespace) -> argparse.Namespace:
         )
         selected_files = filedialog.askopenfilenames(
             title="Choose source Excel reports",
+            initialdir=str(input_dir),
             filetypes=[("Excel files", "*.xlsx"), ("All files", "*.*")],
         )
         if not selected_files:
-            raise SystemExit("No source files selected.")
+            root.destroy()
+            raise SystemExit("Исходные файлы не выбраны.\nNo source files selected.")
 
         object_lookup = filedialog.askopenfilename(
             title="Optional: choose object lookup CSV/XLSX, or Cancel to skip",
+            initialdir=str(input_dir),
             filetypes=[
                 ("Object lookup", "*.csv *.xlsx"),
                 ("CSV files", "*.csv"),
@@ -455,11 +488,13 @@ def prompt_interactive(args: argparse.Namespace) -> argparse.Namespace:
         output_file = filedialog.asksaveasfilename(
             title="Save combined report as",
             defaultextension=".xlsx",
+            initialdir=str(output_dir),
             initialfile="excellent-combined-report.xlsx",
             filetypes=[("Excel workbook", "*.xlsx"), ("CSV file", "*.csv")],
         )
         if not output_file:
-            raise SystemExit("No output file selected.")
+            root.destroy()
+            raise SystemExit("Файл отчета не выбран.\nNo output file selected.")
 
         prefixes_text = simpledialog.askstring(
             "Object column prefixes",
@@ -481,18 +516,18 @@ def prompt_interactive(args: argparse.Namespace) -> argparse.Namespace:
 
     selected_files = prompt_text_paths()
     if not selected_files:
-        raise SystemExit("No source files selected.")
+        raise SystemExit("Исходные файлы не выбраны.\nNo source files selected.")
     object_lookup_text = input(
         "Optional object lookup CSV/XLSX path (press Enter to skip): "
     ).strip().strip('"')
     output_text = input(
-        "Output path [output/excellent-combined-report.xlsx]: "
+        f"Output path [{default_output}]: "
     ).strip().strip('"')
     prefixes_text = input("Object prefixes comma-separated [HK_]: ").strip()
 
     args.files = selected_files
     args.objects = Path(object_lookup_text) if object_lookup_text else None
-    args.output = Path(output_text) if output_text else Path("output/excellent-combined-report.xlsx")
+    args.output = Path(output_text) if output_text else default_output
     if prefixes_text:
         args.object_prefix = [part.strip() for part in prefixes_text.split(",")]
     return args
@@ -570,54 +605,81 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv or sys.argv[1:])
-    if args.interactive:
-        args = prompt_interactive(args)
-    object_lookup = load_object_lookup(args.objects)
-    object_regex = re.compile(args.object_pattern)
-    prefixes = tuple(prefix.upper() for prefix in args.object_prefix if prefix)
-    sheet_names = set(args.sheet) if args.sheet else None
-    input_files = iter_xlsx_files(args.input_dir, args.files)
-    if not input_files:
-        print("No .xlsx files found.", file=sys.stderr)
-        return 2
-
-    all_rows: list[dict[str, Any]] = []
-    all_summary: list[dict[str, Any]] = []
-    for workbook_path in input_files:
-        try:
-            rows, summary = normalize_workbook(
-                workbook_path=workbook_path,
-                object_lookup=object_lookup,
-                object_regex=object_regex,
-                prefixes=prefixes,
-                sheet_names=sheet_names,
-                header_row=args.header_row,
-                max_scan_rows=args.max_scan_rows,
-                include_empty_amounts=args.include_empty_amounts,
+    interactive = args.interactive
+    try:
+        if interactive:
+            args = prompt_interactive(args)
+        object_lookup = load_object_lookup(args.objects)
+        object_regex = re.compile(args.object_pattern)
+        prefixes = tuple(prefix.upper() for prefix in args.object_prefix if prefix)
+        sheet_names = set(args.sheet) if args.sheet else None
+        input_files = iter_xlsx_files(args.input_dir, args.files)
+        if not input_files:
+            notify_user(
+                "Excellent Books",
+                "Не найдены файлы .xlsx.\nNo .xlsx files found.",
+                error=True,
+                use_gui=interactive,
             )
-        except Exception as exc:  # noqa: BLE001 - CLI should continue across files
-            all_summary.append(
-                {
-                    "source_file": workbook_path.name,
-                    "sheet": "",
-                    "status": "error",
-                    "message": str(exc),
-                    "rows": 0,
-                }
-            )
-            continue
-        all_rows.extend(rows)
-        all_summary.extend(summary)
+            return 2
 
-    if args.output.suffix.lower() == ".csv":
-        write_csv(args.output, all_rows)
-    elif args.output.suffix.lower() == ".xlsx":
-        write_xlsx(args.output, all_rows, all_summary)
-    else:
-        raise ValueError("Output path must end with .xlsx or .csv")
+        all_rows: list[dict[str, Any]] = []
+        all_summary: list[dict[str, Any]] = []
+        for workbook_path in input_files:
+            try:
+                rows, summary = normalize_workbook(
+                    workbook_path=workbook_path,
+                    object_lookup=object_lookup,
+                    object_regex=object_regex,
+                    prefixes=prefixes,
+                    sheet_names=sheet_names,
+                    header_row=args.header_row,
+                    max_scan_rows=args.max_scan_rows,
+                    include_empty_amounts=args.include_empty_amounts,
+                )
+            except Exception as exc:  # noqa: BLE001 - CLI should continue across files
+                all_summary.append(
+                    {
+                        "source_file": workbook_path.name,
+                        "sheet": "",
+                        "status": "error",
+                        "message": str(exc),
+                        "rows": 0,
+                    }
+                )
+                continue
+            all_rows.extend(rows)
+            all_summary.extend(summary)
 
-    print(f"Wrote {len(all_rows)} normalized rows to {args.output}")
-    return 0
+        output_path = args.output.expanduser()
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        if output_path.suffix.lower() == ".csv":
+            write_csv(output_path, all_rows)
+        elif output_path.suffix.lower() == ".xlsx":
+            write_xlsx(output_path, all_rows, all_summary)
+        else:
+            raise ValueError("Output path must end with .xlsx or .csv")
+
+        resolved = output_path.resolve()
+        message = f"Отчет сохранен.\n\nСтрок: {len(all_rows)}\n{resolved}"
+        notify_user("Excellent Books", message, use_gui=interactive)
+        return 0
+    except SystemExit as exc:
+        code = exc.code
+        if code is None or code == 0:
+            raise
+        if isinstance(code, str):
+            notify_user("Excellent Books", code, error=True, use_gui=interactive)
+            return 1
+        return int(code)
+    except Exception as exc:  # noqa: BLE001 - interactive clients need a clear message
+        notify_user(
+            "Excellent Books",
+            f"Ошибка / Error:\n{exc}",
+            error=True,
+            use_gui=interactive,
+        )
+        return 1
 
 
 if __name__ == "__main__":

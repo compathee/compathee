@@ -1,8 +1,12 @@
 import importlib.util
+import io
 import sys
 import tempfile
 import unittest
+from contextlib import redirect_stdout
 from pathlib import Path
+
+from openpyxl import Workbook
 
 ROOT = Path(__file__).resolve().parents[1]
 CLIENT_SCRIPT = ROOT / "excellent" / "scripts" / "combine_excellent_reports.py"
@@ -45,6 +49,37 @@ class ExcellentClientUxTests(unittest.TestCase):
             output = Path(tmp) / "out.xlsx"
             code = client.main(["--input-dir", str(missing), "--output", str(output)])
             self.assertNotEqual(code, 0)
+
+    def test_main_success_prints_resolved_path_and_row_count(self):
+        client = load_client()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            source = root / "Kinnisvara.xlsx"
+            workbook = Workbook()
+            sheet = workbook.active
+            sheet.title = "Report"
+            sheet.append(["Account", "Name", "HK_NOMME", "HK_KESKLINN"])
+            sheet.append(["4000", "Revenue", 100, 200])
+            workbook.save(source)
+
+            output = root / "nested" / "excellent-combined-report.xlsx"
+            buf = io.StringIO()
+            with redirect_stdout(buf):
+                code = client.main(
+                    [
+                        "--file",
+                        str(source),
+                        "--output",
+                        str(output),
+                    ]
+                )
+
+            self.assertEqual(code, 0)
+            self.assertTrue(output.exists())
+            text = buf.getvalue()
+            self.assertIn("Отчет сохранен", text)
+            self.assertIn("Строк: 2", text)
+            self.assertIn(str(output.resolve()), text)
 
 
 if __name__ == "__main__":
