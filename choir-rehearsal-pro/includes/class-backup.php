@@ -19,89 +19,6 @@ final class Choir_Rehearsal_Pro_Backup {
 		add_action( 'choir_rehearsal_settings_tools', array( self::class, 'render_settings_section' ) );
 		add_action( 'admin_post_choir_rehearsal_pro_export_songs', array( self::class, 'handle_export' ) );
 		add_action( 'admin_post_choir_rehearsal_pro_import_songs', array( self::class, 'handle_import' ) );
-		add_action( 'admin_enqueue_scripts', array( self::class, 'enqueue_settings_assets' ) );
-	}
-
-	public static function enqueue_settings_assets( string $hook ): void {
-		if ( 'choir_song_page_choir-rehearsal-settings' !== $hook ) {
-			return;
-		}
-
-		if ( ! self::can_manage_backup() ) {
-			return;
-		}
-
-		$handle = 'choir-rehearsal-pro-backup';
-		wp_register_script( $handle, false, array(), defined( 'CHOIR_REHEARSAL_PRO_VERSION' ) ? CHOIR_REHEARSAL_PRO_VERSION : '1.0.0', true );
-		wp_enqueue_script( $handle );
-		wp_add_inline_script( $handle, self::settings_inline_js(), 'after' );
-	}
-
-	private static function settings_inline_js(): string {
-		return <<<'JS'
-(function () {
-	'use strict';
-	var form = document.getElementById('choir-rehearsal-pro-import-form');
-	var modeInput = document.getElementById('choir-rehearsal-pro-import-mode');
-	var fileInput = document.getElementById('choir-rehearsal-pro-import-file');
-	var dialog = document.getElementById('choir-rehearsal-pro-import-replace-dialog');
-	var openBtn = document.getElementById('choir-rehearsal-pro-import-replace');
-	var yesBtn = document.getElementById('choir-rehearsal-pro-import-replace-yes');
-	var noBtn = document.getElementById('choir-rehearsal-pro-import-replace-no');
-	if (!form || !openBtn || !modeInput) {
-		return;
-	}
-	var closeDialog = function () {
-		if (!dialog) {
-			return;
-		}
-		if (typeof dialog.close === 'function') {
-			dialog.close();
-			return;
-		}
-		dialog.setAttribute('hidden', 'hidden');
-	};
-	var submitReplace = function () {
-		modeInput.value = 'replace';
-		form.submit();
-	};
-	var openDialog = function () {
-		if (!fileInput || !fileInput.files || !fileInput.files.length) {
-			window.alert(openBtn.getAttribute('data-pick-file') || 'Choose a backup file first.');
-			return;
-		}
-		if (dialog && typeof dialog.showModal === 'function') {
-			dialog.showModal();
-			return;
-		}
-		if (window.confirm(openBtn.getAttribute('data-confirm') || '')) {
-			submitReplace();
-		}
-	};
-	openBtn.addEventListener('click', function (event) {
-		event.preventDefault();
-		openDialog();
-	});
-	if (yesBtn) {
-		yesBtn.addEventListener('click', function (event) {
-			event.preventDefault();
-			submitReplace();
-		});
-	}
-	if (noBtn) {
-		noBtn.addEventListener('click', function (event) {
-			event.preventDefault();
-			closeDialog();
-		});
-	}
-	if (dialog) {
-		dialog.addEventListener('cancel', function (event) {
-			event.preventDefault();
-			closeDialog();
-		});
-	}
-})();
-JS;
 	}
 
 	private static function can_manage_backup(): bool {
@@ -125,7 +42,7 @@ JS;
 		<hr />
 		<h2><?php esc_html_e( 'Backup songs', 'choir-rehearsal-pro' ); ?></h2>
 		<p class="description">
-			<?php esc_html_e( 'Export the full rehearsal library (songs, voice tracks, audio, and PDF scores) before plugin updates or folder changes. Import restores from a .zip backup.', 'choir-rehearsal-pro' ); ?>
+			<?php esc_html_e( 'Export the full rehearsal library (songs, voice tracks, audio, and PDF scores) to a .zip file on your computer. Import adds songs from a backup without removing unrelated songs.', 'choir-rehearsal-pro' ); ?>
 		</p>
 		<p class="description">
 			<?php
@@ -145,29 +62,29 @@ JS;
 		</p>
 		<form id="choir-rehearsal-pro-import-form" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" enctype="multipart/form-data" style="margin-top:12px;">
 			<input type="hidden" name="action" value="choir_rehearsal_pro_import_songs" />
-			<input type="hidden" name="import_mode" id="choir-rehearsal-pro-import-mode" value="merge" />
 			<?php wp_nonce_field( 'choir_rehearsal_pro_import_songs' ); ?>
 			<p>
 				<label for="choir-rehearsal-pro-import-file"><?php esc_html_e( 'Import backup (.zip)', 'choir-rehearsal-pro' ); ?></label><br />
 				<input type="file" id="choir-rehearsal-pro-import-file" name="backup_zip" accept=".zip,application/zip" required />
 			</p>
+			<fieldset style="border:0;margin:0;padding:0;">
+				<legend><?php esc_html_e( 'What to do with matches?', 'choir-rehearsal-pro' ); ?></legend>
+				<p class="description" style="margin-top:4px;">
+					<?php esc_html_e( 'A match is a song with the same permalink slug. Non-matching songs in the library are never deleted.', 'choir-rehearsal-pro' ); ?>
+				</p>
+				<label style="display:block;margin:6px 0;">
+					<input type="radio" name="match_mode" value="skip" checked="checked" />
+					<?php esc_html_e( 'Skip — keep the existing song, do not import the duplicate', 'choir-rehearsal-pro' ); ?>
+				</label>
+				<label style="display:block;margin:6px 0;">
+					<input type="radio" name="match_mode" value="replace" />
+					<?php esc_html_e( 'Replace — delete the existing song, then import from the backup', 'choir-rehearsal-pro' ); ?>
+				</label>
+			</fieldset>
 			<p>
-				<button type="submit" class="button button-secondary"><?php esc_html_e( 'Import (keep existing songs)', 'choir-rehearsal-pro' ); ?></button>
-				<button type="button" class="button button-secondary" id="choir-rehearsal-pro-import-replace"
-					data-pick-file="<?php echo esc_attr__( 'Choose a backup .zip file first.', 'choir-rehearsal-pro' ); ?>"
-					data-confirm="<?php echo esc_attr__( 'This deletes all current songs and replaces them with the backup. Continue?', 'choir-rehearsal-pro' ); ?>">
-					<?php esc_html_e( 'Restore (replace all songs)', 'choir-rehearsal-pro' ); ?>
-				</button>
+				<button type="submit" class="button button-secondary"><?php esc_html_e( 'Import', 'choir-rehearsal-pro' ); ?></button>
 			</p>
-			<p class="description"><?php esc_html_e( 'Merge import skips songs whose slug already exists. Restore wipes the library first.', 'choir-rehearsal-pro' ); ?></p>
 		</form>
-		<dialog id="choir-rehearsal-pro-import-replace-dialog" class="choir-delete-all-dialog">
-			<p><?php esc_html_e( 'This deletes all current songs and replaces them with the backup. Continue?', 'choir-rehearsal-pro' ); ?></p>
-			<p class="choir-delete-all-dialog__actions">
-				<button type="button" class="button button-primary" id="choir-rehearsal-pro-import-replace-yes"><?php esc_html_e( 'Yes, restore', 'choir-rehearsal-pro' ); ?></button>
-				<button type="button" class="button" id="choir-rehearsal-pro-import-replace-no"><?php esc_html_e( 'Cancel', 'choir-rehearsal-pro' ); ?></button>
-			</p>
-		</dialog>
 		<?php
 	}
 
@@ -180,32 +97,19 @@ JS;
 		}
 
 		if ( isset( $_GET['choir_backup_imported'] ) ) {
-			$songs  = isset( $_GET['choir_backup_songs'] ) ? absint( $_GET['choir_backup_songs'] ) : 0;
-			$tracks = isset( $_GET['choir_backup_tracks'] ) ? absint( $_GET['choir_backup_tracks'] ) : 0;
-			$skipped = isset( $_GET['choir_backup_skipped'] ) ? absint( $_GET['choir_backup_skipped'] ) : 0;
+			$songs    = isset( $_GET['choir_backup_songs'] ) ? absint( $_GET['choir_backup_songs'] ) : 0;
+			$tracks   = isset( $_GET['choir_backup_tracks'] ) ? absint( $_GET['choir_backup_tracks'] ) : 0;
+			$skipped  = isset( $_GET['choir_backup_skipped'] ) ? absint( $_GET['choir_backup_skipped'] ) : 0;
+			$replaced = isset( $_GET['choir_backup_replaced'] ) ? absint( $_GET['choir_backup_replaced'] ) : 0;
 			echo '<div class="notice notice-success is-dismissible"><p>';
 			echo esc_html(
 				sprintf(
-					/* translators: 1: songs imported, 2: tracks imported, 3: songs skipped */
-					__( 'Imported %1$d songs and %2$d tracks (%3$d existing songs skipped).', 'choir-rehearsal-pro' ),
+					/* translators: 1: songs imported, 2: tracks imported, 3: songs skipped, 4: songs replaced */
+					__( 'Imported %1$d songs and %2$d tracks (%3$d skipped, %4$d replaced).', 'choir-rehearsal-pro' ),
 					$songs,
 					$tracks,
-					$skipped
-				)
-			);
-			echo '</p></div>';
-		}
-
-		if ( isset( $_GET['choir_backup_restored'] ) ) {
-			$songs  = isset( $_GET['choir_backup_songs'] ) ? absint( $_GET['choir_backup_songs'] ) : 0;
-			$tracks = isset( $_GET['choir_backup_tracks'] ) ? absint( $_GET['choir_backup_tracks'] ) : 0;
-			echo '<div class="notice notice-success is-dismissible"><p>';
-			echo esc_html(
-				sprintf(
-					/* translators: 1: songs restored, 2: tracks restored */
-					__( 'Restored %1$d songs and %2$d tracks from backup.', 'choir-rehearsal-pro' ),
-					$songs,
-					$tracks
+					$skipped,
+					$replaced
 				)
 			);
 			echo '</p></div>';
@@ -276,9 +180,9 @@ JS;
 			self::redirect_error( __( 'No backup file was uploaded.', 'choir-rehearsal-pro' ) );
 		}
 
-		$mode = isset( $_POST['import_mode'] ) ? sanitize_key( wp_unslash( (string) $_POST['import_mode'] ) ) : 'merge';
-		if ( ! in_array( $mode, array( 'merge', 'replace' ), true ) ) {
-			$mode = 'merge';
+		$mode = isset( $_POST['match_mode'] ) ? sanitize_key( wp_unslash( (string) $_POST['match_mode'] ) ) : 'skip';
+		if ( ! in_array( $mode, array( 'skip', 'replace' ), true ) ) {
+			$mode = 'skip';
 		}
 
 		$zip_path = (string) $_FILES['backup_zip']['tmp_name'];
@@ -299,29 +203,23 @@ JS;
 			self::redirect_error( __( 'Invalid backup format.', 'choir-rehearsal-pro' ) );
 		}
 
-		if ( 'replace' === $mode ) {
-			self::delete_all_songs();
-		}
-
-		$result = self::import_from_manifest( $zip, $manifest, 'merge' === $mode );
+		$result = self::import_from_manifest( $zip, $manifest, $mode );
 		$zip->close();
 
-		$args = array(
-			'post_type' => Choir_Rehearsal_Post_Types::SONG,
-			'page'      => 'choir-rehearsal-settings',
+		wp_safe_redirect(
+			add_query_arg(
+				array(
+					'post_type'              => Choir_Rehearsal_Post_Types::SONG,
+					'page'                   => 'choir-rehearsal-settings',
+					'choir_backup_imported'  => '1',
+					'choir_backup_songs'     => (string) $result['songs'],
+					'choir_backup_tracks'    => (string) $result['tracks'],
+					'choir_backup_skipped'   => (string) $result['skipped'],
+					'choir_backup_replaced'  => (string) $result['replaced'],
+				),
+				admin_url( 'edit.php' )
+			)
 		);
-
-		if ( 'replace' === $mode ) {
-			$args['choir_backup_restored'] = '1';
-		} else {
-			$args['choir_backup_imported'] = '1';
-			$args['choir_backup_skipped']  = (string) $result['skipped'];
-		}
-
-		$args['choir_backup_songs']  = (string) $result['songs'];
-		$args['choir_backup_tracks'] = (string) $result['tracks'];
-
-		wp_safe_redirect( add_query_arg( $args, admin_url( 'edit.php' ) ) );
 		exit;
 	}
 
@@ -417,13 +315,14 @@ JS;
 	}
 
 	/**
-	 * @return array{songs: int, tracks: int, skipped: int}
+	 * @return array{songs: int, tracks: int, skipped: int, replaced: int}
 	 */
-	private static function import_from_manifest( ZipArchive $zip, array $manifest, bool $skip_existing ): array {
-		$songs   = 0;
-		$tracks  = 0;
-		$skipped = 0;
-		$list    = isset( $manifest['songs'] ) && is_array( $manifest['songs'] ) ? $manifest['songs'] : array();
+	private static function import_from_manifest( ZipArchive $zip, array $manifest, string $match_mode ): array {
+		$songs    = 0;
+		$tracks   = 0;
+		$skipped  = 0;
+		$replaced = 0;
+		$list     = isset( $manifest['songs'] ) && is_array( $manifest['songs'] ) ? $manifest['songs'] : array();
 
 		foreach ( $list as $entry ) {
 			if ( ! is_array( $entry ) ) {
@@ -435,9 +334,14 @@ JS;
 				continue;
 			}
 
-			if ( $skip_existing && self::song_exists_by_slug( $slug ) ) {
-				++$skipped;
-				continue;
+			$existing_id = self::get_song_id_by_slug( $slug );
+			if ( $existing_id > 0 ) {
+				if ( 'replace' !== $match_mode ) {
+					++$skipped;
+					continue;
+				}
+				self::delete_song_by_id( $existing_id );
+				++$replaced;
 			}
 
 			$title  = sanitize_text_field( (string) ( $entry['title'] ?? $slug ) );
@@ -515,9 +419,10 @@ JS;
 		}
 
 		return array(
-			'songs'   => $songs,
-			'tracks'  => $tracks,
-			'skipped' => $skipped,
+			'songs'    => $songs,
+			'tracks'   => $tracks,
+			'skipped'  => $skipped,
+			'replaced' => $replaced,
 		);
 	}
 
@@ -572,7 +477,7 @@ JS;
 		};
 	}
 
-	private static function song_exists_by_slug( string $slug ): bool {
+	private static function get_song_id_by_slug( string $slug ): int {
 		$existing = get_posts(
 			array(
 				'post_type'              => Choir_Rehearsal_Post_Types::SONG,
@@ -585,7 +490,35 @@ JS;
 			)
 		);
 
-		return ! empty( $existing );
+		return ! empty( $existing[0] ) ? (int) $existing[0] : 0;
+	}
+
+	private static function delete_song_by_id( int $song_id ): void {
+		if ( $song_id <= 0 ) {
+			return;
+		}
+
+		$tracks = Choir_Rehearsal_Post_Types::get_tracks_for_song( $song_id );
+		$attachment_ids = array();
+
+		foreach ( $tracks as $track ) {
+			$audio_id = (int) get_post_meta( (int) $track->ID, '_choir_audio_id', true );
+			if ( $audio_id > 0 ) {
+				$attachment_ids[ $audio_id ] = $audio_id;
+			}
+			wp_delete_post( (int) $track->ID, true );
+		}
+
+		$pdf_id = Choir_Rehearsal_Post_Types::get_score_pdf_id( $song_id );
+		if ( $pdf_id > 0 ) {
+			$attachment_ids[ $pdf_id ] = $pdf_id;
+		}
+
+		wp_delete_post( $song_id, true );
+
+		foreach ( $attachment_ids as $attachment_id ) {
+			wp_delete_attachment( (int) $attachment_id, true );
+		}
 	}
 
 	private static function count_songs(): int {
@@ -603,54 +536,6 @@ JS;
 		}
 
 		return $total;
-	}
-
-	private static function delete_all_songs(): void {
-		$track_ids = get_posts(
-			array(
-				'post_type'              => Choir_Rehearsal_Post_Types::TRACK,
-				'posts_per_page'         => -1,
-				'post_status'            => 'any',
-				'fields'                 => 'ids',
-				'no_found_rows'          => true,
-				'update_post_meta_cache' => false,
-			)
-		);
-
-		$song_ids = get_posts(
-			array(
-				'post_type'              => Choir_Rehearsal_Post_Types::SONG,
-				'posts_per_page'         => -1,
-				'post_status'            => 'any',
-				'fields'                 => 'ids',
-				'no_found_rows'          => true,
-				'update_post_meta_cache' => false,
-			)
-		);
-
-		$attachment_ids = array();
-		foreach ( $track_ids as $track_id ) {
-			$audio_id = (int) get_post_meta( (int) $track_id, '_choir_audio_id', true );
-			if ( $audio_id > 0 ) {
-				$attachment_ids[ $audio_id ] = $audio_id;
-			}
-		}
-		foreach ( $song_ids as $song_id ) {
-			$pdf_id = Choir_Rehearsal_Post_Types::get_score_pdf_id( (int) $song_id );
-			if ( $pdf_id > 0 ) {
-				$attachment_ids[ $pdf_id ] = $pdf_id;
-			}
-		}
-
-		foreach ( $track_ids as $track_id ) {
-			wp_delete_post( (int) $track_id, true );
-		}
-		foreach ( $song_ids as $song_id ) {
-			wp_delete_post( (int) $song_id, true );
-		}
-		foreach ( $attachment_ids as $attachment_id ) {
-			wp_delete_attachment( (int) $attachment_id, true );
-		}
 	}
 
 	private static function redirect_error( string $message ): void {
