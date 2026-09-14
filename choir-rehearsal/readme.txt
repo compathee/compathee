@@ -59,6 +59,7 @@ Yes. Use the shortcode `[choir_rehearsal]`.
 = 0.4.45 =
 
 * Pro: Export/Import song library backup (ZIP)
+* Pro: Fix activation fatal when backup file missing or duplicate Lite slug listed as dependency
 * Clearer duplicate-plugin admin notice
 
 = 0.4.44 =
