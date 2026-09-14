@@ -1174,7 +1174,7 @@ button.choir-sticky-player__play:focus-visible {
 	appearance: none;
 	-webkit-appearance: none;
 	cursor: pointer;
-	touch-action: manipulation;
+	touch-action: none;
 }
 
 .choir-piano-key--white {
@@ -1186,8 +1186,7 @@ button.choir-sticky-player__play:focus-visible {
 	box-shadow: inset 0 -2px 0 rgba(15, 23, 42, 0.12);
 }
 
-.choir-piano-key--white.is-active,
-.choir-piano-key--white:active {
+.choir-piano-key--white.is-active {
 	background: linear-gradient(180deg, #dbeafe 0%, #93c5fd 100%);
 }
 
@@ -1203,8 +1202,7 @@ button.choir-sticky-player__play:focus-visible {
 	z-index: 2;
 }
 
-.choir-piano-key--black.is-active,
-.choir-piano-key--black:active {
+.choir-piano-key--black.is-active {
 	background: linear-gradient(180deg, #1f4fd8 0%, #172554 100%);
 }
 
