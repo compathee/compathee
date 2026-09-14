@@ -47,6 +47,19 @@ SUMMARY_OUTPUT_COLUMNS = [
 ]
 
 
+def project_root() -> Path:
+    return Path(__file__).resolve().parent.parent
+
+
+def ensure_work_dirs(root: Path | None = None) -> tuple[Path, Path]:
+    base = project_root() if root is None else root
+    input_dir = base / "input"
+    output_dir = base / "output"
+    input_dir.mkdir(parents=True, exist_ok=True)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    return input_dir, output_dir
+
+
 @dataclass(frozen=True)
 class ObjectColumn:
     index: int
@@ -492,7 +505,7 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument(
         "--input-dir",
         type=Path,
-        default=Path("excellent-exports"),
+        default=Path("input"),
         help="Folder with exported .xlsx files. Ignored when --file is used.",
     )
     parser.add_argument(
