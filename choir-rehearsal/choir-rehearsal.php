@@ -3,7 +3,7 @@
  * Plugin Name:       Compath Choir Rehearsal
  * Plugin URI:        https://rehearsal.compath.ee
  * Description:       Private rehearsal library for choirs: songs, voice parts, audio tracks, and a sticky player.
- * Version:           0.4.48
+ * Version:           0.4.49
  * Requires at least: 6.4
  * Requires PHP:      8.0
  * Author:            Compath OÜ
@@ -22,39 +22,22 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /*
  * A second copy (e.g. old folder choir-rehearsal/ plus new compath-choir-rehearsal/)
- * must not fatally redeclare constants/functions. Show an admin notice instead.
+ * must not fatally redeclare constants/functions. Show migration wizard instead.
  */
 if ( defined( 'CHOIR_REHEARSAL_VERSION' ) || function_exists( 'choir_rehearsal' ) || class_exists( 'Choir_Rehearsal_Plugin', false ) ) {
-	add_action(
-		'admin_notices',
-		static function (): void {
-			if ( ! current_user_can( 'activate_plugins' ) ) {
-				return;
-			}
-			$paths = array();
-			foreach ( (array) get_option( 'active_plugins', array() ) as $plugin_file ) {
-				if ( ! is_string( $plugin_file ) ) {
-					continue;
-				}
-				if ( str_ends_with( $plugin_file, '/choir-rehearsal.php' ) && ! str_contains( $plugin_file, 'choir-rehearsal-pro' ) ) {
-					$paths[] = $plugin_file;
-				}
-			}
-			echo '<div class="notice notice-error"><p>';
-			echo esc_html__(
-				'Compath Choir Rehearsal is already loaded from another folder. Deactivate every duplicate Lite copy, then remove the extra folder via FTP (often compath-choir-rehearsal/). Keep only one folder — on existing sites usually wp-content/plugins/choir-rehearsal/. Do not use Delete in wp-admin if you need to keep songs.',
-				'compath-choir-rehearsal'
-			);
-			if ( count( $paths ) > 1 ) {
-				echo '</p><p><code>' . esc_html( implode( ', ', $paths ) ) . '</code>';
-			}
-			echo '</p></div>';
+	if ( ! class_exists( 'Choir_Rehearsal_Migration', false ) ) {
+		$choir_rehearsal_migration = __DIR__ . '/includes/class-migration.php';
+		if ( is_readable( $choir_rehearsal_migration ) ) {
+			require_once $choir_rehearsal_migration;
 		}
-	);
+	}
+	if ( class_exists( 'Choir_Rehearsal_Migration', false ) ) {
+		Choir_Rehearsal_Migration::register_duplicate_bootstrap( __FILE__ );
+	}
 	return;
 }
 
-define( 'CHOIR_REHEARSAL_VERSION', '0.4.48' );
+define( 'CHOIR_REHEARSAL_VERSION', '0.4.49' );
 define( 'CHOIR_REHEARSAL_FILE', __FILE__ );
 define( 'CHOIR_REHEARSAL_PATH', plugin_dir_path( __FILE__ ) );
 define( 'CHOIR_REHEARSAL_URL', plugin_dir_url( __FILE__ ) );
