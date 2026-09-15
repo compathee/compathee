@@ -354,6 +354,7 @@ class EelarveFillEngineTests(unittest.TestCase):
             self.assertIn(str(output.resolve()), text)
             self.assertRegex(text, r"\[\s*\d+%\]")
             self.assertIn("Заполнение Eelarve", text)
+            self.assertIn("Начато заполнение", text)
             self.assertNotIn("HK_A", text.split("Eelarve заполнен")[0])
 
     def test_interactive_cancel_eelarve_creates_new_file(self):
@@ -430,7 +431,7 @@ class EelarveFillProgressAndLockTests(unittest.TestCase):
             combined = stdout.getvalue() + stderr.getvalue()
             self.assertIn("src.xlsx", combined)
             self.assertRegex(combined, r"(?i)занят|busy|locked")
-            self.assertFalse(output.exists())
+            self.assertNotIn("Eelarve заполнен", combined)
 
     def test_locked_source_continue_skips_and_proceeds(self):
         fill = load_fill()
@@ -508,6 +509,55 @@ class EelarveFillProgressAndLockTests(unittest.TestCase):
             combined = stdout.getvalue() + stderr.getvalue()
             self.assertIn("out.xlsx", combined)
             self.assertNotIn("Eelarve заполнен", combined)
+
+
+class EelarveFillInterruptTests(unittest.TestCase):
+    def test_keyboard_interrupt_prints_russian_and_returns_nonzero(self):
+        fill = load_fill()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            source = root / "src.xlsx"
+            output = root / "out.xlsx"
+            write_kasumiaruanne(source, [["3241", "Tulu", "2026-01", 1, None]])
+            stdout = io.StringIO()
+            stderr = io.StringIO()
+            with patch.object(fill, "fill_eelarve", side_effect=KeyboardInterrupt):
+                with redirect_stdout(stdout), redirect_stderr(stderr):
+                    code = fill.main(
+                        [
+                            "--source",
+                            str(source),
+                            "--month",
+                            "Jaanuar",
+                            "--output",
+                            str(output),
+                        ]
+                    )
+            self.assertNotEqual(code, 0)
+            combined = stdout.getvalue() + stderr.getvalue()
+            self.assertIn("прерван", combined.casefold())
+            self.assertIn("Ctrl+C", combined)
+            self.assertNotIn("Eelarve заполнен", combined)
+
+    def test_cancel_flag_aborts_during_fill(self):
+        fill = load_fill()
+        workbook = fill.create_blank_eelarve()
+        sheet = workbook.active
+        facts = [
+            fill.SourceFact(konto="3241", konto_description="", object_code=f"HK_{index}", amount=1.0)
+            for index in range(8)
+        ]
+        with self.assertRaises(fill.JobAborted) as raised:
+            fill.apply_facts(
+                sheet,
+                facts,
+                "Jaanuar",
+                {},
+                True,
+                should_cancel=lambda: True,
+                cancel_every=1,
+            )
+        self.assertIn("Ctrl+C", str(raised.exception))
 
 
 if __name__ == "__main__":

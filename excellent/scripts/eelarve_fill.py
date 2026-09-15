@@ -96,12 +96,13 @@ class EelarveLayout:
     total_col: int | None
 
 
-@dataclass(frozen=True)
+@dataclass
 class KontoBlock:
     konto: str
     header_row: int
     end_row: int
-    total_rows: tuple[int, ...]
+    total_rows: list[int]
+    labels: dict[str, int]
 
 
 def project_root() -> Path:
@@ -124,7 +125,11 @@ def default_new_eelarve_path(root: Path | None = None, year: int | None = None) 
 
 
 class JobAborted(Exception):
-    """Raised when the user aborts after a locked/busy file prompt."""
+    """Raised when the user aborts after a locked/busy file prompt or Ctrl+C."""
+
+
+INTERRUPT_MESSAGE = "Работа прервана (Ctrl+C).\nJob interrupted."
+CANCEL_CHECK_EVERY = 25
 
 
 def progress_percent(completed: int, total: int, *, start: int = 30, end: int = 90) -> int:
@@ -177,18 +182,18 @@ class ProgressReporter:
     def begin_fill(self, total: int) -> None:
         self._fill_total = max(0, int(total))
         self._fill_done = 0
-        self.stage(30 if self._fill_total else 90, "Заполнение Eelarve…")
+        self.stage(30 if self._fill_total else 90, f"Начато заполнение: {self._fill_total} сумм")
 
     def add_filled(self, n: int = 1) -> None:
         self._fill_done += n
         total = self._fill_total
         if total <= 0:
             return
-        step = max(1, total // 10)
+        step = max(1, min(25, total // 20 or 1))
         if self._fill_done in {1, total} or self._fill_done % step == 0:
             self.stage(
                 progress_percent(self._fill_done, total, start=30, end=90),
-                "Заполнение Eelarve…",
+                f"Заполнение Eelarve… ({self._fill_done} из {total})",
             )
 
 
@@ -505,9 +510,16 @@ def _row_values(worksheet: Worksheet, row: int) -> list[Any]:
     return [worksheet.cell(row, column).value for column in range(1, worksheet.max_column + 1)]
 
 
-def last_used_row(worksheet: Worksheet) -> int:
+def last_used_row(worksheet: Worksheet, layout: EelarveLayout | None = None) -> int:
+    if layout is None:
+        columns = range(1, min(worksheet.max_column, 16) + 1)
+    else:
+        columns = {layout.konto_col, layout.object_col}
+        columns.update(layout.month_columns.values())
+        if layout.total_col:
+            columns.add(layout.total_col)
     for row in range(worksheet.max_row, 0, -1):
-        if any(cell_text(value) for value in _row_values(worksheet, row)):
+        if any(cell_text(worksheet.cell(row, column).value) for column in columns):
             return row
     return 1
 
@@ -589,45 +601,65 @@ def _row_konto(worksheet: Worksheet, row: int, layout: EelarveLayout) -> str | N
 
 def find_konto_blocks(worksheet: Worksheet, layout: EelarveLayout) -> list[KontoBlock]:
     blocks: list[KontoBlock] = []
-    current: dict[str, Any] | None = None
-    last = last_used_row(worksheet)
+    current: KontoBlock | None = None
+    last = last_used_row(worksheet, layout)
     for row in range(layout.header_row + 1, last + 1):
         konto = _row_konto(worksheet, row, layout)
         if konto:
             if current is not None:
-                blocks.append(
-                    KontoBlock(
-                        konto=current["konto"],
-                        header_row=current["header_row"],
-                        end_row=current["end_row"],
-                        total_rows=tuple(current["total_rows"]),
-                    )
-                )
-            current = {
-                "konto": konto,
-                "header_row": row,
-                "end_row": row,
-                "total_rows": [],
-            }
+                blocks.append(current)
+            current = KontoBlock(
+                konto=konto,
+                header_row=row,
+                end_row=row,
+                total_rows=[],
+                labels={},
+            )
             continue
         if current is None:
             continue
         if _row_is_total(worksheet, row, layout):
-            current["total_rows"].append(row)
-            current["end_row"] = row
+            current.total_rows.append(row)
+            current.end_row = row
             continue
-        if any(cell_text(value) for value in _row_values(worksheet, row)):
-            current["end_row"] = row
+        object_label = cell_text(worksheet.cell(row, layout.object_col).value)
+        konto_label = cell_text(worksheet.cell(row, layout.konto_col).value)
+        if object_label or konto_label:
+            current.end_row = row
+            _index_object_row(current, worksheet, layout, row)
     if current is not None:
-        blocks.append(
-            KontoBlock(
-                konto=current["konto"],
-                header_row=current["header_row"],
-                end_row=current["end_row"],
-                total_rows=tuple(current["total_rows"]),
-            )
-        )
+        blocks.append(current)
     return blocks
+
+
+def _index_object_row(
+    block: KontoBlock, worksheet: Worksheet, layout: EelarveLayout, row: int
+) -> None:
+    object_label = cell_text(worksheet.cell(row, layout.object_col).value)
+    full = _row_search_text(worksheet, row, layout)
+    for part in (object_label, full):
+        key = _normalize_match_text(part)
+        if key:
+            block.labels[key] = row
+
+
+def shift_blocks_after_insert(blocks: list[KontoBlock], insert_at: int, count: int = 1) -> None:
+    for block in blocks:
+        if block.header_row >= insert_at:
+            block.header_row += count
+        if block.end_row >= insert_at:
+            block.end_row += count
+        block.total_rows = [row + count if row >= insert_at else row for row in block.total_rows]
+        block.labels = {
+            key: (row + count if row >= insert_at else row) for key, row in block.labels.items()
+        }
+
+
+def first_blocks_by_konto(blocks: list[KontoBlock]) -> dict[str, KontoBlock]:
+    index: dict[str, KontoBlock] = {}
+    for block in blocks:
+        index.setdefault(block.konto, block)
+    return index
 
 
 def _shift_row(row: int, insert_at: int, count: int) -> int:
@@ -687,17 +719,23 @@ def adjust_formula(formula: str, insert_at: int, count: int = 1) -> str:
     return SUM_CALL_RE.sub(replace_sum, formula)
 
 
-def adjust_sum_formulas_after_insert(worksheet: Worksheet, insert_at: int, count: int = 1) -> None:
-    for row in worksheet.iter_rows(min_row=1, max_row=worksheet.max_row, max_col=worksheet.max_column):
+def adjust_sum_formulas_after_insert(
+    worksheet: Worksheet,
+    insert_at: int,
+    count: int = 1,
+    min_row: int = 1,
+    max_row: int | None = None,
+) -> None:
+    last = max_row if max_row is not None else worksheet.max_row
+    first = max(1, min_row)
+    for row in worksheet.iter_rows(min_row=first, max_row=last, max_col=worksheet.max_column):
         for cell in row:
             value = cell.value
             if isinstance(value, str) and value.startswith("=") and "SUM(" in value.upper():
-                prefix, formula = ("", value)
-                if value.startswith("="):
-                    prefix, formula = "=", value[1:]
+                formula = value[1:]
                 adjusted = adjust_formula(formula, insert_at, count)
                 if adjusted != formula:
-                    cell.value = prefix + adjusted
+                    cell.value = "=" + adjusted
 
 
 def create_blank_eelarve() -> Workbook:
@@ -739,11 +777,19 @@ def find_object_row(
     lookup: dict[str, str],
 ) -> int | None:
     description = lookup.get(object_code, "")
+    for needle in (object_code, description):
+        if not needle:
+            continue
+        row = block.labels.get(_normalize_match_text(needle))
+        if row and row != block.header_row and row not in block.total_rows:
+            return row
     for row in _object_rows(block):
         text = _row_search_text(worksheet, row, layout)
         if matches_label(text, object_code):
+            _index_object_row(block, worksheet, layout, row)
             return row
         if description and matches_label(text, description):
+            _index_object_row(block, worksheet, layout, row)
             return row
     return None
 
@@ -782,13 +828,34 @@ def insert_object_row(
     block: KontoBlock,
     label: str,
     with_formulas: bool,
+    blocks: list[KontoBlock] | None = None,
+    last_row: int | None = None,
 ) -> int:
     insert_at = min(block.total_rows) if block.total_rows else block.end_row + 1
-    worksheet.insert_rows(insert_at)
-    adjust_sum_formulas_after_insert(worksheet, insert_at)
+    used_last = last_row if last_row is not None else last_used_row(worksheet, layout)
+    if insert_at <= used_last:
+        worksheet.insert_rows(insert_at)
+        if blocks is not None:
+            shift_blocks_after_insert(blocks, insert_at)
+        adjust_sum_formulas_after_insert(
+            worksheet,
+            insert_at,
+            min_row=min(block.header_row, insert_at),
+            max_row=max(used_last + 1, insert_at),
+        )
+    else:
+        adjust_sum_formulas_after_insert(
+            worksheet,
+            insert_at,
+            min_row=block.header_row,
+            max_row=max(block.end_row, block.header_row),
+        )
     worksheet.cell(insert_at, layout.object_col).value = label
     if with_formulas:
         write_row_month_total(worksheet, layout, insert_at)
+    _index_object_row(block, worksheet, layout, insert_at)
+    if insert_at > block.end_row:
+        block.end_row = insert_at
     return insert_at
 
 
@@ -805,38 +872,63 @@ def apply_facts(
     lookup: dict[str, str],
     with_formulas: bool,
     on_written: Callable[[int], None] | None = None,
+    should_cancel: Callable[[], bool] | None = None,
+    cancel_every: int = CANCEL_CHECK_EVERY,
+    layout: EelarveLayout | None = None,
+    blocks: list[KontoBlock] | None = None,
 ) -> tuple[int, int, int]:
     written = 0
     rows_added = 0
     missing = 0
     seen_missing: set[str] = set()
     month_name = parse_month(month)
-
-    for fact in facts:
-        layout = detect_eelarve_layout(worksheet)
-        month_col = _month_col(layout, month_name)
+    layout = layout or detect_eelarve_layout(worksheet)
+    if blocks is None:
         blocks = find_konto_blocks(worksheet, layout)
-        block = next((item for item in blocks if item.konto == fact.konto), None)
+    by_konto = first_blocks_by_konto(blocks)
+    month_col = _month_col(layout, month_name)
+    last_row = last_used_row(worksheet, layout)
+
+    for index, fact in enumerate(facts, start=1):
+        if should_cancel is not None and index % max(1, cancel_every) == 0 and should_cancel():
+            raise JobAborted(INTERRUPT_MESSAGE)
+        block = by_konto.get(fact.konto)
         created_block = False
         if block is None:
             if fact.konto not in seen_missing:
                 seen_missing.add(fact.konto)
                 missing += 1
-            append_konto_block(worksheet, layout, fact.konto)
+            last_row = max(last_row, last_used_row(worksheet, layout))
+            header_row = last_row + 1
+            worksheet.cell(header_row, layout.konto_col).value = fact.konto
+            block = KontoBlock(
+                konto=fact.konto,
+                header_row=header_row,
+                end_row=header_row,
+                total_rows=[],
+                labels={},
+            )
+            blocks.append(block)
+            by_konto[fact.konto] = block
+            last_row = header_row
             created_block = True
-            layout = detect_eelarve_layout(worksheet)
-            blocks = find_konto_blocks(worksheet, layout)
-            block = next(item for item in blocks if item.konto == fact.konto)
 
+        had_objects = bool(_object_rows(block))
         object_row = find_object_row(worksheet, layout, block, fact.object_code, lookup)
         if object_row is None:
             label = lookup.get(fact.object_code) or fact.object_code
-            object_row = insert_object_row(worksheet, layout, block, label, with_formulas)
+            object_row = insert_object_row(
+                worksheet,
+                layout,
+                block,
+                label,
+                with_formulas,
+                blocks=blocks,
+                last_row=last_row,
+            )
+            last_row = max(last_row + 1, object_row, block.end_row)
             rows_added += 1
-            layout = detect_eelarve_layout(worksheet)
-            blocks = find_konto_blocks(worksheet, layout)
-            block = next(item for item in blocks if item.konto == fact.konto)
-            if with_formulas:
+            if with_formulas and not had_objects:
                 ensure_block_formulas(worksheet, layout, block)
         elif created_block and with_formulas:
             ensure_block_formulas(worksheet, layout, block)
@@ -859,114 +951,142 @@ def fill_eelarve(
     reporter: ProgressReporter | None = None,
     use_gui: bool = False,
     handle_locks: bool = False,
+    should_cancel: Callable[[], bool] | None = None,
 ) -> FillStats:
     if not sources:
         raise ValueError("No source workbooks provided")
     reporter = reporter or ProgressReporter(enabled=False)
     created_new = eelarve_path is None
-    if created_new:
-        workbook = create_blank_eelarve()
-        worksheet = workbook.active
-        if output_path is None:
-            output_path = default_new_eelarve_path(root, year)
-            output_path.parent.mkdir(parents=True, exist_ok=True)
-        reporter.stage(5, f"Создан новый Eelarve: {_resolved_path_text(Path(output_path))}")
-    else:
-        reporter.stage(5, f"Eelarve выбран: {_resolved_path_text(Path(eelarve_path))}")
-        status, workbook = run_with_lock_handling(
-            lambda: load_workbook(eelarve_path),
-            Path(eelarve_path),
-            kind="eelarve",
-            handle_locks=handle_locks,
-            use_gui=use_gui,
-        )
-        if status != "ok" or workbook is None:
-            raise JobAborted(
-                "Работа прервана: не удалось открыть Eelarve.\n"
-                f"{_resolved_path_text(Path(eelarve_path))}"
-            )
-        worksheet = pick_eelarve_sheet(workbook)
-        if output_path is None:
-            output_path = Path(eelarve_path)
-
-    for source_path, month in sources:
-        reporter.stage(5, f"Источник принят: {Path(source_path).name} ({parse_month(month)})")
-
-    if objects_path is not None:
-        status, lookup = run_with_lock_handling(
-            lambda: load_object_lookup(objects_path),
-            Path(objects_path),
-            kind="objects",
-            handle_locks=handle_locks,
-            use_gui=use_gui,
-        )
-        if status == "skip" or lookup is None:
-            lookup = {}
-            reporter.stage(8, f"Справочник объектов пропущен: {Path(objects_path).name}")
+    output = Path(output_path) if output_path is not None else None
+    workbook = None
+    try:
+        if created_new:
+            workbook = create_blank_eelarve()
+            worksheet = workbook.active
+            if output is None:
+                output = default_new_eelarve_path(root, year)
+            output.parent.mkdir(parents=True, exist_ok=True)
+            reporter.stage(5, f"Создан новый Eelarve: {_resolved_path_text(output)}")
         else:
-            reporter.stage(8, f"Справочник объектов загружен: {Path(objects_path).name}")
-    else:
-        lookup = {}
-        reporter.stage(8, "Справочник объектов пропущен")
+            reporter.stage(5, f"Eelarve выбран: {_resolved_path_text(Path(eelarve_path))}")
+            status, workbook = run_with_lock_handling(
+                lambda: load_workbook(eelarve_path),
+                Path(eelarve_path),
+                kind="eelarve",
+                handle_locks=handle_locks,
+                use_gui=use_gui,
+            )
+            if status != "ok" or workbook is None:
+                raise JobAborted(
+                    "Работа прервана: не удалось открыть Eelarve.\n"
+                    f"{_resolved_path_text(Path(eelarve_path))}"
+                )
+            worksheet = pick_eelarve_sheet(workbook)
+            if output is None:
+                output = Path(eelarve_path)
+            output.parent.mkdir(parents=True, exist_ok=True)
 
-    parsed: list[tuple[Path, str, list[SourceFact]]] = []
-    source_count = len(sources)
-    for index, (source_path, month) in enumerate(sources, start=1):
-        source_path = Path(source_path)
-        parse_pct = 10 + (20 * (index - 1) // max(source_count, 1))
-        reporter.stage(parse_pct, f"Разбор источника {index} из {source_count}: {source_path.name}")
-        status, facts = run_with_lock_handling(
-            lambda path=source_path: parse_kasumiaruanne(path),
-            source_path,
-            kind="source",
-            handle_locks=handle_locks,
-            use_gui=use_gui,
+        def checkpoint(label: str) -> None:
+            reporter.stage(max(reporter.percent, 6), f"Сохранение ({label}): {_resolved_path_text(output)}")
+            run_with_lock_handling(
+                lambda: workbook.save(output),
+                output,
+                kind="output",
+                handle_locks=handle_locks,
+                use_gui=use_gui,
+            )
+
+        if created_new:
+            checkpoint("заголовок")
+
+        for source_path, month in sources:
+            if should_cancel is not None and should_cancel():
+                raise JobAborted(INTERRUPT_MESSAGE)
+            reporter.stage(5, f"Источник принят: {Path(source_path).name} ({parse_month(month)})")
+
+        if objects_path is not None:
+            status, lookup = run_with_lock_handling(
+                lambda: load_object_lookup(objects_path),
+                Path(objects_path),
+                kind="objects",
+                handle_locks=handle_locks,
+                use_gui=use_gui,
+            )
+            if status == "skip" or lookup is None:
+                lookup = {}
+                reporter.stage(8, f"Справочник объектов пропущен: {Path(objects_path).name}")
+            else:
+                reporter.stage(8, f"Справочник объектов загружен: {Path(objects_path).name}")
+        else:
+            lookup = {}
+            reporter.stage(8, "Справочник объектов пропущен")
+
+        parsed: list[tuple[Path, str, list[SourceFact]]] = []
+        source_count = len(sources)
+        for index, (source_path, month) in enumerate(sources, start=1):
+            if should_cancel is not None and should_cancel():
+                raise JobAborted(INTERRUPT_MESSAGE)
+            source_path = Path(source_path)
+            parse_pct = 10 + (20 * (index - 1) // max(source_count, 1))
+            reporter.stage(parse_pct, f"Разбор источника {index} из {source_count}: {source_path.name}")
+            status, facts = run_with_lock_handling(
+                lambda path=source_path: parse_kasumiaruanne(path),
+                source_path,
+                kind="source",
+                handle_locks=handle_locks,
+                use_gui=use_gui,
+            )
+            if status == "skip" or facts is None:
+                reporter.stage(
+                    reporter.percent if reporter.percent >= 0 else parse_pct,
+                    f"Источник пропущен: {source_path.name}",
+                )
+                continue
+            reporter.stage(parse_pct, f"Разобрано сумм: {len(facts)} ({source_path.name})")
+            parsed.append((source_path, month, facts))
+
+        if not parsed:
+            raise JobAborted("Все исходные файлы пропущены.\nAll source files were skipped.")
+
+        total_facts = sum(len(facts) for _, _, facts in parsed)
+        reporter.begin_fill(total_facts)
+        layout = detect_eelarve_layout(worksheet)
+        blocks = find_konto_blocks(worksheet, layout)
+
+        written = 0
+        rows_added = 0
+        missing = 0
+        for source_path, month, facts in parsed:
+            if should_cancel is not None and should_cancel():
+                raise JobAborted(INTERRUPT_MESSAGE)
+            added_written, added_rows, added_missing = apply_facts(
+                worksheet,
+                facts,
+                month,
+                lookup,
+                with_formulas=created_new,
+                on_written=reporter.add_filled if reporter.enabled else None,
+                should_cancel=should_cancel,
+                layout=layout,
+                blocks=blocks,
+            )
+            written += added_written
+            rows_added += added_rows
+            if not created_new:
+                missing += added_missing
+            checkpoint(source_path.name)
+
+        reporter.stage(95, f"Сохранение: {_resolved_path_text(output)}")
+        checkpoint("итог")
+        reporter.stage(100, "Готово")
+        return FillStats(
+            written=written,
+            rows_added=rows_added,
+            missing_konto_blocks=missing,
+            output_path=output,
         )
-        if status == "skip" or facts is None:
-            reporter.stage(reporter.percent if reporter.percent >= 0 else parse_pct, f"Источник пропущен: {source_path.name}")
-            continue
-        parsed.append((source_path, month, facts))
-
-    if not parsed:
-        raise JobAborted("Все исходные файлы пропущены.\nAll source files were skipped.")
-
-    total_facts = sum(len(facts) for _, _, facts in parsed)
-    reporter.begin_fill(total_facts)
-
-    written = 0
-    rows_added = 0
-    missing = 0
-    for _source_path, month, facts in parsed:
-        added_written, added_rows, added_missing = apply_facts(
-            worksheet,
-            facts,
-            month,
-            lookup,
-            with_formulas=created_new,
-            on_written=reporter.add_filled if reporter.enabled else None,
-        )
-        written += added_written
-        rows_added += added_rows
-        if not created_new:
-            missing += added_missing
-
-    output = Path(output_path)
-    output.parent.mkdir(parents=True, exist_ok=True)
-    reporter.stage(95, f"Сохранение: {_resolved_path_text(output)}")
-    run_with_lock_handling(
-        lambda: workbook.save(output),
-        output,
-        kind="output",
-        handle_locks=handle_locks,
-        use_gui=use_gui,
-    )
-    reporter.stage(100, "Готово")
-    return FillStats(
-        written=written,
-        rows_added=rows_added,
-        missing_konto_blocks=missing,
-        output_path=output,
-    )
+    except KeyboardInterrupt as exc:
+        raise JobAborted(INTERRUPT_MESSAGE) from exc
 
 
 def prompt_text_paths() -> list[Path]:
@@ -1182,9 +1302,18 @@ def main(argv: list[str] | None = None) -> int:
         )
         notify_user("Excellent Books", message, use_gui=interactive)
         return 0
+    except KeyboardInterrupt:
+        notify_user("Excellent Books", INTERRUPT_MESSAGE, error=True, use_gui=False)
+        return 130
     except JobAborted as exc:
-        notify_user("Excellent Books", str(exc), error=True, use_gui=interactive)
-        return 1
+        interrupted = "Ctrl+C" in str(exc)
+        notify_user(
+            "Excellent Books",
+            str(exc),
+            error=True,
+            use_gui=interactive and not interrupted,
+        )
+        return 130 if interrupted else 1
     except SystemExit as exc:
         code = exc.code
         if code is None or code == 0:
