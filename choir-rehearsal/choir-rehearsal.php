@@ -3,7 +3,7 @@
  * Plugin Name:       Compath Choir Rehearsal
  * Plugin URI:        https://rehearsal.compath.ee
  * Description:       Private rehearsal library for choirs: songs, voice parts, audio tracks, and a sticky player.
- * Version:           0.4.47
+ * Version:           0.4.48
  * Requires at least: 6.4
  * Requires PHP:      8.0
  * Author:            Compath OÜ
@@ -31,18 +31,30 @@ if ( defined( 'CHOIR_REHEARSAL_VERSION' ) || function_exists( 'choir_rehearsal' 
 			if ( ! current_user_can( 'activate_plugins' ) ) {
 				return;
 			}
+			$paths = array();
+			foreach ( (array) get_option( 'active_plugins', array() ) as $plugin_file ) {
+				if ( ! is_string( $plugin_file ) ) {
+					continue;
+				}
+				if ( str_ends_with( $plugin_file, '/choir-rehearsal.php' ) && ! str_contains( $plugin_file, 'choir-rehearsal-pro' ) ) {
+					$paths[] = $plugin_file;
+				}
+			}
 			echo '<div class="notice notice-error"><p>';
 			echo esc_html__(
-				'Compath Choir Rehearsal is already loaded from another folder. Deactivate the duplicate copy, then remove its folder on disk via FTP (often compath-choir-rehearsal/ after a mistaken upload). Keep wp-content/plugins/choir-rehearsal/ on existing sites. Do not use Delete in wp-admin if you need to keep songs.',
+				'Compath Choir Rehearsal is already loaded from another folder. Deactivate every duplicate Lite copy, then remove the extra folder via FTP (often compath-choir-rehearsal/). Keep only one folder — on existing sites usually wp-content/plugins/choir-rehearsal/. Do not use Delete in wp-admin if you need to keep songs.',
 				'compath-choir-rehearsal'
 			);
+			if ( count( $paths ) > 1 ) {
+				echo '</p><p><code>' . esc_html( implode( ', ', $paths ) ) . '</code>';
+			}
 			echo '</p></div>';
 		}
 	);
 	return;
 }
 
-define( 'CHOIR_REHEARSAL_VERSION', '0.4.47' );
+define( 'CHOIR_REHEARSAL_VERSION', '0.4.48' );
 define( 'CHOIR_REHEARSAL_FILE', __FILE__ );
 define( 'CHOIR_REHEARSAL_PATH', plugin_dir_path( __FILE__ ) );
 define( 'CHOIR_REHEARSAL_URL', plugin_dir_url( __FILE__ ) );

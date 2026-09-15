@@ -27,9 +27,89 @@ final class Choir_Rehearsal_Updater {
 
 		add_filter( 'pre_set_site_transient_update_plugins', array( self::class, 'inject_update' ) );
 		add_filter( 'plugins_api', array( self::class, 'plugin_info' ), 10, 3 );
+		add_filter( 'upgrader_source_selection', array( self::class, 'upgrader_source_selection' ), 10, 4 );
 		add_action( 'admin_post_choir_rehearsal_check_updates', array( self::class, 'handle_check_updates' ) );
 		add_action( 'admin_notices', array( self::class, 'render_check_notices' ) );
 		add_action( 'upgrader_process_complete', array( self::class, 'after_upgrade' ), 10, 2 );
+	}
+
+	/**
+	 * Keep updates/uploads in the already-installed folder (choir-rehearsal vs compath-choir-rehearsal).
+	 * Prevents WordPress from creating a second Lite copy when the zip root folder name differs.
+	 *
+	 * @param string      $source        Path to unpacked package (trailing slash).
+	 * @param string      $remote_source Parent of $source.
+	 * @param WP_Upgrader $upgrader      Upgrader instance.
+	 * @param array       $hook_extra    Extra data (plugin basename on updates).
+	 * @return string|\WP_Error
+	 */
+	public static function upgrader_source_selection( $source, $remote_source, $upgrader, $hook_extra = array() ) {
+		global $wp_filesystem;
+
+		if ( ! is_string( $source ) || '' === $source || ! is_object( $wp_filesystem ) ) {
+			return $source;
+		}
+
+		if ( ! is_array( $hook_extra ) ) {
+			$hook_extra = array();
+		}
+
+		$main_file = trailingslashit( $source ) . 'choir-rehearsal.php';
+		if ( ! $wp_filesystem->exists( $main_file ) ) {
+			return $source;
+		}
+
+		// Do not touch Pro packages.
+		if ( $wp_filesystem->exists( trailingslashit( $source ) . 'choir-rehearsal-pro.php' ) ) {
+			return $source;
+		}
+
+		$desired = '';
+		$plugin  = (string) ( $hook_extra['plugin'] ?? '' );
+		if ( '' !== $plugin && str_ends_with( $plugin, '/choir-rehearsal.php' ) && ! str_contains( $plugin, 'choir-rehearsal-pro' ) ) {
+			$desired = dirname( $plugin );
+		} elseif ( defined( 'CHOIR_REHEARSAL_FILE' ) ) {
+			$installed = plugin_basename( CHOIR_REHEARSAL_FILE );
+			if ( '' !== $plugin && $plugin === $installed ) {
+				$desired = dirname( $installed );
+			}
+		}
+
+		if ( '' === $desired ) {
+			if ( $wp_filesystem->exists( WP_PLUGIN_DIR . '/choir-rehearsal/choir-rehearsal.php' ) ) {
+				$desired = 'choir-rehearsal';
+			} elseif ( $wp_filesystem->exists( WP_PLUGIN_DIR . '/compath-choir-rehearsal/choir-rehearsal.php' ) ) {
+				$desired = 'compath-choir-rehearsal';
+			}
+		}
+
+		if ( '' === $desired ) {
+			return $source;
+		}
+
+		$current = basename( untrailingslashit( str_replace( '\\', '/', $source ) ) );
+		if ( $current === $desired ) {
+			return $source;
+		}
+
+		$new_source = trailingslashit( $remote_source ) . $desired;
+		if ( $wp_filesystem->exists( $new_source ) ) {
+			$wp_filesystem->delete( $new_source, true );
+		}
+
+		if ( ! $wp_filesystem->move( $source, $new_source ) ) {
+			return new WP_Error(
+				'choir_rehearsal_upgrade_folder',
+				sprintf(
+					/* translators: 1: folder from zip, 2: installed folder */
+					__( 'Could not map update folder %1$s to installed folder %2$s.', 'compath-choir-rehearsal' ),
+					$current,
+					$desired
+				)
+			);
+		}
+
+		return trailingslashit( $new_source );
 	}
 
 	public static function register_settings(): void {
