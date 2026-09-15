@@ -63,8 +63,23 @@ class EelarveFillHelperTests(unittest.TestCase):
         self.assertEqual(fill.parse_konto("3241"), "3241")
         self.assertEqual(fill.parse_konto("3241 Tulu"), "3241")
         self.assertEqual(fill.parse_konto(3241.0), "3241")
+        self.assertEqual(fill.parse_konto("HEAKORRA LEPINGULISED    3241"), "3241")
         self.assertIsNone(fill.parse_konto("Budget 2026"))
         self.assertIsNone(fill.parse_konto("Tulud"))
+
+    def test_parse_kontos_splits_comma_separated_header(self):
+        fill = load_fill()
+        self.assertEqual(
+            fill.parse_kontos("3150, 3160, 3400"),
+            ["3150", "3160", "3400"],
+        )
+        self.assertEqual(fill.parse_kontos("3825, 3401"), ["3825", "3401"])
+        self.assertEqual(fill.parse_kontos("4300, 4310, 4320"), ["4300", "4310", "4320"])
+        self.assertEqual(fill.parse_kontos("6010, 6020, 6030"), ["6010", "6020", "6030"])
+        self.assertEqual(fill.parse_kontos("3150; 3160"), ["3150", "3160"])
+        self.assertEqual(fill.parse_kontos("3241"), ["3241"])
+        self.assertEqual(fill.parse_kontos("HEAKORRA LEPINGULISED    3241"), ["3241"])
+        self.assertEqual(fill.parse_kontos("Budget 2026"), [])
 
     def test_is_total_label_detects_kokku_rows(self):
         fill = load_fill()
@@ -171,6 +186,40 @@ class EelarveFillEngineTests(unittest.TestCase):
             )
             sheet = load_workbook(output)["PL"]
             self.assertEqual(sheet["C3"].value, 50)
+
+    def test_multi_konto_header_shares_block_for_each_number(self):
+        fill = load_fill()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            source = root / "src.xlsx"
+            eelarve = root / "eelarve.xlsx"
+            output = root / "out.xlsx"
+            write_kasumiaruanne(
+                source,
+                [["3160", "Tulu", "2026-01", 50, None]],
+                objects=["HK_A", "HK_B"],
+            )
+            workbook = Workbook()
+            sheet = workbook.active
+            sheet.title = "PL"
+            sheet.append(["Konto", "Objekt", "Jaanuar"])
+            sheet.append(["3150, 3160, 3400", None, None])
+            sheet.append([None, "HK_A", None])
+            sheet.append(["3241", None, None])
+            sheet.append([None, "HK_B", 7])
+            workbook.save(eelarve)
+            stats = fill.fill_eelarve(
+                eelarve_path=eelarve,
+                sources=[(source, "Jaanuar")],
+                output_path=output,
+            )
+            self.assertEqual(stats.missing_konto_blocks, 0)
+            sheet = load_workbook(output)["PL"]
+            self.assertEqual(sheet["A2"].value, "3150, 3160, 3400")
+            self.assertEqual(sheet["C3"].value, 50)
+            self.assertEqual(sheet["A4"].value, "3241")
+            self.assertEqual(sheet["C5"].value, 7)
+            self.assertIsNone(sheet["A6"].value)
 
     def test_append_on_miss_and_skip_unrelated_section(self):
         fill = load_fill()

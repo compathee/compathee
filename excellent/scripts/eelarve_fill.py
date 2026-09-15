@@ -103,6 +103,7 @@ class KontoBlock:
     end_row: int
     total_rows: list[int]
     labels: dict[str, int]
+    kontos: list[str]
 
 
 def project_root() -> Path:
@@ -340,15 +341,25 @@ def parse_amount(value: Any) -> float | None:
         return None
 
 
-def parse_konto(value: Any) -> str | None:
+def parse_kontos(value: Any) -> list[str]:
     text = cell_text(value)
     if not text:
-        return None
+        return []
+    found: list[str] = []
+    seen: set[str] = set()
     for match in KONTO_RE.findall(text):
         if YEAR_RE.fullmatch(match):
             continue
-        return match
-    return None
+        if match in seen:
+            continue
+        seen.add(match)
+        found.append(match)
+    return found
+
+
+def parse_konto(value: Any) -> str | None:
+    kontos = parse_kontos(value)
+    return kontos[0] if kontos else None
 
 
 def is_total_label(text: str) -> bool:
@@ -591,12 +602,18 @@ def _row_is_total(worksheet: Worksheet, row: int, layout: EelarveLayout) -> bool
     )
 
 
-def _row_konto(worksheet: Worksheet, row: int, layout: EelarveLayout) -> str | None:
+def _row_kontos(worksheet: Worksheet, row: int, layout: EelarveLayout) -> list[str]:
     if _row_is_total(worksheet, row, layout):
-        return None
-    return parse_konto(worksheet.cell(row, layout.konto_col).value) or parse_konto(
-        worksheet.cell(row, layout.object_col).value
-    )
+        return []
+    from_konto = parse_kontos(worksheet.cell(row, layout.konto_col).value)
+    if from_konto:
+        return from_konto
+    return parse_kontos(worksheet.cell(row, layout.object_col).value)
+
+
+def _row_konto(worksheet: Worksheet, row: int, layout: EelarveLayout) -> str | None:
+    kontos = _row_kontos(worksheet, row, layout)
+    return kontos[0] if kontos else None
 
 
 def find_konto_blocks(worksheet: Worksheet, layout: EelarveLayout) -> list[KontoBlock]:
@@ -604,16 +621,17 @@ def find_konto_blocks(worksheet: Worksheet, layout: EelarveLayout) -> list[Konto
     current: KontoBlock | None = None
     last = last_used_row(worksheet, layout)
     for row in range(layout.header_row + 1, last + 1):
-        konto = _row_konto(worksheet, row, layout)
-        if konto:
+        kontos = _row_kontos(worksheet, row, layout)
+        if kontos:
             if current is not None:
                 blocks.append(current)
             current = KontoBlock(
-                konto=konto,
+                konto=kontos[0],
                 header_row=row,
                 end_row=row,
                 total_rows=[],
                 labels={},
+                kontos=list(kontos),
             )
             continue
         if current is None:
@@ -658,7 +676,8 @@ def shift_blocks_after_insert(blocks: list[KontoBlock], insert_at: int, count: i
 def first_blocks_by_konto(blocks: list[KontoBlock]) -> dict[str, KontoBlock]:
     index: dict[str, KontoBlock] = {}
     for block in blocks:
-        index.setdefault(block.konto, block)
+        for konto in block.kontos or [block.konto]:
+            index.setdefault(konto, block)
     return index
 
 
@@ -907,6 +926,7 @@ def apply_facts(
                 end_row=header_row,
                 total_rows=[],
                 labels={},
+                kontos=[fact.konto],
             )
             blocks.append(block)
             by_konto[fact.konto] = block
