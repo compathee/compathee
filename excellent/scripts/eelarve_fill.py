@@ -9,12 +9,13 @@ from __future__ import annotations
 
 import argparse
 import csv
+import errno
 import re
 import sys
 from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 try:
     from openpyxl import Workbook, load_workbook
@@ -120,6 +121,153 @@ def default_new_eelarve_path(root: Path | None = None, year: int | None = None) 
     base = project_root() if root is None else root
     resolved_year = date.today().year if year is None else year
     return base / "output" / f"Eelarve_{resolved_year}.xlsx"
+
+
+class JobAborted(Exception):
+    """Raised when the user aborts after a locked/busy file prompt."""
+
+
+def progress_percent(completed: int, total: int, *, start: int = 30, end: int = 90) -> int:
+    if total <= 0:
+        return end
+    completed = min(max(int(completed), 0), int(total))
+    return start + (end - start) * completed // total
+
+
+def is_lock_error(exc: BaseException) -> bool:
+    if isinstance(exc, PermissionError):
+        return True
+    if not isinstance(exc, OSError):
+        return False
+    if getattr(exc, "errno", None) in {errno.EACCES, errno.EPERM, errno.EBUSY}:
+        return True
+    if getattr(exc, "winerror", None) in {5, 32, 33}:
+        return True
+    text = str(exc).casefold()
+    return any(
+        needle in text
+        for needle in (
+            "being used by another",
+            "used by another process",
+            "permission denied",
+            "file is locked",
+            "заблокирован",
+            "занят",
+        )
+    )
+
+
+class ProgressReporter:
+    def __init__(self, enabled: bool = True, stream: Any | None = None) -> None:
+        self.enabled = enabled
+        self.stream = stream or sys.stdout
+        self.percent = -1
+        self._fill_done = 0
+        self._fill_total = 0
+
+    def stage(self, percent: int, message: str) -> None:
+        if not self.enabled:
+            return
+        percent = max(0, min(100, int(percent)))
+        if percent < self.percent:
+            percent = self.percent
+        self.percent = percent
+        print(f"[{self.percent:3d}%] {message}", file=self.stream, flush=True)
+
+    def begin_fill(self, total: int) -> None:
+        self._fill_total = max(0, int(total))
+        self._fill_done = 0
+        self.stage(30 if self._fill_total else 90, "Заполнение Eelarve…")
+
+    def add_filled(self, n: int = 1) -> None:
+        self._fill_done += n
+        total = self._fill_total
+        if total <= 0:
+            return
+        step = max(1, total // 10)
+        if self._fill_done in {1, total} or self._fill_done % step == 0:
+            self.stage(
+                progress_percent(self._fill_done, total, start=30, end=90),
+                "Заполнение Eelarve…",
+            )
+
+
+def _resolved_path_text(path: Path) -> str:
+    try:
+        return str(Path(path).expanduser().resolve())
+    except OSError:
+        return str(path)
+
+
+def ask_lock_action(path: Path, *, use_gui: bool = False, kind: str = "source") -> str:
+    resolved = _resolved_path_text(path)
+    message = (
+        f"Файл занят (открыт в Excel или заблокирован):\n{resolved}\n"
+        f"File is busy/locked:\n{resolved}"
+    )
+    print(message, flush=True)
+    retry_kinds = kind in {"output", "eelarve"}
+    if retry_kinds:
+        print("1 = повторить / продолжить,  2 = прервать  (y/n)", flush=True)
+    else:
+        print("1 = продолжить (пропустить файл),  2 = прервать  (y/n)", flush=True)
+
+    if use_gui:
+        try:
+            import tkinter as tk
+            from tkinter import messagebox
+
+            root = tk.Tk()
+            root.withdraw()
+            try:
+                extra = "\n\nПовторить?" if retry_kinds else "\n\nПропустить этот файл и продолжить?"
+                if retry_kinds:
+                    return "continue" if messagebox.askretrycancel("Файл занят", message + extra) else "abort"
+                return "continue" if messagebox.askyesno("Файл занят", message + extra) else "abort"
+            finally:
+                root.destroy()
+        except Exception:
+            pass
+
+    try:
+        answer = input("Выбор / choice: ").strip().casefold()
+    except EOFError:
+        return "abort"
+    if answer in {"1", "y", "yes", "c", "continue", "retry", "r"}:
+        return "continue"
+    return "abort"
+
+
+def run_with_lock_handling(
+    operation: Callable[[], Any],
+    path: Path,
+    *,
+    kind: str,
+    handle_locks: bool,
+    use_gui: bool,
+) -> tuple[str, Any]:
+    if not handle_locks:
+        return "ok", operation()
+    while True:
+        try:
+            return "ok", operation()
+        except Exception as exc:
+            if not is_lock_error(exc):
+                raise
+            action = ask_lock_action(path, use_gui=use_gui, kind=kind)
+            if action == "abort":
+                raise JobAborted(
+                    "Работа прервана: файл занят.\n"
+                    f"Job aborted: file is locked.\n{_resolved_path_text(path)}"
+                ) from exc
+            if kind in {"source", "objects"}:
+                return "skip", None
+            try:
+                return "ok", operation()
+            except Exception as exc2:
+                if not is_lock_error(exc2):
+                    raise
+                continue
 
 
 def notify_user(
@@ -656,6 +804,7 @@ def apply_facts(
     month: str,
     lookup: dict[str, str],
     with_formulas: bool,
+    on_written: Callable[[int], None] | None = None,
 ) -> tuple[int, int, int]:
     written = 0
     rows_added = 0
@@ -694,6 +843,8 @@ def apply_facts(
 
         worksheet.cell(object_row, month_col).value = fact.amount
         written += 1
+        if on_written is not None:
+            on_written(1)
     return written, rows_added, missing
 
 
@@ -705,10 +856,13 @@ def fill_eelarve(
     output_path: Path | None = None,
     year: int | None = None,
     root: Path | None = None,
+    reporter: ProgressReporter | None = None,
+    use_gui: bool = False,
+    handle_locks: bool = False,
 ) -> FillStats:
     if not sources:
         raise ValueError("No source workbooks provided")
-    lookup = load_object_lookup(objects_path)
+    reporter = reporter or ProgressReporter(enabled=False)
     created_new = eelarve_path is None
     if created_new:
         workbook = create_blank_eelarve()
@@ -716,23 +870,80 @@ def fill_eelarve(
         if output_path is None:
             output_path = default_new_eelarve_path(root, year)
             output_path.parent.mkdir(parents=True, exist_ok=True)
+        reporter.stage(5, f"Создан новый Eelarve: {_resolved_path_text(Path(output_path))}")
     else:
-        workbook = load_workbook(eelarve_path)
+        reporter.stage(5, f"Eelarve выбран: {_resolved_path_text(Path(eelarve_path))}")
+        status, workbook = run_with_lock_handling(
+            lambda: load_workbook(eelarve_path),
+            Path(eelarve_path),
+            kind="eelarve",
+            handle_locks=handle_locks,
+            use_gui=use_gui,
+        )
+        if status != "ok" or workbook is None:
+            raise JobAborted(
+                "Работа прервана: не удалось открыть Eelarve.\n"
+                f"{_resolved_path_text(Path(eelarve_path))}"
+            )
         worksheet = pick_eelarve_sheet(workbook)
         if output_path is None:
             output_path = Path(eelarve_path)
 
+    for source_path, month in sources:
+        reporter.stage(5, f"Источник принят: {Path(source_path).name} ({parse_month(month)})")
+
+    if objects_path is not None:
+        status, lookup = run_with_lock_handling(
+            lambda: load_object_lookup(objects_path),
+            Path(objects_path),
+            kind="objects",
+            handle_locks=handle_locks,
+            use_gui=use_gui,
+        )
+        if status == "skip" or lookup is None:
+            lookup = {}
+            reporter.stage(8, f"Справочник объектов пропущен: {Path(objects_path).name}")
+        else:
+            reporter.stage(8, f"Справочник объектов загружен: {Path(objects_path).name}")
+    else:
+        lookup = {}
+        reporter.stage(8, "Справочник объектов пропущен")
+
+    parsed: list[tuple[Path, str, list[SourceFact]]] = []
+    source_count = len(sources)
+    for index, (source_path, month) in enumerate(sources, start=1):
+        source_path = Path(source_path)
+        parse_pct = 10 + (20 * (index - 1) // max(source_count, 1))
+        reporter.stage(parse_pct, f"Разбор источника {index} из {source_count}: {source_path.name}")
+        status, facts = run_with_lock_handling(
+            lambda path=source_path: parse_kasumiaruanne(path),
+            source_path,
+            kind="source",
+            handle_locks=handle_locks,
+            use_gui=use_gui,
+        )
+        if status == "skip" or facts is None:
+            reporter.stage(reporter.percent if reporter.percent >= 0 else parse_pct, f"Источник пропущен: {source_path.name}")
+            continue
+        parsed.append((source_path, month, facts))
+
+    if not parsed:
+        raise JobAborted("Все исходные файлы пропущены.\nAll source files were skipped.")
+
+    total_facts = sum(len(facts) for _, _, facts in parsed)
+    reporter.begin_fill(total_facts)
+
     written = 0
     rows_added = 0
     missing = 0
-    for source_path, month in sources:
-        facts = parse_kasumiaruanne(Path(source_path))
+    for _source_path, month, facts in parsed:
         added_written, added_rows, added_missing = apply_facts(
             worksheet,
             facts,
             month,
             lookup,
             with_formulas=created_new,
+            on_written=reporter.add_filled if reporter.enabled else None,
         )
         written += added_written
         rows_added += added_rows
@@ -741,7 +952,15 @@ def fill_eelarve(
 
     output = Path(output_path)
     output.parent.mkdir(parents=True, exist_ok=True)
-    workbook.save(output)
+    reporter.stage(95, f"Сохранение: {_resolved_path_text(output)}")
+    run_with_lock_handling(
+        lambda: workbook.save(output),
+        output,
+        kind="output",
+        handle_locks=handle_locks,
+        use_gui=use_gui,
+    )
+    reporter.stage(100, "Готово")
     return FillStats(
         written=written,
         rows_added=rows_added,
@@ -823,6 +1042,16 @@ def prompt_interactive(args: argparse.Namespace) -> argparse.Namespace:
         args.objects = Path(object_lookup) if object_lookup else None
         if args.output is None:
             args.output = args.eelarve if args.eelarve is not None else default_new
+        if args.eelarve is not None:
+            print(f"Eelarve выбран: {args.eelarve}", flush=True)
+        else:
+            print(f"Создан новый Eelarve: {default_new}", flush=True)
+        for path, month in zip(args.sources, args.months, strict=True):
+            print(f"Источник принят: {path.name} ({month})", flush=True)
+        if args.objects is not None:
+            print(f"Справочник объектов: {args.objects.name}", flush=True)
+        else:
+            print("Справочник объектов пропущен", flush=True)
         return args
     except ModuleNotFoundError:
         print("tkinter is not available; falling back to console prompts.")
@@ -859,6 +1088,16 @@ def prompt_interactive(args: argparse.Namespace) -> argparse.Namespace:
     args.objects = Path(object_lookup_text) if object_lookup_text else None
     if args.output is None:
         args.output = args.eelarve if args.eelarve is not None else default_new
+    if args.eelarve is not None:
+        print(f"Eelarve выбран: {args.eelarve}", flush=True)
+    else:
+        print(f"Создан новый Eelarve: {default_new}", flush=True)
+    for path, month in zip(args.sources, args.months, strict=True):
+        print(f"Источник принят: {path.name} ({month})", flush=True)
+    if args.objects is not None:
+        print(f"Справочник объектов: {args.objects.name}", flush=True)
+    else:
+        print("Справочник объектов пропущен", flush=True)
     return args
 
 
@@ -908,7 +1147,9 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv or sys.argv[1:])
     interactive = args.interactive
+    reporter = ProgressReporter(enabled=True)
     try:
+        reporter.stage(0, "Запуск…")
         if interactive:
             args = prompt_interactive(args)
         if not args.sources:
@@ -927,6 +1168,9 @@ def main(argv: list[str] | None = None) -> int:
             objects_path=args.objects,
             output_path=args.output,
             year=args.year,
+            reporter=reporter,
+            use_gui=interactive,
+            handle_locks=True,
         )
         resolved = stats.output_path.expanduser().resolve()
         message = (
@@ -938,6 +1182,9 @@ def main(argv: list[str] | None = None) -> int:
         )
         notify_user("Excellent Books", message, use_gui=interactive)
         return 0
+    except JobAborted as exc:
+        notify_user("Excellent Books", str(exc), error=True, use_gui=interactive)
+        return 1
     except SystemExit as exc:
         code = exc.code
         if code is None or code == 0:

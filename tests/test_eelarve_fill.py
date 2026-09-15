@@ -80,6 +80,22 @@ class EelarveFillHelperTests(unittest.TestCase):
             path = fill.default_new_eelarve_path(root, year=2026)
             self.assertEqual(path, root / "output" / "Eelarve_2026.xlsx")
 
+    def test_progress_percent_maps_fill_stage(self):
+        fill = load_fill()
+        self.assertEqual(fill.progress_percent(0, 10, start=30, end=90), 30)
+        self.assertEqual(fill.progress_percent(5, 10, start=30, end=90), 60)
+        self.assertEqual(fill.progress_percent(10, 10, start=30, end=90), 90)
+        self.assertEqual(fill.progress_percent(0, 0, start=30, end=90), 90)
+
+    def test_is_lock_error_detects_permission_and_sharing(self):
+        fill = load_fill()
+        self.assertTrue(fill.is_lock_error(PermissionError("denied")))
+        self.assertTrue(fill.is_lock_error(OSError(13, "Permission denied")))
+        busy = OSError("The process cannot access the file because it is being used by another process")
+        busy.winerror = 32
+        self.assertTrue(fill.is_lock_error(busy))
+        self.assertFalse(fill.is_lock_error(ValueError("bad month")))
+
 
 class EelarveFillEngineTests(unittest.TestCase):
     def test_parse_kasumiaruanne_skips_period_and_kokku(self):
@@ -336,6 +352,9 @@ class EelarveFillEngineTests(unittest.TestCase):
             self.assertIn("Eelarve заполнен", text)
             self.assertIn("Записано:", text)
             self.assertIn(str(output.resolve()), text)
+            self.assertRegex(text, r"\[\s*\d+%\]")
+            self.assertIn("Заполнение Eelarve", text)
+            self.assertNotIn("HK_A", text.split("Eelarve заполнен")[0])
 
     def test_interactive_cancel_eelarve_creates_new_file(self):
         fill = load_fill()
@@ -377,6 +396,118 @@ class EelarveFillEngineTests(unittest.TestCase):
             sys.stdin = old_stdin
         self.assertNotEqual(code, 0)
         self.assertIn("Исходные файлы не выбраны", stderr.getvalue())
+
+
+class EelarveFillProgressAndLockTests(unittest.TestCase):
+    def test_locked_source_abort_returns_nonzero(self):
+        fill = load_fill()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            source = root / "src.xlsx"
+            output = root / "out.xlsx"
+            write_kasumiaruanne(source, [["3241", "Tulu", "2026-01", 1, None]])
+            stdin = io.StringIO("2\n")
+            stdout = io.StringIO()
+            stderr = io.StringIO()
+            old_stdin = sys.stdin
+            sys.stdin = stdin
+            try:
+                with patch.object(fill, "parse_kasumiaruanne", side_effect=PermissionError("busy")):
+                    with redirect_stdout(stdout), redirect_stderr(stderr):
+                        code = fill.main(
+                            [
+                                "--source",
+                                str(source),
+                                "--month",
+                                "Jaanuar",
+                                "--output",
+                                str(output),
+                            ]
+                        )
+            finally:
+                sys.stdin = old_stdin
+            self.assertNotEqual(code, 0)
+            combined = stdout.getvalue() + stderr.getvalue()
+            self.assertIn("src.xlsx", combined)
+            self.assertRegex(combined, r"(?i)занят|busy|locked")
+            self.assertFalse(output.exists())
+
+    def test_locked_source_continue_skips_and_proceeds(self):
+        fill = load_fill()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            locked = root / "locked.xlsx"
+            ok_source = root / "ok.xlsx"
+            output = root / "out.xlsx"
+            write_kasumiaruanne(locked, [["3241", "Tulu", "2026-01", 9, None]])
+            write_kasumiaruanne(ok_source, [["3241", "Tulu", "2026-01", 4, None]])
+            real_parse = fill.parse_kasumiaruanne
+
+            def parse_maybe_locked(path):
+                if Path(path).name == "locked.xlsx":
+                    raise PermissionError("busy")
+                return real_parse(path)
+
+            stdin = io.StringIO("1\n")
+            stdout = io.StringIO()
+            old_stdin = sys.stdin
+            sys.stdin = stdin
+            try:
+                with patch.object(fill, "parse_kasumiaruanne", side_effect=parse_maybe_locked):
+                    with redirect_stdout(stdout), redirect_stderr(io.StringIO()):
+                        code = fill.main(
+                            [
+                                "--source",
+                                str(locked),
+                                "--month",
+                                "Jaanuar",
+                                "--source",
+                                str(ok_source),
+                                "--month",
+                                "Jaanuar",
+                                "--output",
+                                str(output),
+                            ]
+                        )
+            finally:
+                sys.stdin = old_stdin
+            self.assertEqual(code, 0)
+            self.assertTrue(output.exists())
+            sheet = load_workbook(output)["Eelarve"]
+            self.assertEqual(sheet["C3"].value, 4)
+            self.assertIn("locked.xlsx", stdout.getvalue() + "")
+
+    def test_locked_output_abort_does_not_claim_success(self):
+        fill = load_fill()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            source = root / "src.xlsx"
+            output = root / "out.xlsx"
+            write_kasumiaruanne(source, [["3241", "Tulu", "2026-01", 1, None]])
+            stdin = io.StringIO("2\n")
+            stdout = io.StringIO()
+            stderr = io.StringIO()
+            old_stdin = sys.stdin
+            sys.stdin = stdin
+            try:
+                with patch.object(fill.Workbook, "save", side_effect=PermissionError("busy")):
+                    with redirect_stdout(stdout), redirect_stderr(stderr):
+                        code = fill.main(
+                            [
+                                "--source",
+                                str(source),
+                                "--month",
+                                "Jaanuar",
+                                "--output",
+                                str(output),
+                            ]
+                        )
+            finally:
+                sys.stdin = old_stdin
+            self.assertNotEqual(code, 0)
+            combined = stdout.getvalue() + stderr.getvalue()
+            self.assertIn("out.xlsx", combined)
+            self.assertNotIn("Eelarve заполнен", combined)
 
 
 if __name__ == "__main__":
