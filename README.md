@@ -5,7 +5,17 @@
 Workflow backups and deployable n8n JSON files are stored in
 [`workflows/`](workflows/).
 
-## Excellent Books Excel report combiner
+## Excellent Books Excel tools
+
+The Windows client in [`excellent/`](excellent/) **fills an Eelarve workbook**
+from monthly Kasumiaruanne exports (object columns such as `HK_*`). That is the
+primary client flow: pick an existing Eelarve or create `output/Eelarve_<year>.xlsx`,
+choose source workbooks and months, optionally attach an object CSV, then write
+amounts into the matching konto block. See [`excellent/README_RU.txt`](excellent/README_RU.txt).
+
+The developer unpivot combiner below remains available (and the client still
+ships `excellent/scripts/combine_excellent_reports.py` plus
+`excellent/run_combine_excellent_reports_legacy.bat` for the old flat table).
 
 Use `scripts/combine_excellent_reports.py` to combine Standard/Excellent Books
 Excel exports into one normalized report without using the API.
