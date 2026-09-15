@@ -154,7 +154,7 @@ JS;
 
 	public static function handle_load_demo_songs(): void {
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( esc_html__( 'Sorry, you are not allowed to manage options.', 'choir-rehearsal' ) );
+			wp_die( esc_html__( 'Sorry, you are not allowed to manage options.', 'compath-choir-rehearsal' ) );
 		}
 
 		check_admin_referer( 'choir_rehearsal_load_demo_songs' );
@@ -181,7 +181,7 @@ JS;
 
 	public static function handle_delete_all_songs(): void {
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( esc_html__( 'Sorry, you are not allowed to manage options.', 'choir-rehearsal' ) );
+			wp_die( esc_html__( 'Sorry, you are not allowed to manage options.', 'compath-choir-rehearsal' ) );
 		}
 
 		check_admin_referer( 'choir_rehearsal_delete_all_songs' );
@@ -217,7 +217,7 @@ JS;
 
 		$audio_id = self::ensure_demo_audio_attachment();
 		if ( $audio_id <= 0 ) {
-			$empty['error'] = __( 'Could not create the demo audio file in the Media Library.', 'choir-rehearsal' );
+			$empty['error'] = __( 'Could not create the demo audio file in the Media Library.', 'compath-choir-rehearsal' );
 			return $empty;
 		}
 
@@ -467,7 +467,7 @@ JS;
 			echo esc_html(
 				sprintf(
 					/* translators: 1: first song number, 2: last song number, 3: song count, 4: track count */
-					__( 'Loaded demo songs %1$d–%2$d (%3$d songs, %4$d tracks).', 'choir-rehearsal' ),
+					__( 'Loaded demo songs %1$d–%2$d (%3$d songs, %4$d tracks).', 'compath-choir-rehearsal' ),
 					$from,
 					$to,
 					$songs,
@@ -485,7 +485,7 @@ JS;
 			echo esc_html(
 				sprintf(
 					/* translators: 1: songs deleted, 2: tracks deleted, 3: media deleted */
-					__( 'Deleted %1$d songs, %2$d tracks, and %3$d media files.', 'choir-rehearsal' ),
+					__( 'Deleted %1$d songs, %2$d tracks, and %3$d media files.', 'compath-choir-rehearsal' ),
 					$songs,
 					$tracks,
 					$media
@@ -499,13 +499,13 @@ JS;
 	public static function render_settings_buttons(): void {
 		?>
 		<hr />
-		<h2><?php esc_html_e( 'Demo library', 'choir-rehearsal' ); ?></h2>
+		<h2><?php esc_html_e( 'Demo library', 'compath-choir-rehearsal' ); ?></h2>
 		<p class="description">
 			<?php
 			echo esc_html(
 				sprintf(
 					/* translators: 1: songs created per click, 2: songs shown per library page */
-					__( 'Load %1$d sample songs (4 voice tracks each) so the public library shows pagination (%2$d songs per page), or wipe the whole rehearsal library.', 'choir-rehearsal' ),
+					__( 'Load %1$d sample songs (4 voice tracks each) so the public library shows pagination (%2$d songs per page), or wipe the whole rehearsal library.', 'compath-choir-rehearsal' ),
 					self::SONGS_PER_LOAD,
 					Choir_Rehearsal_Frontend::songs_per_page()
 				)
@@ -514,10 +514,10 @@ JS;
 		</p>
 		<p>
 			<a class="button button-secondary" href="<?php echo esc_url( self::get_load_demo_url() ); ?>">
-				<?php esc_html_e( 'Load demo songs', 'choir-rehearsal' ); ?>
+				<?php esc_html_e( 'Load demo songs', 'compath-choir-rehearsal' ); ?>
 			</a>
-			<button type="button" class="button button-secondary" id="choir-delete-all-songs" data-confirm="<?php echo esc_attr__( 'All songs will be deleted from the library. Do you agree?', 'choir-rehearsal' ); ?>">
-				<?php esc_html_e( 'Delete all songs', 'choir-rehearsal' ); ?>
+			<button type="button" class="button button-secondary" id="choir-delete-all-songs" data-confirm="<?php echo esc_attr__( 'All songs will be deleted from the library. Do you agree?', 'compath-choir-rehearsal' ); ?>">
+				<?php esc_html_e( 'Delete all songs', 'compath-choir-rehearsal' ); ?>
 			</button>
 		</p>
 		<form id="choir-delete-all-songs-form" method="post" action="<?php echo esc_url( self::get_delete_all_url() ); ?>" style="display:none;">
@@ -525,10 +525,10 @@ JS;
 			<?php wp_nonce_field( 'choir_rehearsal_delete_all_songs' ); ?>
 		</form>
 		<dialog id="choir-delete-all-dialog" class="choir-delete-all-dialog">
-			<p><?php esc_html_e( 'All songs will be deleted from the library. Do you agree?', 'choir-rehearsal' ); ?></p>
+			<p><?php esc_html_e( 'All songs will be deleted from the library. Do you agree?', 'compath-choir-rehearsal' ); ?></p>
 			<p class="choir-delete-all-dialog__actions">
-				<button type="button" class="button button-primary" id="choir-delete-all-yes"><?php esc_html_e( 'Yes', 'choir-rehearsal' ); ?></button>
-				<button type="button" class="button" id="choir-delete-all-no"><?php esc_html_e( 'No', 'choir-rehearsal' ); ?></button>
+				<button type="button" class="button button-primary" id="choir-delete-all-yes"><?php esc_html_e( 'Yes', 'compath-choir-rehearsal' ); ?></button>
+				<button type="button" class="button" id="choir-delete-all-no"><?php esc_html_e( 'No', 'compath-choir-rehearsal' ); ?></button>
 			</p>
 		</dialog>
 		<style>

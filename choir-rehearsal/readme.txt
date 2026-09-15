@@ -4,7 +4,7 @@ Tags: choir, audio, rehearsal, voice parts, music
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 0.4.44
+Stable tag: 0.4.49
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -38,7 +38,7 @@ WordPress.org builds receive plugin updates only through WordPress.org. GitHub-d
 
 == Installation ==
 
-1. Upload the plugin folder to `/wp-content/plugins/choir-rehearsal`
+1. Upload the plugin folder to `/wp-content/plugins/compath-choir-rehearsal`
 2. Activate the plugin through the 'Plugins' menu in WordPress
 3. Go to **Choir Rehearsal → Add Song**
 4. Add voice tracks and upload audio files
@@ -55,6 +55,30 @@ By default only logged-in users can view `/rehearsal/`. Change this under **Choi
 Yes. Use the shortcode `[choir_rehearsal]`.
 
 == Changelog ==
+
+= 0.4.49 =
+
+* Migration wizard: detect duplicate Lite folders, keep one, deactivate/delete extras without deleting songs
+* Dual-load copy can open the wizard even when an older Lite loaded first
+
+= 0.4.48 =
+
+* Updates/uploads stay in the already-installed plugin folder (stops a second Lite copy after upgrade)
+* Duplicate-plugin notice lists active Lite paths
+
+= 0.4.47 =
+
+* GitHub zip again installs into folder `choir-rehearsal/` (fixes duplicate plugin after upload on existing sites)
+
+= 0.4.46 =
+
+* Align text domain with WordPress.org slug (`compath-choir-rehearsal`)
+
+= 0.4.45 =
+
+* Pro: Export/Import song library backup (ZIP)
+* Pro: Fix activation fatal when backup file missing or duplicate Lite slug listed as dependency
+* Clearer duplicate-plugin admin notice
 
 = 0.4.44 =
 

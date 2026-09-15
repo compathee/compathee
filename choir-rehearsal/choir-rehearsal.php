@@ -3,14 +3,14 @@
  * Plugin Name:       Compath Choir Rehearsal
  * Plugin URI:        https://rehearsal.compath.ee
  * Description:       Private rehearsal library for choirs: songs, voice parts, audio tracks, and a sticky player.
- * Version:           0.4.44
+ * Version:           0.4.49
  * Requires at least: 6.4
  * Requires PHP:      8.0
  * Author:            Compath OÜ
  * Author URI:        https://compath.ee
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain:       choir-rehearsal
+ * Text Domain:       compath-choir-rehearsal
  * Domain Path:       /languages
  */
 
@@ -22,27 +22,22 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /*
  * A second copy (e.g. old folder choir-rehearsal/ plus new compath-choir-rehearsal/)
- * must not fatally redeclare constants/functions. Show an admin notice instead.
+ * must not fatally redeclare constants/functions. Show migration wizard instead.
  */
 if ( defined( 'CHOIR_REHEARSAL_VERSION' ) || function_exists( 'choir_rehearsal' ) || class_exists( 'Choir_Rehearsal_Plugin', false ) ) {
-	add_action(
-		'admin_notices',
-		static function (): void {
-			if ( ! current_user_can( 'activate_plugins' ) ) {
-				return;
-			}
-			echo '<div class="notice notice-error"><p>';
-			echo esc_html__(
-				'Compath Choir Rehearsal is already loaded from another folder. Deactivate and remove the old “choir-rehearsal” plugin copy (do not use Delete if you need to keep songs — rename the folder on disk instead), then activate only one copy.',
-				'choir-rehearsal'
-			);
-			echo '</p></div>';
+	if ( ! class_exists( 'Choir_Rehearsal_Migration', false ) ) {
+		$choir_rehearsal_migration = __DIR__ . '/includes/class-migration.php';
+		if ( is_readable( $choir_rehearsal_migration ) ) {
+			require_once $choir_rehearsal_migration;
 		}
-	);
+	}
+	if ( class_exists( 'Choir_Rehearsal_Migration', false ) ) {
+		Choir_Rehearsal_Migration::register_duplicate_bootstrap( __FILE__ );
+	}
 	return;
 }
 
-define( 'CHOIR_REHEARSAL_VERSION', '0.4.44' );
+define( 'CHOIR_REHEARSAL_VERSION', '0.4.49' );
 define( 'CHOIR_REHEARSAL_FILE', __FILE__ );
 define( 'CHOIR_REHEARSAL_PATH', plugin_dir_path( __FILE__ ) );
 define( 'CHOIR_REHEARSAL_URL', plugin_dir_url( __FILE__ ) );

@@ -76,7 +76,7 @@ final class Choir_Rehearsal_Pages {
 
 		$new_id = wp_insert_post(
 			array(
-				'post_title'   => __( 'Rehearsal Library', 'choir-rehearsal' ),
+				'post_title'   => __( 'Rehearsal Library', 'compath-choir-rehearsal' ),
 				'post_name'    => 'rehearsal',
 				'post_content' => '[choir_rehearsal]',
 				'post_status'  => 'publish',
@@ -199,7 +199,7 @@ final class Choir_Rehearsal_Pages {
 
 	public static function handle_flush_rewrites(): void {
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( esc_html__( 'Sorry, you are not allowed to manage options.', 'choir-rehearsal' ) );
+			wp_die( esc_html__( 'Sorry, you are not allowed to manage options.', 'compath-choir-rehearsal' ) );
 		}
 
 		check_admin_referer( 'choir_rehearsal_flush_rewrites' );

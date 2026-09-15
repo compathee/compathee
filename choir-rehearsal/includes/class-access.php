@@ -101,7 +101,7 @@ final class Choir_Rehearsal_Access {
 		}
 
 		if ( ! isset( $_POST['choir_rehearsal_login_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['choir_rehearsal_login_nonce'] ) ), 'choir_rehearsal_login' ) ) {
-			self::$login_error = __( 'Security check failed. Please try again.', 'choir-rehearsal' );
+			self::$login_error = __( 'Security check failed. Please try again.', 'compath-choir-rehearsal' );
 			return;
 		}
 
@@ -111,7 +111,7 @@ final class Choir_Rehearsal_Access {
 		$remember = ! empty( $_POST['rememberme'] );
 
 		if ( '' === $username || '' === $password ) {
-			self::$login_error = __( 'Please enter your username and password.', 'choir-rehearsal' );
+			self::$login_error = __( 'Please enter your username and password.', 'compath-choir-rehearsal' );
 			return;
 		}
 

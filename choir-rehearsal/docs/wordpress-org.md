@@ -6,7 +6,7 @@ WordPress.org listing:
 
 * **Plugin Name:** Compath Choir Rehearsal
 * **Slug / folder in the zip:** `compath-choir-rehearsal`
-* Text domain stays `choir-rehearsal` (translations and DB keys unchanged)
+* **Text domain:** `compath-choir-rehearsal` (matches the wordpress.org slug)
 
 Migrating from an older GitHub install in `wp-content/plugins/choir-rehearsal/`:
 
