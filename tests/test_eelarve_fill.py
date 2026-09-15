@@ -58,14 +58,24 @@ class EelarveFillHelperTests(unittest.TestCase):
         self.assertIsNone(fill.parse_amount(""))
         self.assertIsNone(fill.parse_amount("  "))
 
-    def test_parse_konto_extracts_account_number(self):
+    def test_parse_konto_accepts_only_pure_4_digit_source_konto(self):
         fill = load_fill()
         self.assertEqual(fill.parse_konto("3241"), "3241")
-        self.assertEqual(fill.parse_konto("3241 Tulu"), "3241")
+        self.assertEqual(fill.parse_konto("3200"), "3200")
+        self.assertEqual(fill.parse_konto("4205"), "4205")
+        self.assertEqual(fill.parse_konto(" 3241 "), "3241")
         self.assertEqual(fill.parse_konto(3241.0), "3241")
-        self.assertEqual(fill.parse_konto("HEAKORRA LEPINGULISED    3241"), "3241")
-        self.assertIsNone(fill.parse_konto("Budget 2026"))
+        self.assertIsNone(fill.parse_konto(None))
+        self.assertIsNone(fill.parse_konto(""))
         self.assertIsNone(fill.parse_konto("Tulud"))
+        self.assertIsNone(fill.parse_konto("Kokku tulu"))
+        self.assertIsNone(fill.parse_konto("3241 Tulu"))
+        self.assertIsNone(fill.parse_konto("HEAKORRA LEPINGULISED    3241"))
+        self.assertIsNone(fill.parse_konto("3150, 3160"))
+        self.assertIsNone(fill.parse_konto("500"))
+        self.assertIsNone(fill.parse_konto("32410"))
+        self.assertIsNone(fill.parse_konto("2026"))
+        self.assertIsNone(fill.parse_konto("Budget 2026"))
 
     def test_parse_kontos_splits_comma_separated_header(self):
         fill = load_fill()
@@ -130,6 +140,39 @@ class EelarveFillEngineTests(unittest.TestCase):
             self.assertEqual(
                 pairs,
                 {("3241", "HK_NOMME", 2848.0), ("3241", "KÜ_TEST", 100.0)},
+            )
+
+    def test_parse_kasumiaruanne_emits_amounts_only_for_pure_4_digit_col_a(self):
+        fill = load_fill()
+        with tempfile.TemporaryDirectory() as tmp:
+            source = Path(tmp) / "jaanuar.xlsx"
+            write_kasumiaruanne(
+                source,
+                [
+                    ["3241", "Tulu", "2026-01", 10, None],
+                    ["3200", "Tulu", "2026-01", None, 20],
+                    [4205.0, "Tulu", "2026-01", 30, None],
+                    [None, "3241", "2026-01", 99, 99],
+                    ["", "Tulu", "2026-01", 99, 99],
+                    ["Tulud", "section", "2026-01", 99, 99],
+                    ["Kokku tulu", "", "2026-01", 99, 99],
+                    ["3150, 3160", "multi", "2026-01", 99, 99],
+                    ["500", "short", "2026-01", 99, 99],
+                    ["32410", "long", "2026-01", 99, 99],
+                    ["2026", "year", "2026-01", 99, 99],
+                    ["3241 Tulu", "mixed", "2026-01", 99, 99],
+                ],
+                objects=["HK_A", "HK_B"],
+            )
+            facts = fill.parse_kasumiaruanne(source)
+            pairs = {(fact.konto, fact.object_code, fact.amount) for fact in facts}
+            self.assertEqual(
+                pairs,
+                {
+                    ("3241", "HK_A", 10.0),
+                    ("3200", "HK_B", 20.0),
+                    ("4205", "HK_A", 30.0),
+                },
             )
 
     def test_block_match_writes_only_inside_matching_konto(self):

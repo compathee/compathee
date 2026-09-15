@@ -64,6 +64,7 @@ SKIP_SOURCE_HEADERS = {
 }
 YEAR_RE = re.compile(r"^(?:19|20)\d{2}$")
 KONTO_RE = re.compile(r"\d{3,6}")
+SOURCE_KONTO_RE = re.compile(r"^[0-9]{4}$")
 SUM_CALL_RE = re.compile(r"SUM\(([^)]+)\)", re.IGNORECASE)
 RANGE_RE = re.compile(
     r"(\$?[A-Za-z]+\$?\d+)\s*:\s*(\$?[A-Za-z]+\$?\d+)"
@@ -358,8 +359,12 @@ def parse_kontos(value: Any) -> list[str]:
 
 
 def parse_konto(value: Any) -> str | None:
-    kontos = parse_kontos(value)
-    return kontos[0] if kontos else None
+    text = cell_text(value)
+    if not SOURCE_KONTO_RE.fullmatch(text):
+        return None
+    if YEAR_RE.fullmatch(text):
+        return None
+    return text
 
 
 def is_total_label(text: str) -> bool:
@@ -496,9 +501,7 @@ def parse_kasumiaruanne(path: Path) -> list[SourceFact]:
         values = list(row)
         col_a = values[0] if values else None
         col_b = values[1] if len(values) > 1 else None
-        if is_total_label(cell_text(col_a)) or is_total_label(cell_text(col_b)):
-            continue
-        konto = parse_konto(col_a) or parse_konto(col_b)
+        konto = parse_konto(col_a)
         if not konto:
             continue
         description = cell_text(col_b)
