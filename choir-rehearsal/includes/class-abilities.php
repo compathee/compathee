@@ -23,8 +23,8 @@ final class Choir_Rehearsal_Abilities {
 		wp_register_ability(
 			'choir-rehearsal/list-songs',
 			array(
-				'label'             => __( 'List choir songs', 'choir-rehearsal' ),
-				'description'       => __( 'Returns published rehearsal songs with track counts.', 'choir-rehearsal' ),
+				'label'             => __( 'List choir songs', 'compath-choir-rehearsal' ),
+				'description'       => __( 'Returns published rehearsal songs with track counts.', 'compath-choir-rehearsal' ),
 				'category'          => 'site',
 				'execute_callback'  => static function () {
 					$response = Choir_Rehearsal_REST::list_songs();
@@ -42,8 +42,8 @@ final class Choir_Rehearsal_Abilities {
 		wp_register_ability(
 			'choir-rehearsal/get-song',
 			array(
-				'label'             => __( 'Get choir song details', 'choir-rehearsal' ),
-				'description'       => __( 'Returns one song with all voice tracks and audio URLs.', 'choir-rehearsal' ),
+				'label'             => __( 'Get choir song details', 'compath-choir-rehearsal' ),
+				'description'       => __( 'Returns one song with all voice tracks and audio URLs.', 'compath-choir-rehearsal' ),
 				'category'          => 'site',
 				'input_schema'      => array(
 					'type'       => 'object',

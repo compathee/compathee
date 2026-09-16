@@ -1,10 +1,10 @@
-=== Choir Rehearsal ===
+=== Compath Choir Rehearsal ===
 Contributors: compath
 Tags: choir, audio, rehearsal, voice parts, music
 Requires at least: 6.4
-Tested up to: 6.9
+Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 0.4.19
+Stable tag: 0.4.51
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -23,9 +23,17 @@ Choir Rehearsal helps choir members learn new pieces by voice part.
 * Optional login-only access
 * REST API and MCP abilities for automation
 
+== External services ==
+
+This plugin does not require external services to work. Song data, audio, and PDF scores stay on your WordPress site.
+
+Optional documentation link in Settings may open [rehearsal.compath.ee](https://rehearsal.compath.ee/) (Compath OÜ) for help and changelog. No site or user data is sent unless you open that page in your browser.
+
+PDF viewing uses **Mozilla PDF.js** bundled inside the plugin (Apache-2.0). No PDF.js CDN calls are made.
+
 == Installation ==
 
-1. Upload the plugin folder to `/wp-content/plugins/choir-rehearsal`
+1. Upload the plugin folder to `/wp-content/plugins/compath-choir-rehearsal`
 2. Activate the plugin through the 'Plugins' menu in WordPress
 3. Go to **Choir Rehearsal → Add Song**
 4. Add voice tracks and upload audio files
@@ -42,6 +50,150 @@ By default only logged-in users can view `/rehearsal/`. Change this under **Choi
 Yes. Use the shortcode `[choir_rehearsal]`.
 
 == Changelog ==
+
+= 0.4.51 =
+
+* WordPress.org: full feature set in catalog build (no Lite track cap, mic recording, search, editor Play/PDF gates)
+* WordPress.org: remove global sanitize_title filter; song slugs only via wp_insert_post_data / save_post
+* WordPress.org readme: external services limited to optional documentation link and bundled PDF.js
+
+= 0.4.50 =
+
+* Universal install/replace: upload or update replaces choir-rehearsal/ or compath-choir-rehearsal/ instead of adding a second copy
+* After install, extra Lite folders are removed automatically (songs stay in the database)
+* Fix update check on older installs: merge all update sources and pick the highest version (avoids stale 0.4.21 from main-branch update.json)
+* Check for updates redirects to Plugins when an update is available; clearer notice when the server reports an older version than installed
+
+= 0.4.49 =
+
+* Migration wizard: detect duplicate Lite folders, keep one, deactivate/delete extras without deleting songs
+* Dual-load copy can open the wizard even when an older Lite loaded first
+
+= 0.4.48 =
+
+* Updates/uploads stay in the already-installed plugin folder (stops a second Lite copy after upgrade)
+* Duplicate-plugin notice lists active Lite paths
+
+= 0.4.47 =
+
+* GitHub zip again installs into folder `choir-rehearsal/` (fixes duplicate plugin after upload on existing sites)
+
+= 0.4.46 =
+
+* Align text domain with WordPress.org slug (`compath-choir-rehearsal`)
+
+= 0.4.45 =
+
+* Pro: Export/Import song library backup (ZIP)
+* Pro: Fix activation fatal when backup file missing or duplicate Lite slug listed as dependency
+* Clearer duplicate-plugin admin notice
+
+= 0.4.44 =
+
+* Fix piano keys sticking visually after press on the public song player
+
+= 0.4.43 =
+* Fix: activating beside an old choir-rehearsal folder no longer fatals; shows an admin notice instead
+* Keep only one plugin copy active (prefer folder compath-choir-rehearsal)
+
+= 0.4.42 =
+* Fix: replace wp_dropdown_pages with an escaped custom select (Plugin Check)
+
+
+= 0.4.41 =
+* Fix: remaining Plugin Check issues (wp_dropdown_pages escaping, login redirect nonce)
+
+
+= 0.4.40 =
+* Fix: Plugin Check errors (escaping, translators comments, wp_delete_file)
+* Fix: Plugin Check warnings (sanitization, prefixed uninstall vars, textdomain)
+
+
+= 0.4.39 =
+* Brand: plugin renamed to Compath Choir Rehearsal (slug compath-choir-rehearsal) for WordPress.org
+* Package folder and GitHub release zip use compath-choir-rehearsal
+
+
+= 0.4.38 =
+* Fix: mobile fullscreen PDF close (X) appears above sticky player and recording dock
+* Fullscreen PDF toolbar includes a Close control for reliable exit on small screens
+
+
+= 0.4.37 =
+* Fix: PDF page navigation works again (same-size pages were skipped by render guard)
+
+= 0.4.36 =
+* Fix: desktop scrubber works for microphone WebM recordings (Chrome Infinity duration)
+* New mic uploads are converted to WAV when needed so seeking works reliably
+
+= 0.4.35 =
+* Fix: song page / editor freeze caused by recording-dock body class observer
+* PDF viewer skips redundant re-renders that could lock the UI
+
+= 0.4.34 =
+* Mobile: floating recording bar (record / pause / stop / cancel) above the player when controls scroll away or PDF is expanded
+* Mic recording supports pause and resume from the same take
+
+= 0.4.33 =
+* Recording: larger piano and metronome icons
+* Sticky player: metronome only in mic recording (removed from player bar)
+* Sticky player: remove white frame around waveform scrubber on the public song page
+* Song view: reliable X control to exit expanded PDF
+
+= 0.4.32 =
+* Sticky player and song editor: metronome panel with tempo slider (40–208 BPM)
+* Recording row: Start / piano / metronome at 70% / 15% / 15%
+
+= 0.4.31 =
+* Sticky player: hide track title on waveform; time + close sit to the right of scrubber
+
+= 0.4.30 =
+* Song editor: piano icon beside Start recording (70% / 30% row)
+
+= 0.4.29 =
+* Sticky player: open a scrollable 2-octave Web Audio piano above the player
+
+= 0.4.28 =
+* Sticky player: waveform only behind scrubber (no white seek track)
+* PDF expand fits page to screen width; expand toggles to matching X control
+* Pinch-zoom keeps the chosen scale instead of snapping to 100%
+
+= 0.4.27 =
+* Sticky player: waveform is the scrubber background (compact single-row bar)
+
+= 0.4.26 =
+* Song editor: show track waveform instead of the audio filename
+* Sticky player: waveform under the seek bar
+
+= 0.4.25 =
+* Voice tracks show a blue waveform from the track name to Play/Upload
+* Waveforms are generated from each track’s audio file in the browser
+
+= 0.4.24 =
+* Play buttons always blue with white icon/text (theme-proof)
+* PDF: full-screen expand with close control; sticky player stays visible below
+* PDF: pinch-to-zoom (and Ctrl/trackpad zoom)
+
+= 0.4.23 =
+* WordPress.org package: remove GitHub updater file entirely (Plugin Check)
+* readme.txt: Tested up to 7.1
+
+= 0.4.22 =
+* WordPress.org ready: disable GitHub self-updater in .org packages
+* Bundle PDF.js locally (no third-party CDN for scripts)
+* Settings: WordPress.org builds show “Updates via WordPress.org”
+* Document external Pro storefront link in readme
+
+= 0.4.21 =
+* Fix: updater treats non-2xx GitHub API responses as failures (rate limits no longer look like empty release lists)
+* Fix: durable update.json fallback via GitHub release asset (/releases/latest/download/update.json)
+* Settings: Check for plugin updates redirects back with clear notices (available / up to date / failed)
+* Settings: show last update-check result under Plugin version
+
+= 0.4.20 =
+* Fix: PDF score preview no longer blanks in the song editor after the form loads
+* PDF.js loads without credentials first (avoids hung credentialed fetches in wp-admin)
+* Song save no longer deletes an attached PDF when the metabox field is missing or mime is unexpected
 
 = 0.4.19 =
 * Share: one-tap copy link with on-screen confirmation (no dual public/private menu)
