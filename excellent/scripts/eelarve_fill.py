@@ -406,6 +406,16 @@ def parse_month(value: str) -> str:
     return canonical
 
 
+def _text_lookup_delimiter(path: Path, header_line: str) -> str:
+    if path.suffix.lower() == ".tsv":
+        return "\t"
+    if "\t" in header_line:
+        return "\t"
+    if "|" in header_line:
+        return "|"
+    return ","
+
+
 def load_object_lookup(path: Path | None) -> dict[str, str]:
     if path is None:
         return {}
@@ -413,10 +423,15 @@ def load_object_lookup(path: Path | None) -> dict[str, str]:
     if not path.exists():
         raise FileNotFoundError(f"Object lookup file not found: {path}")
 
-    if path.suffix.lower() == ".csv":
+    suffix = path.suffix.lower()
+    if suffix in {".tsv", ".txt", ".csv"}:
         with path.open("r", encoding="utf-8-sig", newline="") as handle:
-            rows = list(csv.DictReader(handle))
-    elif path.suffix.lower() == ".xlsx":
+            header_line = handle.readline()
+            if not header_line:
+                return {}
+            handle.seek(0)
+            rows = list(csv.DictReader(handle, delimiter=_text_lookup_delimiter(path, header_line)))
+    elif suffix == ".xlsx":
         workbook = load_workbook(path, read_only=True, data_only=True)
         sheet = workbook[workbook.sheetnames[0]]
         iterator = sheet.iter_rows(values_only=True)
@@ -426,7 +441,7 @@ def load_object_lookup(path: Path | None) -> dict[str, str]:
             return {}
         rows = [dict(zip(header, row, strict=False)) for row in iterator]
     else:
-        raise ValueError("Object lookup must be .csv or .xlsx")
+        raise ValueError("Object lookup must be .tsv, .txt, .csv or .xlsx")
 
     lookup: dict[str, str] = {}
     for row in rows:
@@ -1168,10 +1183,12 @@ def prompt_interactive(args: argparse.Namespace) -> argparse.Namespace:
             months.append(parse_month(month_text))
 
         object_lookup = filedialog.askopenfilename(
-            title="Optional: object lookup CSV/XLSX, or Cancel to skip",
+            title="Optional: object lookup TSV/TXT/XLSX, or Cancel to skip",
             initialdir=str(input_dir),
             filetypes=[
-                ("Object lookup", "*.csv *.xlsx"),
+                ("Object lookup", "*.tsv *.txt *.csv *.xlsx"),
+                ("TSV files", "*.tsv"),
+                ("Text files", "*.txt"),
                 ("CSV files", "*.csv"),
                 ("Excel files", "*.xlsx"),
                 ("All files", "*.*"),
@@ -1222,7 +1239,7 @@ def prompt_interactive(args: argparse.Namespace) -> argparse.Namespace:
         months.append(parse_month(month_text or "Jaanuar"))
     try:
         object_lookup_text = input(
-            "Optional object lookup CSV/XLSX path (press Enter to skip): "
+            "Optional object lookup TSV/TXT/XLSX path (press Enter to skip): "
         ).strip().strip('"')
     except EOFError as exc:
         raise SystemExit("Ввод отменен.\nInput cancelled.") from exc
@@ -1272,7 +1289,7 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument(
         "--objects",
         type=Path,
-        help="Optional object lookup .csv/.xlsx with object_code and object_name.",
+        help="Optional object lookup .tsv/.txt/.csv/.xlsx with object_code and object_name. Prefer TAB-delimited TSV; descriptions often contain commas.",
     )
     parser.add_argument(
         "--output",

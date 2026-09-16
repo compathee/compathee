@@ -196,7 +196,9 @@ Default path: `<excellent>/output/Eelarve_<year>.xlsx` e.g. `Eelarve_2026.xlsx`.
 
 ## Object dictionary
 
-Optional. Columns (case-insensitive): `object_code` / `code` / `object` / `objekt` and `object_name` / `name` / `description` / `nimetus`.
+Optional. Prefer **TAB-delimited `.tsv`** (`object_code<TAB>object_name`). Also `.txt` (pipe `|` if the header contains `|`), `.csv` (detect TAB, else `|`, else comma), and `.xlsx`. Do **not** use comma as the delimiter: descriptions often contain commas.
+
+Columns (case-insensitive): `object_code` / `code` / `object` / `objekt` and `object_name` / `name` / `description` / `nimetus`.
 
 Used only for (a) matching Eelarve rows by description and (b) the label of newly appended rows. Absence → match by code only; append the code as the label.
 

@@ -121,6 +121,29 @@ class EelarveFillHelperTests(unittest.TestCase):
         self.assertTrue(fill.is_lock_error(busy))
         self.assertFalse(fill.is_lock_error(ValueError("bad month")))
 
+    def test_load_object_lookup_tsv_and_pipe_keep_commas_in_description(self):
+        fill = load_fill()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            tsv = root / "objects.tsv"
+            tsv.write_text(
+                "object_code\tobject_name\nHK_A\tFoo, bar and baz\n",
+                encoding="utf-8",
+            )
+            self.assertEqual(
+                fill.load_object_lookup(tsv)["HK_A"],
+                "Foo, bar and baz",
+            )
+            pipe = root / "objects.txt"
+            pipe.write_text(
+                "object_code|object_name\nHK_A|Foo, bar and baz\n",
+                encoding="utf-8",
+            )
+            self.assertEqual(
+                fill.load_object_lookup(pipe)["HK_A"],
+                "Foo, bar and baz",
+            )
+
 
 class EelarveFillEngineTests(unittest.TestCase):
     def test_parse_kasumiaruanne_skips_period_and_kokku(self):
