@@ -8,7 +8,9 @@ $checks = [
   'latest_asset_fallback' => str_contains($src, 'releases/latest/download/update.json'),
   'settings_redirect' => str_contains($src, 'choir-rehearsal-settings'),
   'notices' => str_contains($src, 'render_check_notices'),
-  'lite_tag_regex' => str_contains($src, "/^choir-rehearsal-v\\d/"),
+  'lite_tag_regex' => str_contains($src, "/^(?:compath-)?choir-rehearsal-v\\d/"),
+  'pick_highest_metadata' => str_contains($src, 'pick_highest_version_metadata'),
+  'github_latest_fallback' => str_contains($src, 'fetch_github_latest_release'),
 ];
 
 // Live fallback

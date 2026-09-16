@@ -102,15 +102,25 @@ final class Choir_Rehearsal_Updater {
 			wp_update_plugins();
 		}
 
-		$redirect = add_query_arg(
-			array(
-				'post_type'                      => Choir_Rehearsal_Post_Types::SONG,
-				'page'                           => 'choir-rehearsal-settings',
-				'choir_rehearsal_update_check'   => $status,
-				'choir_rehearsal_update_version' => $version,
-			),
-			admin_url( 'edit.php' )
-		);
+		if ( 'available' === $status ) {
+			$redirect = add_query_arg(
+				array(
+					'choir_rehearsal_update_check'   => $status,
+					'choir_rehearsal_update_version' => $version,
+				),
+				admin_url( 'plugins.php' )
+			);
+		} else {
+			$redirect = add_query_arg(
+				array(
+					'post_type'                      => Choir_Rehearsal_Post_Types::SONG,
+					'page'                           => 'choir-rehearsal-settings',
+					'choir_rehearsal_update_check'   => $status,
+					'choir_rehearsal_update_version' => $version,
+				),
+				admin_url( 'edit.php' )
+			);
+		}
 
 		wp_safe_redirect( $redirect );
 		exit;
@@ -137,20 +147,37 @@ final class Choir_Rehearsal_Updater {
 			$message = '' !== $version
 				? sprintf(
 					/* translators: %s: new plugin version */
-					__( 'Update available: Compath Choir Rehearsal %s. Open Plugins to install it, or use WordPress update now.', 'compath-choir-rehearsal' ),
+					__( 'Update available: Compath Choir Rehearsal %s. Use Update now below or on the Plugins screen.', 'compath-choir-rehearsal' ),
 					$version
 				)
-				: __( 'An update is available for Compath Choir Rehearsal. Open Plugins to install it.', 'compath-choir-rehearsal' );
+				: __( 'An update is available for Compath Choir Rehearsal. Use Update now on the Plugins screen.', 'compath-choir-rehearsal' );
 			echo '<div class="notice notice-success is-dismissible"><p>' . esc_html( $message ) . '</p></div>';
 			return;
 		}
 
 		if ( 'up_to_date' === $status ) {
-			$message = '' !== $version
+			$last      = self::get_last_check_result();
+			$installed = isset( $last['installed'] ) ? (string) $last['installed'] : '';
+
+			if ( '' !== $installed && '' !== $version && version_compare( $installed, $version, '>' ) ) {
+				echo '<div class="notice notice-warning is-dismissible"><p>';
+				printf(
+					/* translators: 1: installed version, 2: version reported by update server */
+					esc_html__( 'Your installed version is %1$s, but the update server only reported %2$s (likely stale metadata). Open Plugins and use Update now if shown, upload the latest zip, or set Update JSON URL to the latest GitHub release update.json.', 'compath-choir-rehearsal' ),
+					esc_html( $installed ),
+					esc_html( $version )
+				);
+				echo ' <a href="' . esc_url( admin_url( 'plugins.php' ) ) . '"><strong>' . esc_html__( 'Open Plugins', 'compath-choir-rehearsal' ) . '</strong></a>';
+				echo '</p></div>';
+				return;
+			}
+
+			$display = '' !== $installed ? $installed : $version;
+			$message = '' !== $display
 				? sprintf(
 					/* translators: %s: installed plugin version */
 					__( 'Compath Choir Rehearsal is up to date (version %s).', 'compath-choir-rehearsal' ),
-					$version
+					$display
 				)
 				: __( 'Compath Choir Rehearsal is up to date.', 'compath-choir-rehearsal' );
 			echo '<div class="notice notice-success is-dismissible"><p>' . esc_html( $message ) . '</p></div>';
@@ -341,33 +368,50 @@ final class Choir_Rehearsal_Updater {
 			return $cached;
 		}
 
+		$candidates = array();
+
 		$json_url = trim( (string) get_option( 'choir_rehearsal_update_json_url', '' ) );
-		$data     = null;
-
 		if ( '' !== $json_url ) {
-			$data = self::request_json( $json_url );
+			$candidates[] = self::normalize_metadata( self::request_json( $json_url ) );
 		}
 
-		if ( null === $data ) {
-			$data = self::fetch_from_github();
+		$candidates[] = self::fetch_from_github();
+		$candidates[] = self::fetch_github_latest_release();
+
+		foreach ( self::fallback_update_json_urls() as $fallback_url ) {
+			$candidates[] = self::normalize_metadata( self::request_json( $fallback_url ) );
 		}
 
-		if ( null === $data ) {
-			foreach ( self::fallback_update_json_urls() as $fallback_url ) {
-				$data = self::request_json( $fallback_url );
-				if ( null !== $data ) {
-					break;
-				}
-			}
-		}
-
-		$normalized = self::normalize_metadata( $data );
+		$normalized = self::pick_highest_version_metadata( $candidates );
 		if ( null === $normalized ) {
 			return null;
 		}
 
 		set_transient( 'choir_rehearsal_update_metadata', $normalized, 12 * HOUR_IN_SECONDS );
 		return $normalized;
+	}
+
+	/**
+	 * @param list<array<string, mixed>|null> $candidates
+	 * @return array<string, mixed>|null
+	 */
+	private static function pick_highest_version_metadata( array $candidates ): ?array {
+		$best      = null;
+		$best_ver  = '';
+
+		foreach ( $candidates as $item ) {
+			if ( ! is_array( $item ) || empty( $item['version'] ) ) {
+				continue;
+			}
+
+			$version = (string) $item['version'];
+			if ( null === $best || version_compare( $version, $best_ver, '>' ) ) {
+				$best     = $item;
+				$best_ver = $version;
+			}
+		}
+
+		return $best;
 	}
 
 	/**
@@ -414,6 +458,58 @@ final class Choir_Rehearsal_Updater {
 
 		// Prefer the full list: /releases/latest can point at an unrelated non-plugin release.
 		return self::fetch_latest_choir_release_from_list( $owner, $name );
+	}
+
+	/**
+	 * Single-release GitHub API fallback when the paginated list is blocked or rate-limited.
+	 *
+	 * @return array<string, mixed>|null
+	 */
+	private static function fetch_github_latest_release(): ?array {
+		$repo = (string) get_option( 'choir_rehearsal_github_repo', 'compathee/compathee' );
+		if ( ! preg_match( '#^([A-Za-z0-9_.-]+)/([A-Za-z0-9_.-]+)$#', $repo, $matches ) ) {
+			return null;
+		}
+
+		$owner = $matches[1];
+		$name  = $matches[2];
+		$url   = sprintf(
+			'https://api.github.com/repos/%s/%s/releases/latest',
+			rawurlencode( $owner ),
+			rawurlencode( $name )
+		);
+
+		$response = wp_remote_get(
+			$url,
+			array(
+				'timeout' => 15,
+				'headers' => array(
+					'Accept'     => 'application/vnd.github+json',
+					'User-Agent' => 'Choir-Rehearsal-Updater',
+				),
+			)
+		);
+
+		if ( is_wp_error( $response ) ) {
+			return null;
+		}
+
+		$status = (int) wp_remote_retrieve_response_code( $response );
+		if ( $status < 200 || $status >= 300 ) {
+			return null;
+		}
+
+		$body = json_decode( (string) wp_remote_retrieve_body( $response ), true );
+		if ( ! is_array( $body ) || ! empty( $body['draft'] ) || ! empty( $body['prerelease'] ) ) {
+			return null;
+		}
+
+		$tag = (string) ( $body['tag_name'] ?? '' );
+		if ( str_contains( $tag, '-pro-v' ) || 1 !== preg_match( '/^(?:compath-)?choir-rehearsal-v\d/', $tag ) ) {
+			return null;
+		}
+
+		return self::map_github_release( $body );
 	}
 
 	/**

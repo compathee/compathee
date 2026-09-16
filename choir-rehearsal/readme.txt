@@ -60,6 +60,8 @@ Yes. Use the shortcode `[choir_rehearsal]`.
 
 * Universal install/replace: upload or update replaces choir-rehearsal/ or compath-choir-rehearsal/ instead of adding a second copy
 * After install, extra Lite folders are removed automatically (songs stay in the database)
+* Fix update check on older installs: merge all update sources and pick the highest version (avoids stale 0.4.21 from main-branch update.json)
+* Check for updates redirects to Plugins when an update is available; clearer notice when the server reports an older version than installed
 
 = 0.4.49 =
 
