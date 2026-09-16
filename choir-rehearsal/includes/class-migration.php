@@ -199,6 +199,19 @@ final class Choir_Rehearsal_Migration {
 		return $found;
 	}
 
+	public static function suggested_keep_folder( array $installs = array() ): string {
+		if ( empty( $installs ) ) {
+			$installs = self::find_lite_installs();
+		}
+
+		$keep = self::suggested_keep_file( $installs );
+		if ( '' === $keep ) {
+			return '';
+		}
+
+		return dirname( $keep );
+	}
+
 	public static function suggested_keep_file( array $installs ): string {
 		foreach ( $installs as $row ) {
 			if ( 'choir-rehearsal' === $row['folder'] ) {
@@ -465,7 +478,7 @@ final class Choir_Rehearsal_Migration {
 	 *
 	 * @return true|\WP_Error
 	 */
-	private static function delete_plugin_folder( string $dir ) {
+	public static function delete_plugin_folder( string $dir ) {
 		$dir = wp_normalize_path( $dir );
 		$root = wp_normalize_path( WP_PLUGIN_DIR );
 

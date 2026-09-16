@@ -4,7 +4,7 @@ Tags: choir, audio, rehearsal, voice parts, music
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 0.4.49
+Stable tag: 0.4.50
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -55,6 +55,11 @@ By default only logged-in users can view `/rehearsal/`. Change this under **Choi
 Yes. Use the shortcode `[choir_rehearsal]`.
 
 == Changelog ==
+
+= 0.4.50 =
+
+* Universal install/replace: upload or update replaces choir-rehearsal/ or compath-choir-rehearsal/ instead of adding a second copy
+* After install, extra Lite folders are removed automatically (songs stay in the database)
 
 = 0.4.49 =
 

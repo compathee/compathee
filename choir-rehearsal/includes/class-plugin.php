@@ -23,6 +23,7 @@ require_once CHOIR_REHEARSAL_PATH . 'includes/class-frontend.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-rest.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-abilities.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-migration.php';
+require_once CHOIR_REHEARSAL_PATH . 'includes/class-install-replace.php';
 // GitHub builds only — WordPress.org packages omit class-updater.php (Plugin Check).
 if ( Choir_Rehearsal_Distribution::uses_github_updater() ) {
 	require_once CHOIR_REHEARSAL_PATH . 'includes/class-updater.php';
@@ -47,6 +48,7 @@ final class Choir_Rehearsal_Plugin {
 		add_action( 'plugins_loaded', array( $this, 'load_textdomain' ) );
 		add_action( 'init', array( $this, 'maybe_upgrade' ), 20 );
 		add_action( 'init', array( $this, 'init' ), 5 );
+		Choir_Rehearsal_Install_Replace::register();
 		if ( Choir_Rehearsal_Distribution::uses_github_updater() ) {
 			Choir_Rehearsal_Updater::register();
 		}
