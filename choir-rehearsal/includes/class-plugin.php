@@ -9,6 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+require_once CHOIR_REHEARSAL_PATH . 'includes/class-distribution.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-edition.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-post-types.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-slugs.php';
@@ -21,7 +22,12 @@ require_once CHOIR_REHEARSAL_PATH . 'includes/class-recording.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-frontend.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-rest.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-abilities.php';
-require_once CHOIR_REHEARSAL_PATH . 'includes/class-updater.php';
+require_once CHOIR_REHEARSAL_PATH . 'includes/class-migration.php';
+require_once CHOIR_REHEARSAL_PATH . 'includes/class-install-replace.php';
+// GitHub builds only — WordPress.org packages omit class-updater.php (Plugin Check).
+if ( Choir_Rehearsal_Distribution::uses_github_updater() ) {
+	require_once CHOIR_REHEARSAL_PATH . 'includes/class-updater.php';
+}
 
 final class Choir_Rehearsal_Plugin {
 
@@ -42,15 +48,14 @@ final class Choir_Rehearsal_Plugin {
 		add_action( 'plugins_loaded', array( $this, 'load_textdomain' ) );
 		add_action( 'init', array( $this, 'maybe_upgrade' ), 20 );
 		add_action( 'init', array( $this, 'init' ), 5 );
-		Choir_Rehearsal_Updater::register();
+		Choir_Rehearsal_Install_Replace::register();
+		if ( Choir_Rehearsal_Distribution::uses_github_updater() ) {
+			Choir_Rehearsal_Updater::register();
+		}
 	}
 
 	public function load_textdomain(): void {
-		load_plugin_textdomain(
-			'choir-rehearsal',
-			false,
-			dirname( plugin_basename( CHOIR_REHEARSAL_FILE ) ) . '/languages'
-		);
+		// Translations load automatically (WP 4.6+ / Domain Path). Avoid load_plugin_textdomain() for Plugin Check.
 	}
 
 	public function init(): void {
@@ -65,6 +70,7 @@ final class Choir_Rehearsal_Plugin {
 		Choir_Rehearsal_Frontend::register();
 		Choir_Rehearsal_REST::register();
 		Choir_Rehearsal_Abilities::register();
+		Choir_Rehearsal_Migration::register();
 	}
 
 	public function maybe_upgrade(): void {
@@ -73,8 +79,11 @@ final class Choir_Rehearsal_Plugin {
 
 	public function activate(): void {
 		$this->init();
+		// Register CPT/taxonomy now — init already ran, so hooked callbacks will not fire
+		// before flush_rewrite_rules() and song URLs would 404 after reactivate.
+		Choir_Rehearsal_Post_Types::register_post_types();
+		Choir_Rehearsal_Voice_Types::register_taxonomy();
 		Choir_Rehearsal_Voice_Types::seed_default_terms();
-		Choir_Rehearsal_Post_Types::register();
 		Choir_Rehearsal_Pages::ensure_library_page();
 		flush_rewrite_rules( false );
 		update_option( Choir_Rehearsal_Pages::OPTION_VERSION, CHOIR_REHEARSAL_VERSION );

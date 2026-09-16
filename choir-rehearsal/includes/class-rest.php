@@ -80,11 +80,11 @@ final class Choir_Rehearsal_REST {
 	public static function get_song( WP_REST_Request $request ): WP_REST_Response|WP_Error {
 		$song = get_post( (int) $request['id'] );
 		if ( ! $song instanceof WP_Post || Choir_Rehearsal_Post_Types::SONG !== $song->post_type ) {
-			return new WP_Error( 'not_found', __( 'Song not found.', 'choir-rehearsal' ), array( 'status' => 404 ) );
+			return new WP_Error( 'not_found', __( 'Song not found.', 'compath-choir-rehearsal' ), array( 'status' => 404 ) );
 		}
 
 		if ( ! Choir_Rehearsal_Access::can_view_song( (int) $song->ID ) ) {
-			return new WP_Error( 'forbidden', __( 'You must sign in to view this song.', 'choir-rehearsal' ), array( 'status' => 401 ) );
+			return new WP_Error( 'forbidden', __( 'You must sign in to view this song.', 'compath-choir-rehearsal' ), array( 'status' => 401 ) );
 		}
 
 		return new WP_REST_Response( self::format_song_detail( $song ), 200 );
@@ -120,7 +120,7 @@ final class Choir_Rehearsal_REST {
 		return array(
 			'id'       => (int) $song->ID,
 			'title'    => get_the_title( $song ),
-			'notes'    => apply_filters( 'the_content', $song->post_content ),
+			'notes'    => apply_filters( 'the_content', $song->post_content ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- core content filter.
 			'url'      => get_permalink( $song ),
 			'score_pdf_url' => Choir_Rehearsal_Post_Types::get_score_pdf_url( (int) $song->ID ),
 			'tracks'   => $tracks,

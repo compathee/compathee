@@ -1,6 +1,6 @@
 <?php
 return [
-    'domain' => 'choir-rehearsal',
+    'domain' => 'compath-choir-rehearsal',
     'locale' => 'ru_RU',
     'messages' => [
         'Songs' => 'ÐÐµÑÐ½Ð¸',
