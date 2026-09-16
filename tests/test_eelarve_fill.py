@@ -1,5 +1,6 @@
 import importlib.util
 import io
+import re
 import sys
 import tempfile
 import unittest
@@ -90,6 +91,16 @@ class EelarveFillHelperTests(unittest.TestCase):
         self.assertEqual(fill.parse_kontos("3241"), ["3241"])
         self.assertEqual(fill.parse_kontos("HEAKORRA LEPINGULISED    3241"), ["3241"])
         self.assertEqual(fill.parse_kontos("Budget 2026"), [])
+
+    def test_is_object_header_rejects_synthetic_column_n(self):
+        fill = load_fill()
+        self.assertTrue(fill.is_object_header("HK_A"))
+        self.assertTrue(fill.is_object_header("KÜ_TEST"))
+        self.assertFalse(fill.is_object_header(""))
+        self.assertFalse(fill.is_object_header("Konto"))
+        self.assertFalse(fill.is_object_header("column_1"))
+        self.assertFalse(fill.is_object_header("column_4"))
+        self.assertFalse(fill.is_object_header("Column_12"))
 
     def test_is_total_label_detects_kokku_rows(self):
         fill = load_fill()
@@ -197,6 +208,21 @@ class EelarveFillEngineTests(unittest.TestCase):
                     ("4205", "HK_A", 30.0),
                 },
             )
+
+    def test_parse_kasumiaruanne_skips_empty_header_cells(self):
+        fill = load_fill()
+        with tempfile.TemporaryDirectory() as tmp:
+            source = Path(tmp) / "jaanuar.xlsx"
+            workbook = Workbook()
+            sheet = workbook.active
+            sheet.title = "Kasumiaruanne"
+            sheet.append(["Konto", "Nimetus", "Periood", None, "HK_A"])
+            sheet.append(["3241", "Tulu", "2026-01", 999, 50])
+            workbook.save(source)
+            facts = fill.parse_kasumiaruanne(source)
+            pairs = {(fact.konto, fact.object_code, fact.amount) for fact in facts}
+            self.assertEqual(pairs, {("3241", "HK_A", 50.0)})
+            self.assertFalse(any(fact.object_code.startswith("column_") for fact in facts))
 
     def test_block_match_writes_only_inside_matching_konto(self):
         fill = load_fill()
@@ -391,6 +417,53 @@ class EelarveFillEngineTests(unittest.TestCase):
                 and str(sheet.cell(row, column).value).startswith("=")
             ]
             self.assertTrue(any("SUM(" in formula.upper() for formula in formulas))
+
+    def test_create_new_eelarve_object_rows_are_label_and_month_only(self):
+        fill = load_fill()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            source = root / "src.xlsx"
+            lookup = root / "objects.tsv"
+            workbook = Workbook()
+            sheet = workbook.active
+            sheet.title = "Kasumiaruanne"
+            sheet.append(["Konto", "Nimetus", "Periood", None, "HK_A"])
+            sheet.append(["3241", "Tulu", "2026-01", 3241, 50])
+            workbook.save(source)
+            lookup.write_text("object_code\tobject_name\nHK_A\tNomme, LOV\n", encoding="utf-8")
+            stats = fill.fill_eelarve(
+                eelarve_path=None,
+                sources=[(source, "Jaanuar")],
+                objects_path=lookup,
+                year=2026,
+                root=root,
+            )
+            sheet = load_workbook(stats.output_path)["Eelarve"]
+            headers = [cell.value for cell in next(sheet.iter_rows(max_row=1))]
+            self.assertEqual(headers[0], "Konto")
+            self.assertEqual(headers[1], "Object")
+            self.assertEqual(headers[2], "Jaanuar")
+            dumped = [
+                sheet.cell(row, column).value
+                for row in range(1, sheet.max_row + 1)
+                for column in range(1, sheet.max_column + 1)
+            ]
+            self.assertFalse(
+                any(
+                    isinstance(value, str) and re.fullmatch(r"column_\d+", value, re.I)
+                    for value in dumped
+                )
+            )
+            self.assertEqual(sheet["A2"].value, "3241")
+            self.assertTrue(
+                sheet["C2"].value is None
+                or (isinstance(sheet["C2"].value, str) and str(sheet["C2"].value).startswith("="))
+            )
+            self.assertIsNone(sheet["A3"].value)
+            self.assertEqual(sheet["B3"].value, "Nomme, LOV")
+            self.assertEqual(sheet["C3"].value, 50)
+            self.assertNotEqual(sheet["C3"].value, 3241)
+            self.assertIsNone(sheet["B2"].value)
 
     def test_inserting_object_expands_neighboring_sum(self):
         fill = load_fill()

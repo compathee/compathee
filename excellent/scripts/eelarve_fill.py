@@ -48,6 +48,7 @@ OBJECT_HEADER_RE = re.compile(
     r"^[A-Z0-9ÕÄÖÜŠŽ]+[_-][A-Z0-9ÕÄÖÜŠŽõäöüšž_-]+",
     re.IGNORECASE,
 )
+SYNTHETIC_COLUMN_HEADER_RE = re.compile(r"^column_\d+$", re.IGNORECASE)
 SKIP_SOURCE_HEADERS = {
     "konto",
     "account",
@@ -319,10 +320,10 @@ def cell_text(value: Any) -> str:
     return text
 
 
-def normalize_header(value: Any, fallback_index: int) -> str:
+def normalize_header(value: Any, fallback_index: int = 0) -> str:
     text = cell_text(value)
     if not text:
-        text = f"column_{fallback_index}"
+        return ""
     return re.sub(r"\s+", " ", text)
 
 
@@ -375,6 +376,8 @@ def is_total_label(text: str) -> bool:
 def is_object_header(header: str) -> bool:
     clean = header.strip()
     if not clean:
+        return False
+    if SYNTHETIC_COLUMN_HEADER_RE.fullmatch(clean):
         return False
     code = re.sub(r"\s*\(.*\)\s*$", "", clean).strip()
     lowered = code.casefold()
