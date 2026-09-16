@@ -3,7 +3,7 @@
  * Plugin Name:       Compath Choir Rehearsal
  * Plugin URI:        https://rehearsal.compath.ee
  * Description:       Private rehearsal library for choirs: songs, voice parts, audio tracks, and a sticky player.
- * Version:           0.4.51
+ * Version:           0.4.52
  * Requires at least: 6.4
  * Requires PHP:      8.0
  * Author:            Compath OÜ
@@ -21,10 +21,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /*
- * A second copy (e.g. old folder choir-rehearsal/ plus new compath-choir-rehearsal/)
- * must not fatally redeclare constants/functions. Show migration wizard instead.
+ * A second copy (e.g. choir-rehearsal/ plus compath-choir-rehearsal/) must not fatally
+ * redeclare constants/functions. Track the primary loaded file globally (not VERSION alone).
  */
-if ( defined( 'CHOIR_REHEARSAL_VERSION' ) || function_exists( 'choir_rehearsal' ) || class_exists( 'Choir_Rehearsal_Plugin', false ) ) {
+$choir_rehearsal_primary = isset( $GLOBALS['choir_rehearsal_lite_file'] )
+	? (string) $GLOBALS['choir_rehearsal_lite_file']
+	: '';
+if ( '' !== $choir_rehearsal_primary && $choir_rehearsal_primary !== __FILE__ ) {
 	if ( ! class_exists( 'Choir_Rehearsal_Migration', false ) ) {
 		$choir_rehearsal_migration = __DIR__ . '/includes/class-migration.php';
 		if ( is_readable( $choir_rehearsal_migration ) ) {
@@ -37,7 +40,7 @@ if ( defined( 'CHOIR_REHEARSAL_VERSION' ) || function_exists( 'choir_rehearsal' 
 	return;
 }
 
-define( 'CHOIR_REHEARSAL_VERSION', '0.4.51' );
+define( 'CHOIR_REHEARSAL_VERSION', '0.4.52' );
 define( 'CHOIR_REHEARSAL_FILE', __FILE__ );
 define( 'CHOIR_REHEARSAL_PATH', plugin_dir_path( __FILE__ ) );
 define( 'CHOIR_REHEARSAL_URL', plugin_dir_url( __FILE__ ) );
@@ -63,3 +66,5 @@ function choir_rehearsal(): Choir_Rehearsal_Plugin {
 }
 
 choir_rehearsal();
+
+$GLOBALS['choir_rehearsal_lite_file'] = __FILE__;

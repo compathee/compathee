@@ -27,12 +27,15 @@ final class Choir_Rehearsal_Migration {
 		}
 		self::$registered = true;
 
+		add_action( 'plugins_loaded', array( self::class, 'repair_active_plugins_early' ), 0 );
 		add_action( 'admin_menu', array( self::class, 'register_menu' ), 30 );
 		add_action( 'admin_notices', array( self::class, 'maybe_notice' ) );
+		add_action( 'admin_notices', array( self::class, 'maybe_repair_notice' ), 2 );
 		add_action( 'admin_post_choir_rehearsal_migration_set_keep', array( self::class, 'handle_set_keep' ) );
 		add_action( 'admin_post_choir_rehearsal_migration_deactivate_others', array( self::class, 'handle_deactivate_others' ) );
 		add_action( 'admin_post_choir_rehearsal_migration_delete_others', array( self::class, 'handle_delete_others' ) );
 		add_action( 'admin_post_choir_rehearsal_migration_activate_keep', array( self::class, 'handle_activate_keep' ) );
+		add_action( 'admin_post_choir_rehearsal_migration_repair_active', array( self::class, 'handle_repair_active' ) );
 	}
 
 	/**
@@ -40,6 +43,7 @@ final class Choir_Rehearsal_Migration {
 	 */
 	public static function register_duplicate_bootstrap( string $plugin_file ): void {
 		self::$bootstrap_file = $plugin_file;
+		self::repair_active_plugins( true );
 		self::register();
 		add_action(
 			'admin_notices',
@@ -82,7 +86,7 @@ final class Choir_Rehearsal_Migration {
 		}
 
 		$installs = self::find_lite_installs();
-		if ( count( $installs ) < 2 && ! self::is_duplicate_bootstrap() ) {
+		if ( count( $installs ) < 2 && ! self::is_duplicate_bootstrap() && ! self::needs_active_plugins_repair() ) {
 			return;
 		}
 
@@ -135,8 +139,12 @@ final class Choir_Rehearsal_Migration {
 		echo '</p></div>';
 	}
 
+	public static function is_lite_basename( string $plugin ): bool {
+		return str_ends_with( $plugin, '/choir-rehearsal.php' ) && ! str_contains( $plugin, 'choir-rehearsal-pro' );
+	}
+
 	/**
-	 * @return list<array{file: string, dir: string, folder: string, version: string, name: string, active: bool}>
+	 * @return list<array{file: string, dir: string, folder: string, version: string, name: string, active: bool, on_disk: bool}>
 	 */
 	public static function find_lite_installs(): array {
 		$root = defined( 'WP_PLUGIN_DIR' ) ? WP_PLUGIN_DIR : '';
@@ -145,44 +153,30 @@ final class Choir_Rehearsal_Migration {
 		}
 
 		$active = array_map( 'strval', (array) get_option( 'active_plugins', array() ) );
-		$found  = array();
+		$by_file = array();
 
 		$matches = glob( $root . '/*/choir-rehearsal.php' );
-		if ( ! is_array( $matches ) ) {
-			return array();
+		if ( is_array( $matches ) ) {
+			foreach ( $matches as $main ) {
+				$row = self::row_from_main_file( (string) $main, $active );
+				if ( null !== $row ) {
+					$by_file[ $row['file'] ] = $row;
+				}
+			}
 		}
 
-		foreach ( $matches as $main ) {
-			$main = str_replace( '\\', '/', (string) $main );
-			if ( str_contains( $main, 'choir-rehearsal-pro' ) ) {
+		foreach ( $active as $plugin ) {
+			if ( ! self::is_lite_basename( $plugin ) || isset( $by_file[ $plugin ] ) ) {
 				continue;
 			}
-
-			$folder = basename( dirname( $main ) );
-			if ( str_contains( $folder, 'choir-rehearsal-pro' ) ) {
-				continue;
+			$main = $root . '/' . $plugin;
+			$row  = self::row_from_main_file( $main, $active, false );
+			if ( null !== $row ) {
+				$by_file[ $row['file'] ] = $row;
 			}
-
-			$file = $folder . '/choir-rehearsal.php';
-			if ( ! function_exists( 'get_plugin_data' ) ) {
-				require_once ABSPATH . 'wp-admin/includes/plugin.php';
-			}
-			$data = get_plugin_data( $main, false, false );
-			$name = is_array( $data ) ? (string) ( $data['Name'] ?? '' ) : '';
-			if ( '' !== $name && false === stripos( $name, 'Choir Rehearsal' ) ) {
-				continue;
-			}
-
-			$found[] = array(
-				'file'    => $file,
-				'dir'     => dirname( $main ),
-				'folder'  => $folder,
-				'version' => is_array( $data ) ? (string) ( $data['Version'] ?? '' ) : '',
-				'name'    => $name,
-				'active'  => in_array( $file, $active, true ),
-			);
 		}
 
+		$found = array_values( $by_file );
 		usort(
 			$found,
 			static function ( array $a, array $b ): int {
@@ -197,6 +191,168 @@ final class Choir_Rehearsal_Migration {
 		);
 
 		return $found;
+	}
+
+	/**
+	 * @param list<string> $active
+	 * @return array{file: string, dir: string, folder: string, version: string, name: string, active: bool, on_disk: bool}|null
+	 */
+	private static function row_from_main_file( string $main, array $active, bool $on_disk = true ): ?array {
+		$main = str_replace( '\\', '/', $main );
+		if ( str_contains( $main, 'choir-rehearsal-pro' ) ) {
+			return null;
+		}
+
+		$folder = basename( dirname( $main ) );
+		if ( str_contains( $folder, 'choir-rehearsal-pro' ) ) {
+			return null;
+		}
+
+		$file         = $folder . '/choir-rehearsal.php';
+		$file_exists  = is_readable( $main );
+		$version      = '';
+		$name         = '';
+
+		if ( $file_exists ) {
+			if ( ! function_exists( 'get_plugin_data' ) ) {
+				require_once ABSPATH . 'wp-admin/includes/plugin.php';
+			}
+			$data = get_plugin_data( $main, false, false );
+			$name = is_array( $data ) ? (string) ( $data['Name'] ?? '' ) : '';
+			if ( '' !== $name && false === stripos( $name, 'Choir Rehearsal' ) ) {
+				return null;
+			}
+			$version = is_array( $data ) ? (string) ( $data['Version'] ?? '' ) : '';
+		}
+
+		return array(
+			'file'    => $file,
+			'dir'     => dirname( $main ),
+			'folder'  => $folder,
+			'version' => $version,
+			'name'    => '' !== $name ? $name : __( 'Missing or unreadable', 'compath-choir-rehearsal' ),
+			'active'  => in_array( $file, $active, true ),
+			'on_disk' => $file_exists && $on_disk,
+		);
+	}
+
+	/**
+	 * @return list<string>
+	 */
+	public static function find_active_lite_basenames(): array {
+		$lite = array();
+		foreach ( array_map( 'strval', (array) get_option( 'active_plugins', array() ) ) as $plugin ) {
+			if ( self::is_lite_basename( $plugin ) ) {
+				$lite[] = $plugin;
+			}
+		}
+		return $lite;
+	}
+
+	public static function repair_active_plugins_early(): void {
+		self::repair_active_plugins( true );
+	}
+
+	/**
+	 * Keep one Lite row in active_plugins; drop ghosts and duplicates.
+	 */
+	public static function repair_active_plugins( bool $persist = true ): bool {
+		$active   = array_map( 'strval', (array) get_option( 'active_plugins', array() ) );
+		$installs = self::find_lite_installs();
+		$keep     = self::suggested_keep_file( $installs );
+
+		$disk_keep = '';
+		foreach ( $installs as $row ) {
+			if ( $row['on_disk'] && is_readable( WP_PLUGIN_DIR . '/' . $row['file'] ) ) {
+				$disk_keep = $row['file'];
+				break;
+			}
+		}
+		if ( '' !== $disk_keep ) {
+			$keep = $disk_keep;
+		}
+
+		$changed  = false;
+		$next     = array();
+		$lite_kept = false;
+
+		foreach ( $active as $plugin ) {
+			if ( ! self::is_lite_basename( $plugin ) ) {
+				$next[] = $plugin;
+				continue;
+			}
+
+			$readable = is_readable( WP_PLUGIN_DIR . '/' . $plugin );
+			if ( ! $readable ) {
+				$changed = true;
+				continue;
+			}
+
+			if ( '' !== $keep && $plugin !== $keep ) {
+				$changed = true;
+				continue;
+			}
+
+			if ( $lite_kept ) {
+				$changed = true;
+				continue;
+			}
+
+			$lite_kept = true;
+			$next[]    = $plugin;
+		}
+
+		if ( '' !== $keep && ! $lite_kept && is_readable( WP_PLUGIN_DIR . '/' . $keep ) ) {
+			$next[]    = $keep;
+			$lite_kept = true;
+			$changed   = true;
+		}
+
+		if ( ! $changed ) {
+			return false;
+		}
+
+		if ( $persist ) {
+			update_option( 'active_plugins', array_values( $next ) );
+			if ( function_exists( 'wp_clean_plugins_cache' ) ) {
+				wp_clean_plugins_cache( true );
+			}
+			update_option( 'choir_rehearsal_active_repaired', time(), false );
+		}
+
+		return true;
+	}
+
+	public static function needs_active_plugins_repair(): bool {
+		$lite_active = self::find_active_lite_basenames();
+		if ( count( $lite_active ) > 1 ) {
+			return true;
+		}
+
+		foreach ( $lite_active as $plugin ) {
+			if ( ! is_readable( WP_PLUGIN_DIR . '/' . $plugin ) ) {
+				return true;
+			}
+		}
+
+		if ( self::is_duplicate_bootstrap() ) {
+			return count( self::find_lite_installs() ) <= 1;
+		}
+
+		return false;
+	}
+
+	public static function maybe_repair_notice(): void {
+		if ( ! is_admin() || ! current_user_can( 'activate_plugins' ) ) {
+			return;
+		}
+
+		$repaired = (int) get_option( 'choir_rehearsal_active_repaired', 0 );
+		if ( $repaired > 0 && ( time() - $repaired ) < 120 ) {
+			echo '<div class="notice notice-success is-dismissible"><p>';
+			esc_html_e( 'Choir Rehearsal: duplicate Lite entries were removed from active plugins. Reload this page if Pro or features still look inactive.', 'compath-choir-rehearsal' );
+			echo '</p></div>';
+		}
 	}
 
 	public static function suggested_keep_folder( array $installs = array() ): string {
@@ -276,15 +432,28 @@ final class Choir_Rehearsal_Migration {
 			echo '</p></div>';
 		}
 
+		if ( 'repaired' === $status ) {
+			echo '<div class="notice notice-success"><p>';
+			esc_html_e( 'active_plugins repaired. Reload this page (F5) so Lite and Pro load cleanly.', 'compath-choir-rehearsal' );
+			echo '</p></div>';
+		}
+
 		echo '<p class="description">';
 		esc_html_e( 'After 0.4.39 the package folder was renamed for WordPress.org. Uploading a newer zip beside an existing choir-rehearsal/ folder creates a second copy. This wizard keeps one folder and removes the extras. Song data in the database is not deleted.', 'compath-choir-rehearsal' );
 		echo '</p>';
 
-		if ( count( $installs ) < 2 ) {
+		$lite_active = self::find_active_lite_basenames();
+		if ( count( $installs ) < 2 && ! self::needs_active_plugins_repair() ) {
 			echo '<div class="notice notice-success"><p>';
 			esc_html_e( 'Only one Lite install was found on disk. No cleanup needed.', 'compath-choir-rehearsal' );
 			echo '</p></div></div>';
 			return;
+		}
+
+		if ( count( $installs ) < 2 && self::needs_active_plugins_repair() ) {
+			echo '<div class="notice notice-warning"><p>';
+			esc_html_e( 'Only one Lite folder exists on disk, but WordPress still lists more than one Lite plugin as active (or a missing path). This breaks Pro and updates. Use the repair button below, then reload wp-admin.', 'compath-choir-rehearsal' );
+			echo '</p></div>';
 		}
 
 		echo '<h2>' . esc_html__( 'Step 1 — Installs found', 'compath-choir-rehearsal' ) . '</h2>';
@@ -292,6 +461,7 @@ final class Choir_Rehearsal_Migration {
 		echo '<th>' . esc_html__( 'Folder', 'compath-choir-rehearsal' ) . '</th>';
 		echo '<th>' . esc_html__( 'Version', 'compath-choir-rehearsal' ) . '</th>';
 		echo '<th>' . esc_html__( 'Plugin name', 'compath-choir-rehearsal' ) . '</th>';
+		echo '<th>' . esc_html__( 'On disk', 'compath-choir-rehearsal' ) . '</th>';
 		echo '<th>' . esc_html__( 'Active', 'compath-choir-rehearsal' ) . '</th>';
 		echo '</tr></thead><tbody>';
 		foreach ( $installs as $row ) {
@@ -299,10 +469,38 @@ final class Choir_Rehearsal_Migration {
 			echo '<td><code>' . esc_html( $row['folder'] ) . '</code></td>';
 			echo '<td>' . esc_html( $row['version'] ) . '</td>';
 			echo '<td>' . esc_html( $row['name'] ) . '</td>';
+			echo '<td>' . ( $row['on_disk'] ? esc_html__( 'Yes', 'compath-choir-rehearsal' ) : esc_html__( 'Missing', 'compath-choir-rehearsal' ) ) . '</td>';
 			echo '<td>' . ( $row['active'] ? esc_html__( 'Yes', 'compath-choir-rehearsal' ) : esc_html__( 'No', 'compath-choir-rehearsal' ) ) . '</td>';
 			echo '</tr>';
 		}
 		echo '</tbody></table>';
+
+		if ( ! empty( $lite_active ) ) {
+			echo '<h3>' . esc_html__( 'Lite rows in active_plugins', 'compath-choir-rehearsal' ) . '</h3>';
+			echo '<ul style="list-style:disc;margin-left:1.5em">';
+			foreach ( $lite_active as $plugin ) {
+				$missing = ! is_readable( WP_PLUGIN_DIR . '/' . $plugin );
+				echo '<li><code>' . esc_html( $plugin ) . '</code>';
+				if ( $missing ) {
+					echo ' — <strong>' . esc_html__( 'file missing', 'compath-choir-rehearsal' ) . '</strong>';
+				}
+				echo '</li>';
+			}
+			echo '</ul>';
+		}
+
+		echo '<h2>' . esc_html__( 'Repair active_plugins', 'compath-choir-rehearsal' ) . '</h2>';
+		echo '<p class="description">' . esc_html__( 'Keeps choir-rehearsal/ (or the only folder on disk), removes ghost or duplicate Lite entries. Does not delete songs.', 'compath-choir-rehearsal' ) . '</p>';
+		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
+		echo '<input type="hidden" name="action" value="choir_rehearsal_migration_repair_active" />';
+		wp_nonce_field( 'choir_rehearsal_migration_repair_active' );
+		submit_button( __( 'Repair active plugins list', 'compath-choir-rehearsal' ), 'primary', 'submit', false );
+		echo '</form>';
+
+		if ( count( $installs ) < 2 ) {
+			echo '</div>';
+			return;
+		}
 
 		echo '<h2>' . esc_html__( 'Step 2 — Choose folder to keep', 'compath-choir-rehearsal' ) . '</h2>';
 		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
@@ -385,8 +583,7 @@ final class Choir_Rehearsal_Migration {
 		$next   = array();
 		foreach ( $active as $plugin ) {
 			$plugin = (string) $plugin;
-			$is_lite = str_ends_with( $plugin, '/choir-rehearsal.php' ) && ! str_contains( $plugin, 'choir-rehearsal-pro' );
-			if ( $is_lite && $plugin !== $keep ) {
+			if ( self::is_lite_basename( $plugin ) && $plugin !== $keep ) {
 				continue;
 			}
 			$next[] = $plugin;
@@ -411,8 +608,7 @@ final class Choir_Rehearsal_Migration {
 		$next   = array();
 		foreach ( $active as $plugin ) {
 			$plugin  = (string) $plugin;
-			$is_lite = str_ends_with( $plugin, '/choir-rehearsal.php' ) && ! str_contains( $plugin, 'choir-rehearsal-pro' );
-			if ( $is_lite && $plugin !== $keep ) {
+			if ( self::is_lite_basename( $plugin ) && $plugin !== $keep ) {
 				continue;
 			}
 			$next[] = $plugin;
@@ -441,6 +637,14 @@ final class Choir_Rehearsal_Migration {
 		}
 
 		self::redirect( array( 'choir_mig' => 'deleted' ) );
+	}
+
+	public static function handle_repair_active(): void {
+		self::require_cap();
+		check_admin_referer( 'choir_rehearsal_migration_repair_active' );
+
+		self::repair_active_plugins( true );
+		self::redirect( array( 'choir_mig' => 'repaired' ) );
 	}
 
 	public static function handle_activate_keep(): void {

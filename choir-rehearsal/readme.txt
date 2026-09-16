@@ -4,7 +4,7 @@ Tags: choir, audio, rehearsal, voice parts, music
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 0.4.51
+Stable tag: 0.4.52
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -50,6 +50,11 @@ By default only logged-in users can view `/rehearsal/`. Change this under **Choi
 Yes. Use the shortcode `[choir_rehearsal]`.
 
 == Changelog ==
+
+= 0.4.52 =
+
+* Fix duplicate Lite notice when only one folder exists: repair ghost/duplicate rows in active_plugins
+* Migration wizard: show active_plugins Lite entries and one-click repair
 
 = 0.4.51 =
 
