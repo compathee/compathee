@@ -55,7 +55,7 @@ rm -f "$ZIP"
 ( cd "$STAGE" && zip -rq "$ZIP" "$SLUG" -x '*.DS_Store' )
 
 echo "Built $ZIP"
-unzip -l "$ZIP" | grep -E 'distribution-wporg|pdf\.min\.js' | head -5
+unzip -l "$ZIP" | grep -E 'distribution-wporg|pdf\.min\.js' | head -5 || true
 
 unzip -l "$ZIP" | grep -q 'distribution-wporg.php'
 unzip -l "$ZIP" | grep -q 'assets/vendor/pdfjs/pdf.min.js'
