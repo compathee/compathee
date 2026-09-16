@@ -18,7 +18,7 @@ $checks = [
 	'suggested_keep_folder' => str_contains($migration, 'suggested_keep_folder'),
 	'plugin_registers_install_replace' => str_contains($plugin, 'Choir_Rehearsal_Install_Replace::register'),
 	'updater_no_source_selection' => ! str_contains($updater, 'upgrader_source_selection'),
-	'version_050' => str_contains(file_get_contents(__DIR__ . '/../choir-rehearsal.php'), '0.4.50'),
+	'version_051' => str_contains(file_get_contents(__DIR__ . '/../choir-rehearsal.php'), '0.4.51'),
 ];
 
 $fail = 0;

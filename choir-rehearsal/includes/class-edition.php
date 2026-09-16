@@ -1,6 +1,6 @@
 <?php
 /**
- * Lite vs Pro edition helpers.
+ * GitHub distribution: Lite vs Pro. WordPress.org builds replace this file at package time.
  */
 
 declare(strict_types=1);
@@ -21,29 +21,39 @@ final class Choir_Rehearsal_Edition {
 		return (bool) apply_filters( 'choir_rehearsal_is_pro', false );
 	}
 
+	private static function is_full_edition(): bool {
+		return self::is_pro();
+	}
+
+	public static function shows_commercial_upgrade(): bool {
+		return ! self::is_full_edition();
+	}
+
 	/**
-	 * Maximum voice tracks per song. Zero means unlimited (Pro).
+	 * Maximum voice tracks per song. Zero means unlimited.
 	 */
 	public static function max_tracks(): int {
-		return self::is_pro() ? 0 : self::LITE_MAX_TRACKS;
+		return self::is_full_edition() ? 0 : self::LITE_MAX_TRACKS;
 	}
 
 	public static function can_record(): bool {
-		return self::is_pro();
+		return self::is_full_edition();
 	}
 
-	/**
-	 * Sticky-player preview of voice tracks in the song editor (Pro).
-	 */
 	public static function can_play_in_editor(): bool {
-		return self::is_pro();
+		return self::is_full_edition();
 	}
 
-	/**
-	 * Embedded PDF score preview in the song editor (Pro).
-	 */
 	public static function can_view_score_in_editor(): bool {
-		return self::is_pro();
+		return self::is_full_edition();
+	}
+
+	public static function can_search_songs(): bool {
+		return self::is_full_edition();
+	}
+
+	public static function can_show_pdf_badge(): bool {
+		return self::is_full_edition();
 	}
 
 	public static function upgrade_url(): string {

@@ -40,6 +40,8 @@ Continue shipping `compath-choir-rehearsal.zip` from GitHub Releases **without**
 
 ## Reviewer notes
 
-* Pro upgrade links open https://shop.compath.ee/ (documented in readme “External services”)
+* WordPress.org package replaces `class-edition.php` with a full-feature stub (no Lite track cap, no license checks, no Buy Pro UI)
+* GitHub / commercial Lite+Pro builds use the standard `class-edition.php` and a separate Pro add-on plugin — not submitted to WordPress.org
+* No global `sanitize_title` filter — song slugs are handled only in `wp_insert_post_data` and `save_post` for the song post type
 * No custom update hooks ship in the WordPress.org package — updates only via wordpress.org
 * Re-run [Plugin Check](https://wordpress.org/plugins/plugin-check/) on the wporg zip before upload

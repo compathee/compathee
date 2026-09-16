@@ -77,15 +77,22 @@ final class Choir_Rehearsal_Admin {
 						<th scope="row"><?php esc_html_e( 'Documentation', 'compath-choir-rehearsal' ); ?></th>
 						<td>
 							<a href="<?php echo esc_url( CHOIR_REHEARSAL_DOCS_URL ); ?>" target="_blank" rel="noopener noreferrer">
-								<?php esc_html_e( 'Product page: order, install, pricing, changelog', 'compath-choir-rehearsal' ); ?>
+								<?php
+								echo esc_html(
+									Choir_Rehearsal_Distribution::is_wporg()
+										? __( 'Plugin documentation and changelog', 'compath-choir-rehearsal' )
+										: __( 'Product page: order, install, pricing, changelog', 'compath-choir-rehearsal' )
+								);
+								?>
 							</a>
 						</td>
 					</tr>
+					<?php if ( Choir_Rehearsal_Edition::shows_commercial_upgrade() || Choir_Rehearsal_Edition::is_pro() ) : ?>
 					<tr>
 						<th scope="row"><?php esc_html_e( 'Edition', 'compath-choir-rehearsal' ); ?></th>
 						<td>
 							<code><?php echo esc_html( Choir_Rehearsal_Edition::edition_label() ); ?></code>
-							<?php if ( ! Choir_Rehearsal_Edition::is_pro() ) : ?>
+							<?php if ( Choir_Rehearsal_Edition::shows_commercial_upgrade() ) : ?>
 								<p class="description">
 									<?php
 									echo esc_html(
@@ -107,6 +114,7 @@ final class Choir_Rehearsal_Admin {
 							<?php endif; ?>
 						</td>
 					</tr>
+					<?php endif; ?>
 					<tr>
 						<th scope="row"><?php esc_html_e( 'Plugin version', 'compath-choir-rehearsal' ); ?></th>
 						<td>
@@ -214,7 +222,7 @@ final class Choir_Rehearsal_Admin {
 				</table>
 				<?php submit_button(); ?>
 			</form>
-			<?php if ( ! Choir_Rehearsal_Edition::is_pro() ) : ?>
+			<?php if ( Choir_Rehearsal_Edition::shows_commercial_upgrade() ) : ?>
 				<div class="choir-buy-pro-banner">
 					<p>
 						<strong><?php esc_html_e( 'Choir Rehearsal Pro', 'compath-choir-rehearsal' ); ?></strong>
@@ -273,7 +281,7 @@ final class Choir_Rehearsal_Admin {
 
 		$extra = array( 'settings' => $settings );
 
-		if ( ! Choir_Rehearsal_Edition::is_pro() ) {
+		if ( Choir_Rehearsal_Edition::shows_commercial_upgrade() ) {
 			$extra['buy_pro'] = sprintf(
 				'<a href="%s" target="_blank" rel="noopener noreferrer" style="font-weight:600;">%s</a>',
 				esc_url( Choir_Rehearsal_Edition::upgrade_url() ),
@@ -578,24 +586,16 @@ final class Choir_Rehearsal_Admin {
 				)
 			);
 		}
-		wp_localize_script(
-			'choir-rehearsal-admin',
-			'choirRehearsalAdmin',
-			array(
+		$admin_i18n = array(
 				'ajaxUrl'        => admin_url( 'admin-ajax.php' ),
 				'postId'         => $screen && 'post' === $screen->base ? (int) get_the_ID() : 0,
 				'recordingNonce' => wp_create_nonce( 'choir_rehearsal_recording' ),
 				'voices'         => Choir_Rehearsal_Voice_Types::choices(),
-				'isPro'          => Choir_Rehearsal_Edition::is_pro(),
+				'canRecord'      => Choir_Rehearsal_Edition::can_record(),
 				'canPlay'        => Choir_Rehearsal_Edition::can_play_in_editor(),
 				'canViewPdf'     => Choir_Rehearsal_Edition::can_view_score_in_editor(),
 				'maxTracks'      => Choir_Rehearsal_Edition::max_tracks(),
 				'upgradeUrl'     => Choir_Rehearsal_Edition::upgrade_url(),
-				'trackLimitMsg'  => sprintf(
-					/* translators: %d: maximum track count */
-					__( 'Lite edition allows up to %d voice tracks per song. Upgrade to Pro for unlimited tracks, microphone recording, Play preview, and embedded PDF in the editor.', 'compath-choir-rehearsal' ),
-					Choir_Rehearsal_Edition::LITE_MAX_TRACKS
-				),
 				'selectAudio'    => __( 'Upload', 'compath-choir-rehearsal' ),
 				'recordAudio'    => __( 'Record', 'compath-choir-rehearsal' ),
 				'playAudio'      => __( 'Play', 'compath-choir-rehearsal' ),
@@ -631,7 +631,20 @@ final class Choir_Rehearsal_Admin {
 				'makePrivate'    => __( 'Make private', 'compath-choir-rehearsal' ),
 				'publicHint'     => __( 'Anyone can view and listen without signing in.', 'compath-choir-rehearsal' ),
 				'privateHint'    => __( 'Only signed-in users can access this song (when login is required).', 'compath-choir-rehearsal' ),
-			)
+		);
+
+		if ( Choir_Rehearsal_Edition::shows_commercial_upgrade() ) {
+			$admin_i18n['trackLimitMsg'] = sprintf(
+				/* translators: %d: maximum track count */
+				__( 'Lite edition allows up to %d voice tracks per song. Upgrade to Pro for unlimited tracks, microphone recording, Play preview, and embedded PDF in the editor.', 'compath-choir-rehearsal' ),
+				Choir_Rehearsal_Edition::LITE_MAX_TRACKS
+			);
+		}
+
+		wp_localize_script(
+			'choir-rehearsal-admin',
+			'choirRehearsalAdmin',
+			$admin_i18n
 		);
 	}
 
@@ -720,7 +733,7 @@ final class Choir_Rehearsal_Admin {
 				<?php
 				if ( Choir_Rehearsal_Edition::can_record() ) {
 					esc_html_e( 'Voice parts look like the public song page. Use the icons on the right to upload, record, or play.', 'compath-choir-rehearsal' );
-				} else {
+				} elseif ( Choir_Rehearsal_Edition::shows_commercial_upgrade() ) {
 					echo wp_kses_post(
 						sprintf(
 							/* translators: 1: max tracks, 2: upgrade link HTML */
@@ -729,6 +742,8 @@ final class Choir_Rehearsal_Admin {
 							'<a class="button button-small" href="' . esc_url( Choir_Rehearsal_Edition::upgrade_url() ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Buy Pro', 'compath-choir-rehearsal' ) . '</a>'
 						)
 					);
+				} else {
+					esc_html_e( 'Add one voice part per row. Upload audio with the icon on the right.', 'compath-choir-rehearsal' );
 				}
 				?>
 			</p>

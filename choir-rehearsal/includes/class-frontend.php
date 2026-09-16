@@ -66,7 +66,7 @@ final class Choir_Rehearsal_Frontend {
 
 		$public_only = Choir_Rehearsal_Access::is_guest_library_request();
 
-		if ( Choir_Rehearsal_Edition::is_pro() && self::is_song_list_page() ) {
+		if ( Choir_Rehearsal_Edition::can_search_songs() && self::is_song_list_page() ) {
 			wp_enqueue_script(
 				'choir-rehearsal-song-list',
 				CHOIR_REHEARSAL_URL . 'public/js/song-list.js',
@@ -339,7 +339,7 @@ final class Choir_Rehearsal_Frontend {
 				<?php endif; ?>
 			</div>
 			<div class="choir-user-bar__actions">
-				<?php if ( $can_manage && ! Choir_Rehearsal_Edition::is_pro() ) : ?>
+				<?php if ( $can_manage && Choir_Rehearsal_Edition::shows_commercial_upgrade() ) : ?>
 					<a class="choir-user-bar__link choir-user-bar__link--buy" href="<?php echo esc_url( Choir_Rehearsal_Edition::upgrade_url() ); ?>" target="_blank" rel="noopener noreferrer">
 						<?php esc_html_e( 'Buy Pro', 'compath-choir-rehearsal' ); ?>
 					</a>
@@ -392,7 +392,7 @@ final class Choir_Rehearsal_Frontend {
 		$query      = new WP_Query( $query_args );
 		$songs      = $query->posts;
 		$can_manage = ! $public_only && Choir_Rehearsal_Access::can_manage();
-		$is_pro     = Choir_Rehearsal_Edition::is_pro();
+		$can_search = Choir_Rehearsal_Edition::can_search_songs();
 		?>
 		<div class="choir-rehearsal-archive<?php echo $public_only ? ' choir-rehearsal-archive--public' : ''; ?>">
 			<div class="choir-rehearsal-archive__header">
@@ -405,7 +405,7 @@ final class Choir_Rehearsal_Frontend {
 					);
 					?>
 				</h1>
-				<?php if ( $is_pro && $total_songs > 0 ) : ?>
+				<?php if ( $can_search && $total_songs > 0 ) : ?>
 					<div class="choir-song-search">
 						<label class="screen-reader-text" for="choir-song-search"><?php esc_html_e( 'Search songs', 'compath-choir-rehearsal' ); ?></label>
 						<input
@@ -441,7 +441,7 @@ final class Choir_Rehearsal_Frontend {
 						<?php esc_html_e( 'These songs are open to listen and view without signing in.', 'compath-choir-rehearsal' ); ?>
 					</p>
 				<?php endif; ?>
-				<?php if ( $is_pro ) : ?>
+				<?php if ( $can_search ) : ?>
 					<p class="choir-song-list__empty-search" role="status" aria-live="polite">
 						<?php esc_html_e( 'No songs match your search.', 'compath-choir-rehearsal' ); ?>
 					</p>
@@ -539,7 +539,7 @@ final class Choir_Rehearsal_Frontend {
 
 	private static function render_song_list_item( WP_Post $song, bool $can_manage ): void {
 		$track_count = count( Choir_Rehearsal_Post_Types::get_tracks_for_song( (int) $song->ID ) );
-		$show_pdf    = Choir_Rehearsal_Edition::is_pro()
+		$show_pdf    = Choir_Rehearsal_Edition::can_show_pdf_badge()
 			&& Choir_Rehearsal_Post_Types::get_score_pdf_id( (int) $song->ID ) > 0;
 		?>
 		<li data-song-title="<?php echo esc_attr( get_the_title( $song ) ); ?>">

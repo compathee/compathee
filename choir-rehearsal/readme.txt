@@ -4,7 +4,7 @@ Tags: choir, audio, rehearsal, voice parts, music
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 0.4.50
+Stable tag: 0.4.51
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -25,16 +25,11 @@ Choir Rehearsal helps choir members learn new pieces by voice part.
 
 == External services ==
 
-This plugin can open an external product page when you choose to upgrade to **Choir Rehearsal Pro**:
+This plugin does not require external services to work. Song data, audio, and PDF scores stay on your WordPress site.
 
-* Service: [shop.compath.ee](https://shop.compath.ee/products/choir-rehearsal-pro/) (Compath OÜ)
-* Purpose: optional paid Pro add-on purchase (unlimited tracks, microphone recording, search, editor Play, embedded PDF in the editor)
-* Data: the plugin does not send site or user data to the shop unless you click through and complete checkout there
-* Terms: see the shop site terms/privacy policy on shop.compath.ee
+Optional documentation link in Settings may open [rehearsal.compath.ee](https://rehearsal.compath.ee/) (Compath OÜ) for help and changelog. No site or user data is sent unless you open that page in your browser.
 
 PDF viewing uses **Mozilla PDF.js** bundled inside the plugin (Apache-2.0). No PDF.js CDN calls are made.
-
-WordPress.org builds receive plugin updates only through WordPress.org. GitHub-distributed builds may offer an optional GitHub Releases updater in Settings.
 
 == Installation ==
 
@@ -55,6 +50,12 @@ By default only logged-in users can view `/rehearsal/`. Change this under **Choi
 Yes. Use the shortcode `[choir_rehearsal]`.
 
 == Changelog ==
+
+= 0.4.51 =
+
+* WordPress.org: full feature set in catalog build (no Lite track cap, mic recording, search, editor Play/PDF gates)
+* WordPress.org: remove global sanitize_title filter; song slugs only via wp_insert_post_data / save_post
+* WordPress.org readme: external services limited to optional documentation link and bundled PDF.js
 
 = 0.4.50 =
 

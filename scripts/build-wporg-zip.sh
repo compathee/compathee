@@ -25,6 +25,9 @@ rm -rf \
 rm -f "$STAGE/$SLUG/update.json"
 # Plugin Check fails if custom updater code is present, even when disabled at runtime.
 rm -f "$STAGE/$SLUG/includes/class-updater.php"
+# WordPress.org package: full feature set, no Lite/Pro commercial gates in shipped code.
+cp "$STAGE/$SLUG/includes/edition-wporg.php" "$STAGE/$SLUG/includes/class-edition.php"
+rm -f "$STAGE/$SLUG/includes/edition-wporg.php"
 
 # Mark package as WordPress.org distribution (disables GitHub self-updater).
 cat > "$STAGE/$SLUG/includes/distribution-wporg.php" <<'PHP'
@@ -84,6 +87,24 @@ fi
 if ! unzip -l "$ZIP" | grep -q "^.* ${SLUG}/choir-rehearsal.php$"; then
   echo "ERROR: zip root folder must be ${SLUG}/" >&2
   unzip -l "$ZIP" | head -20
+  exit 1
+fi
+if unzip -l "$ZIP" | grep -q 'edition-wporg.php'; then
+  echo "ERROR: edition-wporg.php must not ship in wporg zip" >&2
+  exit 1
+fi
+if unzip -p "$ZIP" "$SLUG/includes/class-edition.php" | grep -qE 'LITE_MAX_TRACKS|choir_rehearsal_is_pro|is_full_edition'; then
+  echo "ERROR: wporg class-edition.php must not contain Lite/Pro gate identifiers" >&2
+  exit 1
+fi
+if unzip -p "$ZIP" "$SLUG/includes/class-slugs.php" | grep -q "add_filter( 'sanitize_title'"; then
+  echo "ERROR: wporg build must not register global sanitize_title filter" >&2
+  exit 1
+fi
+if unzip -p "$ZIP" "$SLUG/includes/class-edition.php" | grep -q 'can_record(): bool'; then
+  :
+else
+  echo "ERROR: wporg class-edition.php missing capability helpers" >&2
   exit 1
 fi
 echo "OK wporg package checks passed"

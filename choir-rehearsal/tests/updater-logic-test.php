@@ -22,11 +22,12 @@ $checks['live_fallback_json'] = is_array($json) && !empty($json['version']) && !
 // Tag filter behavior
 $tags = [
   'choir-rehearsal-v0.4.21' => true,
+  'compath-choir-rehearsal-v0.4.49' => true,
   'choir-rehearsal-pro-v0.4.21' => false,
   'other-v1.0.0' => false,
 ];
 foreach ($tags as $tag=>$expect) {
-  $ok = (1 === preg_match('/^choir-rehearsal-v\d/', $tag));
+  $ok = (1 === preg_match('/^(?:compath-)?choir-rehearsal-v\d/', $tag) && !str_contains($tag, '-pro-v'));
   $checks['tag_'.$tag] = ($ok === $expect);
 }
 

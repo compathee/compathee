@@ -801,7 +801,7 @@
 
 
 	function bindRow($row) {
-		if (i18n.isPro) {
+		if (i18n.canRecord) {
 			const recorder = new Recorder($row);
 			$row.data('recorder', recorder);
 			recorder.bind();
@@ -887,13 +887,13 @@
 			options += '<option value="' + slug + '">' + voices[slug] + '</option>';
 		});
 
-		const recordButton = i18n.isPro
+		const recordButton = i18n.canRecord
 			? iconButton('choir-record-audio', i18n.recordAudio || 'Record', 'record')
 			: '';
 		const playButton = i18n.canPlay
 			? iconButton('choir-play-track', i18n.playAudio || 'Play', 'play', ' data-track-url="" data-track-title="" disabled')
 			: '';
-		const recorderPanel = i18n.isPro ? recorderPanelHtml() : '';
+		const recorderPanel = i18n.canRecord ? recorderPanelHtml() : '';
 
 		const html =
 			'<li class="choir-track-item choir-track-row">' +
