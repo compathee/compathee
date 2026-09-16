@@ -17,8 +17,8 @@ if %ERRORLEVEL% NEQ 0 (
 )
 
 echo.
-echo Starting Excellent Books Eelarve fill...
-%PYTHON_CMD% scripts\eelarve_fill.py --interactive
+echo Starting legacy Excellent Books report combiner (unpivot)...
+%PYTHON_CMD% scripts\combine_excellent_reports.py --interactive
 
 echo.
 pause
