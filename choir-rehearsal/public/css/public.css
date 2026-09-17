@@ -794,35 +794,55 @@ button.choir-sticky-player__play:focus-visible {
 	fill: #ffffff !important;
 }
 
-.choir-sticky-player__piano {
+/* Theme-proof (SoftMe/Softica etc. set .softica button { color }) — same pattern as Play. */
+.choir-sticky-player__piano,
+button.choir-sticky-player__piano {
 	flex: 0 0 auto;
 	align-self: center;
-	display: inline-flex;
+	display: inline-flex !important;
 	align-items: center;
 	justify-content: center;
-	width: 36px;
-	height: 36px;
-	margin: 0;
-	padding: 0;
-	border: 0;
-	border-radius: 8px;
-	background: rgba(255, 255, 255, 0.1);
-	color: #fff;
+	width: 36px !important;
+	height: 36px !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	border: 0 !important;
+	border-radius: 8px !important;
+	background: rgba(255, 255, 255, 0.1) !important;
+	background-color: rgba(255, 255, 255, 0.1) !important;
+	color: #fff !important;
+	-webkit-text-fill-color: #fff !important;
+	overflow: visible !important;
+	box-shadow: none !important;
+	text-shadow: none !important;
 	cursor: pointer;
 }
 
 .choir-sticky-player__piano:hover,
 .choir-sticky-player__piano:focus-visible,
-.choir-sticky-player__piano.is-open {
-	background: rgba(31, 79, 216, 0.9);
+.choir-sticky-player__piano.is-open,
+button.choir-sticky-player__piano:hover,
+button.choir-sticky-player__piano:focus-visible,
+button.choir-sticky-player__piano.is-open {
+	background: rgba(31, 79, 216, 0.9) !important;
+	background-color: rgba(31, 79, 216, 0.9) !important;
+	color: #fff !important;
+	-webkit-text-fill-color: #fff !important;
 	outline: none;
-	box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.35);
+	box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.35) !important;
 }
 
 .choir-sticky-player__piano-icon {
 	display: block;
 	width: 18px;
 	height: 18px;
+	color: #fff !important;
+	-webkit-text-fill-color: #fff !important;
+	fill: #fff !important;
+}
+
+.choir-sticky-player__piano-icon path {
+	fill: #ffffff !important;
 }
 
 .choir-sticky-player__main {
@@ -959,29 +979,40 @@ button.choir-sticky-player__play:focus-visible {
 	line-height: 1;
 }
 
-.choir-sticky-player__close {
+.choir-sticky-player__close,
+button.choir-sticky-player__close {
 	flex: 0 0 auto;
-	display: inline-flex;
+	display: inline-flex !important;
 	align-items: center;
 	justify-content: center;
-	width: 32px;
-	height: 32px;
-	margin: 0;
-	padding: 0;
-	border: 0;
-	border-radius: 6px;
-	background: rgba(255, 255, 255, 0.1);
-	color: #fff;
-	font-size: 1.35rem;
-	line-height: 1;
+	width: 32px !important;
+	height: 32px !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	border: 0 !important;
+	border-radius: 6px !important;
+	background: rgba(255, 255, 255, 0.1) !important;
+	background-color: rgba(255, 255, 255, 0.1) !important;
+	color: #fff !important;
+	-webkit-text-fill-color: #fff !important;
+	font-size: 1.35rem !important;
+	line-height: 1 !important;
+	overflow: visible !important;
+	box-shadow: none !important;
+	text-shadow: none !important;
 	cursor: pointer;
 }
 
 .choir-sticky-player__close:hover,
-.choir-sticky-player__close:focus-visible {
-	background: rgba(255, 255, 255, 0.2);
+.choir-sticky-player__close:focus-visible,
+button.choir-sticky-player__close:hover,
+button.choir-sticky-player__close:focus-visible {
+	background: rgba(255, 255, 255, 0.2) !important;
+	background-color: rgba(255, 255, 255, 0.2) !important;
+	color: #fff !important;
+	-webkit-text-fill-color: #fff !important;
 	outline: none;
-	box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.25);
+	box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.25) !important;
 }
 
 .choir-sticky-player__audio {
@@ -1111,26 +1142,35 @@ button.choir-sticky-player__play:focus-visible {
 	letter-spacing: 0.02em;
 }
 
-.choir-piano-sheet__close {
-	display: inline-flex;
+.choir-piano-sheet__close,
+button.choir-piano-sheet__close {
+	display: inline-flex !important;
 	align-items: center;
 	justify-content: center;
-	width: 32px;
-	height: 32px;
-	margin: 0;
-	padding: 0;
-	border: 0;
-	border-radius: 8px;
-	background: rgba(255, 255, 255, 0.1);
-	color: #fff;
-	font-size: 1.4rem;
-	line-height: 1;
+	width: 32px !important;
+	height: 32px !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	border: 0 !important;
+	border-radius: 8px !important;
+	background: rgba(255, 255, 255, 0.1) !important;
+	background-color: rgba(255, 255, 255, 0.1) !important;
+	color: #fff !important;
+	-webkit-text-fill-color: #fff !important;
+	font-size: 1.4rem !important;
+	line-height: 1 !important;
+	overflow: visible !important;
 	cursor: pointer;
 }
 
 .choir-piano-sheet__close:hover,
-.choir-piano-sheet__close:focus-visible {
-	background: rgba(255, 255, 255, 0.2);
+.choir-piano-sheet__close:focus-visible,
+button.choir-piano-sheet__close:hover,
+button.choir-piano-sheet__close:focus-visible {
+	background: rgba(255, 255, 255, 0.2) !important;
+	background-color: rgba(255, 255, 255, 0.2) !important;
+	color: #fff !important;
+	-webkit-text-fill-color: #fff !important;
 	outline: none;
 }
 
@@ -1262,26 +1302,35 @@ body.choir-piano-open:not(.choir-sticky-player-open) .choir-piano-sheet {
 	letter-spacing: 0.02em;
 }
 
-.choir-metronome-sheet__close {
-	display: inline-flex;
+.choir-metronome-sheet__close,
+button.choir-metronome-sheet__close {
+	display: inline-flex !important;
 	align-items: center;
 	justify-content: center;
-	width: 32px;
-	height: 32px;
-	margin: 0;
-	padding: 0;
-	border: 0;
-	border-radius: 8px;
-	background: rgba(255, 255, 255, 0.1);
-	color: #fff;
-	font-size: 1.4rem;
-	line-height: 1;
+	width: 32px !important;
+	height: 32px !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	border: 0 !important;
+	border-radius: 8px !important;
+	background: rgba(255, 255, 255, 0.1) !important;
+	background-color: rgba(255, 255, 255, 0.1) !important;
+	color: #fff !important;
+	-webkit-text-fill-color: #fff !important;
+	font-size: 1.4rem !important;
+	line-height: 1 !important;
+	overflow: visible !important;
 	cursor: pointer;
 }
 
 .choir-metronome-sheet__close:hover,
-.choir-metronome-sheet__close:focus-visible {
-	background: rgba(255, 255, 255, 0.2);
+.choir-metronome-sheet__close:focus-visible,
+button.choir-metronome-sheet__close:hover,
+button.choir-metronome-sheet__close:focus-visible {
+	background: rgba(255, 255, 255, 0.2) !important;
+	background-color: rgba(255, 255, 255, 0.2) !important;
+	color: #fff !important;
+	-webkit-text-fill-color: #fff !important;
 	outline: none;
 }
 

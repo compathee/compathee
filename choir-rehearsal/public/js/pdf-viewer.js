@@ -516,6 +516,24 @@
 			ro.observe(wrap);
 		}
 
+		// Re-render when the viewer becomes visible (closed metabox / zero-width layout).
+		if (typeof IntersectionObserver !== 'undefined') {
+			var io = new IntersectionObserver(
+				function (entries) {
+					entries.forEach(function (entry) {
+						if (!entry.isIntersecting || !pdfDoc) {
+							return;
+						}
+						window.requestAnimationFrame(function () {
+							queueRenderPage(pageNum);
+						});
+					});
+				},
+				{ threshold: 0.01 }
+			);
+			io.observe(viewer);
+		}
+
 		var api = {
 			load: loadDocument,
 			reload: loadDocument,
@@ -527,6 +545,11 @@
 			},
 			expand: enterFullscreen,
 			collapse: exitFullscreen,
+			refresh: function () {
+				if (pdfDoc) {
+					queueRenderPage(pageNum);
+				}
+			},
 		};
 
 		viewer._choirPdfApi = api;
