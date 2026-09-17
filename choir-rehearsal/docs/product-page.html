@@ -4,7 +4,7 @@
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<title>Choir Rehearsal — rehearsal library for choirs</title>
-	<meta name="description" content="WordPress plugin for choirs: songs, voice tracks, PDF scores, and mobile-friendly listening. Order, install, subscription, and updates." />
+	<meta name="description" content="Choir Rehearsal for WordPress — free Lite in the WordPress.org plugin directory, Pro at shop.compath.ee. Practice tracks and sheet music in the browser." />
 	<link rel="canonical" href="https://rehearsal.compath.ee/" />
 	<style>
 		:root {
@@ -139,7 +139,7 @@
 	</style>
 </head>
 <body>
-	<!-- shell: order-pro-cta -->
+	<!-- shell: site-refresh-0.4.53-2026-09 -->
 	<div id="app">
 		<p class="loading">Loading latest content from GitHub…</p>
 	</div>
@@ -151,12 +151,15 @@
 		var CONFIG = {
 			repo: 'compathee/compathee',
 			branches: [
-				'cursor/lite-pro-hub-setup-abc2',
+				'cursor/rehearsal-site-refresh-abc2',
+				'cursor/rehearsal-copy-main-abc2',
 				'main',
+				'cursor/lite-pro-hub-setup-abc2',
 				'cursor/choir-rehearsal-plugin-090e'
 			],
-			releasesUrl: 'https://api.github.com/repos/compathee/compathee/releases?per_page=20',
-			buyProUrl: 'https://shop.compath.ee/products/choir-rehearsal-pro/'
+			releasesUrl: 'https://api.github.com/repos/compathee/compathee/releases?per_page=30',
+			buyProUrl: 'https://shop.compath.ee/products/choir-rehearsal-pro/',
+			wordpressOrgUrl: 'https://wordpress.org/plugins/compath-choir-rehearsal/'
 		};
 
 		function rawUrl(branch, path) {
@@ -219,14 +222,27 @@
 			}).join('');
 		}
 
+		function parseLiteVersionFromTag(tag) {
+			tag = String(tag || '');
+			if (tag.indexOf('compath-choir-rehearsal-v') === 0) {
+				return tag.slice('compath-choir-rehearsal-v'.length);
+			}
+			if (tag.indexOf('choir-rehearsal-v') === 0) {
+				return tag.slice('choir-rehearsal-v'.length);
+			}
+			return '';
+		}
+
 		function findLatestRelease(releases) {
 			var best = null;
 			var bestVersion = '';
 			releases.forEach(function (release) {
 				if (!release || release.draft || release.prerelease) return;
 				var tag = String(release.tag_name || '');
-				if (tag.indexOf('choir-rehearsal-v') !== 0) return;
-				var version = tag.replace('choir-rehearsal-v', '');
+				// Skip Pro releases
+				if (tag.indexOf('choir-rehearsal-pro-') === 0) return;
+				var version = parseLiteVersionFromTag(tag);
+				if (!version) return;
 				if (!best || compareVersions(version, bestVersion) > 0) {
 					best = release;
 					bestVersion = version;
@@ -247,9 +263,16 @@
 		}
 
 		function getDownloadUrl(release) {
-			if (!release || !release.assets) return 'https://github.com/compathee/compathee/releases/latest';
-			for (var i = 0; i < release.assets.length; i++) {
-				if (release.assets[i].name === 'choir-rehearsal.zip') return release.assets[i].browser_download_url;
+			if (!release || !release.assets) {
+				return 'https://github.com/compathee/compathee/releases/latest';
+			}
+			var preferred = ['compath-choir-rehearsal.zip', 'choir-rehearsal.zip'];
+			for (var p = 0; p < preferred.length; p++) {
+				for (var i = 0; i < release.assets.length; i++) {
+					if (release.assets[i].name === preferred[p]) {
+						return release.assets[i].browser_download_url;
+					}
+				}
 			}
 			return release.html_url || 'https://github.com/compathee/compathee/releases/latest';
 		}
@@ -297,9 +320,9 @@
 					'<h1>' + esc(data.title) + '</h1>' +
 					'<p>' + esc(data.tagline) + '</p>' +
 					'<div class="hero__cta">' +
-						'<a class="btn btn--primary" href="' + esc(downloadUrl) + '">Download Lite</a>' +
+						'<a class="btn btn--primary" href="' + esc(CONFIG.wordpressOrgUrl) + '" target="_blank" rel="noopener noreferrer">Get Lite on WordPress.org</a>' +
+						'<a class="btn btn--ghost" href="' + esc(downloadUrl) + '">Download from GitHub</a>' +
 						'<a class="btn btn--ghost" href="' + esc(CONFIG.buyProUrl) + '" target="_blank" rel="noopener noreferrer">Order Pro</a>' +
-						'<a class="btn btn--ghost" href="#order">Order &amp; subscribe</a>' +
 					'</div>' +
 				'</div></header>' +
 				'<main class="page">' +
@@ -309,20 +332,19 @@
 						'<p class="meta">Requirements: ' + esc(data.requirements) + '. Owner and developer: <strong>' + esc(data.owner) + '</strong>. First customer — <a href="' + esc(customer.url) + '">' + esc(customer.name) + '</a>.</p>' +
 					'</section>' +
 					'<section class="card" id="order"><h2>Order &amp; subscription</h2>' +
-						'<p>Lite is free (GPL). Pro is a separate WordPress add-on — keep Lite installed and activate Pro beside it.</p>' +
+						'<p>Lite is free in the WordPress.org plugin directory (GPL). Pro is a separate add-on from shop.compath.ee — keep Lite installed and activate Pro beside it.</p>' +
 						'<div class="pricing">' + renderPricing(data.pricing || []) + '</div>' +
 						'<div class="order-cta">' +
 							'<a class="btn btn--accent" href="' + esc(CONFIG.buyProUrl) + '" target="_blank" rel="noopener noreferrer">Order Pro — €49 / year</a>' +
-							'<span class="meta">Opens shop.compath.ee checkout</span>' +
+							'<span class="meta">Opens shop.compath.ee</span>' +
 						'</div>' +
 						'<h3>How to order</h3>' + renderSteps(data.orderSteps || []) +
-						'<p class="meta">Discounts available for non-profit choirs and educational projects — ask when ordering.</p>' +
 					'</section>' +
 					'<section class="card" id="install"><h2>Installation</h2>' +
 						'<h3>Self-service</h3>' + renderSteps(data.installSteps || []) +
 						'<h3>Updates</h3><ul>' +
-							'<li><strong>Lite:</strong> Choir Rehearsal → Settings → Check for updates now (GitHub Releases).</li>' +
-							'<li><strong>Pro:</strong> download the latest add-on zip from your SureCart account until licensed auto-updates ship.</li>' +
+							'<li><strong>Lite:</strong> updates through WordPress.org like any directory plugin (Plugins → Updates). GitHub Releases remain available as an alternative.</li>' +
+							'<li><strong>Pro:</strong> download the latest add-on zip from your account at shop.compath.ee.</li>' +
 							'<li>Installed version: <strong>Choir Rehearsal → Settings</strong>.</li>' +
 						'</ul>' +
 						'<h3>User roles</h3><ul>' +
@@ -335,7 +357,7 @@
 					'</section>' +
 				'</main>' +
 				'<footer class="footer">' +
-					'<p>Choir Rehearsal · <a href="https://rehearsal.compath.ee">rehearsal.compath.ee</a> · <a href="https://compath.ee">compath.ee</a> · <a href="https://github.com/compathee/compathee">GitHub</a> · <a href="mailto:' + esc(email) + '">' + esc(email) + '</a></p>' +
+					'<p>Compath Choir Rehearsal · <a href="https://rehearsal.compath.ee">rehearsal.compath.ee</a> · <a href="https://compath.ee">compath.ee</a> · <a href="https://wordpress.org/plugins/compath-choir-rehearsal/">WordPress.org</a> · <a href="https://github.com/compathee/compathee">GitHub</a> · <a href="mailto:' + esc(email) + '">' + esc(email) + '</a></p>' +
 					'<p>© Compath OÜ, Tallinn, Estonia</p>' +
 					'<p>Licensed under GPL-2.0-or-later</p>' +
 				'</footer>';
@@ -358,16 +380,16 @@
 			var updateMeta = results[1];
 			var releases = results[2];
 			var latestRelease = findLatestRelease(releases);
-			var versionFromRelease = latestRelease ? latestRelease.tag_name.replace('choir-rehearsal-v', '') : '';
+			var versionFromRelease = latestRelease ? parseLiteVersionFromTag(latestRelease.tag_name) : '';
 			var versionFromJson = (updateMeta && updateMeta.version) ? String(updateMeta.version) : '';
-			var version = versionFromRelease || versionFromJson || '0.4.6';
+			var version = versionFromRelease || versionFromJson || '0.4.53';
 			if (versionFromRelease && versionFromJson && compareVersions(versionFromRelease, versionFromJson) >= 0) {
 				version = versionFromRelease;
 			} else if (versionFromJson) {
 				version = versionFromJson;
 			}
 			var downloadUrl = getDownloadUrl(latestRelease);
-			if (updateMeta && updateMeta.download_url && (!latestRelease || compareVersions(versionFromJson, versionFromRelease) > 0)) {
+			if (updateMeta && updateMeta.download_url && (!latestRelease || compareVersions(versionFromJson, versionFromRelease || '0') > 0)) {
 				downloadUrl = updateMeta.download_url;
 			}
 			renderPage(data, version, downloadUrl);
