@@ -13,7 +13,6 @@ final class Choir_Rehearsal_Slugs {
 
 	public static function register(): void {
 		add_filter( 'wp_insert_post_data', array( self::class, 'filter_insert_post_data' ), 20, 2 );
-		add_filter( 'sanitize_title', array( self::class, 'filter_sanitize_title' ), 9, 3 );
 		add_action( 'save_post_' . Choir_Rehearsal_Post_Types::SONG, array( self::class, 'ensure_latin_slug_after_save' ), 5, 2 );
 	}
 
@@ -58,24 +57,6 @@ final class Choir_Rehearsal_Slugs {
 		$data['post_name'] = self::unique_slug( $slug, $post_id );
 
 		return $data;
-	}
-
-	/**
-	 * Keep sample-permalink / AJAX slug edits Latin for songs.
-	 *
-	 * @param string $title     Sanitized title.
-	 * @param string $raw_title Raw title before sanitizing.
-	 * @param string $context   Sanitization context.
-	 */
-	public static function filter_sanitize_title( string $title, string $raw_title = '', string $context = 'save' ): string {
-		if ( 'save' !== $context || ! self::is_song_slug_context() ) {
-			return $title;
-		}
-
-		$source = '' !== $raw_title ? $raw_title : $title;
-		$latin  = self::latin_slug( $source );
-
-		return '' !== $latin ? $latin : $title;
 	}
 
 	/**
@@ -167,7 +148,7 @@ final class Choir_Rehearsal_Slugs {
 		$text = wp_strip_all_tags( $text );
 		$text = self::transliterate( $text );
 		$text = strtolower( $text );
-		// Do not call sanitize_title() here — it re-enters our filter.
+		// Avoid sanitize_title() — WordPress may apply unrelated global filters.
 		$slug = preg_replace( '/[^a-z0-9]+/', '-', $text ) ?? '';
 		$slug = preg_replace( '/-+/', '-', $slug ) ?? '';
 		$slug = trim( $slug, '-' );
@@ -298,25 +279,4 @@ final class Choir_Rehearsal_Slugs {
 		return (bool) preg_match( '/\p{L}/u', $text );
 	}
 
-	private static function is_song_slug_context(): bool {
-		if ( isset( $_POST['post_type'] ) && Choir_Rehearsal_Post_Types::SONG === (string) wp_unslash( $_POST['post_type'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
-			return true;
-		}
-
-		$post_id = 0;
-		if ( isset( $_POST['post_id'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
-			$post_id = (int) $_POST['post_id']; // phpcs:ignore WordPress.Security.NonceVerification.Missing
-		} elseif ( isset( $_REQUEST['post_id'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			$post_id = (int) $_REQUEST['post_id']; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		}
-
-		if ( $post_id > 0 ) {
-			$post = get_post( $post_id );
-			if ( $post instanceof WP_Post && Choir_Rehearsal_Post_Types::SONG === $post->post_type ) {
-				return true;
-			}
-		}
-
-		return false;
-	}
 }
