@@ -10,8 +10,8 @@ $admin = file_get_contents(__DIR__ . '/../admin/js/admin.js');
 $checks = [
 	'has_usable_width_fn' => str_contains($js, 'function hasUsableWidth'),
 	'raw_width_fn' => str_contains($js, 'function wrapRawContentWidth'),
-	'defer_zero_width' => str_contains($js, 'defer-render-zero-width')
-		|| (str_contains($js, 'hasUsableWidth()') && str_contains($js, 'SoftMe/admin')),
+	'defer_zero_width' => str_contains($js, 'hasUsableWidth()')
+		&& str_contains($js, 'SoftMe/admin'),
 	'no_floor_on_zero' => (bool) preg_match(
 		'/function wrapContentWidth\(\)\s*\{[^}]*Math\.max\(\s*120\s*,\s*wrapRawContentWidth\(\)/s',
 		$js

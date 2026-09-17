@@ -1009,24 +1009,6 @@
 				sawUsable = markUsable();
 				const editorRo = new ResizeObserver(function () {
 					const usable = markUsable();
-					// #region agent log
-					try {
-						window.choirPdfDebugLogs = window.choirPdfDebugLogs || [];
-						window.choirPdfDebugLogs.push({
-							hypothesisId: 'C',
-							location: 'admin.js:editorRo',
-							message: 'editor-resize',
-							data: {
-								usable: usable,
-								becameUsable: usable && !sawUsable,
-								wrapW: wrapEl ? wrapEl.clientWidth : -1,
-								viewerW: editorViewer.clientWidth,
-							},
-							timestamp: Date.now(),
-							runId: 'admin-pdf-width',
-						});
-					} catch (err) {}
-					// #endregion
 					if (usable && !sawUsable) {
 						sawUsable = true;
 						const api = getEditorPdfApi();

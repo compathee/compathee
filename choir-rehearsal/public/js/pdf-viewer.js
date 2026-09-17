@@ -81,30 +81,6 @@
 			return Math.max(120, wrapRawContentWidth());
 		}
 
-		function debugLog(hypothesisId, message, data) {
-			// #region agent log
-			try {
-				var payload = {
-					hypothesisId: hypothesisId,
-					location: 'pdf-viewer.js',
-					message: message,
-					data: data || {},
-					timestamp: Date.now(),
-					runId: 'admin-pdf-width',
-				};
-				if (typeof window !== 'undefined') {
-					window.choirPdfDebugLogs = window.choirPdfDebugLogs || [];
-					window.choirPdfDebugLogs.push(payload);
-					if (typeof console !== 'undefined' && console.debug) {
-						console.debug('[choir-pdf]', hypothesisId, message, data || {});
-					}
-				}
-			} catch (err) {
-				// Debug logging must never break the viewer.
-			}
-			// #endregion
-		}
-
 		function applyCanvasTransform() {
 			var live = pinchLiveScale;
 			canvas.style.transformOrigin = 'center top';
@@ -124,12 +100,6 @@
 			// Painting with a fake floor width permanently clips the canvas.
 			if (!hasUsableWidth()) {
 				pageRendering = false;
-				debugLog('A', 'defer-render-zero-width', {
-					clientWidth: wrap.clientWidth,
-					rawContent: wrapRawContentWidth(),
-					page: num,
-					hadPaint: lastRenderedPageNum > 0,
-				});
 				updateControls();
 				return;
 			}
@@ -139,10 +109,6 @@
 			pdfDoc.getPage(num).then(function (page) {
 				if (!hasUsableWidth()) {
 					pageRendering = false;
-					debugLog('A', 'abort-paint-width-lost', {
-						clientWidth: wrap.clientWidth,
-						page: num,
-					});
 					updateControls();
 					if (pageNumPending !== null) {
 						var pendingWidth = pageNumPending;
@@ -182,13 +148,6 @@
 					}
 					return;
 				}
-
-				debugLog('A', 'paint-page', {
-					clientWidth: wrap.clientWidth,
-					cssW: nextCssW,
-					cssH: nextCssH,
-					page: num,
-				});
 
 				canvas.width = nextBitmapW;
 				canvas.height = nextBitmapH;
@@ -575,12 +534,6 @@
 
 		function scheduleLayoutRender(reason) {
 			if (!pdfDoc || !hasUsableWidth()) {
-				debugLog('B', 'layout-render-skip', {
-					reason: reason,
-					hasPdf: !!pdfDoc,
-					clientWidth: wrap.clientWidth,
-					usable: hasUsableWidth(),
-				});
 				return;
 			}
 			window.clearTimeout(resizeTimer);
@@ -588,12 +541,6 @@
 				if (isFullscreen) {
 					syncPlayerReserve();
 				}
-				debugLog('B', 'layout-render-run', {
-					reason: reason,
-					clientWidth: wrap.clientWidth,
-					page: pageNum,
-					lastRendered: lastRenderedPageNum,
-				});
 				queueRenderPage(pageNum);
 			}, 50);
 		}
@@ -603,12 +550,6 @@
 				var usable = hasUsableWidth();
 				var becameUsable = usable && !lastHadUsableWidth;
 				lastHadUsableWidth = usable;
-				debugLog('B', 'resize-observed', {
-					clientWidth: wrap.clientWidth,
-					usable: usable,
-					becameUsable: becameUsable,
-					hasPdf: !!pdfDoc,
-				});
 				if (!usable) {
 					return;
 				}
@@ -631,12 +572,6 @@
 						if (!entry.isIntersecting) {
 							return;
 						}
-						debugLog('E', 'intersecting', {
-							ratio: entry.intersectionRatio,
-							hasPdf: !!pdfDoc,
-							usable: hasUsableWidth(),
-							clientWidth: wrap.clientWidth,
-						});
 						if (!pdfDoc || !hasUsableWidth()) {
 							return;
 						}
