@@ -981,9 +981,7 @@
 		if (i18n.canViewPdf) {
 			// Ensure viewer loads after DOM ready from the hidden URL field (canonical),
 			// not only data-pdf-url from the early pdf-viewer auto-init.
-			// Delay past first layout / closed-postbox paint so SoftMe/admin metaboxes
-			// have a non-zero width before PDF.js fits the page.
-			window.setTimeout(function () {
+			const bootEditorPdf = function () {
 				const url = String(
 					$('#choir-score-pdf-url').val() ||
 						$('#choir-editor-pdf-viewer').attr('data-pdf-url') ||
@@ -994,7 +992,63 @@
 				} else {
 					getEditorPdfApi();
 				}
-			}, 50);
+			};
+
+			// SoftMe/admin: metabox width is often 0 on first paint. Load immediately
+			// (pdf-viewer defers paint until usable width), then refresh on 0→width.
+			bootEditorPdf();
+
+			const editorViewer = document.getElementById('choir-editor-pdf-viewer');
+			if (editorViewer && typeof ResizeObserver !== 'undefined') {
+				let sawUsable = false;
+				const wrapEl = editorViewer.querySelector('.choir-pdf-viewer__canvas-wrap');
+				const markUsable = function () {
+					const w = wrapEl ? wrapEl.clientWidth : editorViewer.clientWidth;
+					return w > 0;
+				};
+				sawUsable = markUsable();
+				const editorRo = new ResizeObserver(function () {
+					const usable = markUsable();
+					// #region agent log
+					try {
+						window.choirPdfDebugLogs = window.choirPdfDebugLogs || [];
+						window.choirPdfDebugLogs.push({
+							hypothesisId: 'C',
+							location: 'admin.js:editorRo',
+							message: 'editor-resize',
+							data: {
+								usable: usable,
+								becameUsable: usable && !sawUsable,
+								wrapW: wrapEl ? wrapEl.clientWidth : -1,
+								viewerW: editorViewer.clientWidth,
+							},
+							timestamp: Date.now(),
+							runId: 'admin-pdf-width',
+						});
+					} catch (err) {}
+					// #endregion
+					if (usable && !sawUsable) {
+						sawUsable = true;
+						const api = getEditorPdfApi();
+						if (api && typeof api.refresh === 'function') {
+							window.requestAnimationFrame(function () {
+								api.refresh();
+							});
+						}
+					} else if (usable) {
+						sawUsable = true;
+					} else {
+						sawUsable = false;
+					}
+				});
+				if (wrapEl) {
+					editorRo.observe(wrapEl);
+				}
+				editorRo.observe(editorViewer);
+			} else {
+				// Fallback when ResizeObserver is unavailable.
+				window.setTimeout(bootEditorPdf, 50);
+			}
 
 			// When the Sheet Music metabox is opened, refresh the canvas (WP postboxes).
 			$(document).on('postbox-toggled', function (_event, postbox) {
