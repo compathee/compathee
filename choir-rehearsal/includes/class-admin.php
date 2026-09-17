@@ -98,7 +98,7 @@ final class Choir_Rehearsal_Admin {
 									echo esc_html(
 										sprintf(
 											/* translators: %d: maximum track count */
-											__( 'Lite: up to %d voice tracks per song; no microphone recording, song search, editor Play, or embedded PDF preview.', 'compath-choir-rehearsal' ),
+											__( 'Lite: up to %d voice tracks per song; no microphone recording, song search, or editor Play preview.', 'compath-choir-rehearsal' ),
 											(int) Choir_Rehearsal_Edition::LITE_MAX_TRACKS
 										)
 									);
@@ -110,7 +110,7 @@ final class Choir_Rehearsal_Admin {
 									</a>
 								</p>
 							<?php else : ?>
-								<p class="description"><?php esc_html_e( 'Unlimited voice tracks, microphone recording, song search, Play preview, and embedded PDF in the editor.', 'compath-choir-rehearsal' ); ?></p>
+								<p class="description"><?php esc_html_e( 'Unlimited voice tracks, microphone recording, song search, and Play preview in the editor.', 'compath-choir-rehearsal' ); ?></p>
 							<?php endif; ?>
 						</td>
 					</tr>
@@ -226,7 +226,7 @@ final class Choir_Rehearsal_Admin {
 				<div class="choir-buy-pro-banner">
 					<p>
 						<strong><?php esc_html_e( 'Choir Rehearsal Pro', 'compath-choir-rehearsal' ); ?></strong>
-						<?php esc_html_e( 'Unlimited tracks, microphone recording, search by song title, Play preview, and embedded PDF in the editor. Keep this Lite plugin installed — Pro is a separate add-on.', 'compath-choir-rehearsal' ); ?>
+						<?php esc_html_e( 'Unlimited tracks, microphone recording, search by song title, and Play preview in the editor. Keep this Lite plugin installed — Pro is a separate add-on.', 'compath-choir-rehearsal' ); ?>
 					</p>
 					<p>
 						<a class="button button-primary" href="<?php echo esc_url( Choir_Rehearsal_Edition::upgrade_url() ); ?>" target="_blank" rel="noopener noreferrer">
@@ -636,7 +636,7 @@ final class Choir_Rehearsal_Admin {
 		if ( Choir_Rehearsal_Edition::shows_commercial_upgrade() ) {
 			$admin_i18n['trackLimitMsg'] = sprintf(
 				/* translators: %d: maximum track count */
-				__( 'Lite edition allows up to %d voice tracks per song. Upgrade to Pro for unlimited tracks, microphone recording, Play preview, and embedded PDF in the editor.', 'compath-choir-rehearsal' ),
+				__( 'Lite edition allows up to %d voice tracks per song. Upgrade to Pro for unlimited tracks, microphone recording, and Play preview in the editor.', 'compath-choir-rehearsal' ),
 				Choir_Rehearsal_Edition::LITE_MAX_TRACKS
 			);
 		}
@@ -672,17 +672,10 @@ final class Choir_Rehearsal_Admin {
 			$file = get_attached_file( $pdf_id );
 			$filename = $file ? basename( $file ) : get_the_title( $pdf_id );
 		}
-		$can_view = Choir_Rehearsal_Edition::can_view_score_in_editor();
 		?>
 		<div class="choir-score-wrap choir-song-card-section">
 			<p class="description">
-				<?php
-				if ( $can_view ) {
-					esc_html_e( 'Upload a PDF score. It appears below like on the public song page — swipe left/right to change pages while you record.', 'compath-choir-rehearsal' );
-				} else {
-					esc_html_e( 'Upload a PDF score for this song. Singers will see it with page navigation on the song page. Pro embeds the score here in the editor.', 'compath-choir-rehearsal' );
-				}
-				?>
+				<?php esc_html_e( 'Upload a PDF score. It appears below like on the public song page — swipe left/right to change pages while you record.', 'compath-choir-rehearsal' ); ?>
 			</p>
 			<input type="hidden" id="choir-score-pdf-id" name="choir_score_pdf_id" value="<?php echo esc_attr( (string) $pdf_id ); ?>" />
 			<input type="hidden" id="choir-score-pdf-url" value="<?php echo esc_url( $pdf_url ); ?>" />
@@ -693,32 +686,30 @@ final class Choir_Rehearsal_Admin {
 					<button type="button" class="button-link-delete" id="choir-remove-pdf"><?php esc_html_e( 'Remove PDF', 'compath-choir-rehearsal' ); ?></button>
 				</div>
 			</div>
-			<?php if ( $can_view ) : ?>
-				<div
-					id="choir-editor-pdf-viewer"
-					class="choir-pdf-viewer<?php echo '' === $pdf_url ? ' is-empty' : ''; ?>"
-					data-pdf-url="<?php echo esc_url( $pdf_url ); ?>"
-				>
-					<button type="button" class="choir-pdf-expand" aria-label="<?php esc_attr_e( 'Expand PDF', 'compath-choir-rehearsal' ); ?>">
-						<span class="screen-reader-text"><?php esc_html_e( 'Expand PDF', 'compath-choir-rehearsal' ); ?></span>
-						<svg class="choir-pdf-toolbar-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path fill="#ffffff" d="M4 9V4h5v2H6v3H4zm10-5h5v5h-2V6h-3V4zM4 15h2v3h3v2H4v-5zm16 0v5h-5v-2h3v-3h2z"/></svg>
-					</button>
-					<button type="button" class="choir-pdf-close-fs" hidden aria-label="<?php esc_attr_e( 'Close full screen', 'compath-choir-rehearsal' ); ?>">
-						<span class="screen-reader-text"><?php esc_html_e( 'Close full screen', 'compath-choir-rehearsal' ); ?></span>
-						<svg class="choir-pdf-toolbar-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path fill="#ffffff" d="M6.4 5l5.6 5.6L17.6 5 19 6.4 13.4 12 19 17.6 17.6 19 12 13.4 6.4 19 5 17.6 10.6 12 5 6.4 6.4 5z"/></svg>
-					</button>
-					<div class="choir-pdf-viewer__canvas-wrap" title="<?php esc_attr_e( 'Swipe to change pages · pinch to zoom', 'compath-choir-rehearsal' ); ?>">
-						<canvas class="choir-pdf-viewer__canvas"></canvas>
-						<p class="choir-pdf-viewer__empty"><?php esc_html_e( 'No PDF selected yet.', 'compath-choir-rehearsal' ); ?></p>
-					</div>
-					<div class="choir-pdf-viewer__controls">
-						<button type="button" class="choir-pdf-prev" aria-label="<?php esc_attr_e( 'Previous page', 'compath-choir-rehearsal' ); ?>">&larr; <?php esc_html_e( 'Previous', 'compath-choir-rehearsal' ); ?></button>
-						<span class="choir-pdf-page">1 / 1</span>
-						<button type="button" class="choir-pdf-next" aria-label="<?php esc_attr_e( 'Next page', 'compath-choir-rehearsal' ); ?>"><?php esc_html_e( 'Next', 'compath-choir-rehearsal' ); ?> &rarr;</button>
-						<button type="button" class="choir-pdf-exit-fs" hidden aria-label="<?php esc_attr_e( 'Close full screen', 'compath-choir-rehearsal' ); ?>">&times; <?php esc_html_e( 'Close', 'compath-choir-rehearsal' ); ?></button>
-					</div>
+			<div
+				id="choir-editor-pdf-viewer"
+				class="choir-pdf-viewer<?php echo '' === $pdf_url ? ' is-empty' : ''; ?>"
+				data-pdf-url="<?php echo esc_url( $pdf_url ); ?>"
+			>
+				<button type="button" class="choir-pdf-expand" aria-label="<?php esc_attr_e( 'Expand PDF', 'compath-choir-rehearsal' ); ?>">
+					<span class="screen-reader-text"><?php esc_html_e( 'Expand PDF', 'compath-choir-rehearsal' ); ?></span>
+					<svg class="choir-pdf-toolbar-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path fill="#ffffff" d="M4 9V4h5v2H6v3H4zm10-5h5v5h-2V6h-3V4zM4 15h2v3h3v2H4v-5zm16 0v5h-5v-2h3v-3h2z"/></svg>
+				</button>
+				<button type="button" class="choir-pdf-close-fs" hidden aria-label="<?php esc_attr_e( 'Close full screen', 'compath-choir-rehearsal' ); ?>">
+					<span class="screen-reader-text"><?php esc_html_e( 'Close full screen', 'compath-choir-rehearsal' ); ?></span>
+					<svg class="choir-pdf-toolbar-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path fill="#ffffff" d="M6.4 5l5.6 5.6L17.6 5 19 6.4 13.4 12 19 17.6 17.6 19 12 13.4 6.4 19 5 17.6 10.6 12 5 6.4 6.4 5z"/></svg>
+				</button>
+				<div class="choir-pdf-viewer__canvas-wrap" title="<?php esc_attr_e( 'Swipe to change pages · pinch to zoom', 'compath-choir-rehearsal' ); ?>">
+					<canvas class="choir-pdf-viewer__canvas"></canvas>
+					<p class="choir-pdf-viewer__empty"><?php esc_html_e( 'No PDF selected yet.', 'compath-choir-rehearsal' ); ?></p>
 				</div>
-			<?php endif; ?>
+				<div class="choir-pdf-viewer__controls">
+					<button type="button" class="choir-pdf-prev" aria-label="<?php esc_attr_e( 'Previous page', 'compath-choir-rehearsal' ); ?>">&larr; <?php esc_html_e( 'Previous', 'compath-choir-rehearsal' ); ?></button>
+					<span class="choir-pdf-page">1 / 1</span>
+					<button type="button" class="choir-pdf-next" aria-label="<?php esc_attr_e( 'Next page', 'compath-choir-rehearsal' ); ?>"><?php esc_html_e( 'Next', 'compath-choir-rehearsal' ); ?> &rarr;</button>
+					<button type="button" class="choir-pdf-exit-fs" hidden aria-label="<?php esc_attr_e( 'Close full screen', 'compath-choir-rehearsal' ); ?>">&times; <?php esc_html_e( 'Close', 'compath-choir-rehearsal' ); ?></button>
+				</div>
+			</div>
 		</div>
 		<?php
 	}
