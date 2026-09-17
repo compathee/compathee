@@ -145,7 +145,7 @@ return [
         'PDF score attached' => 'Прикреплён PDF с нотами',
         'Permalinks refreshed and rehearsal page verified.' => 'Постоянные ссылки обновлены, страница репетиций проверена.',
         'Piano' => 'Фортепиано',
-        'Play' => '▶',
+        'Play' => 'Играть',
         'Please enter your username and password.' => 'Введите имя пользователя и пароль.',
         'Plugin documentation and changelog' => 'Документация и журнал изменений плагина',
         'Plugin name' => 'Имя плагина',

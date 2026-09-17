@@ -370,6 +370,7 @@ ET: dict[str, str] = {
 
 # Russian additions for strings missing from older PO (beyond existing file)
 RU_EXTRA: dict[str, str] = {
+    "Play": "Играть",
     "Compath Choir Rehearsal": "Compath Choir Rehearsal",
     "Standard": "Стандарт",
     "Expand PDF": "Развернуть PDF",

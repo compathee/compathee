@@ -438,7 +438,7 @@ msgid "Piano"
 msgstr "Фортепиано"
 
 msgid "Play"
-msgstr "▶"
+msgstr "Играть"
 
 msgid "Please enter your username and password."
 msgstr "Введите имя пользователя и пароль."
