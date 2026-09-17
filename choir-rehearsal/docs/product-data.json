@@ -1,8 +1,8 @@
 {
-  "title": "Choir Rehearsal",
-  "tagline": "A private rehearsal library for choirs: songs, voice tracks, PDF scores, and easy listening on phone or desktop.",
-  "overview": "Choir Rehearsal helps choir members learn new pieces by voice part. Editors upload PDF scores and audio for each voice. Singers visit /rehearsal/, pick a song, and listen. Lite is free from GitHub; Pro is a separate add-on from shop.compath.ee (keep Lite installed — do not replace it).",
-  "requirements": "WordPress 6.4+, PHP 8.0+",
+  "title": "Compath Choir Rehearsal",
+  "tagline": "Practice tracks and sheet music for choirs — free Lite on WordPress.org, Pro from shop.compath.ee.",
+  "overview": "Compath Choir Rehearsal helps choir members learn new pieces by voice part. Editors upload PDF scores and audio for each voice. Singers visit /rehearsal/, pick a song, and listen on phone or desktop — no separate app. Each voice track shows a blue waveform from its audio file. Lite is free in the WordPress.org plugin catalog (Plugins → Add New → search “Compath Choir Rehearsal”). Pro is a separate add-on from shop.compath.ee — keep Lite installed; do not replace it. Pro license covers one WordPress site (one activation).",
+  "requirements": "WordPress 6.4+, PHP 8.0+ — WordPress is available on virtually every hosting; use one-click install if it is not active yet",
   "owner": "Compath OÜ, Tallinn, Estonia",
   "firstCustomer": {
     "name": "Cappella Veneta",
@@ -10,13 +10,13 @@
   },
   "features": [
     "Song library — paginated list on your choir website with shortcode embedding",
-    "PDF scores — attach sheet music and flip pages in the built-in viewer",
-    "Voice tracks — bass, tenor, alto, soprano and more",
-    "Sticky player — listen while reading the score",
-    "Private access — optional login-only rehearsal pages",
+    "PDF scores — attach sheet music, flip pages, pinch-to-zoom, and expand almost full screen",
+    "Voice tracks — bass, tenor, alto, soprano and more, each with a blue waveform",
+    "Sticky player — listen while reading the score (piano + metronome tools)",
+    "Public & private — optional login-only pages; Make public + Share link",
     "Editor & singer roles — editors manage, singers listen",
-    "Lite (free) — up to 4 tracks per song, audio upload, GitHub updates",
-    "Pro add-on — unlimited tracks, mic recording, search, editor Play, embedded PDF in the editor"
+    "Lite (free) — WordPress.org install and updates",
+    "Pro add-on — song library backup (ZIP), priority support, one-site license"
   ],
   "featureCards": [
     {
@@ -27,22 +27,22 @@
     {
       "icon": "pdf",
       "title": "PDF scores",
-      "text": "Attach sheet music and flip pages in the built-in viewer."
+      "text": "Attach sheet music, flip pages, pinch-to-zoom, and expand while the sticky player stays below."
     },
     {
       "icon": "voices",
       "title": "Voice tracks",
-      "text": "Bass, tenor, alto, soprano and more — one audio part per voice."
+      "text": "Bass, tenor, alto, soprano and more — each track shows a blue waveform from its audio file."
     },
     {
       "icon": "player",
       "title": "Sticky player",
-      "text": "Listen while reading the score — player stays at the bottom of the screen."
+      "text": "Listen while reading the score — Play, scrubber/waveform, piano, and close controls."
     },
     {
       "icon": "lock",
-      "title": "Private access",
-      "text": "Optional login-only rehearsal pages for your choir members."
+      "title": "Public & private",
+      "text": "Optional login-only rehearsal pages; Make public and Share a song link when needed."
     },
     {
       "icon": "users",
@@ -51,13 +51,13 @@
     },
     {
       "icon": "lite",
-      "title": "Lite — free",
-      "text": "Up to 4 tracks per song, audio upload, GitHub updates."
+      "title": "Lite — free on WordPress.org",
+      "text": "Install from Plugins → Add New. Updates through WordPress like any directory plugin."
     },
     {
       "icon": "pro",
       "title": "Pro add-on",
-      "text": "Unlimited tracks, mic recording, search by title, Play preview, and embedded PDF preview in the editor."
+      "text": "Song library backup (export/import ZIP), priority email support — one WordPress site / one activation."
     }
   ],
   "pricing": [
@@ -66,11 +66,11 @@
       "price": "Free",
       "featured": false,
       "items": [
-        "Download from GitHub Releases",
-        "Up to 4 voice tracks per song",
-        "PDF scores and sticky player",
-        "Upload audio (no microphone recording)",
-        "Updates via WordPress (Check for updates)"
+        "Install from WordPress.org (Plugins → Add New)",
+        "PDF scores, sticky player, waveforms",
+        "Voice tracks and rehearsal library",
+        "Updates through WordPress like any directory plugin",
+        "GitHub zip available for existing installs"
       ]
     },
     {
@@ -81,14 +81,10 @@
       "ctaLabel": "Order Pro",
       "items": [
         "Install beside Lite (separate add-on)",
-        "Unlimited voice tracks per song",
-        "Microphone recording in the admin",
-        "Play preview of voice tracks in the song editor",
-        "Embedded PDF score in the song editor (swipe pages)",
-        "Search songs by title",
-        "PDF icon on songs that have a score attached",
-        "1 choir website",
-        "Priority email support"
+        "License: one WordPress site (one activation)",
+        "Song library backup — export/import ZIP",
+        "Priority email support",
+        "Commercial GitHub Lite unlocks: unlimited tracks, mic recording, search, editor Play/PDF"
       ]
     },
     {
@@ -107,256 +103,383 @@
   "orderEmail": "order@compath.ee",
   "orderSteps": [
     "Open https://shop.compath.ee/products/choir-rehearsal-pro/ (or email order@compath.ee for setup services).",
-    "After payment, download choir-rehearsal-pro.zip from your SureCart customer dashboard.",
-    "Keep Choir Rehearsal (Lite) installed. Upload and activate the Pro add-on beside it — do not replace Lite."
+    "After payment, download choir-rehearsal-pro.zip from your account at shop.compath.ee.",
+    "Keep Compath Choir Rehearsal (Lite) installed. Upload and activate Pro beside it — do not replace Lite.",
+    "Pro license covers one WordPress site (one activation)."
   ],
   "installSteps": [
-    "Download choir-rehearsal.zip (Lite) from GitHub Releases.",
-    "In WordPress: Plugins → Add New → Upload Plugin — activate Lite.",
-    "Pro customers: upload choir-rehearsal-pro.zip next and activate it. Settings should show Edition: Pro.",
+    "If WordPress is not on your hosting yet, add it with your host’s one-click WordPress installer.",
+    "Install Lite from WordPress.org: Plugins → Add New, search for “Compath Choir Rehearsal”, then Install → Activate.",
+    "Existing GitHub sites: upload the latest GitHub zip into the same plugin folder (do not Delete in wp-admin).",
+    "Pro customers: download choir-rehearsal-pro.zip from shop.compath.ee, then Plugins → Add New → Upload Plugin and activate beside Lite.",
     "The plugin creates a /rehearsal/ page with the [choir_rehearsal] shortcode.",
     "Add a song: Choir Rehearsal → Add Song — title, PDF, voice tracks.",
     "Give singers WordPress accounts (Subscriber). Editors need Editor or Administrator."
   ],
   "changelog": [
     {
-      "version": "0.4.19",
-      "summary": "Share UX and Play icon fixes",
+      "version": "0.4.53",
+      "summary": "SoftMe theme-proof player icons + editor PDF refresh",
       "items": [
-        "Share button copies the song link in one tap and shows a confirmation",
-        "Mobile Share confirmation stays on screen",
-        "Song editor Play icon is a clear white triangle"
+        "Theme-proof sticky player piano and close icons (SoftMe/Softica button color overrides)",
+        "Editor PDF: re-render when metabox becomes visible; refresh on postbox toggle"
       ],
       "open": true
     },
     {
-      "version": "0.4.18",
-      "summary": "Latin song permalinks",
+      "version": "0.4.52",
+      "summary": "Repair ghost Lite entries in active_plugins",
       "items": [
-        "Song URLs are auto-generated in Latin letters from any language title",
-        "Permalink edits in the song editor save correctly",
-        "Existing non-Latin song URLs are migrated on upgrade"
+        "Fix duplicate Lite notice when only one folder exists: repair ghost/duplicate rows in active_plugins",
+        "Migration wizard: show active_plugins Lite entries and one-click repair"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.51",
+      "summary": "WordPress.org full-feature package",
+      "items": [
+        "WordPress.org: full feature set in catalog build (no Lite track cap, mic recording, search, editor Play/PDF gates)",
+        "WordPress.org: remove global sanitize_title filter; song slugs only via wp_insert_post_data / save_post",
+        "WordPress.org readme: external services limited to optional documentation link and bundled PDF.js"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.50",
+      "summary": "Universal install/replace for both folder names",
+      "items": [
+        "Universal install/replace: upload or update replaces choir-rehearsal/ or compath-choir-rehearsal/ instead of adding a second copy",
+        "After install, extra Lite folders are removed automatically (songs stay in the database)",
+        "Fix update check on older installs: merge all update sources and pick the highest version (avoids stale 0.4.21 from main-branch update.json)",
+        "Check for updates redirects to Plugins when an update is available; clearer notice when the server reports an older version than installed"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.49",
+      "summary": "Migration wizard for duplicate Lite folders",
+      "items": [
+        "Migration wizard: detect duplicate Lite folders, keep one, deactivate/delete extras without deleting songs",
+        "Dual-load copy can open the wizard even when an older Lite loaded first"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.48",
+      "summary": "Updates/uploads stay in the already-installed plugin folder (stops a second Lite",
+      "items": [
+        "Updates/uploads stay in the already-installed plugin folder (stops a second Lite copy after upgrade)",
+        "Duplicate-plugin notice lists active Lite paths"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.47",
+      "summary": "GitHub zip again installs into folder `choir-rehearsal/` (fixes duplicate plugin",
+      "items": [
+        "GitHub zip again installs into folder `choir-rehearsal/` (fixes duplicate plugin after upload on existing sites)"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.46",
+      "summary": "Align text domain with WordPress.org slug (`compath-choir-rehearsal`)",
+      "items": [
+        "Align text domain with WordPress.org slug (`compath-choir-rehearsal`)"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.45",
+      "summary": "Pro: Export/Import song library backup (ZIP)",
+      "items": [
+        "Pro: Export/Import song library backup (ZIP)",
+        "Pro: Fix activation fatal when backup file missing or duplicate Lite slug listed as dependency",
+        "Clearer duplicate-plugin admin notice"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.44",
+      "summary": "Fix piano keys sticking visually after press on the public song player",
+      "items": [
+        "Fix piano keys sticking visually after press on the public song player"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.43",
+      "summary": "Fix: activating beside an old choir-rehearsal folder no longer fatals; shows an ",
+      "items": [
+        "Fix: activating beside an old choir-rehearsal folder no longer fatals; shows an admin notice instead",
+        "Keep only one plugin copy active (prefer folder compath-choir-rehearsal)"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.42",
+      "summary": "Fix: replace wp_dropdown_pages with an escaped custom select (Plugin Check)",
+      "items": [
+        "Fix: replace wp_dropdown_pages with an escaped custom select (Plugin Check)"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.41",
+      "summary": "Fix: remaining Plugin Check issues (wp_dropdown_pages escaping, login redirect n",
+      "items": [
+        "Fix: remaining Plugin Check issues (wp_dropdown_pages escaping, login redirect nonce)"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.40",
+      "summary": "Fix: Plugin Check errors (escaping, translators comments, wp_delete_file)",
+      "items": [
+        "Fix: Plugin Check errors (escaping, translators comments, wp_delete_file)",
+        "Fix: Plugin Check warnings (sanitization, prefixed uninstall vars, textdomain)"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.39",
+      "summary": "Brand: plugin renamed to Compath Choir Rehearsal (slug compath-choir-rehearsal) ",
+      "items": [
+        "Brand: plugin renamed to Compath Choir Rehearsal (slug compath-choir-rehearsal) for WordPress.org",
+        "Package folder and GitHub release zip use compath-choir-rehearsal"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.38",
+      "summary": "Fix: mobile fullscreen PDF close (X) appears above sticky player and recording d",
+      "items": [
+        "Fix: mobile fullscreen PDF close (X) appears above sticky player and recording dock",
+        "Fullscreen PDF toolbar includes a Close control for reliable exit on small screens"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.37",
+      "summary": "Fix: PDF page navigation works again (same-size pages were skipped by render gua",
+      "items": [
+        "Fix: PDF page navigation works again (same-size pages were skipped by render guard)"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.36",
+      "summary": "Fix: desktop scrubber works for microphone WebM recordings (Chrome Infinity dura",
+      "items": [
+        "Fix: desktop scrubber works for microphone WebM recordings (Chrome Infinity duration)",
+        "New mic uploads are converted to WAV when needed so seeking works reliably"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.35",
+      "summary": "Fix: song page / editor freeze caused by recording-dock body class observer",
+      "items": [
+        "Fix: song page / editor freeze caused by recording-dock body class observer",
+        "PDF viewer skips redundant re-renders that could lock the UI"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.34",
+      "summary": "Mobile: floating recording bar (record / pause / stop / cancel) above the player",
+      "items": [
+        "Mobile: floating recording bar (record / pause / stop / cancel) above the player when controls scroll away or PDF is expanded",
+        "Mic recording supports pause and resume from the same take"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.33",
+      "summary": "Recording: larger piano and metronome icons",
+      "items": [
+        "Recording: larger piano and metronome icons",
+        "Sticky player: metronome only in mic recording (removed from player bar)",
+        "Sticky player: remove white frame around waveform scrubber on the public song page",
+        "Song view: reliable X control to exit expanded PDF"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.32",
+      "summary": "Sticky player and song editor: metronome panel with tempo slider (40–208 BPM)",
+      "items": [
+        "Sticky player and song editor: metronome panel with tempo slider (40–208 BPM)",
+        "Recording row: Start / piano / metronome at 70% / 15% / 15%"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.31",
+      "summary": "Sticky player: hide track title on waveform; time + close sit to the right of sc",
+      "items": [
+        "Sticky player: hide track title on waveform; time + close sit to the right of scrubber"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.30",
+      "summary": "Song editor: piano icon beside Start recording (70% / 30% row)",
+      "items": [
+        "Song editor: piano icon beside Start recording (70% / 30% row)"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.29",
+      "summary": "Sticky player: open a scrollable 2-octave Web Audio piano above the player",
+      "items": [
+        "Sticky player: open a scrollable 2-octave Web Audio piano above the player"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.28",
+      "summary": "Sticky player: waveform only behind scrubber (no white seek track)",
+      "items": [
+        "Sticky player: waveform only behind scrubber (no white seek track)",
+        "PDF expand fits page to screen width; expand toggles to matching X control",
+        "Pinch-zoom keeps the chosen scale instead of snapping to 100%"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.27",
+      "summary": "Sticky player: waveform is the scrubber background (compact single-row bar)",
+      "items": [
+        "Sticky player: waveform is the scrubber background (compact single-row bar)"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.26",
+      "summary": "Song editor: show track waveform instead of the audio filename",
+      "items": [
+        "Song editor: show track waveform instead of the audio filename",
+        "Sticky player: waveform under the seek bar"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.25",
+      "summary": "Voice tracks show a blue waveform from the track name to Play/Upload",
+      "items": [
+        "Voice tracks show a blue waveform from the track name to Play/Upload",
+        "Waveforms are generated from each track’s audio file in the browser"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.24",
+      "summary": "Play buttons always blue with white icon/text (theme-proof)",
+      "items": [
+        "Play buttons always blue with white icon/text (theme-proof)",
+        "PDF: full-screen expand with close control; sticky player stays visible below",
+        "PDF: pinch-to-zoom (and Ctrl/trackpad zoom)"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.23",
+      "summary": "WordPress.org package: remove GitHub updater file entirely (Plugin Check)",
+      "items": [
+        "WordPress.org package: remove GitHub updater file entirely (Plugin Check)",
+        "readme.txt: Tested up to 7.1"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.22",
+      "summary": "WordPress.org ready: disable GitHub self-updater in .org packages",
+      "items": [
+        "WordPress.org ready: disable GitHub self-updater in .org packages",
+        "Bundle PDF.js locally (no third-party CDN for scripts)",
+        "Settings: WordPress.org builds show “Updates via WordPress.org”",
+        "Document external Pro storefront link in readme"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.21",
+      "summary": "Fix: updater treats non-2xx GitHub API responses as failures (rate limits no lon",
+      "items": [
+        "Fix: updater treats non-2xx GitHub API responses as failures (rate limits no longer look like empty release lists)",
+        "Fix: durable update.json fallback via GitHub release asset (/releases/latest/download/update.json)",
+        "Settings: Check for plugin updates redirects back with clear notices (available / up to date / failed)",
+        "Settings: show last update-check result under Plugin version"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.20",
+      "summary": "Fix: PDF score preview no longer blanks in the song editor after the form loads",
+      "items": [
+        "Fix: PDF score preview no longer blanks in the song editor after the form loads",
+        "PDF.js loads without credentials first (avoids hung credentialed fetches in wp-admin)",
+        "Song save no longer deletes an attached PDF when the metabox field is missing or mime is unexpected"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.19",
+      "summary": "Share: one-tap copy link with on-screen confirmation (no dual public/private men",
+      "items": [
+        "Share: one-tap copy link with on-screen confirmation (no dual public/private menu)",
+        "Fix mobile Share toast so it stays on screen",
+        "Song editor: fix Play icon (large white triangle in blue circle)"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.18",
+      "summary": "Song permalinks: auto-transliterate any language title to a Latin slug",
+      "items": [
+        "Song permalinks: auto-transliterate any language title to a Latin slug",
+        "Fix permalink editing so custom slugs save correctly",
+        "Migrate existing non-Latin song URLs on upgrade"
       ],
       "open": false
     },
     {
       "version": "0.4.17",
-      "summary": "Share song links",
+      "summary": "Song page: Share icon to copy public or private song links",
       "items": [
-        "Song view: Share icon button",
-        "Copy public or private (login-required) link to the song"
+        "Song page: Share icon to copy public or private song links"
       ],
       "open": false
     },
     {
       "version": "0.4.16",
-      "summary": "Public songs for guests",
+      "summary": "Make public control on the song editor card (icon on mobile)",
       "items": [
-        "Song editor: Make public button (icon-only on mobile)",
-        "Guests see a public songs list and can listen without signing in",
-        "Private songs remain login-gated when require-login is on"
+        "Make public control on the song editor card (icon on mobile)",
+        "Guests can browse and listen to public songs without signing in",
+        "Private songs still require login when that setting is enabled"
       ],
       "open": false
     },
     {
       "version": "0.4.15",
-      "summary": "Editor song card + swipe PDF",
+      "summary": "Song editor matches the public song card: embedded PDF with swipe page turns",
       "items": [
-        "Song editor matches the public song card with an embedded PDF viewer",
-        "Swipe left/right on the score to change pages",
-        "Voice tracks use listen-style rows with Upload / Record / Play icons",
-        "Removed the floating PDF panel"
+        "Song editor matches the public song card: embedded PDF with swipe page turns",
+        "Voice track rows use listen-style layout with Upload / Record / Play icon buttons",
+        "Removed the unreliable floating PDF panel"
       ],
       "open": false
     },
     {
       "version": "0.4.14",
-      "summary": "Player close + PDF list icon",
+      "summary": "Sticky player: close (×) button on the right — hides the player so mobile Update",
       "items": [
-        "Sticky player: close (×) on the right so mobile Update and content stay reachable",
+        "Sticky player: close (×) button on the right — hides the player so mobile Update / content is reachable",
         "Pro: PDF icon after song titles that have an attached score"
-      ],
-      "open": false
-    },
-    {
-      "version": "0.4.13",
-      "summary": "Editor back link + PDF panel",
-      "items": [
-        "Mobile song editor: Back to song list stays at the top (not under sticky player)",
-        "Pro: View PDF floating panel in song editor — record while reading the score"
-      ],
-      "open": false
-    },
-    {
-      "version": "0.4.12",
-      "summary": "Editor Play is Pro",
-      "items": [
-        "Song editor Play preview is a Pro feature",
-        "Pro benefits copy updated (Settings, product page, docs)"
-      ],
-      "open": false
-    },
-    {
-      "version": "0.4.11",
-      "summary": "Editor track Play",
-      "items": [
-        "Voice Tracks: Play button after Upload/Record opens the sticky player"
-      ],
-      "open": false
-    },
-    {
-      "version": "0.4.10",
-      "summary": "Demo title sorting",
-      "items": [
-        "Demo song titles use zero-padded numbers (01, 02, …) so the list sorts in numeric order"
-      ],
-      "open": false
-    },
-    {
-      "version": "0.4.9",
-      "summary": "Demo pagination",
-      "items": [
-        "Load demo songs creates 25 songs so the public list shows page navigation (20 per page)"
-      ],
-      "open": false
-    },
-    {
-      "version": "0.4.8",
-      "summary": "Demo library tools",
-      "items": [
-        "Settings: Load demo songs (10 songs × 4 tracks with demo voice audio)",
-        "Settings: Delete all songs with Yes/No confirmation"
-      ],
-      "open": false
-    },
-    {
-      "version": "0.4.7",
-      "summary": "Unicode song search",
-      "items": [
-        "Pro search matches Cyrillic and other Unicode titles"
-      ],
-      "open": false
-    },
-    {
-      "version": "0.4.6",
-      "summary": "One-click plugin update",
-      "items": [
-        "Fix needing two Update now clicks after Check for updates"
-      ],
-      "open": false
-    },
-    {
-      "version": "0.4.5",
-      "summary": "Remove Lite license key field",
-      "items": [
-        "License key removed from Lite Settings (Pro licensing will live in the Pro add-on)"
-      ],
-      "open": false
-    },
-    {
-      "version": "0.4.4",
-      "summary": "Buy Pro product URL",
-      "items": [
-        "Buy Pro opens https://shop.compath.ee/products/choir-rehearsal-pro/"
-      ],
-      "open": false
-    },
-    {
-      "version": "0.4.3",
-      "summary": "Buy Pro and Lite→Pro process",
-      "items": [
-        "Buy Pro button in Lite (Settings, Plugins list, library toolbar)",
-        "Keep Lite installed; Pro is a separate add-on"
-      ],
-      "open": false
-    },
-    {
-      "version": "0.4.2",
-      "summary": "Pagination and mobile search",
-      "items": [
-        "Paginated song list (20 per page) for large libraries",
-        "Pro search filters the full library across pages",
-        "Mobile layout: full-width search above the list"
-      ],
-      "open": false
-    },
-    {
-      "version": "0.4.1",
-      "summary": "Song search (Pro)",
-      "items": [
-        "Search songs by title in the rehearsal library list (Pro only)"
-      ],
-      "open": false
-    },
-    {
-      "version": "0.4.0",
-      "summary": "Lite and Pro editions",
-      "items": [
-        "Lite: up to 4 voice tracks, upload only",
-        "Pro add-on: unlimited tracks and microphone recording",
-        "shop.compath.ee subscriptions via SureCart"
-      ],
-      "open": false
-    },
-    {
-      "version": "0.3.11",
-      "summary": "Mobile player",
-      "items": [
-        "Wider sticky player with large play button and seek bar on phone"
-      ],
-      "open": false
-    },
-    {
-      "version": "0.3.10",
-      "summary": "Plugin author",
-      "items": [
-        "Plugin list shows By Compath OÜ"
-      ],
-      "open": false
-    },
-    {
-      "version": "0.3.9",
-      "summary": "Product website",
-      "items": [
-        "Product page: rehearsal.compath.ee"
-      ],
-      "open": false
-    },
-    {
-      "version": "0.3.8",
-      "summary": "Documentation page",
-      "items": [
-        "Product page: order, install, pricing, changelog",
-        "Documentation link in plugin settings"
-      ],
-      "open": false
-    },
-    {
-      "version": "0.3.0–0.3.7",
-      "summary": "Recording and editor",
-      "items": [
-        "Microphone recording in song editor",
-        "Simplified mobile-friendly song editor",
-        "Version shown in Settings"
-      ],
-      "open": false
-    },
-    {
-      "version": "0.2.x",
-      "summary": "Frontend & updates",
-      "items": [
-        "Frontend login and role toolbar",
-        "/rehearsal/ page via shortcode",
-        "Updates via GitHub Releases",
-        "PDF scores and page viewer"
-      ],
-      "open": false
-    },
-    {
-      "version": "0.1.0",
-      "summary": "Initial release",
-      "items": [
-        "Songs, tracks, sticky player, REST API"
       ],
       "open": false
     }
