@@ -21,9 +21,12 @@ final class Choir_Rehearsal_Pro_Backup {
 	public static function register(): void {
 		add_action( 'choir_rehearsal_settings_tools', array( self::class, 'render_settings_section' ) );
 		add_action( 'admin_enqueue_scripts', array( self::class, 'maybe_register_settings_fallback' ) );
+		add_action( 'admin_enqueue_scripts', array( self::class, 'enqueue_settings_assets' ) );
 		add_action( 'admin_notices', array( self::class, 'maybe_notice_lite_too_old' ) );
 		add_action( 'admin_post_choir_rehearsal_pro_export_songs', array( self::class, 'handle_export' ) );
 		add_action( 'admin_post_choir_rehearsal_pro_import_songs', array( self::class, 'handle_import' ) );
+		add_action( 'wp_ajax_choir_rehearsal_pro_import_chunk', array( self::class, 'ajax_import_chunk' ) );
+		add_action( 'wp_ajax_choir_rehearsal_pro_import_finish', array( self::class, 'ajax_import_finish' ) );
 	}
 
 	/**
@@ -36,6 +39,42 @@ final class Choir_Rehearsal_Pro_Backup {
 		}
 
 		add_action( 'admin_footer', array( self::class, 'render_settings_section_fallback' ) );
+	}
+
+	public static function enqueue_settings_assets( string $hook ): void {
+		if ( 'choir_song_page_choir-rehearsal-settings' !== $hook || ! self::can_manage_backup() ) {
+			return;
+		}
+
+		$script = CHOIR_REHEARSAL_PRO_PATH . 'admin/js/backup-import.js';
+		if ( ! is_readable( $script ) ) {
+			return;
+		}
+
+		wp_enqueue_script(
+			'choir-rehearsal-pro-backup-import',
+			plugins_url( 'admin/js/backup-import.js', CHOIR_REHEARSAL_PRO_FILE ),
+			array( 'jquery' ),
+			defined( 'CHOIR_REHEARSAL_PRO_VERSION' ) ? (string) CHOIR_REHEARSAL_PRO_VERSION : '1',
+			true
+		);
+		wp_localize_script(
+			'choir-rehearsal-pro-backup-import',
+			'choirRehearsalProBackup',
+			array(
+				'ajaxUrl'    => admin_url( 'admin-ajax.php' ),
+				'nonce'      => wp_create_nonce( 'choir_rehearsal_pro_import_chunks' ),
+				'chunkBytes' => self::chunk_bytes(),
+				'postMax'    => self::post_max_bytes(),
+				'uploadMax'  => self::upload_max_bytes(),
+				'i18n'       => array(
+					'uploading' => __( 'Uploading…', 'choir-rehearsal-pro' ),
+					'importing' => __( 'Importing…', 'choir-rehearsal-pro' ),
+					'failed'    => __( 'Import failed.', 'choir-rehearsal-pro' ),
+					'noFile'    => __( 'Choose a backup .zip file.', 'choir-rehearsal-pro' ),
+				),
+			)
+		);
 	}
 
 	public static function render_settings_section_fallback(): void {
@@ -133,6 +172,19 @@ final class Choir_Rehearsal_Pro_Backup {
 				<label for="choir-rehearsal-pro-import-file"><?php esc_html_e( 'Import backup (.zip)', 'choir-rehearsal-pro' ); ?></label><br />
 				<input type="file" id="choir-rehearsal-pro-import-file" name="backup_zip" accept=".zip,application/zip" required />
 			</p>
+			<p class="description">
+				<?php
+				echo esc_html(
+					sprintf(
+						/* translators: 1: post_max_size, 2: upload_max_filesize */
+						__( 'Large backups upload in small chunks (avoids PHP post_max_size / upload_max_filesize limits). Server single-request limits: post_max_size %1$s, upload_max_filesize %2$s.', 'choir-rehearsal-pro' ),
+						size_format( self::post_max_bytes() ),
+						size_format( self::upload_max_bytes() )
+					)
+				);
+				?>
+			</p>
+			<p id="choir-rehearsal-pro-import-status" class="notice inline" style="display:none;padding:8px 12px;"></p>
 			<fieldset style="border:0;margin:0;padding:0;">
 				<legend><?php esc_html_e( 'What to do with matches?', 'choir-rehearsal-pro' ); ?></legend>
 				<p class="description" style="margin-top:4px;">
@@ -243,7 +295,30 @@ final class Choir_Rehearsal_Pro_Backup {
 			self::redirect_error( __( 'ZIP import is not available on this server.', 'choir-rehearsal-pro' ) );
 		}
 
+		$content_length = isset( $_SERVER['CONTENT_LENGTH'] ) ? (int) $_SERVER['CONTENT_LENGTH'] : 0;
+		$post_max       = self::post_max_bytes();
+		if ( $content_length > 0 && $post_max > 0 && $content_length > $post_max ) {
+			self::redirect_error(
+				sprintf(
+					/* translators: 1: uploaded bytes, 2: post_max_size */
+					__( 'Backup is too large for a single upload (%1$s > post_max_size %2$s). Use the Import button with JavaScript enabled — large files upload in chunks automatically.', 'choir-rehearsal-pro' ),
+					size_format( $content_length ),
+					size_format( $post_max )
+				)
+			);
+		}
+
 		if ( empty( $_FILES['backup_zip']['tmp_name'] ) || ! is_uploaded_file( (string) $_FILES['backup_zip']['tmp_name'] ) ) {
+			$err = isset( $_FILES['backup_zip']['error'] ) ? (int) $_FILES['backup_zip']['error'] : UPLOAD_ERR_NO_FILE;
+			if ( UPLOAD_ERR_INI_SIZE === $err || UPLOAD_ERR_FORM_SIZE === $err ) {
+				self::redirect_error(
+					sprintf(
+						/* translators: %s: upload_max_filesize */
+						__( 'Backup exceeds the server upload_max_filesize (%s). Large files upload in chunks automatically when JavaScript is enabled.', 'choir-rehearsal-pro' ),
+						size_format( self::upload_max_bytes() )
+					)
+				);
+			}
 			self::redirect_error( __( 'No backup file was uploaded.', 'choir-rehearsal-pro' ) );
 		}
 
@@ -252,42 +327,238 @@ final class Choir_Rehearsal_Pro_Backup {
 			$mode = 'skip';
 		}
 
-		$zip_path = (string) $_FILES['backup_zip']['tmp_name'];
-		$zip      = new ZipArchive();
+		$result = self::import_zip_path( (string) $_FILES['backup_zip']['tmp_name'], $mode );
+		if ( is_wp_error( $result ) ) {
+			self::redirect_error( $result->get_error_message() );
+		}
+
+		self::redirect_imported( $result );
+	}
+
+	public static function ajax_import_chunk(): void {
+		if ( ! self::can_manage_backup() ) {
+			wp_send_json_error( array( 'message' => __( 'Sorry, you are not allowed to import songs.', 'choir-rehearsal-pro' ) ), 403 );
+		}
+		check_ajax_referer( 'choir_rehearsal_pro_import_chunks', 'nonce' );
+
+		$upload_id = isset( $_POST['upload_id'] ) ? sanitize_key( wp_unslash( (string) $_POST['upload_id'] ) ) : '';
+		$index     = isset( $_POST['index'] ) ? (int) $_POST['index'] : -1;
+		$total     = isset( $_POST['total'] ) ? (int) $_POST['total'] : 0;
+		if ( ! preg_match( '/^[a-f0-9]{16,64}$/', $upload_id ) || $index < 0 || $total < 1 || $index >= $total ) {
+			wp_send_json_error( array( 'message' => __( 'Invalid upload chunk.', 'choir-rehearsal-pro' ) ), 400 );
+		}
+
+		if ( empty( $_FILES['chunk']['tmp_name'] ) || ! is_uploaded_file( (string) $_FILES['chunk']['tmp_name'] ) ) {
+			wp_send_json_error( array( 'message' => __( 'Chunk upload failed.', 'choir-rehearsal-pro' ) ), 400 );
+		}
+
+		$dir = self::import_temp_dir();
+		if ( '' === $dir ) {
+			wp_send_json_error( array( 'message' => __( 'Could not create a temporary upload folder.', 'choir-rehearsal-pro' ) ), 500 );
+		}
+
+		$part = $dir . '/' . $upload_id . '.part';
+		$meta = $dir . '/' . $upload_id . '.json';
+		if ( 0 === $index && file_exists( $part ) ) {
+			wp_delete_file( $part );
+		}
+
+		$chunk_bin = file_get_contents( (string) $_FILES['chunk']['tmp_name'] );
+		if ( false === $chunk_bin ) {
+			wp_send_json_error( array( 'message' => __( 'Could not read uploaded chunk.', 'choir-rehearsal-pro' ) ), 500 );
+		}
+
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
+		$written = file_put_contents( $part, $chunk_bin, FILE_APPEND );
+		if ( false === $written ) {
+			wp_send_json_error( array( 'message' => __( 'Could not save upload chunk.', 'choir-rehearsal-pro' ) ), 500 );
+		}
+
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
+		file_put_contents(
+			$meta,
+			wp_json_encode(
+				array(
+					'total'   => $total,
+					'received'=> $index + 1,
+					'updated' => time(),
+				)
+			)
+		);
+
+		wp_send_json_success(
+			array(
+				'index' => $index,
+				'total' => $total,
+			)
+		);
+	}
+
+	public static function ajax_import_finish(): void {
+		if ( ! self::can_manage_backup() ) {
+			wp_send_json_error( array( 'message' => __( 'Sorry, you are not allowed to import songs.', 'choir-rehearsal-pro' ) ), 403 );
+		}
+		check_ajax_referer( 'choir_rehearsal_pro_import_chunks', 'nonce' );
+
+		if ( ! class_exists( 'ZipArchive' ) ) {
+			wp_send_json_error( array( 'message' => __( 'ZIP import is not available on this server.', 'choir-rehearsal-pro' ) ), 500 );
+		}
+
+		$upload_id = isset( $_POST['upload_id'] ) ? sanitize_key( wp_unslash( (string) $_POST['upload_id'] ) ) : '';
+		if ( ! preg_match( '/^[a-f0-9]{16,64}$/', $upload_id ) ) {
+			wp_send_json_error( array( 'message' => __( 'Invalid upload id.', 'choir-rehearsal-pro' ) ), 400 );
+		}
+
+		$mode = isset( $_POST['match_mode'] ) ? sanitize_key( wp_unslash( (string) $_POST['match_mode'] ) ) : 'skip';
+		if ( ! in_array( $mode, array( 'skip', 'replace' ), true ) ) {
+			$mode = 'skip';
+		}
+
+		$dir  = self::import_temp_dir();
+		$part = $dir . '/' . $upload_id . '.part';
+		$meta = $dir . '/' . $upload_id . '.json';
+		$zip_path = $dir . '/' . $upload_id . '.zip';
+		if ( ! is_readable( $part ) ) {
+			wp_send_json_error( array( 'message' => __( 'Uploaded backup not found. Try again.', 'choir-rehearsal-pro' ) ), 400 );
+		}
+
+		if ( file_exists( $zip_path ) ) {
+			wp_delete_file( $zip_path );
+		}
+		if ( ! @rename( $part, $zip_path ) ) { // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+			wp_send_json_error( array( 'message' => __( 'Could not finalize the uploaded backup.', 'choir-rehearsal-pro' ) ), 500 );
+		}
+
+		$result = self::import_zip_path( $zip_path, $mode );
+		wp_delete_file( $zip_path );
+		if ( is_readable( $meta ) ) {
+			wp_delete_file( $meta );
+		}
+
+		if ( is_wp_error( $result ) ) {
+			wp_send_json_error( array( 'message' => $result->get_error_message() ), 400 );
+		}
+
+		wp_send_json_success(
+			array(
+				'redirect' => self::imported_redirect_url( $result ),
+			)
+		);
+	}
+
+	/**
+	 * @return array{songs:int,tracks:int,skipped:int,replaced:int}|WP_Error
+	 */
+	private static function import_zip_path( string $zip_path, string $mode ) {
+		$zip = new ZipArchive();
 		if ( true !== $zip->open( $zip_path ) ) {
-			self::redirect_error( __( 'Could not open the backup archive.', 'choir-rehearsal-pro' ) );
+			return new WP_Error( 'choir_backup_open', __( 'Could not open the backup archive.', 'choir-rehearsal-pro' ) );
 		}
 
 		$manifest_raw = $zip->getFromName( 'manifest.json' );
 		if ( ! is_string( $manifest_raw ) || '' === $manifest_raw ) {
 			$zip->close();
-			self::redirect_error( __( 'Invalid backup: manifest.json is missing.', 'choir-rehearsal-pro' ) );
+			return new WP_Error( 'choir_backup_manifest', __( 'Invalid backup: manifest.json is missing.', 'choir-rehearsal-pro' ) );
 		}
 
 		$manifest = json_decode( $manifest_raw, true );
 		if ( ! is_array( $manifest ) || ( $manifest['format'] ?? '' ) !== self::FORMAT_ID ) {
 			$zip->close();
-			self::redirect_error( __( 'Invalid backup format.', 'choir-rehearsal-pro' ) );
+			return new WP_Error( 'choir_backup_format', __( 'Invalid backup format.', 'choir-rehearsal-pro' ) );
 		}
 
 		$result = self::import_from_manifest( $zip, $manifest, $mode );
 		$zip->close();
+		return $result;
+	}
 
-		wp_safe_redirect(
-			add_query_arg(
-				array(
-					'post_type'              => Choir_Rehearsal_Post_Types::SONG,
-					'page'                   => 'choir-rehearsal-settings',
-					'choir_backup_imported'  => '1',
-					'choir_backup_songs'     => (string) $result['songs'],
-					'choir_backup_tracks'    => (string) $result['tracks'],
-					'choir_backup_skipped'   => (string) $result['skipped'],
-					'choir_backup_replaced'  => (string) $result['replaced'],
-				),
-				admin_url( 'edit.php' )
-			)
-		);
+	/**
+	 * @param array{songs:int,tracks:int,skipped:int,replaced:int} $result
+	 */
+	private static function redirect_imported( array $result ): void {
+		wp_safe_redirect( self::imported_redirect_url( $result ) );
 		exit;
+	}
+
+	/**
+	 * @param array{songs:int,tracks:int,skipped:int,replaced:int} $result
+	 */
+	private static function imported_redirect_url( array $result ): string {
+		return add_query_arg(
+			array(
+				'post_type'             => Choir_Rehearsal_Post_Types::SONG,
+				'page'                  => 'choir-rehearsal-settings',
+				'choir_backup_imported' => '1',
+				'choir_backup_songs'    => (string) $result['songs'],
+				'choir_backup_tracks'   => (string) $result['tracks'],
+				'choir_backup_skipped'  => (string) $result['skipped'],
+				'choir_backup_replaced' => (string) $result['replaced'],
+			),
+			admin_url( 'edit.php' )
+		);
+	}
+
+	private static function chunk_bytes(): int {
+		$limit = min( self::post_max_bytes(), self::upload_max_bytes() );
+		if ( $limit <= 0 ) {
+			return 2 * MB_IN_BYTES;
+		}
+		// Leave headroom for multipart fields/overhead.
+		$safe = (int) max( 256 * KB_IN_BYTES, min( 2 * MB_IN_BYTES, (int) floor( $limit * 0.5 ) ) );
+		return $safe;
+	}
+
+	private static function post_max_bytes(): int {
+		return self::ini_bytes( (string) ini_get( 'post_max_size' ) );
+	}
+
+	private static function upload_max_bytes(): int {
+		return self::ini_bytes( (string) ini_get( 'upload_max_filesize' ) );
+	}
+
+	private static function ini_bytes( string $value ): int {
+		$value = trim( $value );
+		if ( '' === $value || '0' === $value ) {
+			return 0;
+		}
+		$unit = strtolower( substr( $value, -1 ) );
+		$num  = (float) $value;
+		switch ( $unit ) {
+			case 'g':
+				$num *= GB_IN_BYTES;
+				break;
+			case 'm':
+				$num *= MB_IN_BYTES;
+				break;
+			case 'k':
+				$num *= KB_IN_BYTES;
+				break;
+			default:
+				$num = (float) $value;
+		}
+		return (int) $num;
+	}
+
+	private static function import_temp_dir(): string {
+		$upload = wp_upload_dir();
+		if ( ! empty( $upload['error'] ) ) {
+			return '';
+		}
+		$dir = trailingslashit( $upload['basedir'] ) . 'choir-rehearsal-import';
+		if ( ! wp_mkdir_p( $dir ) ) {
+			return '';
+		}
+		$htaccess = $dir . '/.htaccess';
+		if ( ! file_exists( $htaccess ) ) {
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
+			file_put_contents( $htaccess, "Deny from all\n" );
+		}
+		$index = $dir . '/index.php';
+		if ( ! file_exists( $index ) ) {
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
+			file_put_contents( $index, "<?php\n// Silence is golden.\n" );
+		}
+		return $dir;
 	}
 
 	/**
