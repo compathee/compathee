@@ -4,7 +4,7 @@ Tags: choir, audio, rehearsal, voice parts, music
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 0.4.52
+Stable tag: 0.4.53
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -50,6 +50,11 @@ By default only logged-in users can view `/rehearsal/`. Change this under **Choi
 Yes. Use the shortcode `[choir_rehearsal]`.
 
 == Changelog ==
+
+= 0.4.53 =
+
+* Theme-proof sticky player piano and close icons (SoftMe/Softica button color overrides)
+* Editor PDF: re-render when metabox becomes visible; refresh on postbox toggle
 
 = 0.4.52 =
 

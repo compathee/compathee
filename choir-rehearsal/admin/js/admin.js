@@ -981,6 +981,8 @@
 		if (i18n.canViewPdf) {
 			// Ensure viewer loads after DOM ready from the hidden URL field (canonical),
 			// not only data-pdf-url from the early pdf-viewer auto-init.
+			// Delay past first layout / closed-postbox paint so SoftMe/admin metaboxes
+			// have a non-zero width before PDF.js fits the page.
 			window.setTimeout(function () {
 				const url = String(
 					$('#choir-score-pdf-url').val() ||
@@ -992,7 +994,24 @@
 				} else {
 					getEditorPdfApi();
 				}
-			}, 0);
+			}, 50);
+
+			// When the Sheet Music metabox is opened, refresh the canvas (WP postboxes).
+			$(document).on('postbox-toggled', function (_event, postbox) {
+				const $box = $(postbox);
+				if (!$box.length || !$box.find('#choir-editor-pdf-viewer').length) {
+					return;
+				}
+				if ($box.is('.closed')) {
+					return;
+				}
+				const api = getEditorPdfApi();
+				if (api && typeof api.refresh === 'function') {
+					window.requestAnimationFrame(function () {
+						api.refresh();
+					});
+				}
+			});
 		}
 
 		$('#choir-toggle-public').on('click', function () {
