@@ -1,7 +1,7 @@
 {
   "title": "Compath Choir Rehearsal",
   "tagline": "A private rehearsal library for choirs: songs, voice tracks, PDF scores, and easy listening on phone or desktop.",
-  "overview": "Choir Rehearsal helps choir members learn new pieces by voice part. Editors upload PDF scores and audio for each voice. Singers visit /rehearsal/, pick a song, and listen. Lite is free from GitHub; Pro is a separate add-on from shop.compath.ee (keep Lite installed — do not replace it).",
+  "overview": "Choir Rehearsal helps choir members learn new pieces by voice part. A Voice Leader uploads PDF scores and audio for each voice. Singers visit /rehearsal/, pick a song, and listen. Lite is free from GitHub; Pro is a separate add-on from shop.compath.ee (keep Lite installed — do not replace it).",
   "requirements": "WordPress 6.4+, PHP 8.0+",
   "owner": "Compath OÜ, Tallinn, Estonia",
   "firstCustomer": {
@@ -14,7 +14,7 @@
     "Voice tracks — bass, tenor, alto, soprano and more",
     "Sticky player — listen while reading the score",
     "Private access — optional login-only rehearsal pages",
-    "Editor & singer roles — editors manage, singers listen",
+    "Singer & Voice Leader roles — WordPress roles created on install (English names)",
     "Lite (free) — up to 4 tracks per song, audio upload, GitHub updates",
     "Pro add-on — unlimited tracks, mic recording, search, editor Play, embedded PDF in the editor"
   ],
@@ -46,8 +46,8 @@
     },
     {
       "icon": "users",
-      "title": "Editor & singer roles",
-      "text": "Editors manage the library; singers browse, listen, and view PDFs."
+      "title": "Singer & Voice Leader roles",
+      "text": "Activation adds Singer (listen) and Voice Leader (manage songs). Administrator opens Settings. Role names stay in English."
     },
     {
       "icon": "lite",
@@ -98,8 +98,8 @@
       "items": [
         "One-time setup on your WordPress site",
         "/rehearsal/ page created",
-        "Roles and access configured",
-        "Editor training (1 session)",
+        "Singer and Voice Leader roles configured",
+        "Voice Leader training (1 session)",
         "First year of Pro included"
       ]
     }
@@ -114,11 +114,21 @@
     "Download choir-rehearsal.zip (Lite) from GitHub Releases.",
     "In WordPress: Plugins → Add New → Upload Plugin — activate Lite.",
     "Pro customers: upload choir-rehearsal-pro.zip next and activate it. Settings should show Edition: Pro.",
-    "The plugin creates a /rehearsal/ page with the [choir_rehearsal] shortcode.",
-    "Add a song: Choir Rehearsal → Add Song — title, PDF, voice tracks.",
-    "Give singers WordPress accounts (Subscriber). Editors need Editor or Administrator."
+    "The plugin creates a /rehearsal/ page with the [choir_rehearsal] shortcode and WordPress roles Singer and Voice Leader (English names).",
+    "Add a song: Choir Rehearsal → Add Song — title, PDF, voice tracks (needs Voice Leader or Administrator).",
+    "Assign Users → Singer for listening, Voice Leader for managing songs. Settings remain Administrator-only."
   ],
   "changelog": [
+    {
+      "version": "0.4.60",
+      "summary": "Singer and Voice Leader roles",
+      "items": [
+        "Activation creates WordPress roles Singer (listen) and Voice Leader (manage songs); names stay in English",
+        "Song admin for Voice Leader and Administrator; plugin Settings for Administrator only",
+        "Full private library requires Singer, Voice Leader, or Administrator"
+      ],
+      "open": true
+    },
     {
       "version": "0.4.59",
       "summary": "Public globe badge in song list",
@@ -126,7 +136,7 @@
         "Logged-in song list shows a globe next to the PDF icon for public songs",
         "Small gap between PDF and globe badges"
       ],
-      "open": true
+      "open": false
     },
     {
       "version": "0.4.58",
