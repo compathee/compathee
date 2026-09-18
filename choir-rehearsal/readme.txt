@@ -4,7 +4,7 @@ Tags: choir, audio, rehearsal, voice parts, music
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 0.4.55
+Stable tag: 0.4.56
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -50,6 +50,11 @@ By default only logged-in users can view `/rehearsal/`. Change this under **Choi
 Yes. Use the shortcode `[choir_rehearsal]`.
 
 == Changelog ==
+
+= 0.4.56 =
+
+* Fix Russian (and Estonian) translation mojibake in .l10n.php catalogs
+* Ship UTF-8 PO/MO/l10n.php for et, et_EE, and ru_RU
 
 = 0.4.55 =
 
