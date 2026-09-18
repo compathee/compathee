@@ -23,6 +23,9 @@ msgstr "%d треков"
 msgid "Activate kept Lite plugin"
 msgstr "Активировать сохранённый Lite"
 
+msgid "Activation adds WordPress roles %1$s (listen) and %2$s (manage songs). Assign them under Users. Settings stay Administrator-only. Public songs remain open to guests."
+msgstr "При активации создаются роли WordPress %1$s (прослушивание) и %2$s (управление песнями). Назначьте их в разделе Пользователи. Настройки — только для Administrator. Публичные песни остаются открытыми для гостей."
+
 msgid "Active"
 msgstr "Активен"
 
@@ -80,6 +83,9 @@ msgstr "Смотреть и слушать можно без входа."
 msgid "Appearance → Menus"
 msgstr "Внешний вид → Меню"
 
+msgid "Ask an administrator to assign you the %1$s or %2$s role to open private rehearsal songs."
+msgstr "Попросите администратора назначить вам роль %1$s или %2$s, чтобы открывать закрытые репетиционные песни."
+
 msgid "Back to song list"
 msgstr "Назад к списку песен"
 
@@ -100,6 +106,9 @@ msgstr "Бас 2"
 
 msgid "BPM"
 msgstr "BPM"
+
+msgid "browse and listen to the rehearsal library"
+msgstr "просматривать и слушать библиотеку репетиций"
 
 msgid "Buy Pro"
 msgstr "Купить Pro"
@@ -124,6 +133,9 @@ msgstr "Настройки репетиций"
 
 msgid "Choir Rehearsal: duplicate Lite entries were removed from active plugins. Reload this page if Pro or features still look inactive."
 msgstr "Choir Rehearsal: дублирующие записи Lite удалены из активных плагинов. Обновите страницу, если Pro или функции всё ещё неактивны."
+
+msgid "Choir roles"
+msgstr "Роли хора"
 
 msgid "choir-rehearsal"
 msgstr "choir-rehearsal"
@@ -227,9 +239,6 @@ msgstr "Изменить песню"
 msgid "Edition"
 msgstr "Редакция"
 
-msgid "Editor"
-msgstr "Редактор"
-
 msgid "Expand PDF"
 msgstr "Развернуть PDF"
 
@@ -247,6 +256,12 @@ msgstr "Папка"
 
 msgid "Forgot your password?"
 msgstr "Забыли пароль?"
+
+msgid "full access including plugin Settings"
+msgstr "полный доступ, включая настройки плагина"
+
+msgid "Full library requires a choir role"
+msgstr "Для полной библиотеки нужна роль хора"
 
 msgid "Get choir song details"
 msgstr "Детали песни хора"
@@ -280,6 +295,9 @@ msgstr "Ссылка скопирована в буфер"
 
 msgid "List choir songs"
 msgstr "Список песен хора"
+
+msgid "listen plus add/edit songs in the admin"
+msgstr "слушать и добавлять/редактировать песни в админке"
 
 msgid "Lite"
 msgstr "Lite"
@@ -386,14 +404,14 @@ msgstr "Сейчас играет"
 msgid "On disk"
 msgstr "На диске"
 
-msgid "Only logged-in users can view rehearsal pages."
-msgstr "Только авторизованные пользователи могут видеть страницы репетиций."
-
 msgid "Only one Lite folder exists on disk, but WordPress still lists more than one Lite plugin as active (or a missing path). This breaks Pro and updates. Use the repair button below, then reload wp-admin."
 msgstr "На диске одна папка Lite, но WordPress считает активными несколько записей Lite (или путь отсутствует). Это ломает Pro и обновления. Нажмите кнопку исправления ниже и обновите wp-admin."
 
 msgid "Only one Lite install was found on disk. No cleanup needed."
 msgstr "На диске найдена только одна установка Lite. Очистка не нужна."
+
+msgid "Only signed-in choir roles can open the full private library."
+msgstr "Полную закрытую библиотеку могут открыть только вошедшие пользователи с ролями хора."
 
 msgid "Only signed-in users can access this song (when login is required)."
 msgstr "Доступ только для вошедших пользователей (если требуется вход)."
@@ -473,8 +491,14 @@ msgstr "Публичная"
 msgid "Public songs"
 msgstr "Публичные песни"
 
+msgid "Public songs above are open to everyone. Ask an administrator to assign you the %1$s or %2$s role for the full rehearsal library."
+msgstr "Публичные песни выше открыты для всех. Попросите администратора назначить вам роль %1$s или %2$s для полной библиотеки репетиций."
+
 msgid "Public songs above are open to everyone. Sign in with your WordPress account to access the full rehearsal library."
 msgstr "Публичные песни выше открыты всем. Войдите через WordPress, чтобы открыть полную библиотеку репетиций."
+
+msgid "Public — available without login"
+msgstr ""
 
 msgid "recommended for existing sites"
 msgstr "рекомендуется для существующих сайтов"
@@ -536,6 +560,9 @@ msgstr "Возвращает одну песню со всеми голосам�
 msgid "Returns published rehearsal songs with track counts."
 msgstr "Возвращает опубликованные песни с количеством треков."
 
+msgid "Role names Singer and Voice Leader are kept in English on purpose."
+msgstr "Имена ролей Singer и Voice Leader намеренно остаются на английском."
+
 msgid "Save choice"
 msgstr "Сохранить выбор"
 
@@ -595,9 +622,6 @@ msgstr "Выйти"
 
 msgid "Signed in as"
 msgstr "Вы вошли как"
-
-msgid "Singer"
-msgstr "Певец"
 
 msgid "Song"
 msgstr "Песня"
@@ -673,6 +697,9 @@ msgstr "Тенор 2"
 
 msgid "These songs are open to listen and view without signing in."
 msgstr "Эти песни можно слушать и смотреть без входа."
+
+msgid "This song is private"
+msgstr "Эта песня закрытая"
 
 msgid "Track"
 msgstr "Трек"

@@ -11,7 +11,7 @@ A private rehearsal library: songs, voice tracks, PDF scores, and mobile-friendl
 
 ## Overview
 
-Choir Rehearsal helps choir members learn new pieces by voice part. Editors upload PDF scores and audio for each voice (or record from a phone). Singers visit `/rehearsal/`, pick a song, and listen to their part.
+Choir Rehearsal helps choir members learn new pieces by voice part. A Voice Leader uploads PDF scores and audio for each voice (or record from a phone). Singers visit `/rehearsal/`, pick a song, and listen to their part.
 
 **Features:**
 
@@ -21,7 +21,7 @@ Choir Rehearsal helps choir members learn new pieces by voice part. Editors uplo
 - Microphone recording in the admin
 - Sticky player at the bottom of the screen
 - Login-only access (optional)
-- Roles: editors manage, singers listen
+- Roles: Singer (listen), Voice Leader (manage songs), Administrator (Settings) — role names stay in English
 - WordPress-native plugin updates
 
 **Requirements:** WordPress 6.4+, PHP 8.0+
@@ -51,8 +51,8 @@ The plugin is licensed under GPL. Install it yourself for free or purchase suppo
 ### Done-for-you setup — from €120
 
 - Setup on your WordPress site
-- `/rehearsal/` page, roles, access
-- Editor training
+- `/rehearsal/` page, Singer / Voice Leader roles, access
+- Voice Leader training
 - First year of Pro included
 
 ### How to order
@@ -67,9 +67,9 @@ The plugin is licensed under GPL. Install it yourself for free or purchase suppo
 
 1. Download `choir-rehearsal.zip` from [GitHub Releases](https://github.com/compathee/compathee/releases).
 2. **Plugins → Add New → Upload Plugin** — activate.
-3. The plugin creates `/rehearsal/` with shortcode `[choir_rehearsal]`.
-4. **Choir Rehearsal → Add Song** — title, PDF, tracks.
-5. Singers — Subscriber role; editors — Editor.
+3. The plugin creates `/rehearsal/` with shortcode `[choir_rehearsal]` and WordPress roles **Singer** and **Voice Leader** (English names, not translated).
+4. **Choir Rehearsal → Add Song** — title, PDF, tracks (needs Voice Leader or Administrator).
+5. Assign users: **Singer** to listen; **Voice Leader** to manage songs. **Settings** stay Administrator-only.
 
 ### Updates
 
@@ -80,8 +80,9 @@ The plugin is licensed under GPL. Install it yourself for free or purchase suppo
 
 | Role | Access |
 |------|--------|
-| Subscriber | Listen, view PDF |
-| Editor / Admin | Manage songs |
+| Singer | Listen, view PDF, full private library |
+| Voice Leader | Manage songs in admin + listen |
+| Administrator | Everything, including plugin Settings |
 
 ---
 

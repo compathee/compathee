@@ -21,6 +21,7 @@ Choir Rehearsal uses the WordPress add-on model (same pattern as WooCommerce, AC
    - **Plugin version:** matches the zip
    - **Buy Pro** button is visible
 5. Do **not** install `choir-rehearsal-pro.zip` on this site if you want a Lite-only test.
+6. Assign choir roles under **Users**: **Singer** (listen) or **Voice Leader** (manage songs). Plugin **Settings** stay Administrator-only. Role names stay in English.
 
 Lite limits: 4 voice tracks per song; no mic recording, search, editor Play, or embedded PDF in the editor.
 

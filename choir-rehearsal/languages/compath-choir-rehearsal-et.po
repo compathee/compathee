@@ -22,6 +22,9 @@ msgstr "%d rada"
 msgid "Activate kept Lite plugin"
 msgstr "Aktiveeri alles jäetud Lite plugin"
 
+msgid "Activation adds WordPress roles %1$s (listen) and %2$s (manage songs). Assign them under Users. Settings stay Administrator-only. Public songs remain open to guests."
+msgstr "Aktiveerimine lisab WordPressi rollid %1$s (kuulamine) ja %2$s (lugude haldamine). Määra need menüüs Kasutajad. Seaded jäävad ainult administraatorile. Avalikud lood jäävad külalistele avatuks."
+
 msgid "Active"
 msgstr "Aktiivne"
 
@@ -79,6 +82,9 @@ msgstr "Igaüks saab vaadata ja kuulata ilma sisselogimata."
 msgid "Appearance → Menus"
 msgstr "Välimus → Menüüd"
 
+msgid "Ask an administrator to assign you the %1$s or %2$s role to open private rehearsal songs."
+msgstr "Palu administraatoril määrata sulle roll %1$s või %2$s, et avada privaatsed prooviloosid."
+
 msgid "Back to song list"
 msgstr "Tagasi laulude loendisse"
 
@@ -99,6 +105,9 @@ msgstr "Bass 2"
 
 msgid "BPM"
 msgstr "BPM"
+
+msgid "browse and listen to the rehearsal library"
+msgstr "sirvi ja kuula prooviraamatukogu"
 
 msgid "Buy Pro"
 msgstr "Osta Pro"
@@ -123,6 +132,9 @@ msgstr "Koori proovide seaded"
 
 msgid "Choir Rehearsal: duplicate Lite entries were removed from active plugins. Reload this page if Pro or features still look inactive."
 msgstr "Choir Rehearsal: topelt Lite kirjed eemaldati aktiivsete pluginate nimekirjast. Laadi leht uuesti, kui Pro või funktsioonid tunduvad endiselt mitteaktiivsed."
+
+msgid "Choir roles"
+msgstr "Koorirollid"
 
 msgid "choir-rehearsal"
 msgstr "choir-rehearsal"
@@ -226,9 +238,6 @@ msgstr "Muuda laulu"
 msgid "Edition"
 msgstr "Väljaanne"
 
-msgid "Editor"
-msgstr "Toimetaja"
-
 msgid "Expand PDF"
 msgstr "Laienda PDF"
 
@@ -246,6 +255,12 @@ msgstr "Kaust"
 
 msgid "Forgot your password?"
 msgstr "Unustasid parooli?"
+
+msgid "full access including plugin Settings"
+msgstr "täielik juurdepääs sh plugina Seaded"
+
+msgid "Full library requires a choir role"
+msgstr "Täielik raamatukogu nõuab koorirolli"
 
 msgid "Get choir song details"
 msgstr "Laulu üksikasjad"
@@ -279,6 +294,9 @@ msgstr "Link kopeeritud lõikelauale"
 
 msgid "List choir songs"
 msgstr "Kuva koori laulud"
+
+msgid "listen plus add/edit songs in the admin"
+msgstr "kuula ning lisa/muuda lugusid adminis"
 
 msgid "Lite"
 msgstr "Lite"
@@ -385,14 +403,14 @@ msgstr "Praegu mängib"
 msgid "On disk"
 msgstr "Kettale"
 
-msgid "Only logged-in users can view rehearsal pages."
-msgstr "Proovilehti näevad ainult sisselogitud kasutajad."
-
 msgid "Only one Lite folder exists on disk, but WordPress still lists more than one Lite plugin as active (or a missing path). This breaks Pro and updates. Use the repair button below, then reload wp-admin."
 msgstr "Kettale on ainult üks Lite kaust, aga WordPress peab aktiivseks rohkem kui üht Lite pluginat (või puuduvat teed). See rikub Pro ja uuendused. Kasuta allolevat parandusnuppu ja laadi wp-admin uuesti."
 
 msgid "Only one Lite install was found on disk. No cleanup needed."
 msgstr "Kettalt leiti ainult üks Lite paigaldus. Puhastust ei ole vaja."
+
+msgid "Only signed-in choir roles can open the full private library."
+msgstr "Täielikku eraraamatukogu saavad avada ainult sisselogitud koorirollid."
 
 msgid "Only signed-in users can access this song (when login is required)."
 msgstr "Seda laulu näevad ainult sisselogitud kasutajad (kui sisselogimine on nõutud)."
@@ -472,8 +490,14 @@ msgstr "Avalik"
 msgid "Public songs"
 msgstr "Avalikud laulud"
 
+msgid "Public songs above are open to everyone. Ask an administrator to assign you the %1$s or %2$s role for the full rehearsal library."
+msgstr "Ülal olevad avalikud lood on kõigile avatud. Palu administraatoril määrata sulle roll %1$s või %2$s, et avada täielik prooviraamatukogu."
+
 msgid "Public songs above are open to everyone. Sign in with your WordPress account to access the full rehearsal library."
 msgstr "Ülal olevad avalikud laulud on kõigile avatud. Logi WordPressi kontoga sisse, et avada täielik proovide raamatukogu."
+
+msgid "Public — available without login"
+msgstr "Avalik — saadaval ilma sisselogimiseta"
 
 msgid "recommended for existing sites"
 msgstr "soovitatav olemasolevatele saitidele"
@@ -535,6 +559,9 @@ msgstr "Tagastab ühe laulu kõigi hääleradade ja audio URL-idega."
 msgid "Returns published rehearsal songs with track counts."
 msgstr "Tagastab avaldatud proovilaulud radade arvuga."
 
+msgid "Role names Singer and Voice Leader are kept in English on purpose."
+msgstr "Rollinimed Singer ja Voice Leader jäävad teadlikult ingliskeelseks."
+
 msgid "Save choice"
 msgstr "Salvesta valik"
 
@@ -594,9 +621,6 @@ msgstr "Logi välja"
 
 msgid "Signed in as"
 msgstr "Sisse logitud kui"
-
-msgid "Singer"
-msgstr "Laulja"
 
 msgid "Song"
 msgstr "Laul"
@@ -672,6 +696,9 @@ msgstr "Tenor 2"
 
 msgid "These songs are open to listen and view without signing in."
 msgstr "Neid laule saab kuulata ja vaadata ilma sisselogimata."
+
+msgid "This song is private"
+msgstr "See lugu on privaatne"
 
 msgid "Track"
 msgstr "Rada"

@@ -63,7 +63,7 @@ final class Choir_Rehearsal_REST {
 			'post_status'    => 'publish',
 		);
 
-		if ( Choir_Rehearsal_Access::requires_login() && ! is_user_logged_in() ) {
+		if ( Choir_Rehearsal_Access::requires_login() && ! Choir_Rehearsal_Access::can_listen() ) {
 			$args['meta_query'] = Choir_Rehearsal_Post_Types::public_songs_meta_query();
 		}
 

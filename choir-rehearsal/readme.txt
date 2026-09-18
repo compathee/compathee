@@ -4,7 +4,7 @@ Tags: choir, audio, rehearsal, voice parts, music
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 0.4.59
+Stable tag: 0.4.60
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -20,7 +20,7 @@ Choir Rehearsal helps choir members learn new pieces by voice part.
 * Attach a PDF score per song with page-by-page viewer
 * Frontend song list at `/rehearsal/`
 * Sticky HTML5 player at the bottom of the page
-* Optional login-only access
+* Optional login-only access with Singer and Voice Leader roles (English role names)
 * REST API and MCP abilities for automation
 
 == External services ==
@@ -34,22 +34,32 @@ PDF viewing uses **Mozilla PDF.js** bundled inside the plugin (Apache-2.0). No P
 == Installation ==
 
 1. Upload the plugin folder to `/wp-content/plugins/compath-choir-rehearsal`
-2. Activate the plugin through the 'Plugins' menu in WordPress
-3. Go to **Choir Rehearsal → Add Song**
-4. Add voice tracks and upload audio files
-5. Share `/rehearsal/` with logged-in singers
+2. Activate the plugin through the 'Plugins' menu in WordPress (this creates roles **Singer** and **Voice Leader**)
+3. Assign users under **Users**: Singer to listen, Voice Leader to manage songs
+4. Go to **Choir Rehearsal → Add Song** (Voice Leader or Administrator)
+5. Share `/rehearsal/` with your choir — Settings remain Administrator-only
 
 == Frequently Asked Questions ==
 
 = Who can view rehearsal pages? =
 
-By default only logged-in users can view `/rehearsal/`. Change this under **Choir Rehearsal → Settings**.
+By default the full private library needs a **Singer**, **Voice Leader**, or **Administrator** account. Guests still see songs marked public. Change login behaviour under **Choir Rehearsal → Settings** (Administrators only).
+
+= What are Singer and Voice Leader? =
+
+WordPress roles created on plugin activation. Names stay in English. **Singer** listens; **Voice Leader** manages songs in wp-admin; **Administrator** also opens plugin Settings.
 
 = Can I embed the song list in a page? =
 
 Yes. Use the shortcode `[choir_rehearsal]`.
 
 == Changelog ==
+
+= 0.4.60 =
+
+* Add WordPress roles Singer (listen) and Voice Leader (manage songs); names stay in English
+* Song admin for Voice Leader and Administrator; Settings for Administrator only
+* Full private library requires Singer, Voice Leader, or Administrator
 
 = 0.4.59 =
 
