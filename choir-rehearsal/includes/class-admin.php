@@ -770,7 +770,7 @@ final class Choir_Rehearsal_Admin {
 			$file = get_attached_file( $audio_id );
 			$filename = $file ? basename( $file ) : '';
 			$url      = wp_get_attachment_url( $audio_id );
-			$audio_url = is_string( $url ) ? $url : '';
+			$audio_url = is_string( $url ) ? Choir_Rehearsal_Post_Types::align_attachment_url_scheme( $url ) : '';
 		}
 
 		$song_title  = get_the_title();
