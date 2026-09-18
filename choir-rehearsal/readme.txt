@@ -4,7 +4,7 @@ Tags: choir, audio, rehearsal, voice parts, music
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 0.4.52
+Stable tag: 0.4.57
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -50,6 +50,30 @@ By default only logged-in users can view `/rehearsal/`. Change this under **Choi
 Yes. Use the shortcode `[choir_rehearsal]`.
 
 == Changelog ==
+
+= 0.4.57 =
+
+* Keep the songs library URL permanently at /rehearsal/ (never localize the page slug)
+
+= 0.4.56 =
+
+* Fix Russian (and Estonian) translation mojibake in .l10n.php catalogs
+* Ship UTF-8 PO/MO/l10n.php for et, et_EE, and ru_RU
+
+= 0.4.55 =
+
+* Fix blank PDF canvas in the song editor when SoftMe metabox width is 0
+* Defer PDF.js paint until the viewer has a usable layout width
+
+= 0.4.54 =
+
+* Song editor embedded PDF preview available in Lite and Pro
+* SoftMe/Softica sticky player icon and editor PDF visibility fixes from 0.4.53
+
+= 0.4.53 =
+
+* Theme-proof sticky player piano and close icons (SoftMe/Softica button color overrides)
+* Editor PDF: re-render when metabox becomes visible; refresh on postbox toggle
 
 = 0.4.52 =
 

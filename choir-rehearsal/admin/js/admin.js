@@ -981,7 +981,7 @@
 		if (i18n.canViewPdf) {
 			// Ensure viewer loads after DOM ready from the hidden URL field (canonical),
 			// not only data-pdf-url from the early pdf-viewer auto-init.
-			window.setTimeout(function () {
+			const bootEditorPdf = function () {
 				const url = String(
 					$('#choir-score-pdf-url').val() ||
 						$('#choir-editor-pdf-viewer').attr('data-pdf-url') ||
@@ -992,7 +992,62 @@
 				} else {
 					getEditorPdfApi();
 				}
-			}, 0);
+			};
+
+			// SoftMe/admin: metabox width is often 0 on first paint. Load immediately
+			// (pdf-viewer defers paint until usable width), then refresh on 0→width.
+			bootEditorPdf();
+
+			const editorViewer = document.getElementById('choir-editor-pdf-viewer');
+			if (editorViewer && typeof ResizeObserver !== 'undefined') {
+				let sawUsable = false;
+				const wrapEl = editorViewer.querySelector('.choir-pdf-viewer__canvas-wrap');
+				const markUsable = function () {
+					const w = wrapEl ? wrapEl.clientWidth : editorViewer.clientWidth;
+					return w > 0;
+				};
+				sawUsable = markUsable();
+				const editorRo = new ResizeObserver(function () {
+					const usable = markUsable();
+					if (usable && !sawUsable) {
+						sawUsable = true;
+						const api = getEditorPdfApi();
+						if (api && typeof api.refresh === 'function') {
+							window.requestAnimationFrame(function () {
+								api.refresh();
+							});
+						}
+					} else if (usable) {
+						sawUsable = true;
+					} else {
+						sawUsable = false;
+					}
+				});
+				if (wrapEl) {
+					editorRo.observe(wrapEl);
+				}
+				editorRo.observe(editorViewer);
+			} else {
+				// Fallback when ResizeObserver is unavailable.
+				window.setTimeout(bootEditorPdf, 50);
+			}
+
+			// When the Sheet Music metabox is opened, refresh the canvas (WP postboxes).
+			$(document).on('postbox-toggled', function (_event, postbox) {
+				const $box = $(postbox);
+				if (!$box.length || !$box.find('#choir-editor-pdf-viewer').length) {
+					return;
+				}
+				if ($box.is('.closed')) {
+					return;
+				}
+				const api = getEditorPdfApi();
+				if (api && typeof api.refresh === 'function') {
+					window.requestAnimationFrame(function () {
+						api.refresh();
+					});
+				}
+			});
 		}
 
 		$('#choir-toggle-public').on('click', function () {

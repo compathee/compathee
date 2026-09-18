@@ -63,11 +63,22 @@
 			pageLabel.textContent = pageNum + ' / ' + pdfDoc.numPages;
 		}
 
-		function wrapContentWidth() {
+		/** Raw content width (may be 0 in SoftMe/admin closed or pre-layout metaboxes). */
+		function wrapRawContentWidth() {
 			var style = window.getComputedStyle(wrap);
 			var padL = parseFloat(style.paddingLeft) || 0;
 			var padR = parseFloat(style.paddingRight) || 0;
-			return Math.max(120, wrap.clientWidth - padL - padR);
+			return wrap.clientWidth - padL - padR;
+		}
+
+		/** True when the canvas wrap has a real layout width worth painting into. */
+		function hasUsableWidth() {
+			return wrap.clientWidth > 0 && wrapRawContentWidth() >= 32;
+		}
+
+		function wrapContentWidth() {
+			// Floor only after usable layout exists — never treat width 0 as 120.
+			return Math.max(120, wrapRawContentWidth());
 		}
 
 		function applyCanvasTransform() {
@@ -85,9 +96,28 @@
 				return;
 			}
 
+			// SoftMe/admin: metabox often reports 0 width until layout settles.
+			// Painting with a fake floor width permanently clips the canvas.
+			if (!hasUsableWidth()) {
+				pageRendering = false;
+				updateControls();
+				return;
+			}
+
 			pageRendering = true;
 
 			pdfDoc.getPage(num).then(function (page) {
+				if (!hasUsableWidth()) {
+					pageRendering = false;
+					updateControls();
+					if (pageNumPending !== null) {
+						var pendingWidth = pageNumPending;
+						pageNumPending = null;
+						renderPage(pendingWidth);
+					}
+					return;
+				}
+
 				var dpr = Math.min(window.devicePixelRatio || 1, 2);
 				var unscaled = page.getViewport({ scale: 1 });
 				var fitScale = wrapContentWidth() / unscaled.width;
@@ -500,20 +530,60 @@
 			{ passive: false }
 		);
 
+		var lastHadUsableWidth = hasUsableWidth();
+
+		function scheduleLayoutRender(reason) {
+			if (!pdfDoc || !hasUsableWidth()) {
+				return;
+			}
+			window.clearTimeout(resizeTimer);
+			resizeTimer = window.setTimeout(function () {
+				if (isFullscreen) {
+					syncPlayerReserve();
+				}
+				queueRenderPage(pageNum);
+			}, 50);
+		}
+
 		if (typeof ResizeObserver !== 'undefined') {
 			var ro = new ResizeObserver(function () {
-				if (!pdfDoc) {
+				var usable = hasUsableWidth();
+				var becameUsable = usable && !lastHadUsableWidth;
+				lastHadUsableWidth = usable;
+				if (!usable) {
 					return;
 				}
-				window.clearTimeout(resizeTimer);
-				resizeTimer = window.setTimeout(function () {
-					if (isFullscreen) {
-						syncPlayerReserve();
-					}
-					queueRenderPage(pageNum);
-				}, 120);
+				// Always re-paint when crossing 0→usable (SoftMe layout settle),
+				// even if a prior floored paint left lastRenderedPageNum set.
+				if (becameUsable) {
+					lastRenderedPageNum = 0;
+				}
+				scheduleLayoutRender(becameUsable ? 'became-usable' : 'resize');
 			});
 			ro.observe(wrap);
+			ro.observe(viewer);
+		}
+
+		// Re-render when the viewer becomes visible (closed metabox / zero-width layout).
+		if (typeof IntersectionObserver !== 'undefined') {
+			var io = new IntersectionObserver(
+				function (entries) {
+					entries.forEach(function (entry) {
+						if (!entry.isIntersecting) {
+							return;
+						}
+						if (!pdfDoc || !hasUsableWidth()) {
+							return;
+						}
+						lastRenderedPageNum = 0;
+						window.requestAnimationFrame(function () {
+							queueRenderPage(pageNum);
+						});
+					});
+				},
+				{ threshold: 0.01 }
+			);
+			io.observe(viewer);
 		}
 
 		var api = {
@@ -527,6 +597,15 @@
 			},
 			expand: enterFullscreen,
 			collapse: exitFullscreen,
+			refresh: function () {
+				if (pdfDoc) {
+					if (hasUsableWidth()) {
+						lastRenderedPageNum = 0;
+					}
+					queueRenderPage(pageNum);
+				}
+			},
+			hasUsableWidth: hasUsableWidth,
 		};
 
 		viewer._choirPdfApi = api;

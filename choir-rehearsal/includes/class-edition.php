@@ -44,8 +44,11 @@ final class Choir_Rehearsal_Edition {
 		return self::is_full_edition();
 	}
 
+	/**
+	 * Embedded PDF preview in the song editor (Lite and Pro).
+	 */
 	public static function can_view_score_in_editor(): bool {
-		return self::is_full_edition();
+		return true;
 	}
 
 	public static function can_search_songs(): bool {
