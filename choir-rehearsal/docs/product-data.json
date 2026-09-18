@@ -120,13 +120,54 @@
   ],
   "changelog": [
     {
+      "version": "0.4.58",
+      "summary": "HTTPS media URLs in admin",
+      "items": [
+        "Force HTTPS for PDF and audio attachment URLs on SSL pages",
+        "Fixes mixed-content blank PDF/waveforms in wp-admin when siteurl is still http://"
+      ],
+      "open": true
+    },
+    {
+      "version": "0.4.57",
+      "summary": "Stable /rehearsal/ library URL",
+      "items": [
+        "Keep the songs library URL permanently at /rehearsal/ (never localize the page slug)"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.56",
+      "summary": "Fix RU/ET translation mojibake",
+      "items": [
+        "Regenerate UTF-8 PO/MO/l10n.php for et, et_EE, and ru_RU"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.55",
+      "summary": "SoftMe admin PDF blank canvas",
+      "items": [
+        "Defer PDF.js paint until the Sheet Music metabox has a usable width"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.54",
+      "summary": "Editor PDF for all editions",
+      "items": [
+        "Song editor embedded PDF preview available in Lite and Pro"
+      ],
+      "open": false
+    },
+    {
       "version": "0.4.44",
       "summary": "Safe activate beside old plugin folder",
       "items": [
         "Activating a second copy no longer causes a fatal error",
         "Admin notice explains keeping a single compath-choir-rehearsal folder"
       ],
-      "open": true
+      "open": false
     },
     {
       "version": "0.4.42",
