@@ -120,13 +120,22 @@
   ],
   "changelog": [
     {
+      "version": "0.4.59",
+      "summary": "Public globe badge in song list",
+      "items": [
+        "Logged-in song list shows a globe next to the PDF icon for public songs",
+        "Small gap between PDF and globe badges"
+      ],
+      "open": true
+    },
+    {
       "version": "0.4.58",
       "summary": "HTTPS media URLs in admin",
       "items": [
         "Force HTTPS for PDF and audio attachment URLs on SSL pages",
         "Fixes mixed-content blank PDF/waveforms in wp-admin when siteurl is still http://"
       ],
-      "open": true
+      "open": false
     },
     {
       "version": "0.4.57",
