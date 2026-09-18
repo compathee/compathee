@@ -45,11 +45,11 @@ final class Choir_Rehearsal_Access {
 			return true;
 		}
 
-		if ( is_user_logged_in() ) {
+		if ( Choir_Rehearsal_Post_Types::is_public( $song_id ) ) {
 			return true;
 		}
 
-		return Choir_Rehearsal_Post_Types::is_public( $song_id );
+		return self::can_listen();
 	}
 
 	/**
@@ -73,7 +73,7 @@ final class Choir_Rehearsal_Access {
 			return true;
 		}
 
-		return is_user_logged_in();
+		return self::can_listen();
 	}
 
 	/**
@@ -83,8 +83,69 @@ final class Choir_Rehearsal_Access {
 		return self::requires_login() && ! is_user_logged_in() && self::is_rehearsal_request() && ! is_singular( Choir_Rehearsal_Post_Types::SONG );
 	}
 
+	/**
+	 * Logged-in users without Singer / Voice Leader / Administrator listen rights.
+	 */
+	public static function is_restricted_library_request(): bool {
+		return self::requires_login()
+			&& is_user_logged_in()
+			&& ! self::can_listen()
+			&& self::is_rehearsal_request()
+			&& ! is_singular( Choir_Rehearsal_Post_Types::SONG );
+	}
+
+	/**
+	 * Browse and listen to the full private library.
+	 */
+	public static function can_listen(): bool {
+		return is_user_logged_in()
+			&& (
+				current_user_can( Choir_Rehearsal_Roles::CAP_LISTEN )
+				|| current_user_can( 'manage_options' )
+			);
+	}
+
+	/**
+	 * Edit songs in wp-admin (Voice Leader or Administrator).
+	 */
 	public static function can_manage(): bool {
-		return current_user_can( 'edit_posts' );
+		return is_user_logged_in()
+			&& (
+				current_user_can( Choir_Rehearsal_Roles::CAP_MANAGE )
+				|| current_user_can( 'edit_choir_songs' )
+				|| current_user_can( 'manage_options' )
+			);
+	}
+
+	/**
+	 * Plugin Settings screen — Administrator only.
+	 */
+	public static function can_manage_settings(): bool {
+		return current_user_can( 'manage_options' );
+	}
+
+	/**
+	 * English role badge for the frontend user bar (role names are not translated).
+	 */
+	public static function get_role_badge_label( ?WP_User $user = null ): string {
+		if ( ! $user instanceof WP_User ) {
+			$user = wp_get_current_user();
+		}
+		if ( ! $user instanceof WP_User || ! $user->exists() ) {
+			return '';
+		}
+
+		if ( user_can( $user, 'manage_options' ) ) {
+			return 'Administrator';
+		}
+		if ( user_can( $user, Choir_Rehearsal_Roles::CAP_MANAGE ) || user_can( $user, 'edit_choir_songs' ) ) {
+			return Choir_Rehearsal_Roles::LABEL_VOICE_LEADER;
+		}
+		if ( user_can( $user, Choir_Rehearsal_Roles::CAP_LISTEN ) ) {
+			return Choir_Rehearsal_Roles::LABEL_SINGER;
+		}
+
+		return '';
 	}
 
 	public static function get_login_error(): string {

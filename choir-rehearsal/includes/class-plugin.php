@@ -11,6 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-distribution.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-edition.php';
+require_once CHOIR_REHEARSAL_PATH . 'includes/class-roles.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-post-types.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-slugs.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-voice-types.php';
@@ -59,6 +60,7 @@ final class Choir_Rehearsal_Plugin {
 	}
 
 	public function init(): void {
+		Choir_Rehearsal_Roles::register();
 		Choir_Rehearsal_Post_Types::register();
 		Choir_Rehearsal_Slugs::register();
 		Choir_Rehearsal_Voice_Types::register();
@@ -74,6 +76,7 @@ final class Choir_Rehearsal_Plugin {
 	}
 
 	public function maybe_upgrade(): void {
+		Choir_Rehearsal_Roles::maybe_install();
 		Choir_Rehearsal_Pages::maybe_upgrade();
 	}
 
@@ -81,6 +84,7 @@ final class Choir_Rehearsal_Plugin {
 		$this->init();
 		// Register CPT/taxonomy now — init already ran, so hooked callbacks will not fire
 		// before flush_rewrite_rules() and song URLs would 404 after reactivate.
+		Choir_Rehearsal_Roles::install();
 		Choir_Rehearsal_Post_Types::register_post_types();
 		Choir_Rehearsal_Voice_Types::register_taxonomy();
 		Choir_Rehearsal_Voice_Types::seed_default_terms();

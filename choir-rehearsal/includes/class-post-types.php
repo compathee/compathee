@@ -69,7 +69,8 @@ final class Choir_Rehearsal_Post_Types {
 					'with_front' => false,
 				),
 				'supports'            => array( 'title' ),
-				'capability_type'     => 'post',
+				'capability_type'     => array( 'choir_song', 'choir_songs' ),
+				'map_meta_cap'        => true,
 				'exclude_from_search' => true,
 			)
 		);
@@ -86,13 +87,16 @@ final class Choir_Rehearsal_Post_Types {
 				'show_in_rest'        => true,
 				'hierarchical'        => true,
 				'supports'            => array( 'title', 'author', 'page-attributes' ),
-				'capability_type'     => 'post',
+				'capability_type'     => array( 'choir_song', 'choir_songs' ),
+				'map_meta_cap'        => true,
 				'exclude_from_search' => true,
 			)
 		);
 	}
 
 	public static function register_meta(): void {
+		$can_edit_meta = static fn() => current_user_can( 'edit_choir_songs' ) || current_user_can( 'manage_options' );
+
 		register_post_meta(
 			self::TRACK,
 			'_choir_audio_id',
@@ -100,7 +104,7 @@ final class Choir_Rehearsal_Post_Types {
 				'type'              => 'integer',
 				'single'            => true,
 				'show_in_rest'      => true,
-				'auth_callback'     => static fn() => current_user_can( 'edit_posts' ),
+				'auth_callback'     => $can_edit_meta,
 				'sanitize_callback' => 'absint',
 			)
 		);
@@ -112,7 +116,7 @@ final class Choir_Rehearsal_Post_Types {
 				'type'              => 'integer',
 				'single'            => true,
 				'show_in_rest'      => true,
-				'auth_callback'     => static fn() => current_user_can( 'edit_posts' ),
+				'auth_callback'     => $can_edit_meta,
 				'sanitize_callback' => 'absint',
 			)
 		);
@@ -124,7 +128,7 @@ final class Choir_Rehearsal_Post_Types {
 				'type'              => 'boolean',
 				'single'            => true,
 				'show_in_rest'      => true,
-				'auth_callback'     => static fn() => current_user_can( 'edit_posts' ),
+				'auth_callback'     => $can_edit_meta,
 				'sanitize_callback' => static fn( $value ) => (bool) $value,
 				'default'           => false,
 			)
@@ -137,7 +141,7 @@ final class Choir_Rehearsal_Post_Types {
 				'type'              => 'string',
 				'single'            => true,
 				'show_in_rest'      => true,
-				'auth_callback'     => static fn() => current_user_can( 'edit_posts' ),
+				'auth_callback'     => $can_edit_meta,
 				'sanitize_callback' => 'sanitize_key',
 			)
 		);

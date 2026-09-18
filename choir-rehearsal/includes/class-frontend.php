@@ -64,7 +64,8 @@ final class Choir_Rehearsal_Frontend {
 			return;
 		}
 
-		$public_only = Choir_Rehearsal_Access::is_guest_library_request();
+		$public_only = Choir_Rehearsal_Access::is_guest_library_request()
+			|| Choir_Rehearsal_Access::is_restricted_library_request();
 
 		if ( Choir_Rehearsal_Edition::can_search_songs() && self::is_song_list_page() ) {
 			wp_enqueue_script(
@@ -249,6 +250,10 @@ final class Choir_Rehearsal_Frontend {
 		} elseif ( Choir_Rehearsal_Access::is_guest_library_request() ) {
 			self::render_song_list( true );
 			self::render_login_form( true );
+		} elseif ( Choir_Rehearsal_Access::is_restricted_library_request() ) {
+			self::render_user_bar();
+			self::render_song_list( true );
+			self::render_role_required_notice();
 		} else {
 			self::render_user_bar();
 			self::render_song_list( false );
@@ -329,15 +334,14 @@ final class Choir_Rehearsal_Frontend {
 		}
 
 		$can_manage = Choir_Rehearsal_Access::can_manage();
+		$role_label = Choir_Rehearsal_Access::get_role_badge_label( $user );
 		?>
 		<div class="choir-user-bar">
 			<div class="choir-user-bar__identity">
 				<span class="choir-user-bar__label"><?php esc_html_e( 'Signed in as', 'compath-choir-rehearsal' ); ?></span>
 				<strong class="choir-user-bar__name"><?php echo esc_html( $user->display_name ); ?></strong>
-				<?php if ( $can_manage ) : ?>
-					<span class="choir-user-bar__role"><?php esc_html_e( 'Editor', 'compath-choir-rehearsal' ); ?></span>
-				<?php else : ?>
-					<span class="choir-user-bar__role"><?php esc_html_e( 'Singer', 'compath-choir-rehearsal' ); ?></span>
+				<?php if ( '' !== $role_label ) : ?>
+					<span class="choir-user-bar__role"><?php echo esc_html( $role_label ); ?></span>
 				<?php endif; ?>
 			</div>
 			<div class="choir-user-bar__actions">
@@ -357,6 +361,56 @@ final class Choir_Rehearsal_Frontend {
 				<a class="choir-user-bar__link choir-user-bar__link--muted" href="<?php echo esc_url( Choir_Rehearsal_Access::get_logout_url() ); ?>">
 					<?php esc_html_e( 'Sign out', 'compath-choir-rehearsal' ); ?>
 				</a>
+			</div>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Notice for signed-in users who lack Singer / Voice Leader roles.
+	 */
+	public static function render_role_required_notice(): void {
+		?>
+		<div class="choir-rehearsal-login choir-rehearsal-login--after-public">
+			<div class="choir-rehearsal-login__card">
+				<h2 class="choir-rehearsal-title"><?php esc_html_e( 'Full library requires a choir role', 'compath-choir-rehearsal' ); ?></h2>
+				<p class="choir-rehearsal-login__intro">
+					<?php
+					echo esc_html(
+						sprintf(
+							/* translators: 1: Singer role name (English), 2: Voice Leader role name (English) */
+							__( 'Public songs above are open to everyone. Ask an administrator to assign you the %1$s or %2$s role for the full rehearsal library.', 'compath-choir-rehearsal' ),
+							Choir_Rehearsal_Roles::LABEL_SINGER,
+							Choir_Rehearsal_Roles::LABEL_VOICE_LEADER
+						)
+					);
+					?>
+				</p>
+			</div>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Private song blocked for signed-in users without listen rights.
+	 */
+	public static function render_song_access_denied(): void {
+		?>
+		<div class="choir-rehearsal-login">
+			<div class="choir-rehearsal-login__card">
+				<h1 class="choir-rehearsal-title"><?php esc_html_e( 'This song is private', 'compath-choir-rehearsal' ); ?></h1>
+				<p class="choir-rehearsal-login__intro">
+					<?php
+					echo esc_html(
+						sprintf(
+							/* translators: 1: Singer role name (English), 2: Voice Leader role name (English) */
+							__( 'Ask an administrator to assign you the %1$s or %2$s role to open private rehearsal songs.', 'compath-choir-rehearsal' ),
+							Choir_Rehearsal_Roles::LABEL_SINGER,
+							Choir_Rehearsal_Roles::LABEL_VOICE_LEADER
+						)
+					);
+					?>
+				</p>
 			</div>
 		</div>
 		<?php

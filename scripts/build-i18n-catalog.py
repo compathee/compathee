@@ -77,6 +77,18 @@ def parse_po(path: Path) -> dict[str, object]:
 
 # --- Estonian translations (et) ---
 ET: dict[str, str] = {
+    "Public — available without login": "Avalik — saadaval ilma sisselogimiseta",
+    'Only signed-in choir roles can open the full private library.': 'Täielikku eraraamatukogu saavad avada ainult sisselogitud koorirollid.',
+    'Activation adds WordPress roles %1$s (listen) and %2$s (manage songs). Assign them under Users. Settings stay Administrator-only. Public songs remain open to guests.': 'Aktiveerimine lisab WordPressi rollid %1$s (kuulamine) ja %2$s (lugude haldamine). Määra need menüüs Kasutajad. Seaded jäävad ainult administraatorile. Avalikud lood jäävad külalistele avatuks.',
+    'Choir roles': 'Koorirollid',
+    'browse and listen to the rehearsal library': 'sirvi ja kuula prooviraamatukogu',
+    'listen plus add/edit songs in the admin': 'kuula ning lisa/muuda lugusid adminis',
+    'full access including plugin Settings': 'täielik juurdepääs sh plugina Seaded',
+    'Role names Singer and Voice Leader are kept in English on purpose.': 'Rollinimed Singer ja Voice Leader jäävad teadlikult ingliskeelseks.',
+    'Full library requires a choir role': 'Täielik raamatukogu nõuab koorirolli',
+    'Public songs above are open to everyone. Ask an administrator to assign you the %1$s or %2$s role for the full rehearsal library.': 'Ülal olevad avalikud lood on kõigile avatud. Palu administraatoril määrata sulle roll %1$s või %2$s, et avada täielik prooviraamatukogu.',
+    'This song is private': 'See lugu on privaatne',
+    'Ask an administrator to assign you the %1$s or %2$s role to open private rehearsal songs.': 'Palu administraatoril määrata sulle roll %1$s või %2$s, et avada privaatsed prooviloosid.',
     "Songs": "Laulud",
     "Song": "Laul",
     "Add Song": "Lisa laul",
@@ -375,6 +387,17 @@ ET: dict[str, str] = {
 
 # Russian additions for strings missing from older PO (beyond existing file)
 RU_EXTRA: dict[str, str] = {
+    "Only signed-in choir roles can open the full private library.": "Полную закрытую библиотеку могут открыть только вошедшие пользователи с ролями хора.",
+    "Activation adds WordPress roles %1$s (listen) and %2$s (manage songs). Assign them under Users. Settings stay Administrator-only. Public songs remain open to guests.": "При активации создаются роли WordPress %1$s (прослушивание) и %2$s (управление песнями). Назначьте их в разделе Пользователи. Настройки — только для Administrator. Публичные песни остаются открытыми для гостей.",
+    "Choir roles": "Роли хора",
+    "browse and listen to the rehearsal library": "просматривать и слушать библиотеку репетиций",
+    "listen plus add/edit songs in the admin": "слушать и добавлять/редактировать песни в админке",
+    "full access including plugin Settings": "полный доступ, включая настройки плагина",
+    "Role names Singer and Voice Leader are kept in English on purpose.": "Имена ролей Singer и Voice Leader намеренно остаются на английском.",
+    "Full library requires a choir role": "Для полной библиотеки нужна роль хора",
+    "Public songs above are open to everyone. Ask an administrator to assign you the %1$s or %2$s role for the full rehearsal library.": "Публичные песни выше открыты для всех. Попросите администратора назначить вам роль %1$s или %2$s для полной библиотеки репетиций.",
+    "This song is private": "Эта песня закрытая",
+    "Ask an administrator to assign you the %1$s or %2$s role to open private rehearsal songs.": "Попросите администратора назначить вам роль %1$s или %2$s, чтобы открывать закрытые репетиционные песни.",
     "Play": "Играть",
     "Compath Choir Rehearsal": "Compath Choir Rehearsal",
     "Standard": "Стандарт",
