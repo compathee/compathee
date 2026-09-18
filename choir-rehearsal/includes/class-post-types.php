@@ -17,6 +17,26 @@ final class Choir_Rehearsal_Post_Types {
 	public static function register(): void {
 		add_action( 'init', array( self::class, 'register_post_types' ) );
 		add_action( 'init', array( self::class, 'register_meta' ) );
+		// Attachment GUIDs/siteurl may stay http:// while admin is served over HTTPS.
+		add_filter( 'wp_get_attachment_url', array( self::class, 'align_attachment_url_scheme' ) );
+	}
+
+	/**
+	 * Force HTTPS attachment URLs on SSL requests so PDF.js / audio are not mixed-content blocked.
+	 *
+	 * @param string|false $url Attachment URL.
+	 * @return string|false
+	 */
+	public static function align_attachment_url_scheme( $url ) {
+		if ( ! is_string( $url ) || '' === $url ) {
+			return $url;
+		}
+
+		if ( is_ssl() ) {
+			return set_url_scheme( $url, 'https' );
+		}
+
+		return $url;
 	}
 
 	public static function register_post_types(): void {
@@ -182,7 +202,7 @@ final class Choir_Rehearsal_Post_Types {
 		}
 
 		$url = wp_get_attachment_url( $attachment_id );
-		return is_string( $url ) ? $url : '';
+		return is_string( $url ) ? self::align_attachment_url_scheme( $url ) : '';
 	}
 
 	public static function get_score_pdf_id( int $song_id ): int {
@@ -201,7 +221,7 @@ final class Choir_Rehearsal_Post_Types {
 		}
 
 		$url = wp_get_attachment_url( $attachment_id );
-		return is_string( $url ) ? $url : '';
+		return is_string( $url ) ? self::align_attachment_url_scheme( $url ) : '';
 	}
 
 	public static function get_voice_label( int $track_id ): string {
