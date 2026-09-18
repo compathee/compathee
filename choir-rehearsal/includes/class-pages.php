@@ -14,8 +14,13 @@ final class Choir_Rehearsal_Pages {
 	public const OPTION_PAGE_ID = 'choir_rehearsal_page_id';
 	public const OPTION_VERSION = 'choir_rehearsal_installed_version';
 
+	/** Canonical public path segment for the songs library (never localized). */
+	public const LIBRARY_SLUG = 'rehearsal';
+
 	public static function register(): void {
 		add_action( 'admin_post_choir_rehearsal_flush_rewrites', array( self::class, 'handle_flush_rewrites' ) );
+		add_filter( 'wp_insert_post_data', array( self::class, 'force_library_page_slug_on_save' ), 20, 2 );
+		add_action( 'save_post_page', array( self::class, 'ensure_library_page_slug_after_save' ), 20, 2 );
 	}
 
 	public static function register_settings(): void {
@@ -47,6 +52,7 @@ final class Choir_Rehearsal_Pages {
 		$page_id = self::ensure_library_page();
 		if ( $page_id > 0 ) {
 			self::normalize_page_content( $page_id );
+			self::ensure_library_page_slug( $page_id );
 		}
 
 		if ( version_compare( $stored, '0.4.18', '<' ) ) {
@@ -64,20 +70,23 @@ final class Choir_Rehearsal_Pages {
 		$page_id = self::get_page_id();
 		if ( $page_id > 0 && 'trash' !== get_post_status( $page_id ) ) {
 			self::ensure_page_has_shortcode( $page_id );
+			self::ensure_library_page_slug( $page_id );
 			return $page_id;
 		}
 
-		$existing = get_page_by_path( 'rehearsal' );
+		$existing = get_page_by_path( self::LIBRARY_SLUG );
 		if ( $existing instanceof WP_Post && 'trash' !== $existing->post_status ) {
 			update_option( self::OPTION_PAGE_ID, (int) $existing->ID );
 			self::ensure_page_has_shortcode( (int) $existing->ID );
+			self::ensure_library_page_slug( (int) $existing->ID );
 			return (int) $existing->ID;
 		}
 
 		$new_id = wp_insert_post(
 			array(
+				// Title may be localized; slug must stay English for stable URLs.
 				'post_title'   => __( 'Rehearsal Library', 'compath-choir-rehearsal' ),
-				'post_name'    => 'rehearsal',
+				'post_name'    => self::LIBRARY_SLUG,
 				'post_content' => '[choir_rehearsal]',
 				'post_status'  => 'publish',
 				'post_type'    => 'page',
@@ -92,7 +101,91 @@ final class Choir_Rehearsal_Pages {
 
 		$page_id = (int) $new_id;
 		update_option( self::OPTION_PAGE_ID, $page_id );
+		self::ensure_library_page_slug( $page_id );
 		return $page_id;
+	}
+
+	/**
+	 * Keep the library page permalink at /rehearsal/ even when the title is translated.
+	 */
+	public static function ensure_library_page_slug( int $page_id = 0 ): void {
+		if ( $page_id <= 0 ) {
+			$page_id = self::get_page_id();
+		}
+		if ( $page_id <= 0 ) {
+			return;
+		}
+
+		$post = get_post( $page_id );
+		if ( ! $post instanceof WP_Post || 'page' !== $post->post_type ) {
+			return;
+		}
+		if ( 'trash' === $post->post_status ) {
+			return;
+		}
+		if ( self::LIBRARY_SLUG === (string) $post->post_name ) {
+			return;
+		}
+
+		remove_action( 'save_post_page', array( self::class, 'ensure_library_page_slug_after_save' ), 20 );
+		wp_update_post(
+			array(
+				'ID'        => $page_id,
+				'post_name' => self::LIBRARY_SLUG,
+			)
+		);
+		add_action( 'save_post_page', array( self::class, 'ensure_library_page_slug_after_save' ), 20, 2 );
+	}
+
+	/**
+	 * @param array<string, mixed> $data
+	 * @param array<string, mixed> $postarr
+	 * @return array<string, mixed>
+	 */
+	public static function force_library_page_slug_on_save( array $data, array $postarr ): array {
+		$post_type = (string) ( $data['post_type'] ?? '' );
+		if ( 'page' !== $post_type ) {
+			return $data;
+		}
+
+		$post_id = isset( $postarr['ID'] ) ? (int) $postarr['ID'] : 0;
+		$library = self::get_page_id();
+		$is_library = ( $library > 0 && $post_id === $library );
+
+		if ( ! $is_library ) {
+			$content = (string) ( $data['post_content'] ?? '' );
+			// New/unknown page that hosts the shortcode should still use /rehearsal/.
+			if ( ! self::page_has_shortcode( $content ) ) {
+				return $data;
+			}
+			// Avoid stealing slug from unrelated pages that happen to mention the shortcode in drafts.
+			if ( $post_id > 0 && $library > 0 && $post_id !== $library ) {
+				return $data;
+			}
+		}
+
+		$data['post_name'] = self::LIBRARY_SLUG;
+		return $data;
+	}
+
+	public static function ensure_library_page_slug_after_save( int $post_id, WP_Post $post ): void {
+		if ( wp_is_post_revision( $post_id ) || wp_is_post_autosave( $post_id ) ) {
+			return;
+		}
+		if ( 'page' !== $post->post_type ) {
+			return;
+		}
+
+		$library = self::get_page_id();
+		if ( $library > 0 && (int) $post_id === $library ) {
+			self::ensure_library_page_slug( $post_id );
+			return;
+		}
+
+		if ( $library <= 0 && self::page_has_shortcode( (string) $post->post_content ) ) {
+			update_option( self::OPTION_PAGE_ID, $post_id );
+			self::ensure_library_page_slug( $post_id );
+		}
 	}
 
 	private static function get_setup_user_id(): int {
@@ -179,7 +272,7 @@ final class Choir_Rehearsal_Pages {
 			}
 		}
 
-		$page = get_page_by_path( 'rehearsal' );
+		$page = get_page_by_path( self::LIBRARY_SLUG );
 		if ( $page instanceof WP_Post ) {
 			$url = get_permalink( $page );
 			if ( is_string( $url ) && '' !== $url ) {
@@ -187,7 +280,7 @@ final class Choir_Rehearsal_Pages {
 			}
 		}
 
-		return home_url( '/rehearsal/' );
+		return home_url( '/' . self::LIBRARY_SLUG . '/' );
 	}
 
 	public static function get_flush_rewrites_url(): string {
