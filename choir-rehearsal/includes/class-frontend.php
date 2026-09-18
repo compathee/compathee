@@ -76,14 +76,16 @@ final class Choir_Rehearsal_Frontend {
 			);
 			// Prefer inline JSON with unescaped Unicode — more reliable for Cyrillic titles than wp_localize_script.
 			$song_list_data = array(
-				'songs' => self::get_songs_search_index( Choir_Rehearsal_Access::can_manage(), $public_only ),
-				'i18n'  => array(
+				'songs'            => self::get_songs_search_index( Choir_Rehearsal_Access::can_manage(), $public_only ),
+				'showPublicBadges' => is_user_logged_in(),
+				'i18n'             => array(
 					'edit' => __( 'Edit', 'compath-choir-rehearsal' ),
 					/* translators: %d: number of tracks */
 					'trackSingular' => __( '%d track', 'compath-choir-rehearsal' ),
 					/* translators: %d: number of tracks */
 					'trackPlural'   => __( '%d tracks', 'compath-choir-rehearsal' ),
 					'pdfAttached'   => __( 'PDF score attached', 'compath-choir-rehearsal' ),
+					'publicSong'    => __( 'Public — available without login', 'compath-choir-rehearsal' ),
 				),
 			);
 			wp_add_inline_script(
@@ -479,7 +481,7 @@ final class Choir_Rehearsal_Frontend {
 	}
 
 	/**
-	 * @return list<array{title: string, url: string, trackCount: int, editUrl: string, hasPdf: bool}>
+	 * @return list<array{title: string, url: string, trackCount: int, editUrl: string, hasPdf: bool, isPublic: bool}>
 	 */
 	private static function get_songs_search_index( bool $can_manage, bool $public_only = false ): array {
 		$args = array(
@@ -511,7 +513,9 @@ final class Choir_Rehearsal_Frontend {
 				'url'        => $url,
 				'trackCount' => count( Choir_Rehearsal_Post_Types::get_tracks_for_song( $song_id ) ),
 				'editUrl'    => '',
-				'hasPdf'     => Choir_Rehearsal_Post_Types::get_score_pdf_id( $song_id ) > 0,
+				'hasPdf'     => Choir_Rehearsal_Edition::can_show_pdf_badge()
+					&& Choir_Rehearsal_Post_Types::get_score_pdf_id( $song_id ) > 0,
+				'isPublic'   => Choir_Rehearsal_Post_Types::is_public( $song_id ),
 			);
 
 			if ( $can_manage ) {
@@ -541,6 +545,9 @@ final class Choir_Rehearsal_Frontend {
 		$track_count = count( Choir_Rehearsal_Post_Types::get_tracks_for_song( (int) $song->ID ) );
 		$show_pdf    = Choir_Rehearsal_Edition::can_show_pdf_badge()
 			&& Choir_Rehearsal_Post_Types::get_score_pdf_id( (int) $song->ID ) > 0;
+		// Logged-in library: mark songs that guests can open without signing in.
+		$show_public = is_user_logged_in()
+			&& Choir_Rehearsal_Post_Types::is_public( (int) $song->ID );
 		?>
 		<li data-song-title="<?php echo esc_attr( get_the_title( $song ) ); ?>">
 			<div class="choir-song-list__main">
@@ -548,8 +555,15 @@ final class Choir_Rehearsal_Frontend {
 					<a href="<?php echo esc_url( get_permalink( $song ) ); ?>">
 						<?php echo esc_html( get_the_title( $song ) ); ?>
 					</a>
-					<?php if ( $show_pdf ) : ?>
-						<?php self::render_song_pdf_badge(); ?>
+					<?php if ( $show_pdf || $show_public ) : ?>
+						<span class="choir-song-list__badges">
+							<?php if ( $show_pdf ) : ?>
+								<?php self::render_song_pdf_badge(); ?>
+							<?php endif; ?>
+							<?php if ( $show_public ) : ?>
+								<?php self::render_song_public_badge(); ?>
+							<?php endif; ?>
+						</span>
 					<?php endif; ?>
 				</div>
 				<span class="choir-track-count">
@@ -582,6 +596,20 @@ final class Choir_Rehearsal_Frontend {
 			<span class="screen-reader-text"><?php esc_html_e( 'PDF score attached', 'compath-choir-rehearsal' ); ?></span>
 			<svg class="choir-song-pdf-badge__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">
 				<path fill="currentColor" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm1 7V3.5L19.5 9H15zM8.5 12h1.2c1.1 0 1.8.5 1.8 1.4 0 .9-.7 1.4-1.8 1.4H9.3v1.7H8.5V12zm1.2 2c.4 0 .7-.2.7-.6s-.3-.6-.7-.6H9.3v1.2h.4zm3.1-2h1.5c1.3 0 2.1.7 2.1 1.9s-.8 1.9-2.1 1.9h-.7v1.7h-.8V12zm1.5 3c.7 0 1.2-.4 1.2-1.1S15 12.8 14.3 12.8h-.7V15h.7zm3.2-3h.8v4.5h-.8V12z"/>
+			</svg>
+		</span>
+		<?php
+	}
+
+	/**
+	 * Globe indicator for songs published for guests (no login).
+	 */
+	private static function render_song_public_badge(): void {
+		?>
+		<span class="choir-song-public-badge" title="<?php esc_attr_e( 'Public — available without login', 'compath-choir-rehearsal' ); ?>">
+			<span class="screen-reader-text"><?php esc_html_e( 'Public — available without login', 'compath-choir-rehearsal' ); ?></span>
+			<svg class="choir-song-public-badge__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">
+				<path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
 			</svg>
 		</span>
 		<?php

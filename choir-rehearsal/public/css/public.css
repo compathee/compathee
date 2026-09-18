@@ -287,6 +287,13 @@
 	text-overflow: ellipsis;
 }
 
+.choir-song-list__badges {
+	display: inline-flex;
+	align-items: center;
+	flex: 0 0 auto;
+	gap: 6px;
+}
+
 .choir-song-pdf-badge {
 	display: inline-flex;
 	align-items: center;
@@ -297,6 +304,19 @@
 }
 
 .choir-song-pdf-badge__icon {
+	display: block;
+}
+
+.choir-song-public-badge {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex: 0 0 auto;
+	color: #0b6bcb;
+	line-height: 0;
+}
+
+.choir-song-public-badge__icon {
 	display: block;
 }
 
