@@ -151,11 +151,13 @@
 		var CONFIG = {
 			repo: 'compathee/compathee',
 			branches: [
+				'cursor/rehearsal-copy-main-abc2',
+				'cursor/singer-voice-leader-roles-cdc7',
 				'cursor/lite-pro-hub-setup-abc2',
 				'main',
 				'cursor/choir-rehearsal-plugin-090e'
 			],
-			releasesUrl: 'https://api.github.com/repos/compathee/compathee/releases?per_page=20',
+			releasesUrl: 'https://api.github.com/repos/compathee/compathee/releases?per_page=100',
 			buyProUrl: 'https://shop.compath.ee/products/choir-rehearsal-pro/'
 		};
 
@@ -225,8 +227,16 @@
 			releases.forEach(function (release) {
 				if (!release || release.draft || release.prerelease) return;
 				var tag = String(release.tag_name || '');
-				if (tag.indexOf('choir-rehearsal-v') !== 0) return;
-				var version = tag.replace('choir-rehearsal-v', '');
+				// Skip Pro; accept Lite tags choir-rehearsal-v* and compath-choir-rehearsal-v*.
+				if (tag.indexOf('choir-rehearsal-pro-v') === 0) return;
+				var version = '';
+				if (tag.indexOf('compath-choir-rehearsal-v') === 0) {
+					version = tag.slice('compath-choir-rehearsal-v'.length);
+				} else if (tag.indexOf('choir-rehearsal-v') === 0) {
+					version = tag.slice('choir-rehearsal-v'.length);
+				} else {
+					return;
+				}
 				if (!best || compareVersions(version, bestVersion) > 0) {
 					best = release;
 					bestVersion = version;
@@ -248,8 +258,11 @@
 
 		function getDownloadUrl(release) {
 			if (!release || !release.assets) return 'https://github.com/compathee/compathee/releases/latest';
-			for (var i = 0; i < release.assets.length; i++) {
-				if (release.assets[i].name === 'choir-rehearsal.zip') return release.assets[i].browser_download_url;
+			var preferred = ['compath-choir-rehearsal.zip', 'choir-rehearsal.zip'];
+			for (var p = 0; p < preferred.length; p++) {
+				for (var i = 0; i < release.assets.length; i++) {
+					if (release.assets[i].name === preferred[p]) return release.assets[i].browser_download_url;
+				}
 			}
 			return release.html_url || 'https://github.com/compathee/compathee/releases/latest';
 		}
@@ -358,7 +371,12 @@
 			var updateMeta = results[1];
 			var releases = results[2];
 			var latestRelease = findLatestRelease(releases);
-			var versionFromRelease = latestRelease ? latestRelease.tag_name.replace('choir-rehearsal-v', '') : '';
+			var versionFromRelease = '';
+			if (latestRelease && latestRelease.tag_name) {
+				versionFromRelease = String(latestRelease.tag_name)
+					.replace(/^compath-choir-rehearsal-v/, '')
+					.replace(/^choir-rehearsal-v/, '');
+			}
 			var versionFromJson = (updateMeta && updateMeta.version) ? String(updateMeta.version) : '';
 			var version = versionFromRelease || versionFromJson || '0.4.6';
 			if (versionFromRelease && versionFromJson && compareVersions(versionFromRelease, versionFromJson) >= 0) {
@@ -367,7 +385,7 @@
 				version = versionFromJson;
 			}
 			var downloadUrl = getDownloadUrl(latestRelease);
-			if (updateMeta && updateMeta.download_url && (!latestRelease || compareVersions(versionFromJson, versionFromRelease) > 0)) {
+			if (updateMeta && updateMeta.download_url && (!latestRelease || compareVersions(versionFromJson, versionFromRelease || '0') > 0)) {
 				downloadUrl = updateMeta.download_url;
 			}
 			renderPage(data, version, downloadUrl);
