@@ -8,7 +8,7 @@ Stable tag: 0.4.61
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Private rehearsal library for choirs: songs, voice tracks, sticky player.
+Private rehearsal library for choirs: songs, voice tracks, optional YouTube embeds, sticky player.
 
 == Description ==
 
@@ -16,9 +16,10 @@ Choir Rehearsal helps choir members learn new pieces by voice part.
 
 * Create songs and attach unlimited voice tracks
 * Built-in voice list: backing track, bass, baritone, tenor, alto, soprano, other
-* Upload MP3/WAV files from the Media Library
+* Upload MP3/WAV files from the Media Library, or choose YouTube per track
+* Official YouTube embed on the song page (video stays visible; no download)
 * Attach a PDF score per song with page-by-page viewer
-* Frontend song list at `/rehearsal/`
+* Frontend song list at `/rehearsal/` with PDF, public, and YouTube badges
 * Sticky HTML5 player at the bottom of the page
 * Optional login-only access with Singer and Voice Leader roles (English role names)
 * REST API and MCP abilities for automation
@@ -54,6 +55,10 @@ WordPress roles created on plugin activation. Names stay in English. **Singer** 
 = Can I embed the song list in a page? =
 
 Yes. Use the shortcode `[choir_rehearsal]`.
+
+= Can I use YouTube instead of an audio file? =
+
+Yes. In the song editor, set a voice track’s source to **YouTube** and paste a youtube.com or youtu.be URL. On the song page a button opens the official YouTube embed (video stays visible). This is for listening/reference only — the plugin does not download or convert YouTube audio.
 
 == Changelog ==
 

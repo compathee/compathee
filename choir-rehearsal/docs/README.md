@@ -14,7 +14,7 @@
 | `update.json` | Текущая версия и ссылка на zip |
 | GitHub Releases API | Резервная ссылка «Download» |
 
-**После релиза плагина** достаточно обновить JSON в репозитории на ветке, которую читает сайт (`cursor/lite-pro-hub-setup-abc2`, после merge — `main`) — **перезагрузка FTP не нужна**.
+**После релиза плагина** достаточно обновить JSON в репозитории на ветке, которую читает сайт (`cursor/youtube-embed-button-c2eb`, после merge — `main`) — **перезагрузка FTP не нужна**.
 
 Оболочка `product-page.html` на FTP должна указывать актуальные ветки в `CONFIG.branches`. Если ветка сменилась — обновите HTML и задеплойте оболочку (workflow ниже).
 
@@ -24,7 +24,7 @@
 2. **`update.json`** — версия для WordPress-updater
 3. **`readme.txt`** — changelog для WordPress.org / плагина
 
-Сайт сначала читает ветку `cursor/lite-pro-hub-setup-abc2`, затем `main`. Версия в hero берётся из **GitHub Releases** (`choir-rehearsal-v*`).
+Сайт сначала читает ветку `cursor/youtube-embed-button-c2eb`, затем `cursor/rehearsal-copy-main-abc2` / `main`. Версия в hero берётся из **GitHub Releases** (`compath-choir-rehearsal-v*`).
 
 ### Однократный деплой оболочки
 

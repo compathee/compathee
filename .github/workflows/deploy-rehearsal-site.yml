@@ -2,7 +2,7 @@ name: Deploy rehearsal.compath.ee
 
 on:
   push:
-    branches: [main, cursor/lite-pro-hub-setup-abc2, cursor/choir-rehearsal-plugin-090e]
+    branches: [main, cursor/lite-pro-hub-setup-abc2, cursor/choir-rehearsal-plugin-090e, cursor/youtube-embed-button-c2eb, cursor/rehearsal-site-version-060-cdc7]
     paths:
       - 'choir-rehearsal/docs/product-page.html'
       - 'choir-rehearsal/docs/deploy/**'

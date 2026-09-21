@@ -1,28 +1,30 @@
-# Choir Rehearsal — rehearsal library for choirs
+# Compath Choir Rehearsal — rehearsal library for choirs
 
-**WordPress plugin · version 0.3.9** · [rehearsal.compath.ee](https://rehearsal.compath.ee)
+**WordPress plugin · version 0.4.61** · [rehearsal.compath.ee](https://rehearsal.compath.ee) · [WordPress.org](https://wordpress.org/plugins/compath-choir-rehearsal/)
 
-A private rehearsal library: songs, voice tracks, PDF scores, and mobile-friendly listening.
+A private rehearsal library: songs, voice tracks, optional YouTube embeds, PDF scores, and mobile-friendly listening.
 
-- [Download latest release](https://github.com/compathee/compathee/releases/latest)
+- [Get Lite on WordPress.org](https://wordpress.org/plugins/compath-choir-rehearsal/)
+- [Download latest release (GitHub)](https://github.com/compathee/compathee/releases/latest)
 - [Full HTML page](product-page.html) — for publishing on the website
 
 ---
 
 ## Overview
 
-Choir Rehearsal helps choir members learn new pieces by voice part. A Voice Leader uploads PDF scores and audio for each voice (or record from a phone). Singers visit `/rehearsal/`, pick a song, and listen to their part.
+Choir Rehearsal helps choir members learn new pieces by voice part. A Voice Leader uploads PDF scores and audio for each voice — or links an official YouTube video per track. Singers visit `/rehearsal/`, pick a song, and listen to their part.
 
 **Features:**
 
 - Song list on your choir website
 - PDF viewer with page navigation
 - Voice tracks: bass, tenor, alto, soprano, and more
-- Microphone recording in the admin
+- Per-track Audio / YouTube source (official embed; video stays visible)
+- Microphone recording in the admin (Pro)
 - Sticky player at the bottom of the screen
 - Login-only access (optional)
 - Roles: Singer (listen), Voice Leader (manage songs), Administrator (Settings) — role names stay in English
-- WordPress-native plugin updates
+- Updates via WordPress.org (Lite) or GitHub
 
 **Requirements:** WordPress 6.4+, PHP 8.0+
 
@@ -33,13 +35,14 @@ First customer — [Cappella Veneta](https://veneta.ee)
 
 ## Order & subscription
 
-The plugin is licensed under GPL. Install it yourself for free or purchase support from us.
+The plugin is licensed under GPL. Install Lite yourself for free from WordPress.org or GitHub, or purchase Pro support from us.
 
-### Community — free
+### Lite — free
 
-- Download from GitHub Releases
+- WordPress.org plugin directory or GitHub Releases
+- Up to 4 voice tracks per song
+- PDF scores, sticky player, optional YouTube embeds
 - Self-service installation
-- Manual updates via GitHub
 
 ### Pro — subscription — €49 / year
 
@@ -65,15 +68,15 @@ The plugin is licensed under GPL. Install it yourself for free or purchase suppo
 
 ## Installation
 
-1. Download `choir-rehearsal.zip` from [GitHub Releases](https://github.com/compathee/compathee/releases).
-2. **Plugins → Add New → Upload Plugin** — activate.
+1. Install Lite from [WordPress.org](https://wordpress.org/plugins/compath-choir-rehearsal/) or upload the zip from [GitHub Releases](https://github.com/compathee/compathee/releases).
+2. **Plugins → Add New** — activate Compath Choir Rehearsal.
 3. The plugin creates `/rehearsal/` with shortcode `[choir_rehearsal]` and WordPress roles **Singer** and **Voice Leader** (English names, not translated).
-4. **Choir Rehearsal → Add Song** — title, PDF, tracks (needs Voice Leader or Administrator).
+4. **Choir Rehearsal → Add Song** — title, PDF, tracks (Audio or YouTube; needs Voice Leader or Administrator).
 5. Assign users: **Singer** to listen; **Voice Leader** to manage songs. **Settings** stay Administrator-only.
 
 ### Updates
 
-- **Lite:** GitHub Releases → WordPress “Check for updates”.
+- **Lite:** WordPress.org directory updates (Plugins → Updates). GitHub Releases remain an alternative.
 - **Pro add-on:** new zip from SureCart customer dashboard (until licensed auto-updates).
 
 ### Roles
@@ -81,49 +84,19 @@ The plugin is licensed under GPL. Install it yourself for free or purchase suppo
 | Role | Access |
 |------|--------|
 | Singer | Listen, view PDF, full private library |
-| Voice Leader | Manage songs in admin + listen |
+| Voice Leader | Manage songs in admin + listen; Audio or YouTube per track |
 | Administrator | Everything, including plugin Settings |
 
 ---
 
 ## Changelog
 
-### 0.3.9
-- Product website: rehearsal.compath.ee
+### 0.4.61
+- Per-track Audio / YouTube source switch in the song editor
+- YouTube tracks open the official embed on the song page (video stays visible)
+- Song list shows a YouTube icon next to PDF and public badges
 
-### 0.3.8
-- Product documentation page
-- Link in Settings
-
-### 0.3.7
-- Publish box no longer overlaps title (desktop)
-
-### 0.3.6
-- Song title field visible again
-
-### 0.3.5
-- “Back to song list” on mobile
-
-### 0.3.4
-- Simplified editor: title, PDF, tracks
-
-### 0.3.3
-- Mobile admin for voice tracks
-
-### 0.3.2
-- Fixed microphone recording upload
-
-### 0.3.1
-- Version in Settings
-
-### 0.3.0
-- Voice recording from microphone
-
-### 0.2.6 – 0.2.0
-- Frontend login, /rehearsal/ page, GitHub updates, PDF scores
-
-### 0.1.0
-- Initial release
+See [product-data.json](product-data.json) for the full changelog history.
 
 ---
 
