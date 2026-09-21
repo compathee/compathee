@@ -1,7 +1,7 @@
 {
   "title": "Compath Choir Rehearsal",
-  "tagline": "A private rehearsal library for choirs: songs, voice tracks, PDF scores, and easy listening on phone or desktop.",
-  "overview": "Choir Rehearsal helps choir members learn new pieces by voice part. A Voice Leader uploads PDF scores and audio for each voice. Singers visit /rehearsal/, pick a song, and listen. Lite is free from GitHub; Pro is a separate add-on from shop.compath.ee (keep Lite installed — do not replace it).",
+  "tagline": "A private rehearsal library for choirs: songs, voice tracks, optional YouTube embeds, PDF scores, and easy listening on phone or desktop.",
+  "overview": "Choir Rehearsal helps choir members learn new pieces by voice part. A Voice Leader uploads PDF scores and audio — or links an official YouTube video per voice track. Singers visit /rehearsal/, pick a song, and listen. Lite is free from WordPress.org and GitHub; Pro is a separate add-on from shop.compath.ee (keep Lite installed — do not replace it).",
   "requirements": "WordPress 6.4+, PHP 8.0+",
   "owner": "Compath OÜ, Tallinn, Estonia",
   "firstCustomer": {
@@ -13,9 +13,10 @@
     "PDF scores — attach sheet music and flip pages in the built-in viewer",
     "Voice tracks — bass, tenor, alto, soprano and more",
     "Sticky player — listen while reading the score",
+    "YouTube tracks — optional official embed per voice part (video stays visible; no download)",
     "Private access — optional login-only rehearsal pages",
     "Singer & Voice Leader roles — WordPress roles created on install (English names)",
-    "Lite (free) — up to 4 tracks per song, audio upload, GitHub updates",
+    "Lite (free) — WordPress.org or GitHub, up to 4 tracks per song, audio upload",
     "Pro add-on — unlimited tracks, mic recording, search, editor Play, embedded PDF in the editor"
   ],
   "featureCards": [
@@ -40,6 +41,11 @@
       "text": "Listen while reading the score — player stays at the bottom of the screen."
     },
     {
+      "icon": "youtube",
+      "title": "YouTube tracks",
+      "text": "Per-track Audio / YouTube switch. Official embed on the song page — video stays visible."
+    },
+    {
       "icon": "lock",
       "title": "Private access",
       "text": "Optional login-only rehearsal pages for your choir members."
@@ -52,7 +58,7 @@
     {
       "icon": "lite",
       "title": "Lite — free",
-      "text": "Up to 4 tracks per song, audio upload, GitHub updates."
+      "text": "WordPress.org or GitHub. Up to 4 tracks per song, audio upload, optional YouTube embeds."
     },
     {
       "icon": "pro",
@@ -66,11 +72,11 @@
       "price": "Free",
       "featured": false,
       "items": [
-        "Download from GitHub Releases",
+        "Free from WordPress.org or GitHub Releases",
         "Up to 4 voice tracks per song",
         "PDF scores and sticky player",
-        "Upload audio (no microphone recording)",
-        "Updates via WordPress (Check for updates)"
+        "Upload audio or link official YouTube per track",
+        "Updates via WordPress.org (or GitHub Check for updates)"
       ]
     },
     {
@@ -111,14 +117,24 @@
     "Keep Choir Rehearsal (Lite) installed. Upload and activate the Pro add-on beside it — do not replace Lite."
   ],
   "installSteps": [
-    "Download choir-rehearsal.zip (Lite) from GitHub Releases.",
-    "In WordPress: Plugins → Add New → Upload Plugin — activate Lite.",
+    "Install Lite from WordPress.org (search “Compath Choir Rehearsal”) or upload the zip from GitHub Releases.",
+    "In WordPress: Plugins → Add New → activate Compath Choir Rehearsal (Lite).",
     "Pro customers: upload choir-rehearsal-pro.zip next and activate it. Settings should show Edition: Pro.",
     "The plugin creates a /rehearsal/ page with the [choir_rehearsal] shortcode and WordPress roles Singer and Voice Leader (English names).",
-    "Add a song: Choir Rehearsal → Add Song — title, PDF, voice tracks (needs Voice Leader or Administrator).",
+    "Add a song: Choir Rehearsal → Add Song — title, PDF, voice tracks (Audio or YouTube per track; needs Voice Leader or Administrator).",
     "Assign Users → Singer for listening, Voice Leader for managing songs. Settings remain Administrator-only."
   ],
   "changelog": [
+    {
+      "version": "0.4.61",
+      "summary": "Per-track YouTube source",
+      "items": [
+        "Song editor: Audio / YouTube switch per voice track",
+        "YouTube tracks open the official embed on the song page (video stays visible)",
+        "Song list shows a YouTube icon next to PDF and public badges"
+      ],
+      "open": true
+    },
     {
       "version": "0.4.60",
       "summary": "Singer and Voice Leader roles",
@@ -127,7 +143,7 @@
         "Song admin for Voice Leader and Administrator; plugin Settings for Administrator only",
         "Full private library requires Singer, Voice Leader, or Administrator"
       ],
-      "open": true
+      "open": false
     },
     {
       "version": "0.4.59",
