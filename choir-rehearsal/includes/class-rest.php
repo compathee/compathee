@@ -109,11 +109,16 @@ final class Choir_Rehearsal_REST {
 	private static function format_song_detail( WP_Post $song ): array {
 		$tracks = array();
 		foreach ( Choir_Rehearsal_Post_Types::get_tracks_for_song( (int) $song->ID ) as $track ) {
+			$track_id = (int) $track->ID;
+			$source   = Choir_Rehearsal_Post_Types::get_track_source( $track_id );
 			$tracks[] = array(
-				'id'         => (int) $track->ID,
-				'voice'      => (string) get_post_meta( $track->ID, '_choir_voice_slug', true ),
-				'voice_label'=> Choir_Rehearsal_Post_Types::get_voice_label( (int) $track->ID ),
-				'audio_url'  => Choir_Rehearsal_Post_Types::get_audio_url( (int) $track->ID ),
+				'id'         => $track_id,
+				'voice'      => (string) get_post_meta( $track_id, '_choir_voice_slug', true ),
+				'voice_label'=> Choir_Rehearsal_Post_Types::get_voice_label( $track_id ),
+				'source'     => $source,
+				'audio_url'  => 'audio' === $source ? Choir_Rehearsal_Post_Types::get_audio_url( $track_id ) : '',
+				'youtube_url'=> 'youtube' === $source ? Choir_Rehearsal_Post_Types::get_track_youtube_url( $track_id ) : '',
+				'youtube_embed_url' => 'youtube' === $source ? Choir_Rehearsal_Post_Types::get_track_youtube_embed_url( $track_id ) : '',
 			);
 		}
 
@@ -123,6 +128,7 @@ final class Choir_Rehearsal_REST {
 			'notes'    => apply_filters( 'the_content', $song->post_content ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- core content filter.
 			'url'      => get_permalink( $song ),
 			'score_pdf_url' => Choir_Rehearsal_Post_Types::get_score_pdf_url( (int) $song->ID ),
+			'has_youtube'   => Choir_Rehearsal_Post_Types::song_has_youtube_track( (int) $song->ID ),
 			'tracks'   => $tracks,
 		);
 	}

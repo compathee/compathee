@@ -806,3 +806,39 @@ msgstr "Установлена версия %1$s, а сервер обновле
 msgid "— Select —"
 msgstr "— Выбрать —"
 
+
+msgid "Hide video"
+msgstr "Скрыть видео"
+
+msgid "Optional. On the song page a button opens the official YouTube player (video stays visible). Not for downloading audio."
+msgstr "Необязательно. На странице песни кнопка откроет официальный плеер YouTube (видео остаётся видимым). Не для скачивания аудио."
+
+msgid "Watch reference video"
+msgstr "Смотреть референс"
+
+msgid "YouTube reference"
+msgstr "Референс YouTube"
+
+msgid "Audio"
+msgstr "Аудио"
+
+msgid "YouTube"
+msgstr "YouTube"
+
+msgid "YouTube URL"
+msgstr "Ссылка YouTube"
+
+msgid "Track source"
+msgstr "Источник трека"
+
+msgid "Official YouTube player opens on the song page (video stays visible). Not for downloading audio."
+msgstr "На странице песни откроется официальный плеер YouTube (видео остаётся видимым). Не для скачивания аудио."
+
+msgid "Preview video"
+msgstr "Предпросмотр видео"
+
+msgid "Watch video"
+msgstr "Смотреть видео"
+
+msgid "Has YouTube track"
+msgstr "Есть трек YouTube"

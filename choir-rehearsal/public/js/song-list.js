@@ -46,6 +46,7 @@
 			editUrl: String(song.editUrl || ''),
 			hasPdf: Boolean(song.hasPdf),
 			isPublic: Boolean(song.isPublic),
+			hasYoutube: Boolean(song.hasYoutube),
 			needle: normalizeSearchText(song.title || '')
 		};
 	});
@@ -95,10 +96,31 @@
 		return badge;
 	}
 
+	function createYoutubeBadge() {
+		const badge = document.createElement('span');
+		badge.className = 'choir-song-youtube-badge';
+		badge.title = config.i18n.youtubeTrack || 'Has YouTube track';
+
+		const sr = document.createElement('span');
+		sr.className = 'screen-reader-text';
+		sr.textContent = config.i18n.youtubeTrack || 'Has YouTube track';
+		badge.appendChild(sr);
+
+		badge.insertAdjacentHTML(
+			'beforeend',
+			'<svg class="choir-song-youtube-badge__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">' +
+				'<path fill="currentColor" d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31.5 31.5 0 0 0 0 12a31.5 31.5 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31.5 31.5 0 0 0 24 12a31.5 31.5 0 0 0-.5-5.8zM9.8 15.5v-7l6.3 3.5-6.3 3.5z"/>' +
+			'</svg>'
+		);
+
+		return badge;
+	}
+
 	function appendBadges(titleRow, song) {
 		const showPdf = Boolean(song.hasPdf);
 		const showPublic = showPublicBadges && Boolean(song.isPublic);
-		if (!showPdf && !showPublic) {
+		const showYoutube = Boolean(song.hasYoutube);
+		if (!showPdf && !showPublic && !showYoutube) {
 			return;
 		}
 
@@ -109,6 +131,9 @@
 		}
 		if (showPublic) {
 			badges.appendChild(createPublicBadge());
+		}
+		if (showYoutube) {
+			badges.appendChild(createYoutubeBadge());
 		}
 		titleRow.appendChild(badges);
 	}

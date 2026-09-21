@@ -18,7 +18,13 @@ $checks = [
 	'suggested_keep_folder' => str_contains($migration, 'suggested_keep_folder'),
 	'plugin_registers_install_replace' => str_contains($plugin, 'Choir_Rehearsal_Install_Replace::register'),
 	'updater_no_source_selection' => ! str_contains($updater, 'upgrader_source_selection'),
-	'version_051' => str_contains(file_get_contents(__DIR__ . '/../choir-rehearsal.php'), '0.4.51'),
+	'version_at_least_051' => (static function () {
+		$main = file_get_contents(__DIR__ . '/../choir-rehearsal.php');
+		if (!is_string($main) || !preg_match("/define\(\s*'CHOIR_REHEARSAL_VERSION',\s*'([^']+)'/", $main, $m)) {
+			return false;
+		}
+		return version_compare($m[1], '0.4.51', '>=');
+	})(),
 ];
 
 $fail = 0;

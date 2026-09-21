@@ -145,6 +145,32 @@ final class Choir_Rehearsal_Post_Types {
 				'sanitize_callback' => 'sanitize_key',
 			)
 		);
+
+		register_post_meta(
+			self::TRACK,
+			'_choir_source',
+			array(
+				'type'              => 'string',
+				'single'            => true,
+				'show_in_rest'      => true,
+				'auth_callback'     => $can_edit_meta,
+				'sanitize_callback' => array( self::class, 'sanitize_track_source' ),
+				'default'           => 'audio',
+			)
+		);
+
+		register_post_meta(
+			self::TRACK,
+			'_choir_youtube_url',
+			array(
+				'type'              => 'string',
+				'single'            => true,
+				'show_in_rest'      => true,
+				'auth_callback'     => $can_edit_meta,
+				'sanitize_callback' => array( self::class, 'sanitize_youtube_url' ),
+				'default'           => '',
+			)
+		);
 	}
 
 	public static function is_public( int $song_id ): bool {
@@ -226,6 +252,135 @@ final class Choir_Rehearsal_Post_Types {
 
 		$url = wp_get_attachment_url( $attachment_id );
 		return is_string( $url ) ? self::align_attachment_url_scheme( $url ) : '';
+	}
+
+	/**
+	 * Stored watch/share URL for a YouTube track source.
+	 */
+	public static function get_track_youtube_url( int $track_id ): string {
+		if ( $track_id <= 0 ) {
+			return '';
+		}
+
+		return self::sanitize_youtube_url( (string) get_post_meta( $track_id, '_choir_youtube_url', true ) );
+	}
+
+	/**
+	 * Track media source: audio (default) or youtube.
+	 */
+	public static function get_track_source( int $track_id ): string {
+		if ( $track_id <= 0 ) {
+			return 'audio';
+		}
+
+		return self::sanitize_track_source( (string) get_post_meta( $track_id, '_choir_source', true ) );
+	}
+
+	public static function sanitize_track_source( mixed $value ): string {
+		$source = is_string( $value ) ? sanitize_key( $value ) : 'audio';
+		return 'youtube' === $source ? 'youtube' : 'audio';
+	}
+
+	/**
+	 * 11-character YouTube video id for a track, or empty.
+	 */
+	public static function get_track_youtube_video_id( int $track_id ): string {
+		return self::parse_youtube_video_id( self::get_track_youtube_url( $track_id ) );
+	}
+
+	/**
+	 * Official embed URL for a YouTube track (https://www.youtube.com/embed/…).
+	 */
+	public static function get_track_youtube_embed_url( int $track_id ): string {
+		$id = self::get_track_youtube_video_id( $track_id );
+		if ( '' === $id ) {
+			return '';
+		}
+
+		return 'https://www.youtube.com/embed/' . rawurlencode( $id );
+	}
+
+	/**
+	 * Whether the song has at least one playable YouTube track.
+	 */
+	public static function song_has_youtube_track( int $song_id ): bool {
+		foreach ( self::get_tracks_for_song( $song_id ) as $track ) {
+			$track_id = (int) $track->ID;
+			if ( 'youtube' === self::get_track_source( $track_id ) && '' !== self::get_track_youtube_video_id( $track_id ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Keep only recognisable YouTube watch/share URLs.
+	 */
+	public static function sanitize_youtube_url( mixed $value ): string {
+		$url = is_string( $value ) ? trim( $value ) : '';
+		if ( '' === $url ) {
+			return '';
+		}
+
+		$url = esc_url_raw( $url );
+		if ( '' === $url || '' === self::parse_youtube_video_id( $url ) ) {
+			return '';
+		}
+
+		return $url;
+	}
+
+	/**
+	 * Extract a YouTube video id from common URL shapes.
+	 */
+	public static function parse_youtube_video_id( string $url ): string {
+		$url = trim( $url );
+		if ( '' === $url ) {
+			return '';
+		}
+
+		if ( ! preg_match( '#^https?://#i', $url ) ) {
+			$url = 'https://' . ltrim( $url, '/' );
+		}
+
+		$parts = wp_parse_url( $url );
+		if ( ! is_array( $parts ) || empty( $parts['host'] ) ) {
+			return '';
+		}
+
+		$host = strtolower( (string) $parts['host'] );
+		$host = preg_replace( '/^www\./', '', $host ) ?? $host;
+		$path = isset( $parts['path'] ) ? (string) $parts['path'] : '';
+
+		if ( 'youtu.be' === $host ) {
+			$segment = trim( $path, '/' );
+			$segment = explode( '/', $segment )[0] ?? '';
+			return self::is_youtube_video_id( $segment ) ? $segment : '';
+		}
+
+		if ( ! in_array( $host, array( 'youtube.com', 'm.youtube.com', 'music.youtube.com', 'youtube-nocookie.com' ), true ) ) {
+			return '';
+		}
+
+		if ( preg_match( '#/(?:embed|shorts|live|v)/([A-Za-z0-9_-]{11})#', $path, $matches ) ) {
+			return $matches[1];
+		}
+
+		$query = array();
+		if ( ! empty( $parts['query'] ) ) {
+			parse_str( (string) $parts['query'], $query );
+		}
+
+		if ( isset( $query['v'] ) && is_string( $query['v'] ) && self::is_youtube_video_id( $query['v'] ) ) {
+			return $query['v'];
+		}
+
+		return '';
+	}
+
+	private static function is_youtube_video_id( string $id ): bool {
+		return 1 === preg_match( '/^[A-Za-z0-9_-]{11}$/', $id );
 	}
 
 	public static function get_voice_label( int $track_id ): string {

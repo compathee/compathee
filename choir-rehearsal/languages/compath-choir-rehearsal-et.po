@@ -805,3 +805,39 @@ msgstr "Paigaldatud versioon on %1$s, aga uuendusserver teatas ainult %2$s (tõe
 msgid "— Select —"
 msgstr "— Vali —"
 
+
+msgid "Hide video"
+msgstr "Peida video"
+
+msgid "Optional. On the song page a button opens the official YouTube player (video stays visible). Not for downloading audio."
+msgstr "Valikuline. Laulu lehel nupp avab ametliku YouTube mängija (video jääb nähtavaks). Mitte heli allalaadimiseks."
+
+msgid "Watch reference video"
+msgstr "Vaata viitevideot"
+
+msgid "YouTube reference"
+msgstr "YouTube viide"
+
+msgid "Audio"
+msgstr "Audio"
+
+msgid "YouTube"
+msgstr "YouTube"
+
+msgid "YouTube URL"
+msgstr "YouTube URL"
+
+msgid "Track source"
+msgstr "Raja allikas"
+
+msgid "Official YouTube player opens on the song page (video stays visible). Not for downloading audio."
+msgstr "Laulu lehel avaneb ametlik YouTube mängija (video jääb nähtavaks). Mitte heli allalaadimiseks."
+
+msgid "Preview video"
+msgstr "Video eelvaade"
+
+msgid "Watch video"
+msgstr "Vaata videot"
+
+msgid "Has YouTube track"
+msgstr "Sisaldab YouTube rada"

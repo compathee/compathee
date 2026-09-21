@@ -13,6 +13,7 @@
     "PDF scores — attach sheet music and flip pages in the built-in viewer",
     "Voice tracks — bass, tenor, alto, soprano and more",
     "Sticky player — listen while reading the score",
+    "YouTube tracks — optional official embed per voice part (video stays visible)",
     "Private access — optional login-only rehearsal pages",
     "Singer & Voice Leader roles — WordPress roles created on install (English names)",
     "Lite (free) — up to 4 tracks per song, audio upload, GitHub updates",
@@ -120,6 +121,16 @@
   ],
   "changelog": [
     {
+      "version": "0.4.61",
+      "summary": "Per-track YouTube source",
+      "items": [
+        "Song editor: Audio / YouTube switch per voice track",
+        "YouTube tracks open the official embed on the song page (video stays visible)",
+        "Song list shows a YouTube icon next to PDF and public badges"
+      ],
+      "open": true
+    },
+    {
       "version": "0.4.60",
       "summary": "Singer and Voice Leader roles",
       "items": [
@@ -127,7 +138,7 @@
         "Song admin for Voice Leader and Administrator; plugin Settings for Administrator only",
         "Full private library requires Singer, Voice Leader, or Administrator"
       ],
-      "open": true
+      "open": false
     },
     {
       "version": "0.4.59",

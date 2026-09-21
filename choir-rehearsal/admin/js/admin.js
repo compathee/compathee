@@ -800,12 +800,88 @@
 	});
 
 
+	function parseYoutubeId(url) {
+		const raw = String(url || '').trim();
+		if (!raw) {
+			return '';
+		}
+		const withProto = /^https?:\/\//i.test(raw) ? raw : 'https://' + raw.replace(/^\/+/, '');
+		let parsed;
+		try {
+			parsed = new URL(withProto);
+		} catch (e) {
+			return '';
+		}
+		const host = parsed.hostname.replace(/^www\./, '').toLowerCase();
+		const path = parsed.pathname || '';
+		const idRe = /^[A-Za-z0-9_-]{11}$/;
+		if (host === 'youtu.be') {
+			const seg = path.replace(/^\/+/, '').split('/')[0] || '';
+			return idRe.test(seg) ? seg : '';
+		}
+		if (['youtube.com', 'm.youtube.com', 'music.youtube.com', 'youtube-nocookie.com'].indexOf(host) === -1) {
+			return '';
+		}
+		const pathMatch = path.match(/\/(?:embed|shorts|live|v)\/([A-Za-z0-9_-]{11})/);
+		if (pathMatch) {
+			return pathMatch[1];
+		}
+		const v = parsed.searchParams.get('v');
+		return v && idRe.test(v) ? v : '';
+	}
+
+	function syncTrackSource($row) {
+		const source = $row.find('.choir-track-source-input:checked').val() || 'audio';
+		const isYoutube = source === 'youtube';
+		$row.attr('data-source', source);
+		$row.find('.choir-track-audio-pane').prop('hidden', isYoutube);
+		$row.find('.choir-track-youtube-pane').prop('hidden', !isYoutube);
+		if (isYoutube) {
+			const recorder = $row.data('recorder');
+			if (recorder && typeof recorder.close === 'function') {
+				recorder.close();
+			}
+			syncYoutubePreview($row);
+		}
+	}
+
+	function syncYoutubePreview($row) {
+		const $input = $row.find('.choir-youtube-url-input');
+		const $btn = $row.find('.choir-youtube-toggle');
+		if (!$btn.length) {
+			return;
+		}
+		const id = parseYoutubeId($input.val());
+		const embed = id ? 'https://www.youtube.com/embed/' + encodeURIComponent(id) : '';
+		$btn.attr('data-embed-url', embed);
+		$btn.prop('disabled', !embed);
+		if (!embed && $btn.attr('aria-expanded') === 'true') {
+			$btn.attr('aria-expanded', 'false');
+			$btn.text(i18n.previewVideo || 'Preview video');
+			const mountId = $btn.attr('aria-controls');
+			const mount = mountId ? document.getElementById(mountId) : null;
+			if (mount) {
+				mount.innerHTML = '';
+				mount.hidden = true;
+				mount.classList.add('is-hidden');
+			}
+		}
+	}
+
 	function bindRow($row) {
 		if (i18n.canRecord) {
 			const recorder = new Recorder($row);
 			$row.data('recorder', recorder);
 			recorder.bind();
 		}
+
+		$row.find('.choir-track-source-input').on('change', function () {
+			syncTrackSource($row);
+		});
+
+		$row.find('.choir-youtube-url-input').on('input change', function () {
+			syncYoutubePreview($row);
+		});
 
 		$row.find('.choir-select-audio').on('click', function () {
 			const frame = wp.media({
@@ -842,8 +918,13 @@
 				$row.remove();
 			} else {
 				clearRowAudio($row);
+				$row.find('.choir-track-source-input[value="audio"]').prop('checked', true);
+				$row.find('.choir-youtube-url-input').val('');
+				syncTrackSource($row);
 			}
 		});
+
+		syncTrackSource($row);
 	}
 
 	function recorderPanelHtml() {
@@ -894,22 +975,50 @@
 			? iconButton('choir-play-track', i18n.playAudio || 'Play', 'play', ' data-track-url="" data-track-title="" disabled')
 			: '';
 		const recorderPanel = i18n.canRecord ? recorderPanelHtml() : '';
+		const ytPreview = i18n.canPlay
+			? (
+				'<button type="button" class="button choir-youtube-toggle" aria-expanded="false" aria-controls="choir-track-yt-' + index + '-player" data-embed-url="" disabled>' +
+					(i18n.previewVideo || 'Preview video') +
+				'</button>' +
+				'<div id="choir-track-yt-' + index + '-player" class="choir-youtube-player is-hidden" hidden></div>'
+			)
+			: '';
 
 		const html =
-			'<li class="choir-track-item choir-track-row">' +
+			'<li class="choir-track-item choir-track-row" data-source="audio">' +
 				'<input type="hidden" name="choir_tracks[' + index + '][id]" value="0" />' +
 				'<input type="hidden" class="choir-audio-id" name="choir_tracks[' + index + '][audio_id]" value="0" />' +
 				'<div class="choir-track-item__main">' +
 					'<select class="choir-voice-select choir-track-voice" name="choir_tracks[' + index + '][voice]" aria-label="Voice">' + options + '</select>' +
+					'<div class="choir-track-source" role="group" aria-label="Track source">' +
+						'<label class="choir-track-source__option">' +
+							'<input type="radio" class="choir-track-source-input" name="choir_tracks[' + index + '][source]" value="audio" checked />' +
+							'<span>' + (i18n.sourceAudio || 'Audio') + '</span>' +
+						'</label>' +
+						'<label class="choir-track-source__option">' +
+							'<input type="radio" class="choir-track-source-input" name="choir_tracks[' + index + '][source]" value="youtube" />' +
+							'<span>' + (i18n.sourceYoutube || 'YouTube') + '</span>' +
+						'</label>' +
+					'</div>' +
 					'<span class="choir-audio-name screen-reader-text">' + (i18n.noAudio || 'No audio selected') + '</span>' +
 				'</div>' +
-				'<div class="choir-track-waveform is-empty" data-audio-url="" title="' + (i18n.noAudio || 'No audio selected') + '" aria-hidden="true">' +
-					'<canvas class="choir-track-waveform__canvas"></canvas>' +
+				'<div class="choir-track-audio-pane">' +
+					'<div class="choir-track-waveform is-empty" data-audio-url="" title="' + (i18n.noAudio || 'No audio selected') + '" aria-hidden="true">' +
+						'<canvas class="choir-track-waveform__canvas"></canvas>' +
+					'</div>' +
+					'<div class="choir-track-item__actions choir-track-item__actions--audio">' +
+						iconButton('choir-select-audio', i18n.selectAudio || 'Upload', 'upload') +
+						recordButton +
+						playButton +
+					'</div>' +
 				'</div>' +
-				'<div class="choir-track-item__actions">' +
-					iconButton('choir-select-audio', i18n.selectAudio || 'Upload', 'upload') +
-					recordButton +
-					playButton +
+				'<div class="choir-track-youtube-pane" hidden>' +
+					'<label class="screen-reader-text" for="choir-track-yt-' + index + '-url">' + (i18n.youtubeUrl || 'YouTube URL') + '</label>' +
+					'<input type="url" class="choir-youtube-url-input large-text" id="choir-track-yt-' + index + '-url" name="choir_tracks[' + index + '][youtube_url]" value="" placeholder="https://www.youtube.com/watch?v=…" autocomplete="off" />' +
+					'<p class="description choir-track-youtube-hint">' + (i18n.youtubeHint || '') + '</p>' +
+					ytPreview +
+				'</div>' +
+				'<div class="choir-track-item__actions choir-track-item__actions--row">' +
 					iconButton('choir-icon-btn--danger choir-remove-track', i18n.removeTrack || 'Remove', 'remove') +
 				'</div>' +
 				recorderPanel +

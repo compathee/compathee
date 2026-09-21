@@ -4,7 +4,7 @@ Tags: choir, audio, rehearsal, voice parts, music
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 0.4.60
+Stable tag: 0.4.61
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -26,6 +26,8 @@ Choir Rehearsal helps choir members learn new pieces by voice part.
 == External services ==
 
 This plugin does not require external services to work. Song data, audio, and PDF scores stay on your WordPress site.
+
+Optional **YouTube tracks** (song editor): choose YouTube as a track source and paste a URL. The song page opens the official YouTube embed player (`youtube.com`). Playback uses YouTube’s embed; no download. Subject to [YouTube Terms of Service](https://www.youtube.com/static?template=terms). No YouTube API key is required for this embed.
 
 Optional documentation link in Settings may open [rehearsal.compath.ee](https://rehearsal.compath.ee/) (Compath OÜ) for help and changelog. No site or user data is sent unless you open that page in your browser.
 
@@ -54,6 +56,12 @@ WordPress roles created on plugin activation. Names stay in English. **Singer** 
 Yes. Use the shortcode `[choir_rehearsal]`.
 
 == Changelog ==
+
+= 0.4.61 =
+
+* Per-track Audio / YouTube source switch in the song editor
+* YouTube tracks open the official embed player on the song page (video stays visible)
+* Song list shows a YouTube icon next to PDF and public badges when a song has a YouTube track
 
 = 0.4.60 =
 

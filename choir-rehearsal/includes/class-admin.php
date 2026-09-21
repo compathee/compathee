@@ -577,6 +577,21 @@ final class Choir_Rehearsal_Admin {
 				)
 			);
 			wp_enqueue_script(
+				'choir-rehearsal-youtube',
+				CHOIR_REHEARSAL_URL . 'public/js/youtube-embed.js',
+				array(),
+				CHOIR_REHEARSAL_VERSION,
+				true
+			);
+			wp_localize_script(
+				'choir-rehearsal-youtube',
+				'choirRehearsalYoutube',
+				array(
+					'open'  => __( 'Preview video', 'compath-choir-rehearsal' ),
+					'close' => __( 'Hide video', 'compath-choir-rehearsal' ),
+				)
+			);
+			wp_enqueue_script(
 				'choir-rehearsal-piano',
 				CHOIR_REHEARSAL_URL . 'public/js/piano.js',
 				array(),
@@ -626,6 +641,11 @@ final class Choir_Rehearsal_Admin {
 				'removeTrack'    => __( 'Remove', 'compath-choir-rehearsal' ),
 				'trackLabel'     => __( 'Track', 'compath-choir-rehearsal' ),
 				'noAudio'        => __( 'No audio selected', 'compath-choir-rehearsal' ),
+				'sourceAudio'    => __( 'Audio', 'compath-choir-rehearsal' ),
+				'sourceYoutube'  => __( 'YouTube', 'compath-choir-rehearsal' ),
+				'youtubeUrl'     => __( 'YouTube URL', 'compath-choir-rehearsal' ),
+				'youtubeHint'    => __( 'Official YouTube player opens on the song page (video stays visible). Not for downloading audio.', 'compath-choir-rehearsal' ),
+				'previewVideo'   => __( 'Preview video', 'compath-choir-rehearsal' ),
 				'selectPdf'      => __( 'Select PDF', 'compath-choir-rehearsal' ),
 				'usePdf'         => __( 'Use this PDF', 'compath-choir-rehearsal' ),
 				'noPdf'          => __( 'No PDF selected', 'compath-choir-rehearsal' ),
@@ -772,7 +792,9 @@ final class Choir_Rehearsal_Admin {
 							(string) get_post_meta( $track->ID, '_choir_voice_slug', true ),
 							(int) get_post_meta( $track->ID, '_choir_audio_id', true ),
 							$voices,
-							(int) $track->ID
+							(int) $track->ID,
+							Choir_Rehearsal_Post_Types::get_track_source( (int) $track->ID ),
+							Choir_Rehearsal_Post_Types::get_track_youtube_url( (int) $track->ID )
 						);
 						?>
 					<?php endforeach; ?>
@@ -786,9 +808,20 @@ final class Choir_Rehearsal_Admin {
 	/**
 	 * @param array<string, string> $voices
 	 */
-	private static function render_track_row( int $index, string $voice_slug, int $audio_id, array $voices, int $track_id = 0 ): void {
-		$filename = '';
-		$audio_url = '';
+	private static function render_track_row(
+		int $index,
+		string $voice_slug,
+		int $audio_id,
+		array $voices,
+		int $track_id = 0,
+		string $source = 'audio',
+		string $youtube_url = ''
+	): void {
+		$source      = Choir_Rehearsal_Post_Types::sanitize_track_source( $source );
+		$youtube_url = Choir_Rehearsal_Post_Types::sanitize_youtube_url( $youtube_url );
+		$is_youtube  = 'youtube' === $source;
+		$filename    = '';
+		$audio_url   = '';
 		if ( $audio_id > 0 ) {
 			$file = get_attached_file( $audio_id );
 			$filename = $file ? basename( $file ) : '';
@@ -801,9 +834,18 @@ final class Choir_Rehearsal_Admin {
 		$play_title  = trim( (string) $song_title ) !== ''
 			? $song_title . ' — ' . $voice_label
 			: (string) $voice_label;
-		$can_play    = '' !== $audio_url;
+		$can_play_audio = '' !== $audio_url;
+		$yt_embed       = '' !== $youtube_url
+			? Choir_Rehearsal_Post_Types::get_track_youtube_embed_url( $track_id > 0 ? $track_id : 0 )
+			: '';
+		if ( '' === $yt_embed && '' !== $youtube_url ) {
+			$vid = Choir_Rehearsal_Post_Types::parse_youtube_video_id( $youtube_url );
+			$yt_embed = '' !== $vid ? 'https://www.youtube.com/embed/' . rawurlencode( $vid ) : '';
+		}
+		$can_play_youtube = '' !== $yt_embed;
+		$row_id           = 'choir-track-yt-' . $index . ( $track_id > 0 ? '-' . $track_id : '' );
 		?>
-		<li class="choir-track-item choir-track-row">
+		<li class="choir-track-item choir-track-row" data-source="<?php echo esc_attr( $source ); ?>">
 			<input type="hidden" name="choir_tracks[<?php echo esc_attr( (string) $index ); ?>][id]" value="<?php echo esc_attr( (string) $track_id ); ?>" />
 			<input type="hidden" class="choir-audio-id" name="choir_tracks[<?php echo esc_attr( (string) $index ); ?>][audio_id]" value="<?php echo esc_attr( (string) $audio_id ); ?>" />
 			<div class="choir-track-item__main">
@@ -812,38 +854,96 @@ final class Choir_Rehearsal_Admin {
 						<option value="<?php echo esc_attr( $slug ); ?>" <?php selected( $voice_slug, $slug ); ?>><?php echo esc_html( $label ); ?></option>
 					<?php endforeach; ?>
 				</select>
+				<div class="choir-track-source" role="group" aria-label="<?php esc_attr_e( 'Track source', 'compath-choir-rehearsal' ); ?>">
+					<label class="choir-track-source__option">
+						<input
+							type="radio"
+							class="choir-track-source-input"
+							name="choir_tracks[<?php echo esc_attr( (string) $index ); ?>][source]"
+							value="audio"
+							<?php checked( ! $is_youtube ); ?>
+						/>
+						<span><?php esc_html_e( 'Audio', 'compath-choir-rehearsal' ); ?></span>
+					</label>
+					<label class="choir-track-source__option">
+						<input
+							type="radio"
+							class="choir-track-source-input"
+							name="choir_tracks[<?php echo esc_attr( (string) $index ); ?>][source]"
+							value="youtube"
+							<?php checked( $is_youtube ); ?>
+						/>
+						<span><?php esc_html_e( 'YouTube', 'compath-choir-rehearsal' ); ?></span>
+					</label>
+				</div>
 				<span class="choir-audio-name screen-reader-text"><?php echo esc_html( $filename ?: __( 'No audio selected', 'compath-choir-rehearsal' ) ); ?></span>
 			</div>
-			<div
-				class="choir-track-waveform<?php echo '' === $audio_url ? ' is-empty' : ''; ?>"
-				data-audio-url="<?php echo esc_url( $audio_url ); ?>"
-				title="<?php echo esc_attr( $filename ?: __( 'No audio selected', 'compath-choir-rehearsal' ) ); ?>"
-				aria-hidden="true"
-			>
-				<canvas class="choir-track-waveform__canvas"></canvas>
-			</div>
-			<div class="choir-track-item__actions">
-				<button type="button" class="choir-icon-btn choir-select-audio" title="<?php esc_attr_e( 'Upload', 'compath-choir-rehearsal' ); ?>" aria-label="<?php esc_attr_e( 'Upload', 'compath-choir-rehearsal' ); ?>">
-					<?php echo self::icon_svg( 'upload' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-				</button>
-				<?php if ( Choir_Rehearsal_Edition::can_record() ) : ?>
-					<button type="button" class="choir-icon-btn choir-record-audio" title="<?php esc_attr_e( 'Record', 'compath-choir-rehearsal' ); ?>" aria-label="<?php esc_attr_e( 'Record', 'compath-choir-rehearsal' ); ?>">
-						<?php echo self::icon_svg( 'record' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+			<div class="choir-track-audio-pane" <?php echo $is_youtube ? 'hidden' : ''; ?>>
+				<div
+					class="choir-track-waveform<?php echo '' === $audio_url ? ' is-empty' : ''; ?>"
+					data-audio-url="<?php echo esc_url( $audio_url ); ?>"
+					title="<?php echo esc_attr( $filename ?: __( 'No audio selected', 'compath-choir-rehearsal' ) ); ?>"
+					aria-hidden="true"
+				>
+					<canvas class="choir-track-waveform__canvas"></canvas>
+				</div>
+				<div class="choir-track-item__actions choir-track-item__actions--audio">
+					<button type="button" class="choir-icon-btn choir-select-audio" title="<?php esc_attr_e( 'Upload', 'compath-choir-rehearsal' ); ?>" aria-label="<?php esc_attr_e( 'Upload', 'compath-choir-rehearsal' ); ?>">
+						<?php echo self::icon_svg( 'upload' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 					</button>
-				<?php endif; ?>
+					<?php if ( Choir_Rehearsal_Edition::can_record() ) : ?>
+						<button type="button" class="choir-icon-btn choir-record-audio" title="<?php esc_attr_e( 'Record', 'compath-choir-rehearsal' ); ?>" aria-label="<?php esc_attr_e( 'Record', 'compath-choir-rehearsal' ); ?>">
+							<?php echo self::icon_svg( 'record' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+						</button>
+					<?php endif; ?>
+					<?php if ( Choir_Rehearsal_Edition::can_play_in_editor() ) : ?>
+						<button
+							type="button"
+							class="choir-icon-btn choir-play-track"
+							title="<?php esc_attr_e( 'Play', 'compath-choir-rehearsal' ); ?>"
+							aria-label="<?php esc_attr_e( 'Play', 'compath-choir-rehearsal' ); ?>"
+							data-track-url="<?php echo esc_url( $audio_url ); ?>"
+							data-track-title="<?php echo esc_attr( $play_title ); ?>"
+							<?php disabled( ! $can_play_audio ); ?>
+						>
+							<?php echo self::icon_svg( 'play' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+						</button>
+					<?php endif; ?>
+				</div>
+			</div>
+			<div class="choir-track-youtube-pane" <?php echo $is_youtube ? '' : 'hidden'; ?>>
+				<label class="screen-reader-text" for="<?php echo esc_attr( $row_id ); ?>-url"><?php esc_html_e( 'YouTube URL', 'compath-choir-rehearsal' ); ?></label>
+				<input
+					type="url"
+					class="choir-youtube-url-input large-text"
+					id="<?php echo esc_attr( $row_id ); ?>-url"
+					name="choir_tracks[<?php echo esc_attr( (string) $index ); ?>][youtube_url]"
+					value="<?php echo esc_attr( $youtube_url ); ?>"
+					placeholder="https://www.youtube.com/watch?v=…"
+					autocomplete="off"
+				/>
+				<p class="description choir-track-youtube-hint">
+					<?php esc_html_e( 'Official YouTube player opens on the song page (video stays visible). Not for downloading audio.', 'compath-choir-rehearsal' ); ?>
+				</p>
 				<?php if ( Choir_Rehearsal_Edition::can_play_in_editor() ) : ?>
 					<button
 						type="button"
-						class="choir-icon-btn choir-play-track"
-						title="<?php esc_attr_e( 'Play', 'compath-choir-rehearsal' ); ?>"
-						aria-label="<?php esc_attr_e( 'Play', 'compath-choir-rehearsal' ); ?>"
-						data-track-url="<?php echo esc_url( $audio_url ); ?>"
-						data-track-title="<?php echo esc_attr( $play_title ); ?>"
-						<?php disabled( ! $can_play ); ?>
+						class="button choir-youtube-toggle"
+						aria-expanded="false"
+						aria-controls="<?php echo esc_attr( $row_id ); ?>-player"
+						data-embed-url="<?php echo esc_url( $yt_embed ); ?>"
+						<?php disabled( ! $can_play_youtube ); ?>
 					>
-						<?php echo self::icon_svg( 'play' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+						<?php esc_html_e( 'Preview video', 'compath-choir-rehearsal' ); ?>
 					</button>
+					<div
+						id="<?php echo esc_attr( $row_id ); ?>-player"
+						class="choir-youtube-player is-hidden"
+						hidden
+					></div>
 				<?php endif; ?>
+			</div>
+			<div class="choir-track-item__actions choir-track-item__actions--row">
 				<button type="button" class="choir-icon-btn choir-icon-btn--danger choir-remove-track" title="<?php esc_attr_e( 'Remove', 'compath-choir-rehearsal' ); ?>" aria-label="<?php esc_attr_e( 'Remove', 'compath-choir-rehearsal' ); ?>">
 					<?php echo self::icon_svg( 'remove' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 				</button>
@@ -946,9 +1046,13 @@ final class Choir_Rehearsal_Admin {
 					continue;
 				}
 				$submitted[] = array(
-					'id'       => isset( $row['id'] ) ? absint( $row['id'] ) : 0,
-					'voice'    => isset( $row['voice'] ) ? sanitize_key( (string) $row['voice'] ) : '',
-					'audio_id' => isset( $row['audio_id'] ) ? absint( $row['audio_id'] ) : 0,
+					'id'          => isset( $row['id'] ) ? absint( $row['id'] ) : 0,
+					'voice'       => isset( $row['voice'] ) ? sanitize_key( (string) $row['voice'] ) : '',
+					'audio_id'    => isset( $row['audio_id'] ) ? absint( $row['audio_id'] ) : 0,
+					'source'      => isset( $row['source'] ) ? Choir_Rehearsal_Post_Types::sanitize_track_source( (string) $row['source'] ) : 'audio',
+					'youtube_url' => isset( $row['youtube_url'] )
+						? Choir_Rehearsal_Post_Types::sanitize_youtube_url( sanitize_text_field( (string) $row['youtube_url'] ) )
+						: '',
 				);
 			}
 		}
@@ -971,13 +1075,22 @@ final class Choir_Rehearsal_Admin {
 				continue;
 			}
 
-			$track_id  = isset( $row['id'] ) ? absint( $row['id'] ) : 0;
-			$voice     = isset( $row['voice'] ) ? sanitize_key( $row['voice'] ) : 'other';
-			$audio_id  = isset( $row['audio_id'] ) ? absint( $row['audio_id'] ) : 0;
-			$voice_lbl = Choir_Rehearsal_Voice_Types::get_label( $voice );
+			$track_id    = isset( $row['id'] ) ? absint( $row['id'] ) : 0;
+			$voice       = isset( $row['voice'] ) ? sanitize_key( $row['voice'] ) : 'other';
+			$audio_id    = isset( $row['audio_id'] ) ? absint( $row['audio_id'] ) : 0;
+			$source      = isset( $row['source'] ) ? Choir_Rehearsal_Post_Types::sanitize_track_source( (string) $row['source'] ) : 'audio';
+			$youtube_url = isset( $row['youtube_url'] ) ? Choir_Rehearsal_Post_Types::sanitize_youtube_url( (string) $row['youtube_url'] ) : '';
+			$voice_lbl   = Choir_Rehearsal_Voice_Types::get_label( $voice );
 
-			if ( $audio_id <= 0 ) {
+			if ( 'youtube' === $source ) {
+				if ( '' === $youtube_url ) {
+					continue;
+				}
+				$audio_id = 0;
+			} elseif ( $audio_id <= 0 ) {
 				continue;
+			} else {
+				$youtube_url = '';
 			}
 
 			$track_data = array(
@@ -1005,7 +1118,14 @@ final class Choir_Rehearsal_Admin {
 			}
 
 			update_post_meta( (int) $new_id, '_choir_voice_slug', $voice );
-			update_post_meta( (int) $new_id, '_choir_audio_id', $audio_id );
+			update_post_meta( (int) $new_id, '_choir_source', $source );
+			if ( 'youtube' === $source ) {
+				update_post_meta( (int) $new_id, '_choir_youtube_url', $youtube_url );
+				delete_post_meta( (int) $new_id, '_choir_audio_id' );
+			} else {
+				update_post_meta( (int) $new_id, '_choir_audio_id', $audio_id );
+				delete_post_meta( (int) $new_id, '_choir_youtube_url' );
+			}
 			$keep_ids[] = (int) $new_id;
 		}
 
