@@ -43,12 +43,33 @@ define( 'CHOIR_REHEARSAL_DISTRIBUTION', 'demo' );
 |---------|----------------|
 | Features | Same as Pro (search, mic record, editor Play, embedded PDF, YouTube tracks, etc.) |
 | License | No SureCart; features on via distribution flag |
+| Host lock | Install/run **only** on `compath.ee` and `*.compath.ee` (see below) |
 | Song cap | **50** songs site-wide |
 | Tracks per song | **10** |
 | Score PDF upload | **≤ 5 MB** |
 | Admin UI | Extra submenu **Demo data** (not mixed into general Settings) |
+| i18n | Full WordPress gettext readiness (any locale) |
 
 Over-limit: disable Add song / Add track / upload with a clear notice. Oversized PDF rejected on upload.
+
+### Host lock (Demo only)
+
+Hard gate so the Demo package cannot be used as a free Pro substitute on third-party sites.
+
+- Allowed hosts: exact `compath.ee` **or** any subdomain whose registrable suffix is `compath.ee` (e.g. `demo.rehearsal.compath.ee`, `shop.compath.ee`, `rehearsal.compath.ee`).
+- Disallowed: `localhost`, IP literals, `*.local`, any other TLD — unless a documented override constant is set for engineering (e.g. `CHOIR_REHEARSAL_DEMO_ALLOW_HOST` for staging); default **off** in shipped Demo zips.
+- Enforce on: plugin activation (fail activation + admin error) and early `plugins_loaded` (if site URL changed later → deactivate Demo soft-fail / show fatal notice and do not unlock Pro features).
+- Compare against `home_url()` / `site_url()` host (normalized, lowercase, no port).
+
+### Internationalization (Demo and shared strings)
+
+Lay translation groundwork from day one (not Russian-only UI):
+
+- All user-facing Demo strings via `__() / esc_html_e()` with text domain `compath-choir-rehearsal` (or dedicated `compath-choir-rehearsal-demo` if the Demo zip is a separate plugin header — prefer **one** domain shared with Lite so translators reuse catalogs).
+- Ship / generate `.pot`; load translations the WordPress.org-compatible way (WP 6.5+ language packs / `languages/*.l10n.php` as already used for Lite).
+- Demo data page, banner, limit messages, reset log messages, cron instructions — all translatable.
+- Seed song titles may stay English codes (`Demo Song 01`) for reset stability; optional localized labels later via filter, not required for v1.
+- Do **not** hardcode ET/RU-only copy in PHP for Demo chrome.
 
 ## Access model
 
@@ -163,6 +184,7 @@ Writers: nightly/HTTP/CLI reset, Run reset now, load/delete default library, son
 
 ## Security
 
+- Host lock to `*.compath.ee` (activation + runtime).  
 - Reset HTTP endpoint: constant-time key compare; no cookie auth required (cron has no WP session); refuse empty key.  
 - Rate-limit or one-flight lock during reset.  
 - Voice Leader cannot change reset key or install plugins.  
@@ -188,9 +210,28 @@ Writers: nightly/HTTP/CLI reset, Run reset now, load/delete default library, son
 | Cron | Host curl → secret URL at 03:00 EET |
 | Admin UI | Separate **Demo data** page (not Settings) |
 | Log | Last 24 h on Demo data page |
+| Host lock | Only `compath.ee` / `*.compath.ee` |
+| i18n | gettext + .pot / language packs from the start |
+
+## Related: song slug transliteration (all editions)
+
+Existing `Choir_Rehearsal_Slugs::transliterate()` pipeline (Lite/Pro/Demo):
+
+1. Explicit Cyrillic map (Russian + Ukrainian/Belarusian extras).  
+2. WordPress `remove_accents()` — Latin-based languages (French, German, Spanish, Estonian õ/ä/ö/ü, etc.).  
+3. `iconv(…, 'ASCII//TRANSLIT')` when available — broader fallback.
+
+**Product answer:** do **not** invent a separate procedure per language. Extend the **same** pipeline:
+
+- Most European languages → already covered by steps 2–3; no new code.  
+- Extra Cyrillic letters (e.g. Serbian ђ/ћ/џ) → add rows to the same map.  
+- Greek / Georgian / Armenian → optional map additions if iconv quality is poor.  
+- CJK / Arabic / Hebrew → iconv often yields empty or ugly slugs; add targeted maps or a documented “fallback to `song-N`” only if those locales become a real customer need.
+
+No per-language strategy objects for v1.
 
 ## Out of scope for v1
 
-- Multi-language landing copy beyond existing plugin l10n  
-- Automatic DNS/hosting provisioning from CI  
+- Hosting auto-provisioning from CI  
 - Soft-delete / recycle bin for demo vandalism (nightly wipe is enough)  
+- High-quality CJK/Arabic slug dictionaries (extend later if needed)  
