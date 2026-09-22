@@ -126,6 +126,15 @@
   ],
   "changelog": [
     {
+      "version": "0.4.62",
+      "summary": "Fix Cyrillic song permalinks",
+      "items": [
+        "WordPress percent-encoded Russian titles no longer become hex-dump slugs (d0-9f-d0-b5…)",
+        "Existing bad song slugs are repaired on upgrade"
+      ],
+      "open": true
+    },
+    {
       "version": "0.4.61",
       "summary": "Per-track YouTube source",
       "items": [
@@ -133,7 +142,7 @@
         "YouTube tracks open the official embed on the song page (video stays visible)",
         "Song list shows a YouTube icon next to PDF and public badges"
       ],
-      "open": true
+      "open": false
     },
     {
       "version": "0.4.60",

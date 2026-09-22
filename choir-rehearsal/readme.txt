@@ -4,7 +4,7 @@ Tags: choir, audio, rehearsal, voice parts, music
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 0.4.61
+Stable tag: 0.4.63
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -61,6 +61,16 @@ Yes. Use the shortcode `[choir_rehearsal]`.
 Yes. In the song editor, set a voice track’s source to **YouTube** and paste a youtube.com or youtu.be URL. On the song page a button opens the official YouTube embed (video stays visible). This is for listening/reference only — the plugin does not download or convert YouTube audio.
 
 == Changelog ==
+
+= 0.4.63 =
+
+* Multilingual song slugs for all editions (Lite/Pro/Demo/wporg): ICU Any-Latin for Arabic/CJK; fallback song-{id}
+* Keeps Cyrillic hex-dump repair from 0.4.62
+
+= 0.4.62 =
+
+* Fix Cyrillic song permalinks: WordPress percent-encoded titles no longer become hex dumps like d0-9f-d0-b5…
+* Repair existing hex-dump / non-Latin song slugs on upgrade
 
 = 0.4.61 =
 
