@@ -215,23 +215,41 @@ Writers: nightly/HTTP/CLI reset, Run reset now, load/delete default library, son
 
 ## Related: song slug transliteration (all editions)
 
-Existing `Choir_Rehearsal_Slugs::transliterate()` pipeline (Lite/Pro/Demo):
+One shared pipeline in `Choir_Rehearsal_Slugs::transliterate()` (Lite/Pro/Demo) — **no per-language strategy classes**.
 
-1. Explicit Cyrillic map (Russian + Ukrainian/Belarusian extras).  
-2. WordPress `remove_accents()` — Latin-based languages (French, German, Spanish, Estonian õ/ä/ö/ü, etc.).  
-3. `iconv(…, 'ASCII//TRANSLIT')` when available — broader fallback.
+Required coverage: Cyrillic, Latin-with-diacritics, **Arabic**, **CJK** (Chinese / Japanese / Korean), and other scripts ICU can romanize.
 
-**Product answer:** do **not** invent a separate procedure per language. Extend the **same** pipeline:
+### Pipeline (ordered)
 
-- Most European languages → already covered by steps 2–3; no new code.  
-- Extra Cyrillic letters (e.g. Serbian ђ/ћ/џ) → add rows to the same map.  
-- Greek / Georgian / Armenian → optional map additions if iconv quality is poor.  
-- CJK / Arabic / Hebrew → iconv often yields empty or ugly slugs; add targeted maps or a documented “fallback to `song-N`” only if those locales become a real customer need.
+1. **Explicit Cyrillic map** (Russian + Ukrainian/Belarusian extras; extend with Serbian etc. as needed) — better choir-facing quality than raw ICU for RU (`песня` → `pesnya`).  
+2. **ICU / PHP `intl` Transliterator** when available:  
+   `Any-Latin; Latin-ASCII`  
+   Romanizes remaining non-Latin (Arabic → Latin, Han → pinyin-like, Hiragana/Katakana → romaji, Hangul → romanization, Greek, etc.).  
+3. WordPress `remove_accents()` — leftover Latin diacritics.  
+4. `iconv(…, 'ASCII//TRANSLIT')` if still needed.  
+5. Lowercase + non `[a-z0-9]` → `-` as today. If the result is empty → fallback slug `song` / `song-N`.
 
-No per-language strategy objects for v1.
+### Hosting note
+
+Demo (and recommended Pro hosts) should have PHP **`intl`** enabled so step 2 works. Without `intl`, Arabic/CJK quality degrades (steps 3–4 often strip characters); show a one-time admin notice on Demo if `intl` is missing.
+
+### Examples (with ICU)
+
+| Title | Slug (approx.) |
+|-------|----------------|
+| Песня | `pesnya` (map) |
+| مرحبا | `mrhba` |
+| 合唱练习 | `he-chang-lian-xi` |
+| こんにちは | `konnichiha` |
+| 한국어 | `hangug-eo` |
+| Õhtu laul | `ohtu-laul` |
+
+### Product answer
+
+Do **not** invent separate procedures per language. Arabic and CJK go through the **same** `transliterate()` via ICU step 2. Manual maps only where we want better than ICU (Cyrillic today).
 
 ## Out of scope for v1
 
 - Hosting auto-provisioning from CI  
 - Soft-delete / recycle bin for demo vandalism (nightly wipe is enough)  
-- High-quality CJK/Arabic slug dictionaries (extend later if needed)  
+- Shipping a full offline CJK dictionary if `intl` is absent (require `intl` instead)  
