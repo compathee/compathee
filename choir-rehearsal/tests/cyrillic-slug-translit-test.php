@@ -73,4 +73,19 @@ $hexdump = 'd09fd0b5d181d0bdd18f';
 assert_false( 'hexdump_not_good_latin', Choir_Rehearsal_Slugs::is_usable_latin_slug( $hexdump ) );
 assert_same( 'hexdump_from_title', 'pesnya', Choir_Rehearsal_Slugs::latin_slug_from_title_or_slug( $title, $hexdump ) );
 
+assert_same( 'ohtu', 'ohtu-laul', Choir_Rehearsal_Slugs::latin_slug( 'Õhtu laul' ) );
+assert_same( 'fallback_id', 'song-42', Choir_Rehearsal_Slugs::fallback_slug( 42 ) );
+assert_same( 'fallback_new', 'song', Choir_Rehearsal_Slugs::fallback_slug( 0 ) );
+
+$cjk = Choir_Rehearsal_Slugs::latin_slug( '合唱' );
+$ar  = Choir_Rehearsal_Slugs::latin_slug( 'مرحبا' );
+if ( class_exists( 'Transliterator', false ) ) {
+	assert_true( 'cjk_romanized', '' !== $cjk && Choir_Rehearsal_Slugs::is_latin_slug( $cjk ) );
+	assert_true( 'arabic_romanized', '' !== $ar && Choir_Rehearsal_Slugs::is_latin_slug( $ar ) );
+	echo "INFO cjk=$cjk arabic=$ar\n";
+} else {
+	assert_same( 'cjk_empty_without_intl', '', $cjk );
+	assert_same( 'arabic_empty_without_intl', '', $ar );
+}
+
 echo "OK slug transliteration tests\n";

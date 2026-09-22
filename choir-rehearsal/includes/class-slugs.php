@@ -46,7 +46,7 @@ final class Choir_Rehearsal_Slugs {
 		$slug = self::latin_slug_from_title_or_slug( $title, $slug );
 
 		if ( '' === $slug ) {
-			$slug = 'song';
+			$slug = self::fallback_slug( $post_id );
 		}
 
 		$data['post_name'] = self::unique_slug( $slug, $post_id );
@@ -75,7 +75,7 @@ final class Choir_Rehearsal_Slugs {
 		}
 
 		$slug = self::unique_slug(
-			self::latin_slug_from_title_or_slug( (string) $post->post_title, (string) $post->post_name ) ?: 'song',
+			self::latin_slug_from_title_or_slug( (string) $post->post_title, (string) $post->post_name ) ?: self::fallback_slug( $post_id ),
 			$post_id
 		);
 
@@ -114,7 +114,7 @@ final class Choir_Rehearsal_Slugs {
 			}
 
 			$slug   = self::unique_slug(
-				self::latin_slug_from_title_or_slug( (string) $song->post_title, (string) $song->post_name ) ?: 'song',
+				self::latin_slug_from_title_or_slug( (string) $song->post_title, (string) $song->post_name ) ?: self::fallback_slug( (int) $song->ID ),
 				(int) $song->ID
 			);
 			$result = wp_update_post(
@@ -327,7 +327,16 @@ final class Choir_Rehearsal_Slugs {
 			$text = remove_accents( $text );
 		}
 
-		if ( function_exists( 'iconv' ) ) {
+		// Arabic / CJK / other scripts when php-intl is available (Lite, Pro, and Demo).
+		if ( class_exists( 'Transliterator', false ) ) {
+			$transliterator = \Transliterator::create( 'Any-Latin; Latin-ASCII' );
+			if ( $transliterator instanceof \Transliterator ) {
+				$converted = $transliterator->transliterate( $text );
+				if ( is_string( $converted ) && '' !== $converted ) {
+					$text = $converted;
+				}
+			}
+		} elseif ( function_exists( 'iconv' ) ) {
 			$converted = @iconv( 'UTF-8', 'ASCII//TRANSLIT//IGNORE', $text );
 			if ( is_string( $converted ) && '' !== $converted ) {
 				$text = $converted;
@@ -337,9 +346,16 @@ final class Choir_Rehearsal_Slugs {
 		return $text;
 	}
 
+	/**
+	 * ASCII stub when romanization yields nothing (typical without intl for Arabic/CJK).
+	 */
+	public static function fallback_slug( int $post_id ): string {
+		return $post_id > 0 ? 'song-' . $post_id : 'song';
+	}
+
 	private static function unique_slug( string $slug, int $post_id ): string {
 		if ( '' === $slug ) {
-			$slug = 'song';
+			$slug = self::fallback_slug( $post_id );
 		}
 
 		if ( function_exists( 'wp_unique_post_slug' ) ) {
