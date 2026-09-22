@@ -22,6 +22,7 @@ rm -rf \
   "$STAGE/$FOLDER/tests" \
   "$STAGE/$FOLDER/docs/deploy"
 rm -f "$STAGE/$FOLDER/includes/distribution-wporg.php"
+rm -f "$STAGE/$FOLDER/includes/distribution-demo.php"
 
 VERSION="$(grep -E "^\s*\* Version:" "$STAGE/$FOLDER/choir-rehearsal.php" | head -1 | sed -E 's/.*Version:[[:space:]]*//')"
 ZIP="$OUT_DIR/$ASSET"
