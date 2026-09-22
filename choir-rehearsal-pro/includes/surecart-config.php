@@ -18,8 +18,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 return array(
 	/**
-	 * Paste your SureCart Public Token here before uploading the zip to the shop.
-	 * Example: 'pt_xxxxxxxxxxxxxxxxxxxxxxxx'
+	 * SureCart Public Token (app.surecart.com → API → Public).
+	 * Safe to ship in the customer zip — public token, not the secret Connection token.
 	 */
-	'public_token' => '',
+	'public_token' => 'pt_UVGK3voHWKRPSVmVWmxKgZnX',
 );
