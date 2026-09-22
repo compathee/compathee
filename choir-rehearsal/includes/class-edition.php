@@ -14,11 +14,12 @@ final class Choir_Rehearsal_Edition {
 	public const LITE_MAX_TRACKS = 4;
 
 	public static function is_pro(): bool {
-		if ( defined( 'CHOIR_REHEARSAL_PRO' ) && CHOIR_REHEARSAL_PRO ) {
-			return true;
-		}
+		// Pro add-on may be installed but not licensed yet — always ask the filter.
+		// Default true when CHOIR_REHEARSAL_PRO is defined (legacy unlock); Pro's
+		// licensing filter overrides this when a SureCart public token is configured.
+		$default = defined( 'CHOIR_REHEARSAL_PRO' ) && CHOIR_REHEARSAL_PRO;
 
-		return (bool) apply_filters( 'choir_rehearsal_is_pro', false );
+		return (bool) apply_filters( 'choir_rehearsal_is_pro', $default );
 	}
 
 	private static function is_full_edition(): bool {
