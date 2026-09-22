@@ -51,7 +51,7 @@ final class Choir_Rehearsal_Slugs {
 		}
 
 		if ( '' === $slug ) {
-			$slug = 'song';
+			$slug = $post_id > 0 ? 'song-' . $post_id : 'song';
 		}
 
 		$data['post_name'] = self::unique_slug( $slug, $post_id );
@@ -79,8 +79,12 @@ final class Choir_Rehearsal_Slugs {
 			return;
 		}
 
-		$source = '' !== (string) $post->post_name ? (string) $post->post_name : (string) $post->post_title;
-		$slug   = self::unique_slug( self::latin_slug( $source ) ?: 'song', $post_id );
+		$source = '' !== (string) $post->post_title ? (string) $post->post_title : (string) $post->post_name;
+		$slug   = self::latin_slug( $source );
+		if ( '' === $slug ) {
+			$slug = 'song-' . $post_id;
+		}
+		$slug = self::unique_slug( $slug, $post_id );
 
 		remove_action( 'save_post_' . Choir_Rehearsal_Post_Types::SONG, array( self::class, 'ensure_latin_slug_after_save' ), 5 );
 		wp_update_post(
@@ -117,7 +121,11 @@ final class Choir_Rehearsal_Slugs {
 			}
 
 			$source = '' !== (string) $song->post_title ? (string) $song->post_title : 'song';
-			$slug   = self::unique_slug( self::latin_slug( $source ) ?: 'song', (int) $song->ID );
+			$slug   = self::latin_slug( $source );
+			if ( '' === $slug ) {
+				$slug = 'song-' . (int) $song->ID;
+			}
+			$slug   = self::unique_slug( $slug, (int) $song->ID );
 			$result = wp_update_post(
 				array(
 					'ID'        => (int) $song->ID,
@@ -243,7 +251,16 @@ final class Choir_Rehearsal_Slugs {
 			$text = remove_accents( $text );
 		}
 
-		if ( function_exists( 'iconv' ) ) {
+		// Arabic / CJK / other scripts when php-intl is available.
+		if ( class_exists( 'Transliterator', false ) ) {
+			$transliterator = \Transliterator::create( 'Any-Latin; Latin-ASCII' );
+			if ( $transliterator instanceof \Transliterator ) {
+				$converted = $transliterator->transliterate( $text );
+				if ( is_string( $converted ) && '' !== $converted ) {
+					$text = $converted;
+				}
+			}
+		} elseif ( function_exists( 'iconv' ) ) {
 			$converted = @iconv( 'UTF-8', 'ASCII//TRANSLIT//IGNORE', $text );
 			if ( is_string( $converted ) && '' !== $converted ) {
 				$text = $converted;

@@ -19,6 +19,11 @@ require_once CHOIR_REHEARSAL_PATH . 'includes/class-pages.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-access.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-admin.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-demo-data.php';
+require_once CHOIR_REHEARSAL_PATH . 'includes/class-demo-host.php';
+require_once CHOIR_REHEARSAL_PATH . 'includes/class-demo-log.php';
+require_once CHOIR_REHEARSAL_PATH . 'includes/class-demo-limits.php';
+require_once CHOIR_REHEARSAL_PATH . 'includes/class-demo-reset.php';
+require_once CHOIR_REHEARSAL_PATH . 'includes/class-demo-admin.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-recording.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-frontend.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-rest.php';
@@ -68,6 +73,10 @@ final class Choir_Rehearsal_Plugin {
 		Choir_Rehearsal_Access::register();
 		Choir_Rehearsal_Admin::register();
 		Choir_Rehearsal_Demo_Data::register();
+		Choir_Rehearsal_Demo_Host::register();
+		Choir_Rehearsal_Demo_Limits::register();
+		Choir_Rehearsal_Demo_Reset::register();
+		Choir_Rehearsal_Demo_Admin::register();
 		Choir_Rehearsal_Recording::register();
 		Choir_Rehearsal_Frontend::register();
 		Choir_Rehearsal_REST::register();
@@ -81,6 +90,14 @@ final class Choir_Rehearsal_Plugin {
 	}
 
 	public function activate(): void {
+		if ( ! Choir_Rehearsal_Demo_Host::assert_allowed_or_deactivate() ) {
+			wp_die(
+				esc_html__( 'Compath Choir Rehearsal Demo can only be activated on compath.ee domains.', 'compath-choir-rehearsal' ),
+				esc_html__( 'Demo host not allowed', 'compath-choir-rehearsal' ),
+				array( 'back_link' => true )
+			);
+		}
+
 		$this->init();
 		// Register CPT/taxonomy now — init already ran, so hooked callbacks will not fire
 		// before flush_rewrite_rules() and song URLs would 404 after reactivate.

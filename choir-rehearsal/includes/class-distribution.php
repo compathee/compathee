@@ -1,6 +1,6 @@
 <?php
 /**
- * Distribution channel helpers (GitHub vs WordPress.org).
+ * Distribution channel helpers (GitHub vs WordPress.org vs Demo).
  */
 
 declare(strict_types=1);
@@ -13,11 +13,12 @@ final class Choir_Rehearsal_Distribution {
 
 	public const CHANNEL_GITHUB = 'github';
 	public const CHANNEL_WPORG  = 'wporg';
+	public const CHANNEL_DEMO   = 'demo';
 
 	public static function channel(): string {
 		if ( defined( 'CHOIR_REHEARSAL_DISTRIBUTION' ) ) {
 			$channel = (string) CHOIR_REHEARSAL_DISTRIBUTION;
-			if ( self::CHANNEL_WPORG === $channel || self::CHANNEL_GITHUB === $channel ) {
+			if ( in_array( $channel, array( self::CHANNEL_WPORG, self::CHANNEL_GITHUB, self::CHANNEL_DEMO ), true ) ) {
 				return $channel;
 			}
 		}
@@ -29,11 +30,15 @@ final class Choir_Rehearsal_Distribution {
 		return self::CHANNEL_WPORG === self::channel();
 	}
 
+	public static function is_demo(): bool {
+		return self::CHANNEL_DEMO === self::channel();
+	}
+
 	/**
-	 * Third-party (GitHub) self-updates are not allowed for WordPress.org packages.
+	 * Third-party (GitHub) self-updates are not allowed for WordPress.org or Demo packages.
 	 */
 	public static function uses_github_updater(): bool {
-		return ! self::is_wporg();
+		return self::CHANNEL_GITHUB === self::channel();
 	}
 
 	public static function pdfjs_script_url(): string {

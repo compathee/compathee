@@ -4,7 +4,7 @@ Tags: choir, audio, rehearsal, voice parts, music
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 0.4.61
+Stable tag: 0.4.63
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -61,6 +61,13 @@ Yes. Use the shortcode `[choir_rehearsal]`.
 Yes. In the song editor, set a voice track’s source to **YouTube** and paste a youtube.com or youtu.be URL. On the song page a button opens the official YouTube embed (video stays visible). This is for listening/reference only — the plugin does not download or convert YouTube audio.
 
 == Changelog ==
+
+= 0.4.63 =
+
+* Demo distribution for demo.rehearsal.compath.ee (Pro features, 50 songs / 10 tracks / PDF 5 MB)
+* Demo data admin page: nightly reset instructions + 24h event log
+* Host lock: Demo runs only on *.compath.ee
+* Slug transliteration: ICU Any-Latin for Arabic/CJK; fallback song-{id}
 
 = 0.4.61 =
 
