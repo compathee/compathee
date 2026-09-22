@@ -35,3 +35,18 @@ curl -fsS 'https://demo.rehearsal.compath.ee/?choir_demo_reset=1&key=SECRET'
 Or: `wp choir-rehearsal demo-reset`
 
 Full UI instructions: **Songs → Demo data** in wp-admin.
+
+## Download
+
+Draft GitHub Release (Demo zip):
+
+https://github.com/compathee/compathee/releases/tag/compath-choir-rehearsal-demo-v0.4.63
+
+Asset: **`compath-choir-rehearsal-demo.zip`**
+
+Build locally:
+
+```bash
+./scripts/build-demo-zip.sh
+# → dist/compath-choir-rehearsal-demo.zip
+```
