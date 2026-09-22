@@ -12,7 +12,8 @@
 
 declare(strict_types=1);
 
-if ( ! defined( 'ABSPATH' ) ) {
+// Allow CLI package checks to read the token without a WordPress bootstrap.
+if ( ! defined( 'ABSPATH' ) && 'cli' !== PHP_SAPI ) {
 	exit;
 }
 
