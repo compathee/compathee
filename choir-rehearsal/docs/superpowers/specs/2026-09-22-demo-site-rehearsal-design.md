@@ -215,41 +215,38 @@ Writers: nightly/HTTP/CLI reset, Run reset now, load/delete default library, son
 
 ## Related: song slug transliteration (all editions)
 
-One shared pipeline in `Choir_Rehearsal_Slugs::transliterate()` (Lite/Pro/Demo) — **no per-language strategy classes**.
-
-Required coverage: Cyrillic, Latin-with-diacritics, **Arabic**, **CJK** (Chinese / Japanese / Korean), and other scripts ICU can romanize.
+One shared pipeline in `Choir_Rehearsal_Slugs` (Lite/Pro/Demo) — **no per-language strategy classes**.
 
 ### Pipeline (ordered)
 
-1. **Explicit Cyrillic map** (Russian + Ukrainian/Belarusian extras; extend with Serbian etc. as needed) — better choir-facing quality than raw ICU for RU (`песня` → `pesnya`).  
-2. **ICU / PHP `intl` Transliterator** when available:  
-   `Any-Latin; Latin-ASCII`  
-   Romanizes remaining non-Latin (Arabic → Latin, Han → pinyin-like, Hiragana/Katakana → romaji, Hangul → romanization, Greek, etc.).  
-3. WordPress `remove_accents()` — leftover Latin diacritics.  
-4. `iconv(…, 'ASCII//TRANSLIT')` if still needed.  
-5. Lowercase + non `[a-z0-9]` → `-` as today. If the result is empty → fallback slug `song` / `song-N`.
+1. **Explicit Cyrillic map** (Russian + Ukrainian/Belarusian extras) — e.g. `песня` → `pesnya`.  
+2. WordPress `remove_accents()` — Latin diacritics (et, de, fr, …).  
+3. If PHP **`intl`** is available: ICU `Any-Latin; Latin-ASCII` for remaining non-Latin (**Arabic**, **CJK**, Greek, etc.).  
+4. Lowercase + keep only `[a-z0-9-]` as today.
 
-### Hosting note
+### Fallback when romanization yields nothing
 
-Demo (and recommended Pro hosts) should have PHP **`intl`** enabled so step 2 works. Without `intl`, Arabic/CJK quality degrades (steps 3–4 often strip characters); show a one-time admin notice on Demo if `intl` is missing.
+If after steps 1–3 the slug is empty (typical without `intl` for Arabic/CJK, or exotic scripts), **do not** invent dictionaries — use a stable Latin stub:
 
-### Examples (with ICU)
+- Prefer **`song-{post_id}`** (unique, stable after first save).  
+- Before an ID exists (brand-new insert): temporary `song`, then `ensure_latin_slug_after_save` rewrites to `song-{id}`.
 
-| Title | Slug (approx.) |
-|-------|----------------|
-| Песня | `pesnya` (map) |
-| مرحبا | `mrhba` |
-| 合唱练习 | `he-chang-lian-xi` |
-| こんにちは | `konnichiha` |
-| 한국어 | `hangug-eo` |
-| Õhtu laul | `ohtu-laul` |
+No admin nag required for missing `intl`; titles stay in the original script, URLs stay ASCII.
+
+### Examples
+
+| Title | With `intl` (approx.) | Without usable romanization |
+|-------|----------------------|-----------------------------|
+| Песня | `pesnya` | `pesnya` (map, no intl needed) |
+| Õhtu laul | `ohtu-laul` | `ohtu-laul` (`remove_accents`) |
+| مرحبا / 合唱 | `mrhba` / `he-chang-…` | `song-123` |
 
 ### Product answer
 
-Do **not** invent separate procedures per language. Arabic and CJK go through the **same** `transliterate()` via ICU step 2. Manual maps only where we want better than ICU (Cyrillic today).
+Same pipeline for every language. Arabic/CJK romanize when `intl` is present; otherwise the permalink is simply `song-{id}`.
 
 ## Out of scope for v1
 
 - Hosting auto-provisioning from CI  
 - Soft-delete / recycle bin for demo vandalism (nightly wipe is enough)  
-- Shipping a full offline CJK dictionary if `intl` is absent (require `intl` instead)  
+- Offline CJK/Arabic dictionaries when `intl` is missing (use `song-{id}` instead)  
