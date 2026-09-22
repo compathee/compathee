@@ -15,7 +15,11 @@ final class Choir_Rehearsal_Demo_Data {
 
 	public const META_DEMO_AUDIO = '_choir_demo_audio';
 
+	public const META_DEMO_SCORE = '_choir_demo_score';
+
 	private const DEMO_AUDIO_BASENAME = 'choir-rehearsal-demo-voice.mp3';
+
+	private const DEMO_SCORE_BASENAME = 'choir-warm-up.pdf';
 
 	/**
 	 * Zero-padded title so A–Z list order is Demo Song 01, 02, … 09, 10 (not 1, 10, 2).
@@ -206,7 +210,7 @@ JS;
 	/**
 	 * @return array{songs: int, tracks: int, from: int, to: int, error: string}
 	 */
-	public static function load_demo_songs(): array {
+	public static function load_demo_songs( bool $attach_score = false ): array {
 		$empty = array(
 			'songs'  => 0,
 			'tracks' => 0,
@@ -219,6 +223,16 @@ JS;
 		if ( $audio_id <= 0 ) {
 			$empty['error'] = __( 'Could not create the demo audio file in the Media Library.', 'compath-choir-rehearsal' );
 			return $empty;
+		}
+
+		$pdf_id = 0;
+		if ( $attach_score || Choir_Rehearsal_Distribution::is_demo() ) {
+			$pdf_id = self::ensure_demo_score_attachment();
+			if ( $pdf_id <= 0 ) {
+				$empty['error'] = __( 'Could not create the demo score PDF in the Media Library.', 'compath-choir-rehearsal' );
+				return $empty;
+			}
+			$attach_score = true;
 		}
 
 		$start = self::next_demo_song_number();
@@ -264,6 +278,10 @@ JS;
 				$tracks++;
 				$order++;
 			}
+
+			if ( $attach_score && $pdf_id > 0 ) {
+				update_post_meta( (int) $song_id, '_choir_score_pdf_id', $pdf_id );
+			}
 		}
 
 		return array(
@@ -273,6 +291,15 @@ JS;
 			'to'     => $end,
 			'error'  => '',
 		);
+	}
+
+	/**
+	 * Demo reset / Demo package: load songs and attach the seed LilyPond PDF.
+	 *
+	 * @return array{songs: int, tracks: int, from: int, to: int, error: string}
+	 */
+	public static function load_demo_songs_with_score(): array {
+		return self::load_demo_songs( true );
 	}
 
 	/**
@@ -387,6 +414,68 @@ JS;
 		return CHOIR_REHEARSAL_PATH . 'assets/demo/demo-voice-track.mp3';
 	}
 
+	public static function demo_score_source_path(): string {
+		return CHOIR_REHEARSAL_PATH . 'assets/demo/choir-warm-up.pdf';
+	}
+
+	public static function ensure_demo_score_attachment(): int {
+		$existing = get_posts(
+			array(
+				'post_type'      => 'attachment',
+				'posts_per_page' => 1,
+				'post_status'    => 'inherit',
+				'fields'         => 'ids',
+				'meta_key'       => self::META_DEMO_SCORE,
+				'meta_value'     => '1',
+				'no_found_rows'  => true,
+			)
+		);
+
+		if ( ! empty( $existing[0] ) ) {
+			$existing_id = (int) $existing[0];
+			$url         = wp_get_attachment_url( $existing_id );
+			if ( is_string( $url ) && '' !== $url ) {
+				return $existing_id;
+			}
+		}
+
+		$source = self::demo_score_source_path();
+		if ( ! is_readable( $source ) ) {
+			return 0;
+		}
+
+		if ( ! function_exists( 'media_handle_sideload' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/file.php';
+			require_once ABSPATH . 'wp-admin/includes/media.php';
+			require_once ABSPATH . 'wp-admin/includes/image.php';
+		}
+
+		$tmp = wp_tempnam( self::DEMO_SCORE_BASENAME );
+		if ( ! is_string( $tmp ) || '' === $tmp ) {
+			return 0;
+		}
+
+		if ( ! copy( $source, $tmp ) ) {
+			wp_delete_file( $tmp );
+			return 0;
+		}
+
+		$file_array = array(
+			'name'     => self::DEMO_SCORE_BASENAME,
+			'tmp_name' => $tmp,
+		);
+
+		$attachment_id = media_handle_sideload( $file_array, 0, 'Choir Warm-up (demo score)' );
+		if ( is_wp_error( $attachment_id ) ) {
+			wp_delete_file( $tmp );
+			return 0;
+		}
+
+		update_post_meta( (int) $attachment_id, self::META_DEMO_SCORE, '1' );
+
+		return (int) $attachment_id;
+	}
+
 	public static function ensure_demo_audio_attachment(): int {
 		$existing = get_posts(
 			array(
@@ -497,6 +586,10 @@ JS;
 	}
 
 	public static function render_settings_buttons(): void {
+		if ( Choir_Rehearsal_Distribution::is_demo() ) {
+			// Demo package: library actions live on the Demo data admin page.
+			return;
+		}
 		?>
 		<hr />
 		<h2><?php esc_html_e( 'Demo library', 'compath-choir-rehearsal' ); ?></h2>
