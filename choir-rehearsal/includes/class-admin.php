@@ -53,6 +53,7 @@ final class Choir_Rehearsal_Admin {
 		);
 
 		Choir_Rehearsal_Pages::register_settings();
+		Choir_Rehearsal_Feedback::register_settings();
 		if ( Choir_Rehearsal_Distribution::uses_github_updater() ) {
 			Choir_Rehearsal_Updater::register_settings();
 		}
@@ -226,6 +227,7 @@ final class Choir_Rehearsal_Admin {
 							<p class="description"><?php esc_html_e( 'Role names Singer and Voice Leader are kept in English on purpose.', 'compath-choir-rehearsal' ); ?></p>
 						</td>
 					</tr>
+					<?php Choir_Rehearsal_Feedback::render_settings_rows(); ?>
 					<?php if ( Choir_Rehearsal_Distribution::uses_github_updater() ) : ?>
 					<tr>
 						<th scope="row"><?php esc_html_e( 'Update JSON URL', 'compath-choir-rehearsal' ); ?></th>

@@ -20,13 +20,16 @@ Choir Rehearsal helps choir members learn new pieces by voice part.
 * Official YouTube embed on the song page (video stays visible; no download)
 * Attach a PDF score per song with page-by-page viewer
 * Frontend song list at `/rehearsal/` with PDF, public, and YouTube badges
+* Send feedback from the song list (optional GitHub issue when an administrator adds a token)
 * Sticky HTML5 player at the bottom of the page
 * Optional login-only access with Singer and Voice Leader roles (English role names)
 * REST API and MCP abilities for automation
 
 == External services ==
 
-This plugin does not require external services to work. Song data, audio, and PDF scores stay on your WordPress site.
+The rehearsal library works without external services. Song data, audio, and PDF scores stay on your WordPress site.
+
+Optional **feedback** (under the song list): an administrator may save a GitHub personal access token under **Choir Rehearsal → Settings**. When someone sends feedback, the site server calls the GitHub REST API (`https://api.github.com`) to open an issue in the configured repository (default `compathee/compathee`). The request includes the message, feedback type, optional contact email, WordPress role (or guest), plugin version, site home URL, WordPress version, and PHP version. The token is stored in WordPress and is not sent to the visitor’s browser. Nothing is sent until a token is saved. Subject to the [GitHub Terms of Service](https://docs.github.com/en/site-policy/github-terms/github-terms-of-service).
 
 Optional **YouTube tracks** (song editor): choose YouTube as a track source and paste a URL. The song page opens the official YouTube embed player (`youtube.com`). Playback uses YouTube’s embed; no download. Subject to [YouTube Terms of Service](https://www.youtube.com/static?template=terms). No YouTube API key is required for this embed.
 
@@ -56,11 +59,28 @@ WordPress roles created on plugin activation. Names stay in English. **Singer** 
 
 Yes. Use the shortcode `[choir_rehearsal]`.
 
+= How do singers send feedback to GitHub? =
+
+Anyone who can open the song list (Administrator, Voice Leader, Singer, or a guest) sees **Send feedback** under the list. Submitting does nothing useful until an administrator adds a token:
+
+1. On GitHub, open **Settings → Developer settings → Personal access tokens → Fine-grained tokens → Generate new token**.
+2. Resource owner: the account that owns the repository. Repository access: **Only select repositories**, then `compathee/compathee` (or your fork).
+3. Permissions: **Issues → Read and write**. No other permissions are required.
+4. In WordPress, open **Choir Rehearsal → Settings** (Administrator only).
+5. Set **GitHub repository for feedback** to `compathee/compathee` (owner/name).
+6. Paste the token into **GitHub token** and save. Leave the field blank later to keep the saved token. Tick **Remove saved token** to delete it.
+7. The next feedback submission creates an issue titled `[Choir Rehearsal] …`. If the token is missing, the form stays visible and the site replies that feedback is not configured.
+
 = Can I use YouTube instead of an audio file? =
 
 Yes. In the song editor, set a voice track’s source to **YouTube** and paste a youtube.com or youtu.be URL. On the song page a button opens the official YouTube embed (video stays visible). This is for listening/reference only — the plugin does not download or convert YouTube audio.
 
 == Changelog ==
+
+= 0.4.62 =
+
+* Song list: Send feedback for bugs and wishes (Administrator, Voice Leader, Singer, and guests)
+* Settings: GitHub repository and fine-grained token; the server creates the issue and does not expose the token
 
 = 0.4.61 =
 

@@ -841,3 +841,87 @@ msgstr "Vaata videot"
 
 msgid "Has YouTube track"
 msgstr "Sisaldab YouTube rada"
+
+msgid "Sending…"
+msgstr "Saadan…"
+
+msgid "Send"
+msgstr "Saada"
+
+msgid "View issue"
+msgstr "Vaata teemat"
+
+msgid "Could not send feedback. Please try again later."
+msgstr "Tagasisidet ei õnnestunud saata. Proovi hiljem uuesti."
+
+msgid "Send feedback"
+msgstr "Saada tagasiside"
+
+msgid "Wish, bug, or other note about Choir Rehearsal."
+msgstr "Soov, viga või muu märkus Choir Rehearsal’i kohta."
+
+msgid "Type"
+msgstr "Tüüp"
+
+msgid "Bug"
+msgstr "Viga"
+
+msgid "Wish"
+msgstr "Soov"
+
+msgid "Title"
+msgstr "Pealkiri"
+
+msgid "Description"
+msgstr "Kirjeldus"
+
+msgid "Contact email (optional)"
+msgstr "Kontaktmeil (valikuline)"
+
+msgid "Feedback"
+msgstr "Tagasiside"
+
+msgid "Singer, Voice Leader, Administrator, and guests can send a wish or bug from the song list. The site creates a GitHub issue. Lite and Pro both include this."
+msgstr "Singer, Voice Leader, Administrator ja külalised saavad laulude loendist saata soovi või veateate. Sait loob GitHubi teema. See on olemas nii Lites kui Pros."
+
+msgid "GitHub repository for feedback"
+msgstr "GitHubi hoidla tagasiside jaoks"
+
+msgid "Issues are created in this repository. Use owner/name, for example compathee/compathee."
+msgstr "Teemad luuakse selles hoidlas. Kasuta vormi omanik/nimi, näiteks compathee/compathee."
+
+msgid "GitHub token"
+msgstr "GitHubi tunnus"
+
+msgid "A token is saved."
+msgstr "Tunnus on salvestatud."
+
+msgid "Remove saved token"
+msgstr "Eemalda salvestatud tunnus"
+
+msgid "Create a fine-grained personal access token at GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens. Grant only this repository Issues: Read and write. Paste the token here. It stays on the server and is not shown on the rehearsal page. Leave blank to keep the saved token."
+msgstr "Loo peeneteraline isiklik juurdepääsutunnus: GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens. Anna ainult sellele hoidlale õigus Issues: Read and write. Kleebi tunnus siia. See jääb serverisse ega ilmu proovilehele. Tühjaks jätmine säilitab salvestatud tunnuse."
+
+msgid "That GitHub token does not look valid. The saved token was left unchanged."
+msgstr "See GitHubi tunnus ei tundu kehtiv. Salvestatud tunnus jäi muutmata."
+
+msgid "Thank you. Feedback sent as issue #%d."
+msgstr "Aitäh. Tagasiside on saadetud teemana #%d."
+
+msgid "Thank you. Feedback sent."
+msgstr "Aitäh. Tagasiside on saadetud."
+
+msgid "Please enter a type, title, and description."
+msgstr "Sisesta tüüp, pealkiri ja kirjeldus."
+
+msgid "Feedback is not configured."
+msgstr "Tagasiside ei ole seadistatud."
+
+msgid "Please wait before sending more feedback."
+msgstr "Oota enne järgmise tagasiside saatmist."
+
+msgid "Could not send feedback. Please ask an administrator to check the GitHub token."
+msgstr "Tagasisidet ei õnnestunud saata. Palu administraatoril kontrollida GitHubi tunnust."
+
+msgid "Could not send feedback. Please ask an administrator to check the GitHub repository."
+msgstr "Tagasisidet ei õnnestunud saata. Palu administraatoril kontrollida GitHubi hoidlat."

@@ -842,3 +842,87 @@ msgstr "Смотреть видео"
 
 msgid "Has YouTube track"
 msgstr "Есть трек YouTube"
+
+msgid "Sending…"
+msgstr "Отправка…"
+
+msgid "Send"
+msgstr "Отправить"
+
+msgid "View issue"
+msgstr "Открыть задачу"
+
+msgid "Could not send feedback. Please try again later."
+msgstr "Не удалось отправить отзыв. Попробуйте позже."
+
+msgid "Send feedback"
+msgstr "Отправить отзыв"
+
+msgid "Wish, bug, or other note about Choir Rehearsal."
+msgstr "Пожелание, ошибка или другая заметка о Choir Rehearsal."
+
+msgid "Type"
+msgstr "Тип"
+
+msgid "Bug"
+msgstr "Ошибка"
+
+msgid "Wish"
+msgstr "Пожелание"
+
+msgid "Title"
+msgstr "Заголовок"
+
+msgid "Description"
+msgstr "Описание"
+
+msgid "Contact email (optional)"
+msgstr "Контактный email (необязательно)"
+
+msgid "Feedback"
+msgstr "Отзыв"
+
+msgid "Singer, Voice Leader, Administrator, and guests can send a wish or bug from the song list. The site creates a GitHub issue. Lite and Pro both include this."
+msgstr "Singer, Voice Leader, Administrator и гости могут отправить пожелание или ошибку из списка песен. Сайт создаёт задачу на GitHub. Это есть и в Lite, и в Pro."
+
+msgid "GitHub repository for feedback"
+msgstr "Репозиторий GitHub для отзывов"
+
+msgid "Issues are created in this repository. Use owner/name, for example compathee/compathee."
+msgstr "Задачи создаются в этом репозитории. Укажите owner/name, например compathee/compathee."
+
+msgid "GitHub token"
+msgstr "Токен GitHub"
+
+msgid "A token is saved."
+msgstr "Токен сохранён."
+
+msgid "Remove saved token"
+msgstr "Удалить сохранённый токен"
+
+msgid "Create a fine-grained personal access token at GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens. Grant only this repository Issues: Read and write. Paste the token here. It stays on the server and is not shown on the rehearsal page. Leave blank to keep the saved token."
+msgstr "Создайте fine-grained personal access token: GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens. Выдайте только этому репозиторию право Issues: Read and write. Вставьте токен сюда. Он хранится на сервере и не показывается на странице репетиций. Пустое поле сохраняет текущий токен."
+
+msgid "That GitHub token does not look valid. The saved token was left unchanged."
+msgstr "Этот токен GitHub не похож на действительный. Сохранённый токен не изменён."
+
+msgid "Thank you. Feedback sent as issue #%d."
+msgstr "Спасибо. Отзыв отправлен как задача #%d."
+
+msgid "Thank you. Feedback sent."
+msgstr "Спасибо. Отзыв отправлен."
+
+msgid "Please enter a type, title, and description."
+msgstr "Укажите тип, заголовок и описание."
+
+msgid "Feedback is not configured."
+msgstr "Отзывы не настроены."
+
+msgid "Please wait before sending more feedback."
+msgstr "Подождите перед отправкой следующего отзыва."
+
+msgid "Could not send feedback. Please ask an administrator to check the GitHub token."
+msgstr "Не удалось отправить отзыв. Попросите администратора проверить токен GitHub."
+
+msgid "Could not send feedback. Please ask an administrator to check the GitHub repository."
+msgstr "Не удалось отправить отзыв. Попросите администратора проверить репозиторий GitHub."

@@ -97,6 +97,10 @@ final class Choir_Rehearsal_Frontend {
 			);
 		}
 
+		if ( self::is_song_list_page() ) {
+			Choir_Rehearsal_Feedback::enqueue_assets();
+		}
+
 		wp_enqueue_script(
 			'choir-rehearsal-waveform',
 			CHOIR_REHEARSAL_URL . 'public/js/waveform.js',
@@ -528,6 +532,7 @@ final class Choir_Rehearsal_Frontend {
 				</ul>
 				<?php self::render_song_pagination( $current_page, $total_pages, $total_songs ); ?>
 			<?php endif; ?>
+			<?php Choir_Rehearsal_Feedback::render_panel(); ?>
 		</div>
 		<?php
 	}

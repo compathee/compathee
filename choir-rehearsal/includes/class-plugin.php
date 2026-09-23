@@ -21,6 +21,7 @@ require_once CHOIR_REHEARSAL_PATH . 'includes/class-admin.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-demo-data.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-recording.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-frontend.php';
+require_once CHOIR_REHEARSAL_PATH . 'includes/class-feedback.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-rest.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-abilities.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-migration.php';
@@ -70,6 +71,7 @@ final class Choir_Rehearsal_Plugin {
 		Choir_Rehearsal_Demo_Data::register();
 		Choir_Rehearsal_Recording::register();
 		Choir_Rehearsal_Frontend::register();
+		Choir_Rehearsal_Feedback::register();
 		Choir_Rehearsal_REST::register();
 		Choir_Rehearsal_Abilities::register();
 		Choir_Rehearsal_Migration::register();
