@@ -3,12 +3,12 @@
   "short_name": "Compath",
   "icons": [
     {
-      "src": "/preview-2026/favicon-192.png",
+      "src": "/preview-2026/favicon-192x192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/preview-2026/favicon-512.png",
+      "src": "/preview-2026/favicon-512x512.png",
       "sizes": "512x512",
       "type": "image/png"
     }

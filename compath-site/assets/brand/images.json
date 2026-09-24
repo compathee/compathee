@@ -1,46 +1,8 @@
 {
-  "apple-touch-icon.png": {
-    "width": 180,
-    "height": 180,
-    "bytes": 3107
-  },
-  "choir-demo.webp": {
-    "width": 1160,
-    "height": 284,
-    "bytes": 10742
-  },
   "choir-rehearsal.webp": {
     "width": 1200,
     "height": 800,
     "bytes": 57668
-  },
-  "compath-logo-source.png": {
-    "width": 266,
-    "height": 78,
-    "bytes": 83268
-  },
-  "favicon-192.png": {
-    "width": 192,
-    "height": 192,
-    "bytes": 3284
-  },
-  "favicon-32.png": {
-    "width": 32,
-    "height": 32,
-    "bytes": 812
-  },
-  "favicon-512.png": {
-    "width": 512,
-    "height": 512,
-    "bytes": 4416
-  },
-  "favicon.ico": {
-    "bytes": 333
-  },
-  "logo-dots.png": {
-    "width": 119,
-    "height": 84,
-    "bytes": 2933
   },
   "logo.png": {
     "width": 266,

@@ -88,66 +88,6 @@ def prepare_logo():
     return logo
 
 
-def dots_from(logo):
-    """Keep the orange and yellow dots and drop the black wordmark."""
-    src = logo.load()
-    out = Image.new("RGBA", logo.size, (0, 0, 0, 0))
-    dst = out.load()
-    for y in range(logo.size[1]):
-        for x in range(logo.size[0]):
-            r, g, b, a = src[x, y]
-            if a < 20:
-                continue
-            if max(r, g, b) - min(r, g, b) < 28 and r < 80:
-                continue
-            if r < 140:
-                continue
-            dst[x, y] = (r, g, b, a)
-    return trim(out, pad=8)
-
-
-def square_icon(dots, size, background=None):
-    canvas = Image.new("RGBA", (size, size), background or (0, 0, 0, 0))
-    margin = max(2, round(size * 0.08))
-    fitted = dots.copy()
-    fitted.thumbnail((size - margin * 2, size - margin * 2), Image.Resampling.LANCZOS)
-    x = (size - fitted.size[0]) // 2
-    y = (size - fitted.size[1]) // 2
-    canvas.paste(fitted, (x, y), fitted)
-    if background:
-        flat = Image.new("RGB", (size, size), background[:3])
-        flat.paste(canvas, mask=canvas.getchannel("A"))
-        return flat
-    return canvas
-
-
-def raster_mark(logo):
-    dots = dots_from(logo)
-    dots.save(BRAND / "logo-dots.png", optimize=True)
-    sizes = {
-        "favicon-32.png": 32,
-        "favicon-192.png": 192,
-        "favicon-512.png": 512,
-    }
-    for name, size in sizes.items():
-        square_icon(dots, size).save(BRAND / name, optimize=True)
-    square_icon(dots, 180, background=(255, 255, 255, 255)).save(BRAND / "apple-touch-icon.png", optimize=True)
-    icon32 = Image.open(BRAND / "favicon-32.png").convert("RGBA")
-    icon16 = square_icon(dots, 16)
-    icon48 = square_icon(dots, 48)
-    icon16.save(BRAND / "favicon.ico", sizes=[(16, 16), (32, 32), (48, 48)], append_images=[icon32, icon48])
-    # SVG favicon uses the real dots, scaled. A downscale stays sharper than redrawing them.
-    import base64
-    payload = base64.b64encode((BRAND / "logo-dots.png").read_bytes()).decode("ascii")
-    dw, dh = dots.size
-    svg = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {dw} {dh}" role="img">
-<title>Compath</title>
-<image width="{dw}" height="{dh}" href="data:image/png;base64,{payload}"/>
-</svg>
-'''
-    (BRAND / "favicon.svg").write_text(svg, encoding="utf-8")
-
-
 def og_image(code, headline, logo):
     image = Image.new("RGB", (1200, 630), WHITE)
     draw = ImageDraw.Draw(image)
@@ -201,7 +141,6 @@ def manifest():
 def main():
     BRAND.mkdir(parents=True, exist_ok=True)
     logo = prepare_logo()
-    raster_mark(logo)
     for code, line in TAGLINES.items():
         og_image(code, line, logo)
     product_images()

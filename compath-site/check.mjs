@@ -1,3 +1,4 @@
+import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 
@@ -186,6 +187,28 @@ export function validate(dist, options = {}) {
     if (ratio < 4.5) problems.push(`contrast ${fg} on ${bg} is ${ratio.toFixed(2)}`);
   }
 
+  const iconNames = ["favicon.ico", "favicon.svg", "apple-touch-icon.png", "favicon-192x192.png", "favicon-512x512.png"];
+  const iconDir = path.join(root, "..", "choir-rehearsal", "docs", "deploy");
+  for (const name of iconNames) {
+    const from = path.join(iconDir, name);
+    const to = path.join(dist, name);
+    if (!fs.existsSync(from) || !fs.existsSync(to)) {
+      problems.push(`missing favicon ${name}`);
+      continue;
+    }
+    const hash = (file) => crypto.createHash("sha256").update(fs.readFileSync(file)).digest("hex");
+    if (hash(from) !== hash(to)) problems.push(`${name} does not match choir-rehearsal/docs/deploy`);
+  }
+  const iconSvg = fs.readFileSync(path.join(dist, "favicon.svg"), "utf8");
+  if (!iconSvg.includes('fill="#1f4fd8"')) problems.push("favicon is not the blue note");
+  if (fs.existsSync(path.join(dist, "favicon-32.png")) || fs.existsSync(path.join(dist, "favicon-192.png"))) {
+    problems.push("derived favicon still published");
+  }
+  const homeHtml = fs.readFileSync(path.join(dist, "index.html"), "utf8");
+  if (!homeHtml.includes("favicon-192x192.png") || homeHtml.includes("favicon-32.png") || homeHtml.includes("favicon-192.png\"")) {
+    problems.push("home favicon links");
+  }
+
   if (preview) {
     for (const name of ["robots.txt", "sitemap.xml", "llms.txt"]) {
       if (fs.existsSync(path.join(dist, name))) problems.push(`preview contains ${name}`);
@@ -211,7 +234,7 @@ export function validate(dist, options = {}) {
     const service = fs.readFileSync(path.join(dist, "services", "it-support", "index.html"), "utf8");
     if (!service.includes('href="/preview-2026/contact/"')) problems.push("preview inline link");
     const manifest = fs.readFileSync(path.join(dist, "site.webmanifest"), "utf8");
-    if (!manifest.includes("/preview-2026/favicon-192.png")) problems.push("preview manifest");
+    if (!manifest.includes("/preview-2026/favicon-192x192.png")) problems.push("preview manifest");
     const missing = fs.readFileSync(path.join(dist, "404.html"), "utf8");
     if (!missing.includes('<meta name="robots" content="noindex, nofollow" />')) problems.push("preview 404 robots");
     if (!missing.includes('href="/preview-2026/et/"')) problems.push("preview 404 links");

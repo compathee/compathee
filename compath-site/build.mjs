@@ -238,10 +238,10 @@ ${langs.filter((item) => item.code !== lang.code).map((item) => `<meta property=
 <meta name="twitter:description" content="${esc(description)}" />
 <meta name="twitter:image" content="${og}" />
 <meta name="twitter:image:alt" content="${esc(title)}" />
-<link rel="icon" href="${pub("/favicon.svg")}" type="image/svg+xml" />
 <link rel="icon" href="${pub("/favicon.ico")}" sizes="any" />
-<link rel="icon" href="${pub("/favicon-32.png")}" type="image/png" sizes="32x32" />
-<link rel="icon" href="${pub("/favicon-192.png")}" type="image/png" sizes="192x192" />
+<link rel="icon" href="${pub("/favicon.svg")}" type="image/svg+xml" />
+<link rel="icon" href="${pub("/favicon-192x192.png")}" type="image/png" sizes="192x192" />
+<link rel="icon" href="${pub("/favicon-512x512.png")}" type="image/png" sizes="512x512" />
 <link rel="apple-touch-icon" href="${pub("/apple-touch-icon.png")}" />
 <link rel="manifest" href="${pub("/site.webmanifest")}" />
 <link rel="stylesheet" href="${pub("/assets/site.css")}" />
@@ -566,17 +566,21 @@ function copyAssets() {
   const brand = path.join(root, "assets", "brand");
   const skip = new Set(["images.json", "choir-demo.webp", "compath-logo-source.png", "logo-meta.json", "logo-dots.png"]);
   for (const name of fs.readdirSync(brand)) {
-    if (skip.has(name)) continue;
+    if (skip.has(name) || name.startsWith("favicon") || name.startsWith("apple-touch")) continue;
     const inAssets = name.startsWith("og-") || name.startsWith("choir-") || name === "logo.png";
     const target = inAssets ? path.join(assets, name) : path.join(dist, name);
     fs.copyFileSync(path.join(brand, name), target);
+  }
+  const icons = path.join(root, "..", "choir-rehearsal", "docs", "deploy");
+  for (const name of ["favicon.ico", "favicon.svg", "apple-touch-icon.png", "favicon-192x192.png", "favicon-512x512.png"]) {
+    fs.copyFileSync(path.join(icons, name), path.join(dist, name));
   }
   fs.writeFileSync(path.join(dist, "site.webmanifest"), `${JSON.stringify({
     name: "Compath OÜ",
     short_name: "Compath",
     icons: [
-      { src: pub("/favicon-192.png"), sizes: "192x192", type: "image/png" },
-      { src: pub("/favicon-512.png"), sizes: "512x512", type: "image/png" },
+      { src: pub("/favicon-192x192.png"), sizes: "192x192", type: "image/png" },
+      { src: pub("/favicon-512x512.png"), sizes: "512x512", type: "image/png" },
     ],
     theme_color: "#e85d04",
     background_color: "#ffffff",
