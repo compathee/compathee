@@ -268,6 +268,11 @@
 			if (fromQuery) return fromQuery;
 			var stored = storedLang();
 			if (stored) return stored;
+			var list = navigator.languages || [navigator.language || 'en'];
+			for (var i = 0; i < list.length; i++) {
+				var code = normalizeLang(list[i]);
+				if (code) return code;
+			}
 			return 'en';
 		}
 
