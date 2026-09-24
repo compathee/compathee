@@ -95,6 +95,14 @@
 		.plan__cta { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; margin-top: 18px; padding: 12px 18px; border-radius: 999px; background: var(--accent); color: #fff !important; font-weight: 700; text-decoration: none; text-align: center; }
 		.plan__cta:hover { background: var(--accent-dark); color: #fff !important; }
 		.order-cta { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+		.demo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-top: 8px; }
+		.demo-account { border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; background: #fafbfd; }
+		.demo-account h3 { margin: 0 0 4px; }
+		.copy-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 10px 0; }
+		.copy-label { min-width: 7.5rem; font-size: 0.92rem; color: var(--muted); }
+		.copy-row code { font-size: 1rem; padding: 8px 10px; }
+		.copy-btn { min-height: 44px; min-width: 44px; padding: 8px 14px; border-radius: 999px; border: 1px solid var(--border); background: #fff; color: var(--accent-dark); font: inherit; font-weight: 700; cursor: pointer; }
+		.copy-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 		.btn--accent { background: var(--accent); color: #fff !important; }
 		.btn--accent:hover { background: var(--accent-dark); color: #fff !important; }
 		.steps { counter-reset: step; list-style: none; padding: 0; margin: 0; }
@@ -137,10 +145,21 @@
 			<p>A private rehearsal library for choirs: songs, voice tracks, optional YouTube embeds, PDF scores, and easy listening on phone or desktop.</p>
 			<div class="hero__cta">
 				<a class="btn btn--primary" href="https://wordpress.org/plugins/compath-choir-rehearsal/">Get Lite on WordPress.org</a>
+				<a class="btn btn--primary" href="https://demo.rehearsal.compath.ee/rehearsal">Try the demo</a>
 				<a class="btn btn--ghost" href="https://shop.compath.ee/products/choir-rehearsal-pro/">Order Pro</a>
 			</div>
 		</div></header>
 		<main class="page">
+			<section class="card" id="demo">
+				<h2>Live demo</h2>
+				<p>Open the shared rehearsal library. Public songs are visible without an account. Sign in with a demo account for the full library.</p>
+				<p><a class="btn btn--accent" href="https://demo.rehearsal.compath.ee/rehearsal">Try the demo</a></p>
+				<div class="demo-grid">
+					<article class="demo-account"><h3>Singer</h3><p class="meta">For listening.</p><p>Username: <code>demosinger</code></p><p>Password: <code>DMo5ingERzz26</code></p></article>
+					<article class="demo-account"><h3>Voice Leader</h3><p class="meta">For managing songs.</p><p>Username: <code>demoleader</code></p><p>Password: <code>DMoLiidERzz26</code></p></article>
+				</div>
+				<p class="meta">This demo is shared. Everyone uses these same logins, so the library can change while you look at it.</p>
+			</section>
 			<section class="card" id="install">
 				<h2>Updates</h2>
 				<ul class="updates">
@@ -180,8 +199,13 @@
 			],
 			releasesUrl: 'https://api.github.com/repos/compathee/compathee/releases?per_page=100',
 			buyProUrl: 'https://shop.compath.ee/products/choir-rehearsal-pro/',
-			wordpressOrgUrl: 'https://wordpress.org/plugins/compath-choir-rehearsal/'
+			wordpressOrgUrl: 'https://wordpress.org/plugins/compath-choir-rehearsal/',
+			demoUrl: 'https://demo.rehearsal.compath.ee/rehearsal'
 		};
+		var DEMO_ACCOUNTS = [
+			{ role: 'Singer', user: 'demosinger', pass: 'DMo5ingERzz26', blurb: 'demoSingerText' },
+			{ role: 'Voice Leader', user: 'demoleader', pass: 'DMoLiidERzz26', blurb: 'demoLeaderText' }
+		];
 		var HTML_LANG = { en: 'en', et: 'et', ru: 'ru' };
 		var LOADING = { en: 'Loading latest content…', et: 'Laadin uut sisu…', ru: 'Загрузка…' };
 		var SKIP = { en: 'Skip to content', et: 'Sisu juurde', ru: 'К содержанию' };
@@ -237,6 +261,16 @@
 				getLite: 'Get Lite on WordPress.org',
 				downloadZip: 'Download zip',
 				orderPro: 'Order Pro',
+				tryDemo: 'Try the demo',
+				demoTitle: 'Live demo',
+				demoIntro: 'Open the shared rehearsal library. Public songs are visible without an account. Sign in with a demo account for the full library.',
+				demoShared: 'This demo is shared. Everyone uses these same logins, so the library can change while you look at it.',
+				demoSingerText: 'For listening.',
+				demoLeaderText: 'For managing songs.',
+				demoUser: 'Username',
+				demoPassword: 'Password',
+				demoCopy: 'Copy',
+				demoCopied: 'Copied',
 				overviewTitle: 'Overview',
 				requirementsLabel: 'Requirements',
 				ownerLabel: 'Owner and developer',
@@ -450,6 +484,32 @@
 			}).join('') + '</ul>';
 		}
 
+		function textOf(pack, key) {
+			if (pack && pack[key]) return pack[key];
+			var fallback = englishChrome();
+			return fallback[key] || '';
+		}
+
+		function copyRow(label, value, pack) {
+			var copy = textOf(pack, 'demoCopy');
+			return '<div class="copy-row"><span class="copy-label">' + esc(label) + '</span><code>' + esc(value) + '</code><button type="button" class="copy-btn" data-copy="' + esc(value) + '" data-label="' + esc(copy) + '" aria-label="' + esc(copy + ' ' + label) + '">' + esc(copy) + '</button></div>';
+		}
+
+		function renderDemo(pack) {
+			var accounts = DEMO_ACCOUNTS.map(function (account) {
+				return '<article class="demo-account"><h3>' + esc(account.role) + '</h3><p class="meta">' + esc(textOf(pack, account.blurb)) + '</p>' +
+					copyRow(textOf(pack, 'demoUser'), account.user, pack) +
+					copyRow(textOf(pack, 'demoPassword'), account.pass, pack) +
+				'</article>';
+			}).join('');
+			return '<section class="card" id="demo"><h2>' + esc(textOf(pack, 'demoTitle')) + '</h2>' +
+				'<p>' + esc(textOf(pack, 'demoIntro')) + '</p>' +
+				'<p><a class="btn btn--accent" href="' + esc(CONFIG.demoUrl) + '" target="_blank" rel="noopener noreferrer">' + esc(textOf(pack, 'tryDemo')) + '</a></p>' +
+				'<div class="demo-grid">' + accounts + '</div>' +
+				'<p class="meta">' + esc(textOf(pack, 'demoShared')) + '</p>' +
+				'<p id="copy-status" class="visually-hidden" aria-live="polite"></p></section>';
+		}
+
 		function renderFaq(items) {
 			return '<div class="faq">' + (items || []).map(function (item) {
 				return '<details><summary>' + esc(item.q) + '</summary><p>' + linkify(item.a) + '</p></details>';
@@ -570,11 +630,13 @@
 				'<p>' + esc(pack.tagline || data.tagline) + '</p>' +
 				'<div class="hero__cta">' +
 					'<a class="btn btn--primary" href="' + esc(CONFIG.wordpressOrgUrl) + '">' + esc(pack.getLite) + '</a>' +
+					'<a class="btn btn--primary" href="' + esc(CONFIG.demoUrl) + '" target="_blank" rel="noopener noreferrer">' + esc(textOf(pack, 'tryDemo')) + '</a>' +
 					'<a class="btn btn--ghost" href="' + esc(state.downloadUrl) + '">' + esc(pack.downloadZip) + '</a>' +
 					'<a class="btn btn--ghost" href="' + esc(CONFIG.buyProUrl) + '" target="_blank" rel="noopener noreferrer">' + esc(pack.orderPro) + '</a>' +
 				'</div>' +
 				'<nav class="hero__nav" aria-label="' + esc(ON_PAGE[state.lang] || ON_PAGE.en) + '">' +
 					'<a href="#about">' + esc(pack.overviewTitle) + '</a>' +
+					'<a href="#demo">' + esc(textOf(pack, 'demoTitle')) + '</a>' +
 					'<a href="#order">' + esc(pack.orderTitle) + '</a>' +
 					'<a href="#install">' + esc(pack.installTitle) + '</a>' +
 					'<a href="#faq">' + esc(pack.faqTitle) + '</a>' +
@@ -587,6 +649,7 @@
 					renderFeatures(pack.featureCards || data.featureCards || data.features || []) +
 					'<p class="meta">' + esc(pack.requirementsLabel) + ': ' + esc(pack.requirements || data.requirements) + '. ' + esc(pack.ownerLabel) + ': <strong>' + esc(data.owner) + '</strong>. ' + esc(pack.firstCustomerLabel) + ' — <a href="' + esc(customer.url) + '">' + esc(customer.name) + '</a>.</p>' +
 				'</section>' +
+				renderDemo(pack) +
 				'<section class="card" id="order"><h2>' + esc(pack.orderTitle) + '</h2>' +
 					'<p>' + linkify(pack.orderIntro || '') + '</p>' +
 					'<div class="pricing">' + renderPricing(pack.pricing || []) + '</div>' +
@@ -714,7 +777,49 @@
 			else syncUrl();
 		});
 
+		function copyText(value) {
+			if (navigator.clipboard && navigator.clipboard.writeText) {
+				return navigator.clipboard.writeText(value).catch(function () { return fallbackCopy(value); });
+			}
+			return fallbackCopy(value);
+		}
+
+		function fallbackCopy(value) {
+			return new Promise(function (resolve, reject) {
+				var area = document.createElement('textarea');
+				area.value = value;
+				area.setAttribute('readonly', '');
+				area.style.position = 'fixed';
+				area.style.left = '-9999px';
+				document.body.appendChild(area);
+				area.select();
+				try {
+					if (!document.execCommand('copy')) throw new Error('copy failed');
+					resolve();
+				} catch (err) {
+					reject(err);
+				} finally {
+					document.body.removeChild(area);
+				}
+			});
+		}
+
 		document.getElementById('app').addEventListener('click', function (event) {
+			var copyButton = event.target.closest ? event.target.closest('[data-copy]') : null;
+			if (copyButton) {
+				var value = copyButton.getAttribute('data-copy') || '';
+				var label = copyButton.getAttribute('data-label') || copyButton.textContent;
+				var copied = textOf(state.pack || {}, 'demoCopied');
+				copyText(value).then(function () {
+					copyButton.textContent = copied;
+					var status = document.getElementById('copy-status');
+					if (status) status.textContent = copied;
+					window.setTimeout(function () {
+						if (copyButton.textContent === copied) copyButton.textContent = label;
+					}, 2000);
+				}).catch(function () {});
+				return;
+			}
 			var button = event.target.closest ? event.target.closest('[data-pager]') : null;
 			if (!button || button.disabled) return;
 			var kind = button.getAttribute('data-pager');

@@ -5,6 +5,7 @@
 A private rehearsal library: songs, voice tracks, optional YouTube embeds, PDF scores, and mobile-friendly listening.
 
 - [Get Lite on WordPress.org](https://wordpress.org/plugins/compath-choir-rehearsal/)
+- [Try the demo](https://demo.rehearsal.compath.ee/rehearsal) — shared library. Singer: `demosinger` / `DMo5ingERzz26`. Voice Leader: `demoleader` / `DMoLiidERzz26`. Role names stay in English.
 - [Download latest release (GitHub)](https://github.com/compathee/compathee/releases/latest)
 - [Full HTML page](product-page.html) — for publishing on the website
 
