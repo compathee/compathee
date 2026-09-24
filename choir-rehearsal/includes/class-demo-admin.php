@@ -116,6 +116,7 @@ final class Choir_Rehearsal_Demo_Admin {
 				<li><?php esc_html_e( 'Optional WP-CLI alternative:', 'compath-choir-rehearsal' ); ?>
 					<code>wp choir-rehearsal demo-reset</code>
 				</li>
+				<li><?php esc_html_e( 'Install the must-use plugins compath-rehearsal-demo-guard.php and compath-rehearsal-profanity.php, then save a baseline once (wp compath-demo baseline-save). After that, this reset restores the baseline, including demo account passwords and emails, and does not change any other user.', 'compath-choir-rehearsal' ); ?></li>
 			</ol>
 
 			<p>

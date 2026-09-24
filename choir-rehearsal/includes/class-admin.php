@@ -53,6 +53,7 @@ final class Choir_Rehearsal_Admin {
 		);
 
 		Choir_Rehearsal_Pages::register_settings();
+		Choir_Rehearsal_Profanity::register_setting();
 		if ( Choir_Rehearsal_Distribution::uses_github_updater() ) {
 			Choir_Rehearsal_Updater::register_settings();
 		}
@@ -212,6 +213,19 @@ final class Choir_Rehearsal_Admin {
 									)
 								);
 								?>
+							</p>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row"><?php esc_html_e( 'Language', 'compath-choir-rehearsal' ); ?></th>
+						<td>
+							<input type="hidden" name="<?php echo esc_attr( Choir_Rehearsal_Profanity::OPTION ); ?>" value="0" />
+							<label>
+								<input type="checkbox" name="<?php echo esc_attr( Choir_Rehearsal_Profanity::OPTION ); ?>" value="1" <?php checked( Choir_Rehearsal_Profanity::setting_enabled() ); ?> />
+								<?php esc_html_e( Choir_Rehearsal_Profanity::MESSAGE_SETTING, 'compath-choir-rehearsal' ); ?>
+							</label>
+							<p class="description">
+								<?php esc_html_e( Choir_Rehearsal_Profanity::MESSAGE_SETTING_HELP, 'compath-choir-rehearsal' ); ?>
 							</p>
 						</td>
 					</tr>

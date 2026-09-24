@@ -15,6 +15,7 @@ require_once CHOIR_REHEARSAL_PATH . 'includes/class-roles.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-post-types.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-slugs.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-voice-types.php';
+require_once CHOIR_REHEARSAL_PATH . 'includes/class-profanity.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-pages.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-access.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-admin.php';
@@ -69,6 +70,7 @@ final class Choir_Rehearsal_Plugin {
 		Choir_Rehearsal_Post_Types::register();
 		Choir_Rehearsal_Slugs::register();
 		Choir_Rehearsal_Voice_Types::register();
+		Choir_Rehearsal_Profanity::register();
 		Choir_Rehearsal_Pages::register();
 		Choir_Rehearsal_Access::register();
 		Choir_Rehearsal_Admin::register();
