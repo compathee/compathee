@@ -24,7 +24,7 @@
 2. **`update.json`** — версия для WordPress-updater
 3. **`readme.txt`** — changelog для WordPress.org / плагина
 
-Сайт сначала читает ветку `cursor/rehearsal-copy-main-abc2`, затем `main`. В шапке отдельно показаны Lite (релиз / `update.json`) и Pro (`proVersion` в JSON). Страница доступна на английском, эстонском и русском (`?lang=en|et|ru`).
+Сайт сначала читает ветку `cursor/rehearsal-copy-main-abc2`, затем `main`. В шапке отдельно показаны Lite (релиз / `update.json`) и Pro (`proVersion` в JSON). Страница доступна на английском, эстонском, русском, немецком, французском, итальянском, испанском, шведском и финском (`?lang=en|et|ru|de|fr|it|es|sv|fi`).
 
 ### Однократный деплой оболочки
 

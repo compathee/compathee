@@ -94,7 +94,7 @@ The plugin is licensed under GPL. Install Lite yourself for free from WordPress.
 
 ## Changelog
 
-Release notes stay in English. The public page is available in English, Estonian, and Russian (`?lang=en`, `?lang=et`, `?lang=ru`).
+Release notes stay in English. The public page is available in English, Estonian, Russian, German, French, Italian, Spanish, Swedish, and Finnish (`?lang=en|et|ru|de|fr|it|es|sv|fi`).
 
 ### 0.5.0 — Pro
 - Activate the license under Choir Rehearsal → Pro License

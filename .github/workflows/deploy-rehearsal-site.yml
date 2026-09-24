@@ -32,7 +32,8 @@ jobs:
             apple-touch-icon.png \
             favicon-192x192.png \
             favicon-512x512.png \
-            site.webmanifest
+            site.webmanifest \
+            og-image.png
           do
             cp "choir-rehearsal/docs/deploy/${name}" "deploy/${name}"
           done
@@ -85,6 +86,7 @@ jobs:
           chmod 644 favicon-192x192.png
           chmod 644 favicon-512x512.png
           chmod 644 site.webmanifest
+          chmod 644 og-image.png
           bye
           EOF
 

@@ -3,14 +3,43 @@
 <head>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
-	<title>Compath Choir Rehearsal — rehearsal library for choirs</title>
-	<meta name="description" content="Compath Choir Rehearsal for WordPress. Free Lite on WordPress.org, Pro at shop.compath.ee for €49 per year. Current Lite 0.4.63, Pro 0.5.0." />
+	<title>Choir Rehearsal — library for choirs</title>
+	<meta name="description" content="A private rehearsal library for choirs. Songs, voice tracks, and PDF scores on your WordPress site. Listen on any phone. Lite is free; Pro is €49 a year." />
 	<meta name="theme-color" content="#1f4fd8" />
 	<link rel="canonical" href="https://rehearsal.compath.ee/" />
 	<link rel="alternate" hreflang="en" href="https://rehearsal.compath.ee/?lang=en" />
 	<link rel="alternate" hreflang="et" href="https://rehearsal.compath.ee/?lang=et" />
 	<link rel="alternate" hreflang="ru" href="https://rehearsal.compath.ee/?lang=ru" />
+	<link rel="alternate" hreflang="de" href="https://rehearsal.compath.ee/?lang=de" />
+	<link rel="alternate" hreflang="fr" href="https://rehearsal.compath.ee/?lang=fr" />
+	<link rel="alternate" hreflang="it" href="https://rehearsal.compath.ee/?lang=it" />
+	<link rel="alternate" hreflang="es" href="https://rehearsal.compath.ee/?lang=es" />
+	<link rel="alternate" hreflang="sv" href="https://rehearsal.compath.ee/?lang=sv" />
+	<link rel="alternate" hreflang="fi" href="https://rehearsal.compath.ee/?lang=fi" />
 	<link rel="alternate" hreflang="x-default" href="https://rehearsal.compath.ee/?lang=en" />
+	<meta property="og:type" content="website" />
+	<meta property="og:site_name" content="Choir Rehearsal" />
+	<meta property="og:title" content="Choir Rehearsal — library for choirs" />
+	<meta property="og:description" content="A private rehearsal library for choirs. Songs, voice tracks, and PDF scores on your WordPress site. Listen on any phone. Lite is free; Pro is €49 a year." />
+	<meta property="og:url" content="https://rehearsal.compath.ee/" />
+	<meta property="og:image" content="https://rehearsal.compath.ee/og-image.png" />
+	<meta property="og:image:width" content="1200" />
+	<meta property="og:image:height" content="630" />
+	<meta property="og:image:type" content="image/png" />
+	<meta property="og:image:alt" content="Choir Rehearsal, a rehearsal library for choirs" />
+	<meta property="og:locale" content="en_US" />
+	<meta property="og:locale:alternate" content="et_EE" />
+	<meta property="og:locale:alternate" content="ru_RU" />
+	<meta property="og:locale:alternate" content="de_DE" />
+	<meta property="og:locale:alternate" content="fr_FR" />
+	<meta property="og:locale:alternate" content="it_IT" />
+	<meta property="og:locale:alternate" content="es_ES" />
+	<meta property="og:locale:alternate" content="sv_SE" />
+	<meta property="og:locale:alternate" content="fi_FI" />
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:title" content="Choir Rehearsal — library for choirs" />
+	<meta name="twitter:description" content="A private rehearsal library for choirs. Songs, voice tracks, and PDF scores on your WordPress site. Listen on any phone. Lite is free; Pro is €49 a year." />
+	<meta name="twitter:image" content="https://rehearsal.compath.ee/og-image.png" />
 	<link rel="icon" href="favicon.ico" sizes="any" />
 	<link rel="icon" href="favicon.svg" type="image/svg+xml" />
 	<link rel="icon" href="favicon-192x192.png" type="image/png" sizes="192x192" />
@@ -38,7 +67,7 @@
 		.langbar {
 			display: flex;
 			justify-content: flex-end;
-			gap: 8px;
+			align-items: center;
 			padding: 8px 16px;
 			background: #fff;
 			border-bottom: 1px solid var(--border);
@@ -46,23 +75,35 @@
 			top: 0;
 			z-index: 30;
 		}
-		.langbar a {
-			min-width: 44px;
+		.langbar select {
+			min-width: 7.5rem;
 			min-height: 44px;
-			display: inline-flex;
-			align-items: center;
-			justify-content: center;
-			padding: 0 12px;
+			margin: 0;
+			padding: 0 2.4rem 0 1rem;
 			border-radius: 999px;
 			border: 1px solid var(--border);
-			background: transparent;
+			background-color: #fff;
+			background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath fill='%231a1f2e' d='M1.4.6 6 5.2 10.6.6 12 2 6 8 0 2z'/%3E%3C/svg%3E");
+			background-repeat: no-repeat;
+			background-position: right 14px center;
+			background-size: 12px 8px;
 			color: var(--text);
+			font: inherit;
 			font-weight: 700;
 			letter-spacing: 0.04em;
-			text-decoration: none;
+			cursor: pointer;
+			appearance: none;
 		}
-		.langbar a[aria-current="true"] { background: var(--accent); color: #fff; border-color: var(--accent); }
-		.langbar a:focus-visible, .pager button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+		.langbar select:focus-visible, .pager button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+		.btn { white-space: normal; text-align: center; line-height: 1.25; }
+		.pager button { white-space: normal; line-height: 1.2; height: auto; }
+		.copy-label { min-width: 0; }
+		@media (max-width: 640px) {
+			.hero__badge { max-width: 100%; }
+			.copy-label { min-width: 0; flex-basis: 100%; }
+			.copy-row code { overflow-wrap: anywhere; }
+			.hero__cta .btn, .order-cta .btn, .plan__cta { overflow-wrap: anywhere; }
+		}
 		.hero { background: linear-gradient(135deg, #1f4fd8 0%, #3b82f6 55%, #6366f1 100%); color: #fff; padding: 48px 20px 40px; }
 		.hero__inner, .page, .footer { max-width: var(--max); margin: 0 auto; }
 		.hero__badge { display: inline-block; padding: 4px 12px; border-radius: 999px; background: rgba(255,255,255,0.18); font-size: 0.85rem; margin-bottom: 12px; }
@@ -72,7 +113,7 @@
 		.hero__nav { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-top: 8px; }
 		.hero__nav a { color: #fff; font-weight: 600; text-decoration: none; min-height: 44px; display: inline-flex; align-items: center; }
 		.hero__nav a:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
-		.btn { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 12px 20px; border-radius: 999px; font-weight: 600; text-decoration: none; border: 0; }
+		.btn { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 12px 20px; border-radius: 999px; font-weight: 600; text-decoration: none; border: 0; max-width: 100%; }
 		.btn--primary { background: #fff; color: var(--accent-dark); }
 		.btn--ghost { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.55); }
 		.page { padding: 0 20px 64px; }
@@ -99,7 +140,7 @@
 		.demo-account { border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; background: #fafbfd; }
 		.demo-account h3 { margin: 0 0 4px; }
 		.copy-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 10px 0; }
-		.copy-label { min-width: 7.5rem; font-size: 0.92rem; color: var(--muted); }
+		.copy-label { min-width: 9.5rem; font-size: 0.92rem; color: var(--muted); }
 		.copy-row code { font-size: 1rem; padding: 8px 10px; }
 		.copy-btn { min-height: 44px; min-width: 44px; padding: 8px 14px; border-radius: 999px; border: 1px solid var(--border); background: #fff; color: var(--accent-dark); font: inherit; font-weight: 700; cursor: pointer; }
 		.copy-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
@@ -127,13 +168,22 @@
 	</style>
 </head>
 <body>
-	<!-- shell: i18n-changelog-pages -->
+	<!-- shell: i18n-lang-select-og -->
 	<a class="skip" href="#about">Skip to content</a>
-	<nav class="langbar" aria-label="Language">
-		<a href="?lang=en" data-lang="en" lang="en" hreflang="en" aria-label="English" aria-current="true">ENG</a>
-		<a href="?lang=et" data-lang="et" lang="et" hreflang="et" aria-label="Eesti">EST</a>
-		<a href="?lang=ru" data-lang="ru" lang="ru" hreflang="ru" aria-label="Русский">RUS</a>
-	</nav>
+	<div class="langbar">
+		<label class="visually-hidden" id="lang-label" for="lang">Language</label>
+		<select id="lang">
+			<option value="en" lang="en" aria-label="English">ENG</option>
+			<option value="et" lang="et" aria-label="Eesti">EST</option>
+			<option value="ru" lang="ru" aria-label="Русский">RUS</option>
+			<option value="de" lang="de" aria-label="Deutsch">DEU</option>
+			<option value="fr" lang="fr" aria-label="Français">FRA</option>
+			<option value="it" lang="it" aria-label="Italiano">ITA</option>
+			<option value="es" lang="es" aria-label="Español">ESP</option>
+			<option value="sv" lang="sv" aria-label="Svenska">SWE</option>
+			<option value="fi" lang="fi" aria-label="Suomi">FIN</option>
+		</select>
+	</div>
 	<div id="app">
 		<p class="loading">Loading latest content…</p>
 	</div>
@@ -206,18 +256,29 @@
 			{ role: 'Singer', user: 'demosinger', pass: 'DMo5ingERzz26', blurb: 'demoSingerText' },
 			{ role: 'Voice Leader', user: 'demoleader', pass: 'DMoLiidERzz26', blurb: 'demoLeaderText' }
 		];
-		var HTML_LANG = { en: 'en', et: 'et', ru: 'ru' };
-		var LOADING = { en: 'Loading latest content…', et: 'Laadin uut sisu…', ru: 'Загрузка…' };
-		var SKIP = { en: 'Skip to content', et: 'Sisu juurde', ru: 'К содержанию' };
-		var ON_PAGE = { en: 'On this page', et: 'Lehel', ru: 'На странице' };
+		var HTML_LANG = { en: 'en', et: 'et', ru: 'ru', de: 'de', fr: 'fr', it: 'it', es: 'es', sv: 'sv', fi: 'fi' };
+		var LOADING = { en: 'Loading latest content…', et: 'Laadin uut sisu…', ru: 'Загрузка…', de: 'Inhalt wird geladen…', fr: 'Chargement…', it: 'Caricamento…', es: 'Cargando…', sv: 'Läser in…', fi: 'Ladataan…' };
+		var SKIP = { en: 'Skip to content', et: 'Sisu juurde', ru: 'К содержанию', de: 'Zum Inhalt', fr: 'Aller au contenu', it: 'Vai al contenuto', es: 'Saltar al contenido', sv: 'Hoppa till innehållet', fi: 'Siirry sisältöön' };
+		var ON_PAGE = { en: 'On this page', et: 'Lehel', ru: 'На странице', de: 'Auf dieser Seite', fr: 'Sur cette page', it: 'In questa pagina', es: 'En esta página', sv: 'På sidan', fi: 'Tällä sivulla' };
+		var LANG_NAV = { en: 'Language', et: 'Keel', ru: 'Язык', de: 'Sprache', fr: 'Langue', it: 'Lingua', es: 'Idioma', sv: 'Språk', fi: 'Kieli' };
 		var state = { lang: 'en', page: 1, data: null, pack: null, entries: [], lite: '0.4.63', pro: '0.5.0', downloadUrl: 'https://github.com/compathee/compathee/releases/latest' };
 
 		function normalizeLang(value) {
 			var v = String(value || '').toLowerCase().replace('_', '-');
-			if (v === 'et' || v === 'est' || v.indexOf('et-') === 0) return 'et';
-			if (v === 'ru' || v === 'rus' || v.indexOf('ru-') === 0) return 'ru';
-			if (v === 'en' || v === 'eng' || v.indexOf('en-') === 0) return 'en';
-			return '';
+			var aliases = {
+				en: 'en', eng: 'en',
+				et: 'et', est: 'et',
+				ru: 'ru', rus: 'ru',
+				de: 'de', deu: 'de', ger: 'de',
+				fr: 'fr', fra: 'fr', fre: 'fr',
+				it: 'it', ita: 'it',
+				es: 'es', esp: 'es', spa: 'es',
+				sv: 'sv', swe: 'sv',
+				fi: 'fi', fin: 'fi'
+			};
+			if (aliases[v]) return aliases[v];
+			var primary = v.split('-')[0];
+			return aliases[primary] || '';
 		}
 
 		function storedLang() {
@@ -557,17 +618,10 @@
 
 		function updateSwitcher() {
 			document.documentElement.lang = HTML_LANG[state.lang] || 'en';
-			var params = new URLSearchParams(location.search);
-			var links = document.querySelectorAll('.langbar a[data-lang]');
-			for (var i = 0; i < links.length; i++) {
-				var link = links[i];
-				var code = link.getAttribute('data-lang');
-				if (code === state.lang) link.setAttribute('aria-current', 'true');
-				else link.removeAttribute('aria-current');
-				var next = new URLSearchParams(params.toString());
-				next.set('lang', code);
-				link.setAttribute('href', location.pathname + '?' + next.toString() + (location.hash || ''));
-			}
+			var select = document.getElementById('lang');
+			if (select && select.value !== state.lang) select.value = state.lang;
+			var label = document.getElementById('lang-label');
+			if (label) label.textContent = LANG_NAV[state.lang] || LANG_NAV.en;
 			var skip = document.querySelector('.skip');
 			if (skip) skip.textContent = SKIP[state.lang] || SKIP.en;
 		}
@@ -765,11 +819,8 @@
 		var loading = document.querySelector('#app .loading');
 		if (loading) loading.textContent = LOADING[state.lang] || LOADING.en;
 
-		document.querySelector('.langbar').addEventListener('click', function (event) {
-			var link = event.target.closest ? event.target.closest('a[data-lang]') : null;
-			if (!link) return;
-			event.preventDefault();
-			var lang = link.getAttribute('data-lang');
+		document.getElementById('lang').addEventListener('change', function (event) {
+			var lang = normalizeLang(event.target.value);
 			if (!lang || lang === state.lang) return;
 			state.lang = lang;
 			updateSwitcher();
