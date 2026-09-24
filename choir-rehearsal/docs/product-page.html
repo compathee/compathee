@@ -10,6 +10,12 @@
 	<link rel="alternate" hreflang="en" href="https://rehearsal.compath.ee/?lang=en" />
 	<link rel="alternate" hreflang="et" href="https://rehearsal.compath.ee/?lang=et" />
 	<link rel="alternate" hreflang="ru" href="https://rehearsal.compath.ee/?lang=ru" />
+	<link rel="alternate" hreflang="de" href="https://rehearsal.compath.ee/?lang=de" />
+	<link rel="alternate" hreflang="fr" href="https://rehearsal.compath.ee/?lang=fr" />
+	<link rel="alternate" hreflang="it" href="https://rehearsal.compath.ee/?lang=it" />
+	<link rel="alternate" hreflang="es" href="https://rehearsal.compath.ee/?lang=es" />
+	<link rel="alternate" hreflang="sv" href="https://rehearsal.compath.ee/?lang=sv" />
+	<link rel="alternate" hreflang="fi" href="https://rehearsal.compath.ee/?lang=fi" />
 	<link rel="alternate" hreflang="x-default" href="https://rehearsal.compath.ee/?lang=en" />
 	<link rel="icon" href="favicon.ico" sizes="any" />
 	<link rel="icon" href="favicon.svg" type="image/svg+xml" />
@@ -37,6 +43,7 @@
 		.skip:focus { top: 8px; }
 		.langbar {
 			display: flex;
+			flex-wrap: wrap;
 			justify-content: flex-end;
 			gap: 8px;
 			padding: 8px 16px;
@@ -62,7 +69,51 @@
 			text-decoration: none;
 		}
 		.langbar a[aria-current="true"] { background: var(--accent); color: #fff; border-color: var(--accent); }
-		.langbar a:focus-visible, .pager button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+		.langbar a:focus-visible, .pager button:focus-visible, .langmore summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+		.langbar__more { display: contents; }
+		.langmore { display: none; position: relative; }
+		.langmore summary {
+			list-style: none;
+			min-width: 44px;
+			min-height: 44px;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			padding: 0 12px;
+			border-radius: 999px;
+			border: 1px solid var(--border);
+			background: #fff;
+			color: var(--text);
+			font-weight: 700;
+			letter-spacing: 0.04em;
+			cursor: pointer;
+		}
+		.langmore summary::-webkit-details-marker { display: none; }
+		.langmore summary[aria-current="true"] { background: var(--accent); color: #fff; border-color: var(--accent); }
+		.langmore__panel {
+			position: absolute;
+			right: 0;
+			top: calc(100% + 8px);
+			display: grid;
+			grid-template-columns: repeat(3, minmax(52px, 1fr));
+			gap: 8px;
+			padding: 8px;
+			background: #fff;
+			border: 1px solid var(--border);
+			border-radius: 12px;
+			box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+		}
+		.btn { white-space: normal; text-align: center; line-height: 1.25; }
+		.pager button { white-space: normal; line-height: 1.2; height: auto; }
+		.copy-label { min-width: 0; }
+		@media (max-width: 640px) {
+			.langbar__more { display: none; }
+			.langmore { display: block; }
+			.hero__badge { max-width: 100%; }
+			.copy-label { min-width: 0; flex-basis: 100%; }
+			.copy-row code { overflow-wrap: anywhere; }
+			.hero__cta .btn, .order-cta .btn, .plan__cta { overflow-wrap: anywhere; }
+		}
 		.hero { background: linear-gradient(135deg, #1f4fd8 0%, #3b82f6 55%, #6366f1 100%); color: #fff; padding: 48px 20px 40px; }
 		.hero__inner, .page, .footer { max-width: var(--max); margin: 0 auto; }
 		.hero__badge { display: inline-block; padding: 4px 12px; border-radius: 999px; background: rgba(255,255,255,0.18); font-size: 0.85rem; margin-bottom: 12px; }
@@ -72,7 +123,7 @@
 		.hero__nav { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-top: 8px; }
 		.hero__nav a { color: #fff; font-weight: 600; text-decoration: none; min-height: 44px; display: inline-flex; align-items: center; }
 		.hero__nav a:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
-		.btn { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 12px 20px; border-radius: 999px; font-weight: 600; text-decoration: none; border: 0; }
+		.btn { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 12px 20px; border-radius: 999px; font-weight: 600; text-decoration: none; border: 0; max-width: 100%; }
 		.btn--primary { background: #fff; color: var(--accent-dark); }
 		.btn--ghost { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.55); }
 		.page { padding: 0 20px 64px; }
@@ -99,7 +150,7 @@
 		.demo-account { border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; background: #fafbfd; }
 		.demo-account h3 { margin: 0 0 4px; }
 		.copy-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 10px 0; }
-		.copy-label { min-width: 7.5rem; font-size: 0.92rem; color: var(--muted); }
+		.copy-label { min-width: 9.5rem; font-size: 0.92rem; color: var(--muted); }
 		.copy-row code { font-size: 1rem; padding: 8px 10px; }
 		.copy-btn { min-height: 44px; min-width: 44px; padding: 8px 14px; border-radius: 999px; border: 1px solid var(--border); background: #fff; color: var(--accent-dark); font: inherit; font-weight: 700; cursor: pointer; }
 		.copy-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
@@ -127,12 +178,31 @@
 	</style>
 </head>
 <body>
-	<!-- shell: i18n-changelog-pages -->
+	<!-- shell: i18n-nine-languages -->
 	<a class="skip" href="#about">Skip to content</a>
 	<nav class="langbar" aria-label="Language">
 		<a href="?lang=en" data-lang="en" lang="en" hreflang="en" aria-label="English" aria-current="true">ENG</a>
 		<a href="?lang=et" data-lang="et" lang="et" hreflang="et" aria-label="Eesti">EST</a>
 		<a href="?lang=ru" data-lang="ru" lang="ru" hreflang="ru" aria-label="Русский">RUS</a>
+		<span class="langbar__more">
+			<a href="?lang=de" data-lang="de" lang="de" hreflang="de" aria-label="Deutsch">DEU</a>
+			<a href="?lang=fr" data-lang="fr" lang="fr" hreflang="fr" aria-label="Français">FRA</a>
+			<a href="?lang=it" data-lang="it" lang="it" hreflang="it" aria-label="Italiano">ITA</a>
+			<a href="?lang=es" data-lang="es" lang="es" hreflang="es" aria-label="Español">ESP</a>
+			<a href="?lang=sv" data-lang="sv" lang="sv" hreflang="sv" aria-label="Svenska">SWE</a>
+			<a href="?lang=fi" data-lang="fi" lang="fi" hreflang="fi" aria-label="Suomi">FIN</a>
+		</span>
+		<details class="langmore">
+			<summary>More</summary>
+			<div class="langmore__panel">
+				<a href="?lang=de" data-lang="de" lang="de" hreflang="de" aria-label="Deutsch">DEU</a>
+				<a href="?lang=fr" data-lang="fr" lang="fr" hreflang="fr" aria-label="Français">FRA</a>
+				<a href="?lang=it" data-lang="it" lang="it" hreflang="it" aria-label="Italiano">ITA</a>
+				<a href="?lang=es" data-lang="es" lang="es" hreflang="es" aria-label="Español">ESP</a>
+				<a href="?lang=sv" data-lang="sv" lang="sv" hreflang="sv" aria-label="Svenska">SWE</a>
+				<a href="?lang=fi" data-lang="fi" lang="fi" hreflang="fi" aria-label="Suomi">FIN</a>
+			</div>
+		</details>
 	</nav>
 	<div id="app">
 		<p class="loading">Loading latest content…</p>
@@ -206,18 +276,33 @@
 			{ role: 'Singer', user: 'demosinger', pass: 'DMo5ingERzz26', blurb: 'demoSingerText' },
 			{ role: 'Voice Leader', user: 'demoleader', pass: 'DMoLiidERzz26', blurb: 'demoLeaderText' }
 		];
-		var HTML_LANG = { en: 'en', et: 'et', ru: 'ru' };
-		var LOADING = { en: 'Loading latest content…', et: 'Laadin uut sisu…', ru: 'Загрузка…' };
-		var SKIP = { en: 'Skip to content', et: 'Sisu juurde', ru: 'К содержанию' };
-		var ON_PAGE = { en: 'On this page', et: 'Lehel', ru: 'На странице' };
+		var HTML_LANG = { en: 'en', et: 'et', ru: 'ru', de: 'de', fr: 'fr', it: 'it', es: 'es', sv: 'sv', fi: 'fi' };
+		var LANG_CODE = { en: 'ENG', et: 'EST', ru: 'RUS', de: 'DEU', fr: 'FRA', it: 'ITA', es: 'ESP', sv: 'SWE', fi: 'FIN' };
+		var PRIMARY_LANG = { en: true, et: true, ru: true };
+		var LOADING = { en: 'Loading latest content…', et: 'Laadin uut sisu…', ru: 'Загрузка…', de: 'Inhalt wird geladen…', fr: 'Chargement…', it: 'Caricamento…', es: 'Cargando…', sv: 'Läser in…', fi: 'Ladataan…' };
+		var SKIP = { en: 'Skip to content', et: 'Sisu juurde', ru: 'К содержанию', de: 'Zum Inhalt', fr: 'Aller au contenu', it: 'Vai al contenuto', es: 'Saltar al contenido', sv: 'Hoppa till innehållet', fi: 'Siirry sisältöön' };
+		var ON_PAGE = { en: 'On this page', et: 'Lehel', ru: 'На странице', de: 'Auf dieser Seite', fr: 'Sur cette page', it: 'In questa pagina', es: 'En esta página', sv: 'På sidan', fi: 'Tällä sivulla' };
+		var MORE = { en: 'More', et: 'Veel', ru: 'Ещё', de: 'Mehr', fr: 'Plus', it: 'Altro', es: 'Más', sv: 'Fler', fi: 'Lisää' };
+		var MORE_ARIA = { en: 'More languages', et: 'Veel keeli', ru: 'Другие языки', de: 'Weitere Sprachen', fr: 'Autres langues', it: 'Altre lingue', es: 'Más idiomas', sv: 'Fler språk', fi: 'Lisää kieliä' };
+		var LANG_NAV = { en: 'Language', et: 'Keel', ru: 'Язык', de: 'Sprache', fr: 'Langue', it: 'Lingua', es: 'Idioma', sv: 'Språk', fi: 'Kieli' };
 		var state = { lang: 'en', page: 1, data: null, pack: null, entries: [], lite: '0.4.63', pro: '0.5.0', downloadUrl: 'https://github.com/compathee/compathee/releases/latest' };
 
 		function normalizeLang(value) {
 			var v = String(value || '').toLowerCase().replace('_', '-');
-			if (v === 'et' || v === 'est' || v.indexOf('et-') === 0) return 'et';
-			if (v === 'ru' || v === 'rus' || v.indexOf('ru-') === 0) return 'ru';
-			if (v === 'en' || v === 'eng' || v.indexOf('en-') === 0) return 'en';
-			return '';
+			var aliases = {
+				en: 'en', eng: 'en',
+				et: 'et', est: 'et',
+				ru: 'ru', rus: 'ru',
+				de: 'de', deu: 'de', ger: 'de',
+				fr: 'fr', fra: 'fr', fre: 'fr',
+				it: 'it', ita: 'it',
+				es: 'es', esp: 'es', spa: 'es',
+				sv: 'sv', swe: 'sv',
+				fi: 'fi', fin: 'fi'
+			};
+			if (aliases[v]) return aliases[v];
+			var primary = v.split('-')[0];
+			return aliases[primary] || '';
 		}
 
 		function storedLang() {
@@ -570,6 +655,21 @@
 			}
 			var skip = document.querySelector('.skip');
 			if (skip) skip.textContent = SKIP[state.lang] || SKIP.en;
+			var langbar = document.querySelector('.langbar');
+			if (langbar) langbar.setAttribute('aria-label', LANG_NAV[state.lang] || LANG_NAV.en);
+			var summary = document.querySelector('.langmore summary');
+			if (summary) {
+				var extra = !PRIMARY_LANG[state.lang];
+				summary.textContent = extra ? (LANG_CODE[state.lang] || 'More') : (MORE[state.lang] || 'More');
+				summary.setAttribute('aria-label', extra ? (summary.getAttribute('data-own-label') || LANG_CODE[state.lang]) : (MORE_ARIA[state.lang] || 'More languages'));
+				if (extra) {
+					var own = document.querySelector('.langmore a[data-lang="' + state.lang + '"]');
+					summary.setAttribute('aria-label', own ? own.getAttribute('aria-label') : summary.getAttribute('aria-label'));
+					summary.setAttribute('aria-current', 'true');
+				} else {
+					summary.removeAttribute('aria-current');
+				}
+			}
 		}
 
 		function syncUrl() {
@@ -769,6 +869,8 @@
 			var link = event.target.closest ? event.target.closest('a[data-lang]') : null;
 			if (!link) return;
 			event.preventDefault();
+			var details = document.querySelector('.langmore');
+			if (details) details.open = false;
 			var lang = link.getAttribute('data-lang');
 			if (!lang || lang === state.lang) return;
 			state.lang = lang;
