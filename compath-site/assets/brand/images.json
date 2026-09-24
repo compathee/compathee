@@ -1,0 +1,65 @@
+{
+  "apple-touch-icon.png": {
+    "width": 180,
+    "height": 180,
+    "bytes": 5874
+  },
+  "choir-demo.webp": {
+    "width": 1160,
+    "height": 284,
+    "bytes": 10742
+  },
+  "choir-rehearsal.webp": {
+    "width": 1200,
+    "height": 800,
+    "bytes": 57668
+  },
+  "favicon-192.png": {
+    "width": 192,
+    "height": 192,
+    "bytes": 6274
+  },
+  "favicon-32.png": {
+    "width": 32,
+    "height": 32,
+    "bytes": 1038
+  },
+  "favicon-512.png": {
+    "width": 512,
+    "height": 512,
+    "bytes": 18374
+  },
+  "favicon.ico": {
+    "bytes": 679
+  },
+  "og-en.png": {
+    "width": 1200,
+    "height": 630,
+    "bytes": 28223
+  },
+  "og-en.webp": {
+    "width": 1200,
+    "height": 630,
+    "bytes": 14274
+  },
+  "og-et.png": {
+    "width": 1200,
+    "height": 630,
+    "bytes": 25368
+  },
+  "og-et.webp": {
+    "width": 1200,
+    "height": 630,
+    "bytes": 12854
+  },
+  "og-ru.png": {
+    "width": 1200,
+    "height": 630,
+    "bytes": 30868
+  },
+  "og-ru.webp": {
+    "width": 1200,
+    "height": 630,
+    "bytes": 16040
+  }
+}

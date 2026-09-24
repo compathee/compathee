@@ -1,0 +1,243 @@
+{
+  "code": "et",
+  "htmlLang": "et",
+  "ogLocale": "et_EE",
+  "label": "EST",
+  "labelName": "Eesti",
+  "prefix": "/et",
+  "ui": {
+    "skip": "Liigu sisu juurde",
+    "navLabel": "Põhimenüü",
+    "langLabel": "Keel",
+    "footerNav": "Lehel",
+    "home": "Avaleht",
+    "services": "Teenused",
+    "contact": "Kontakt",
+    "privacy": "Privaatsus",
+    "hoursLabel": "Lahtiolekuajad",
+    "hours": "E–R 9–17",
+    "phoneLabel": "Telefon",
+    "addressLabel": "Aadress",
+    "regLabel": "Registrikood",
+    "vatLabel": "KMKR",
+    "map": "Ava Ahtri 12 OpenStreetMapis",
+    "other": "Teised teenused",
+    "more": "Loe lähemalt",
+    "required": "Tärniga väljad on kohustuslikud.",
+    "privacyNote": "Vormi kasutame ainult vastamiseks.",
+    "rights": "Compath OÜ, Tallinn."
+  },
+  "slugs": {
+    "services": "teenused",
+    "it": "teenused/it-tugi",
+    "plugins": "teenused/pluginad-ja-tehisintellekt",
+    "amazon": "teenused/amazon",
+    "choir": "choir-rehearsal",
+    "contact": "kontakt",
+    "privacy": "privaatsus",
+    "thanks": "kontakt/tanu",
+    "formError": "kontakt/viga"
+  },
+  "pages": {
+    "home": {
+      "title": "Compath OÜ — IT tugi Tallinnas",
+      "description": "Compath OÜ Tallinnas: IT tugi ja hooldus ettevõtetele ning kodudele, WordPressi pluginate arendus, tehisintellekti agendid ja nõustamine Amazoni käivitamisel.",
+      "h1": "IT tugi ja tarkvara Tallinnas",
+      "eyebrow": "Compath OÜ · Tallinn",
+      "lead": "Hoiame arvutid, võrgud ja igapäevase veebi töös ning ehitame WordPressi pluginaid ja tehisintellekti agente protsessile, mida oskate kirjeldada. Kontor on Ahtri 12.",
+      "ctaServices": "Vaata teenuseid",
+      "ctaContact": "Kontakt",
+      "servicesTitle": "Teenused",
+      "servicesLead": "Kolm töösuunda. Meie enda WordPressi plugin Choir Rehearsal on nende järel.",
+      "whyTitle": "Miks Compath",
+      "why": [
+        {"title": "Tööpäeviti vastab telefon", "text": "Ahtri 12, Tallinn. Esmaspäevast reedeni 9–17, number +372 55520482."},
+        {"title": "Avaldame ise plugina", "text": "Choir Rehearsal on WordPress.org-i kataloogis. Pluginatöö on meil midagi, mida viime välja ja hooldame."},
+        {"title": "Praktilised tööd võivad jääda ühte kätte", "text": "Võrk, plugin või n8n-i töövoog ja esimene Amazon saab olla ühe ettevõtte töö, kui need kuuluvad sama asja juurde."}
+      ],
+      "ctaTitle": "Kirjutage, mida vaja on",
+      "ctaText": "Piisab lühikesest kirjeldusest: mis on katki, mida tuleb ehitada või kus te Amazoniga olete."
+    },
+    "services": {
+      "title": "Teenused | Compath OÜ",
+      "description": "IT tugi Tallinnas, WordPressi pluginate arendus ja tehisintellekti agendid ning nõustamine Amazoni käivitamisel. Compath OÜ, Ahtri 12.",
+      "h1": "Teenused",
+      "lead": "IT tugi ja hooldus, pluginate ja tehisintellekti agentide arendus ning nõustamine müüjale, kes käivitab müüki Amazonis."
+    },
+    "contact": {
+      "title": "Kontakt | Compath OÜ",
+      "description": "Compath OÜ, Ahtri 12, Tallinn 10151. Telefon +372 55520482, esmaspäevast reedeni 9–17. Registrikood 11502963, KMKR EE101244231.",
+      "h1": "Kontakt",
+      "lead": "Helistage tööpäeval või saatke sõnum. Loeme seda selleks, et vastata."
+    },
+    "privacy": {
+      "title": "Privaatsus | Compath OÜ",
+      "description": "Kuidas Compath OÜ kontaktivormi andmeid kasutab: mida säilitame, miks, kui kaua ja kuidas küsida koopiat või kustutamist.",
+      "h1": "Privaatsus",
+      "updated": "24. september 2026",
+      "sections": [
+        {"h2": "Kes vastutab", "paragraphs": ["Vastutav töötleja on Compath OÜ, Ahtri 12, Tallinn 10151, Eesti, registrikood 11502963. See leht käib ettevõtte veebilehe compath.ee kohta."]},
+        {"h2": "Mida vorm kogub", "paragraphs": ["Kui kirjutate meile, saame teie nime, e-posti aadressi, telefoninumbri, kui selle lisate, ja sõnumi. IP-aadressi räsi hoiame kuni üks tund, et sama aadress ei saaks vormi järjest uuesti saata. Vorm ei ole kohustuslik. Kontaktilehel olev telefon on teine võimalus."]},
+        {"h2": "Miks ja mis alusel", "paragraphs": ["Kasutame sõnumit ainult vastamiseks ja sellest kasvava kirjavahetuse jaoks. Õiguslik alus on lepingueelsed sammud teie palvel ning meie õigustatud huvi päringutele vastata (isikuandmete kaitse üldmääruse artikli 6 lõike 1 punktid b ja f). Meililisti me teid ei lisa ega kasuta sõnumit reklaamiks."]},
+        {"h2": "Kui kaua andmeid hoiame", "paragraphs": ["Kirjavahetus jääb alles seni, kuni päring ja lühike järeltegevus on tehtud. Kustutame selle, kui seda enam vaja ei ole, ja ei hoia seda kauem kui 24 kuud, välja arvatud siis, kui leping või seadus nõuab pikemat tähtaega. Päringupiirangu kirje aegub ühe tunni jooksul."]},
+        {"h2": "Kes andmeid saab", "paragraphs": ["Sõnum saadetakse e-kirjaga meie enda postkasti samas domeenis. Andmeid me ei müü ega anna reklaamivõrgustikule. Päringupiirangu faili hoiab sama majutuskonto, millel see veebileht töötab."]},
+        {"h2": "Küpsised ja keelevalik", "paragraphs": ["See leht ei sea küpsiseid ega laadi analüütika- ega reklaamiskripte. Valitud keel salvestub teie brauseris (localStorage) võtme compath-lang all. Väärtus jääb teie seadmesse. Serverisse me seda ei saada."]},
+        {"h2": "Teie õigused", "paragraphs": ["Võite küsida kirjavahetuse koopiat, parandamist, kustutamist, töötlemise piiramist või esitada vastuväite õigustatud huvile tuginevale kasutusele. Kaebuse võite esitada Andmekaitse Inspektsioonile (aki.ee). Kasutage kontaktivormi või kontaktilehe telefoninumbrit. Kirjutage juurde aadress, millelt sõnum tuli, et leiaksime õige kirja."]}
+      ]
+    },
+    "thanks": {
+      "title": "Sõnum saadetud | Compath OÜ",
+      "description": "Teie sõnum on teel Compath OÜ-le.",
+      "h1": "Sõnum on saadetud",
+      "text": "Aitäh. Vastame tööpäeviti, esmaspäevast reedeni kell 9–17."
+    },
+    "formError": {
+      "title": "Sõnum ei läinud teele | Compath OÜ",
+      "description": "Kontaktivorm ei saanud sõnumit saata.",
+      "h1": "Sõnum ei läinud teele",
+      "text": "Helistage palun tööpäeval numbrile +372 55520482 või proovige vormi veidi aja pärast uuesti. Kontrollige, et nimi, e-post ja sõnum on täidetud."
+    }
+  },
+  "form": {
+    "name": "Nimi",
+    "email": "E-post",
+    "phone": "Telefon",
+    "optional": "soovi korral",
+    "message": "Sõnum",
+    "submit": "Saada",
+    "sending": "Saadan…",
+    "success": "Sõnum on saadetud. Vastame tööpäeviti.",
+    "invalid": "Kontrollige nime, e-posti ja sõnumit ning proovige uuesti.",
+    "error": "Sõnumit ei õnnestunud saata. Helistage palun +372 55520482.",
+    "hp": "Ettevõtte veebileht"
+  },
+  "services": [
+    {
+      "id": "it",
+      "serviceType": "IT tugi ja hooldus",
+      "name": "IT tugi ja hooldus",
+      "summary": "Võrgud, arvutid ja kontoritehnika, domeenid, majutus, e-post, veebilehed, VoIP ja jooksev hooldus. Ettevõtetele ja kodudele.",
+      "title": "IT tugi Tallinnas | Compath OÜ",
+      "description": "IT tugi Tallinnas ettevõtetele ja kodudele: arvutivõrgud, arvutid ja kontoritehnika, domeenid, majutus, e-post, veebilehed, VoIP ja jooksev hooldus.",
+      "h1": "IT tugi ja hooldus",
+      "lead": "Planeerime, paigaldame ja hoiame seejärel igapäevase IT korras. Töö on ettevõtetele ja kodudele. Kontor on Tallinnas, Ahtri 12.",
+      "blocks": [
+        {"h2": "Millega tegeleme"},
+        {"ul": [
+          "Arvutivõrkude planeerimine ja ehitus",
+          "Kontoritehnika, arvutite ja seadmete müük, paigaldus ja seadistus",
+          "Domeenide registreerimine, veebimajutus ning e-posti ja veebilehe seadistus",
+          "VoIP-seadmete tugi",
+          "Jooksev hooldus pärast esimest paigaldust"
+        ]},
+        {"h2": "Ettevõtted ja kodud"},
+        {"p": "Väike kontor ja kodu vajavad sageli sama laadi tööd: võrk nendesse ruumidesse, kus seda päriselt kasutatakse, seadistatud arvuti, kohale jõudev post, veebileht, millel on koht. Teeme selle töö ise. Reageerimisaega me numbriga ei luba, sest see oleneb tööst."},
+        {"h2": "Kuidas alustada"},
+        {"p": "Helistage tööpäeval numbrile +372 55520482 või [kirjutage meile](/et/kontakt/). Öelge, mis teil täna on ja mida tahate muuta. Kui töö jääb sellest väljapoole, mida teeme, ütleme seda."}
+      ]
+    },
+    {
+      "id": "plugins",
+      "serviceType": "WordPressi pluginate ja tehisintellekti agentide arendus",
+      "name": "Pluginad ja tehisintellekti agendid",
+      "summary": "WordPressi pluginad teie enda töövoole ning tehisintellekti agendid ja automatiseerimine, näiteks n8n-i integratsioonid.",
+      "title": "WordPressi pluginate arendus | Compath OÜ",
+      "description": "WordPressi pluginate arendus ning tehisintellekti agendid ja töövoogude automatiseerimine, näiteks n8n. Compath OÜ avaldab ka pluginat Choir Rehearsal.",
+      "h1": "Pluginate ja tehisintellekti agentide arendus",
+      "lead": "Kirjutame WordPressi pluginaid ja seadistame tehisintellekti agente äriprotsessile, sealhulgas n8n-i integratsioone.",
+      "blocks": [
+        {"h2": "WordPressi pluginad"},
+        {"p": "Plugin on õige kuju siis, kui töövoog on konkreetne: suletud kogu, ekraan, mida töötajad iga nädal kasutavad, või side teise süsteemiga. Lepime ulatuse kokku, ehitame selle teie saidile ja jätame nii, et seda saab uuendada."},
+        {"p": "Meie enda plugin on [Choir Rehearsal](/et/choir-rehearsal/), kooride proovikogu. See on selgeim näide pluginatööst, mille viime välja ja mida hooldame. Toote leht on [rehearsal.compath.ee](https://rehearsal.compath.ee/?lang=et)."},
+        {"h2": "Tehisintellekti agendid ja töövood"},
+        {"p": "Agent või n8n-i töövoog võib võtta vormi andmed, liigutada faili, saata teate või valmistada mustandi. Enne kui miski käima läheb, kirjutame üles, millised sammud võivad ise edasi minna ja millised ootavad inimest. See piir on osa tööst."},
+        {"h2": "Kuidas alustada"},
+        {"p": "Kirjeldage protsessi nii, nagu see täna käib, koos juba kasutusel olevate vahenditega. [Võtke ühendust](/et/kontakt/) ja ütleme, kas ausam ja väiksem lahendus on plugin, töövoog või mõlemad."}
+      ]
+    },
+    {
+      "id": "amazon",
+      "serviceType": "Nõustamine Amazoni käivitamisel",
+      "name": "Amazoni käivitamise nõustamine",
+      "summary": "Nõustamine müüjale, kes alustab Amazonis: konto, kuulutused ja reklaami (PPC) põhitõed.",
+      "title": "Nõustamine Amazoni käivitamisel | Compath OÜ",
+      "description": "Nõustamine Amazoni käivitamisel: konto seadistus, kuulutused ja reklaami (PPC) põhitõed. Compath OÜ nõustab. Müüja olete teie.",
+      "h1": "Nõustamine Amazoni käivitamisel",
+      "lead": "Nõustame müüjaid, kes avavad müügi Amazonis. Töö hõlmab kontot, kuulutusi ja reklaami põhitõdesid, sealhulgas PPC-d. See on nõustamine, mitte müügilubadus.",
+      "blocks": [
+        {"h2": "Mida nõustamine katab"},
+        {"ul": [
+          "Konto seadistus ja praktiline järjekord esimesteks nädalateks",
+          "Kuulutused: pealkiri, pildid ja tekst, mida ostja loeb",
+          "Reklaami põhitõed, sealhulgas see, kuidas sponsitud tooted käivitusse sobivad"
+        ]},
+        {"h2": "Mida me ei luba"},
+        {"p": "Müüja jääte teie. Me ei luba kohta otsingus, arvustuste skoori ega käibenumbrit. PPC on üks osa käivituse jutust, mitte eraldi reklaamileping, mis on strateegiaks nimetatud."},
+        {"h2": "Kuidas alustada"},
+        {"p": "Öelge turg, kas konto on juba olemas ja mitu toodet tahate esimesena üles panna. Kasutage [kontaktivormi](/et/kontakt/) või helistage tööpäeval."}
+      ]
+    }
+  ],
+  "product": {
+    "title": "Choir Rehearsal — kooride proovikogu | Compath OÜ",
+    "description": "Choir Rehearsal on Compathi WordPressi plugin: privaatne proovikogu laulude, häälepartiide, PDF-nootide ja YouTube’i manustega. Lite on tasuta. Pro maksab 49 eurot aastas.",
+    "h1": "Choir Rehearsal",
+    "kicker": "Meie WordPressi plugin",
+    "lead": "Choir Rehearsal on kooride privaatne proovikogu. Laulud, igale häälele oma lugu, PDF-noodid ja YouTube’i manused. Kuulata saab telefonis või arvutis.",
+    "homeLead": [
+      "Choir Rehearsal on meie enda WordPressi plugin: privaatne proovikogu. Koor hoiab ühes kohas laulud, iga hääle loo, PDF-noodid ja soovi korral YouTube’i manused. Lauljad kuulavad telefonis või arvutis. Voice Leader lisab materjali.",
+      "Lite on WordPress.org-is tasuta. Pro maksab 49 eurot aastas. Toote leht, demo ja pood on allpool. Rollinimed Singer ja Voice Leader jäävad inglise keelde."
+    ],
+    "whatTitle": "Mis see on",
+    "what": [
+      "Plugin lisab koori WordPressi saidile proovikogu. Kogu aadress on /rehearsal/. Igal laulul saavad olla häälelood, PDF-noot ja igal loo real YouTube’i manus. Mängija jääb ekraani allserva, nii et nooti saab lugeda kuulamise ajal.",
+      "Avalikud laulud võivad olla kõigile avatud. Ülejäänud kogu võib nõuda sisselogimist. Selle valib koor."
+    ],
+    "whoTitle": "Kellele see on",
+    "who": [
+      "Kooridele, kes tahavad praegust repertuaari ühes kohas",
+      "Koorijuhtidele, kes valmistavad ette järgmist proovi",
+      "Inimestele rollis Voice Leader, kes lisavad laule, noote ja lugusid",
+      "Lauljatele, sealhulgas rollis Singer, kes kuulavad oma partiid"
+    ],
+    "featuresTitle": "Võimalused",
+    "features": [
+      {"title": "Laulude kogu", "text": "Lehekülgedega laulude loend koori veebilehel."},
+      {"title": "Häälepartiid", "text": "Bass, tenor, alt, sopran ja teised partiid — igale häälele oma helirida."},
+      {"title": "PDF-noodid", "text": "Lisage noodid ja keerake lehti sisseehitatud vaatajas."},
+      {"title": "YouTube’i manused", "text": "Iga partii võib olla üles laaditud heli või ametlik YouTube’i manus. Video jääb nähtavale."},
+      {"title": "Telefon ja arvuti", "text": "Mängija jääb ekraani allserva, kuni noodiga kaasa lähete."},
+      {"title": "Suletud ligipääs", "text": "Proovilehed saab piirata inimestega, kes logivad sisse."},
+      {"title": "Singer ja Voice Leader", "text": "Singer kuulab. Voice Leader haldab laule. Administrator avab ka sätted. Neid rollinimesid ei tõlgita."},
+      {"title": "Play preview", "text": "Pro-s mängib Play preview häälepartii laulu redaktoris enne avaldamist."}
+    ],
+    "editionsTitle": "Lite ja Pro",
+    "liteTitle": "Lite",
+    "litePrice": "Tasuta",
+    "lite": [
+      "Tasuta WordPress.org-is",
+      "Kuni 4 häälelugu laulu kohta",
+      "PDF-noodid, alumine mängija, heli üleslaadimine ja soovi korral YouTube"
+    ],
+    "proTitle": "Pro",
+    "proPrice": "49 €/aastas",
+    "pro": [
+      "49 eurot aastas, paigaldatakse Lite kõrvale, mitte selle asemele",
+      "Piiramatu arv häälelugusid, salvestamine mikrofoniga ja otsing pealkirja järgi",
+      "Play preview ja PDF-noot laulu redaktoris",
+      "Alates versioonist 0.5.0 uuendab WordPress Pro ise, kuni litsents on aktiivne"
+    ],
+    "demoTitle": "Avalik demo",
+    "demo": "Avalik demo on ühine kogu. Avalikke laule saab avada ilma kontota. Tellimine ja soovi korral seadistus teie enda saidil on kirjas toote lehel, et hinnakiri oleks ühes kohas.",
+    "langTitle": "Keeled",
+    "languages": "Toote lehte saab lugeda eesti, inglise, vene, saksa, prantsuse, itaalia, hispaania, rootsi ja soome keeles. Avage see oma keeles allolevatest linkidest. Rollinimed Singer, Voice Leader ja Administrator jäävad igas keeles inglise keelde.",
+    "ctaProduct": "Ava toote leht",
+    "ctaDemo": "Proovi demot",
+    "ctaLite": "Lite WordPress.org-is",
+    "ctaPro": "Pro — 49 €/aastas",
+    "ctaPage": "Täispikk kirjeldus sellel lehel",
+    "imageAlt": "Choir Rehearsali vaade: laulude loend, häälepartiid, mängija ja PDF-noot.",
+    "imageCaption": "Choir Rehearsali vaade: laulud, häälepartiid ja noot.",
+    "pluginLink": "Pluginate ja tehisintellekti arendus"
+  }
+}
