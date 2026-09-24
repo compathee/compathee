@@ -37,7 +37,12 @@ jobs:
           port: 21
           local-dir: deploy/
           server-dir: ${{ secrets.REHEARSAL_FTP_REMOTE_DIR }}
+          # api/ holds the live relay, config.php, feedback-rate/, and logs.
+          # This job uploads only the static shell and must not replace that folder.
           dangerous-clean-slate: false
+          exclude: |
+            api/**
+            **/api/**
 
       - name: Fix remote permissions (Apache 403)
         env:

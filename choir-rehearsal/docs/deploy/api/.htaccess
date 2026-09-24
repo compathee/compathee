@@ -1,0 +1,22 @@
+# The relay script is public. Config, logs, and the rate store are not.
+Options -Indexes
+
+<IfModule mod_authz_core.c>
+	<FilesMatch "(?i)^(config\.php|config\.example\.php)$">
+		Require all denied
+	</FilesMatch>
+	<FilesMatch "\.(log|json)$">
+		Require all denied
+	</FilesMatch>
+</IfModule>
+
+<IfModule mod_authz_host.c>
+	<FilesMatch "(?i)^(config\.php|config\.example\.php)$">
+		Order allow,deny
+		Deny from all
+	</FilesMatch>
+	<FilesMatch "\.(log|json)$">
+		Order allow,deny
+		Deny from all
+	</FilesMatch>
+</IfModule>

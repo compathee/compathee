@@ -136,7 +136,7 @@ final class Choir_Rehearsal_Access {
 		}
 
 		if ( user_can( $user, 'manage_options' ) ) {
-			return 'Administrator';
+			return Choir_Rehearsal_Roles::LABEL_ADMINISTRATOR;
 		}
 		if ( user_can( $user, Choir_Rehearsal_Roles::CAP_MANAGE ) || user_can( $user, 'edit_choir_songs' ) ) {
 			return Choir_Rehearsal_Roles::LABEL_VOICE_LEADER;

@@ -2,7 +2,8 @@
 /**
  * WordPress roles and capabilities for Choir Rehearsal.
  *
- * Role display names "Singer" and "Voice Leader" stay in English (not translated).
+ * Display names stay English: Singer, Voice Leader, Administrator, Admin, Guest.
+ * Do not wrap those names in gettext. Slugs and capabilities are not labels.
  */
 
 declare(strict_types=1);
@@ -22,11 +23,112 @@ final class Choir_Rehearsal_Roles {
 	/** Display name — do not wrap in gettext. */
 	public const LABEL_VOICE_LEADER = 'Voice Leader';
 
+	/** Core WordPress role display name — do not wrap in gettext. */
+	public const LABEL_ADMINISTRATOR = 'Administrator';
+
+	/** Short form of the administrator role — do not wrap in gettext. */
+	public const LABEL_ADMIN = 'Admin';
+
+	/** Logged-out visitor label — do not wrap in gettext. Not a registered role. */
+	public const LABEL_GUEST = 'Guest';
+
 	public const CAP_LISTEN = 'choir_rehearsal_listen';
 	public const CAP_MANAGE = 'choir_rehearsal_manage_songs';
 
 	public static function register(): void {
 		add_action( 'init', array( self::class, 'maybe_install' ), 4 );
+		add_filter( 'gettext', array( self::class, 'keep_role_label_untranslated' ), 20, 3 );
+		add_filter( 'gettext_with_context', array( self::class, 'keep_role_label_untranslated_context' ), 20, 4 );
+	}
+
+	/**
+	 * English labels shown in the UI and on the Users role dropdown.
+	 *
+	 * @return list<string>
+	 */
+	public static function protected_role_labels(): array {
+		return array(
+			self::LABEL_SINGER,
+			self::LABEL_VOICE_LEADER,
+			self::LABEL_ADMINISTRATOR,
+			self::LABEL_ADMIN,
+			self::LABEL_GUEST,
+		);
+	}
+
+	/**
+	 * Stop this plugin from translating a role label if one is passed to gettext.
+	 */
+	public static function keep_role_label_untranslated( string $translation, string $text, string $domain ): string {
+		if ( 'compath-choir-rehearsal' === $domain && in_array( $text, self::protected_role_labels(), true ) ) {
+			return $text;
+		}
+
+		return $translation;
+	}
+
+	/**
+	 * WordPress translates core role names (Administrator) via context "User role".
+	 */
+	public static function keep_role_label_untranslated_context( string $translation, string $text, string $context, string $domain ): string {
+		if ( 'User role' === $context && in_array( $text, self::protected_role_labels(), true ) ) {
+			return $text;
+		}
+
+		return self::keep_role_label_untranslated( $translation, $text, $domain );
+	}
+
+	public static function describe_activation(): string {
+		return sprintf(
+			/* translators: 1: Singer, 2: Voice Leader, 3: Administrator, 4: Guest. Substituted role names stay English. */
+			__( 'Activation adds WordPress roles %1$s (listen) and %2$s (manage songs). Assign them under Users. Settings stay limited to %3$s. Public songs remain open to %4$s.', 'compath-choir-rehearsal' ),
+			self::LABEL_SINGER,
+			self::LABEL_VOICE_LEADER,
+			self::LABEL_ADMINISTRATOR,
+			self::LABEL_GUEST
+		);
+	}
+
+	public static function describe_role_names_policy(): string {
+		return sprintf(
+			/* translators: 1: Singer, 2: Voice Leader, 3: Administrator, 4: Guest. Substituted role names stay English. */
+			__( 'Role names %1$s, %2$s, %3$s, and %4$s are kept in English on purpose.', 'compath-choir-rehearsal' ),
+			self::LABEL_SINGER,
+			self::LABEL_VOICE_LEADER,
+			self::LABEL_ADMINISTRATOR,
+			self::LABEL_GUEST
+		);
+	}
+
+	public static function describe_feedback_audience(): string {
+		return sprintf(
+			/* translators: 1: Singer, 2: Voice Leader, 3: Administrator, 4: Guest. Substituted role names stay English. */
+			__( '%1$s, %2$s, %3$s, and %4$s can send a wish or bug from the song list. Lite and Pro both include this.', 'compath-choir-rehearsal' ),
+			self::LABEL_SINGER,
+			self::LABEL_VOICE_LEADER,
+			self::LABEL_ADMINISTRATOR,
+			self::LABEL_GUEST
+		);
+	}
+
+	public static function ask_administrator_to_assign_library(): string {
+		return sprintf(
+			/* translators: 1: Administrator, 2: Singer, 3: Voice Leader. Substituted role names stay English. */
+			__( 'Public songs above are open to everyone. Ask someone with the %1$s role to assign you the %2$s or %3$s role for the full rehearsal library.', 'compath-choir-rehearsal' ),
+			self::LABEL_ADMINISTRATOR,
+			self::LABEL_SINGER,
+			self::LABEL_VOICE_LEADER
+		);
+	}
+
+	public static function ask_administrator_to_assign_song(): string {
+		return sprintf(
+			/* translators: 1: Administrator, 2: Singer, 3: Voice Leader. Substituted role names stay English. */
+			__( 'Ask someone with the %1$s role to assign you the %2$s or %3$s role to open private rehearsal songs.', 'compath-choir-rehearsal' ),
+			self::LABEL_ADMINISTRATOR,
+			self::LABEL_SINGER,
+			self::LABEL_VOICE_LEADER
+		);
 	}
 
 	public static function maybe_install(): void {

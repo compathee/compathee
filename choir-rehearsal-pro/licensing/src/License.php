@@ -166,6 +166,7 @@ class License {
 		if ( $store ) {
 			$this->client->settings()->license_key = $license->key;
 			$this->client->settings()->license_id  = $license->id;
+			self::remember_public_details( $this->client->settings(), $license );
 		}
 
 		return $license;
@@ -243,6 +244,62 @@ class License {
 	 *
 	 * @return \WP_Error|boolean
 	 */
+	/**
+	 * Persist non-secret license fields already returned by SureCart.
+	 *
+	 * The license key is stored separately and must not be copied into these options.
+	 *
+	 * @param object $settings SureCart settings object.
+	 * @param object $license  License payload.
+	 * @return void
+	 */
+	public static function remember_public_details( $settings, $license ) {
+		if ( ! is_object( $settings ) || ! is_object( $license ) ) {
+			return;
+		}
+
+		if ( isset( $license->status ) && is_scalar( $license->status ) ) {
+			$status = strtolower( trim( (string) $license->status ) );
+			if ( '' !== $status ) {
+				$settings->license_status = $status;
+			}
+		}
+
+		$map = array(
+			'customer' => 'customer_id',
+			'purchase' => 'purchase_id',
+			'order'    => 'order_id',
+		);
+		foreach ( $map as $property => $option_name ) {
+			$id = self::public_id( isset( $license->{$property} ) ? $license->{$property} : null );
+			if ( '' !== $id ) {
+				$settings->{$option_name} = $id;
+			}
+		}
+	}
+
+	/**
+	 * @param mixed $value Raw SureCart relation.
+	 */
+	public static function public_id( $value ): string {
+		if ( is_object( $value ) && isset( $value->id ) ) {
+			$value = $value->id;
+		} elseif ( is_array( $value ) && isset( $value['id'] ) ) {
+			$value = $value['id'];
+		}
+
+		if ( ! is_string( $value ) ) {
+			return '';
+		}
+
+		$value = trim( $value );
+		if ( 1 !== preg_match( '/\A[A-Za-z0-9_-]{4,80}\z/', $value ) ) {
+			return '';
+		}
+
+		return $value;
+	}
+
 	public function validate_license( $license ) {
 		if ( is_wp_error( $license ) ) {
 			if ( $license->get_error_code( 'not_found' ) ) {
