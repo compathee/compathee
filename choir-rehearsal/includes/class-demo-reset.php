@@ -51,6 +51,12 @@ final class Choir_Rehearsal_Demo_Reset {
 
 		self::$running = true;
 
+		$baseline = self::restore_saved_baseline( $source );
+		if ( null !== $baseline ) {
+			self::$running = false;
+			return $baseline;
+		}
+
 		$deleted = Choir_Rehearsal_Demo_Data::delete_all_songs();
 		Choir_Rehearsal_Demo_Log::add(
 			'reset_deleted',
@@ -75,6 +81,7 @@ final class Choir_Rehearsal_Demo_Reset {
 				),
 				array( 'source' => $source )
 			);
+			self::restore_demo_accounts();
 			self::$running = false;
 
 			return array(
@@ -96,6 +103,7 @@ final class Choir_Rehearsal_Demo_Reset {
 			array( 'source' => $source )
 		);
 
+		self::restore_demo_accounts();
 		self::$running = false;
 
 		return array(
@@ -107,6 +115,51 @@ final class Choir_Rehearsal_Demo_Reset {
 				'tracks' => (int) $loaded['tracks'],
 			),
 		);
+	}
+
+	/**
+	 * When a must-use baseline exists, restore that snapshot (content and demo accounts).
+	 * Returns null when the guard or the baseline is not installed.
+	 *
+	 * @return array{ok:bool,message:string,deleted:array{songs:int,tracks:int,media:int},loaded:array{songs:int,tracks:int}}|null
+	 */
+	private static function restore_saved_baseline( string $source ): ?array {
+		if ( ! class_exists( 'Compath_Rehearsal_Demo_Guard' ) || ! Compath_Rehearsal_Demo_Guard::baseline_is_ready() ) {
+			return null;
+		}
+
+		$result = Compath_Rehearsal_Demo_Guard::restore_baseline( $source );
+		Choir_Rehearsal_Demo_Log::add(
+			! empty( $result['ok'] ) ? 'reset_done' : 'reset_failed',
+			(string) ( $result['message'] ?? '' ),
+			array(
+				'source' => $source,
+				'mode'   => 'baseline',
+			)
+		);
+
+		return array(
+			'ok'      => ! empty( $result['ok'] ),
+			'message' => (string) ( $result['message'] ?? '' ),
+			'deleted' => array(
+				'songs'  => (int) ( $result['songs'] ?? 0 ),
+				'tracks' => (int) ( $result['tracks'] ?? 0 ),
+				'media'  => (int) ( $result['media'] ?? 0 ),
+			),
+			'loaded'  => array(
+				'songs'  => (int) ( $result['songs'] ?? 0 ),
+				'tracks' => (int) ( $result['tracks'] ?? 0 ),
+			),
+		);
+	}
+
+	/**
+	 * Put the shared demo accounts back when the library was reseeded without a snapshot.
+	 */
+	private static function restore_demo_accounts(): void {
+		if ( class_exists( 'Compath_Rehearsal_Demo_Guard' ) ) {
+			Compath_Rehearsal_Demo_Guard::restore_accounts_from_config();
+		}
 	}
 
 	public static function maybe_handle_http_reset(): void {
