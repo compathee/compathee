@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Choir Rehearsal">
-  <rect width="32" height="32" rx="7" fill="#1f4fd8"/>
-  <g fill="#ffffff">
-    <ellipse cx="12.4" cy="22.6" rx="5.1" ry="3.7" transform="rotate(-24 12.4 22.6)"/>
-    <rect x="16.15" y="6.1" width="2.45" height="16.8" rx="0.4"/>
-    <path d="M18.6 6.3c5.2 1.4 7.2 4.6 6.4 7.6-2.8-1.5-5.4-1.6-6.4-.4V6.3z"/>
-  </g>
-</svg>

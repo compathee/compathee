@@ -88,6 +88,34 @@ def prepare_logo():
     return logo
 
 
+FAVICON_SVG = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img">
+  <title>Compath</title>
+  <defs>
+    <radialGradient id="orb" gradientUnits="userSpaceOnUse" cx="8.58" cy="19.56" r="24.23">
+      <stop offset="0" stop-color="#FEFE00"/>
+      <stop offset="1" stop-color="#FE4F00"/>
+    </radialGradient>
+  </defs>
+  <circle cx="16" cy="16" r="16" fill="url(#orb)"/>
+</svg>
+"""
+
+
+def write_favicons():
+    """Orange sphere for compath.ee. The blue note stays on rehearsal.compath.ee."""
+    svg_path = BRAND / "favicon.svg"
+    svg_path.write_text(FAVICON_SVG, encoding="utf-8")
+    rendered = {}
+    for size in (16, 32, 48, 180, 192, 512):
+        out = Path("/tmp") / f"compath-favicon-{size}.png"
+        subprocess.check_call(["rsvg-convert", "-w", str(size), "-h", str(size), str(svg_path), "-o", str(out)])
+        rendered[size] = Image.open(out).convert("RGBA")
+    rendered[192].save(BRAND / "favicon-192.png", optimize=True)
+    rendered[512].save(BRAND / "favicon-512.png", optimize=True)
+    rendered[180].save(BRAND / "apple-touch-icon.png", optimize=True)
+    rendered[512].save(BRAND / "favicon.ico", sizes=[(16, 16), (32, 32), (48, 48)])
+
+
 def og_image(code, headline, logo):
     image = Image.new("RGB", (1200, 630), WHITE)
     draw = ImageDraw.Draw(image)
@@ -141,6 +169,7 @@ def manifest():
 def main():
     BRAND.mkdir(parents=True, exist_ok=True)
     logo = prepare_logo()
+    write_favicons()
     for code, line in TAGLINES.items():
         og_image(code, line, logo)
     product_images()

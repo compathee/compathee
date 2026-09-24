@@ -26,8 +26,8 @@ Static files uploaded from compath-site/dist/ (htaccess.snippet is merged by han
 /public_html/et/teenused/index.html
 /public_html/et/teenused/it-tugi/index.html
 /public_html/et/teenused/pluginad-ja-tehisintellekt/index.html
-/public_html/favicon-192x192.png
-/public_html/favicon-512x512.png
+/public_html/favicon-192.png
+/public_html/favicon-512.png
 /public_html/favicon.ico
 /public_html/favicon.svg
 /public_html/health.txt

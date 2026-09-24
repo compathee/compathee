@@ -187,8 +187,9 @@ export function validate(dist, options = {}) {
     if (ratio < 4.5) problems.push(`contrast ${fg} on ${bg} is ${ratio.toFixed(2)}`);
   }
 
-  const iconNames = ["favicon.ico", "favicon.svg", "apple-touch-icon.png", "favicon-192x192.png", "favicon-512x512.png"];
-  const iconDir = path.join(root, "..", "choir-rehearsal", "docs", "deploy");
+  const iconNames = ["favicon.ico", "favicon.svg", "apple-touch-icon.png", "favicon-192.png", "favicon-512.png"];
+  const iconDir = path.join(root, "assets", "brand");
+  const hash = (file) => crypto.createHash("sha256").update(fs.readFileSync(file)).digest("hex");
   for (const name of iconNames) {
     const from = path.join(iconDir, name);
     const to = path.join(dist, name);
@@ -196,16 +197,28 @@ export function validate(dist, options = {}) {
       problems.push(`missing favicon ${name}`);
       continue;
     }
-    const hash = (file) => crypto.createHash("sha256").update(fs.readFileSync(file)).digest("hex");
-    if (hash(from) !== hash(to)) problems.push(`${name} does not match choir-rehearsal/docs/deploy`);
+    if (hash(from) !== hash(to)) problems.push(`${name} was not copied from the brand set`);
   }
   const iconSvg = fs.readFileSync(path.join(dist, "favicon.svg"), "utf8");
-  if (!iconSvg.includes('fill="#1f4fd8"')) problems.push("favicon is not the blue note");
-  if (fs.existsSync(path.join(dist, "favicon-32.png")) || fs.existsSync(path.join(dist, "favicon-192.png"))) {
-    problems.push("derived favicon still published");
+  if (!iconSvg.includes("radialGradient") || !iconSvg.includes("#FEFE00") || !iconSvg.includes("#FE4F00")) {
+    problems.push("favicon svg is not the orange sphere");
+  }
+  if (iconSvg.includes("#1f4fd8")) problems.push("favicon still uses the rehearsal blue");
+  const pngSize = (file) => {
+    const buf = fs.readFileSync(file);
+    return [buf.readUInt32BE(16), buf.readUInt32BE(20)];
+  };
+  const expect = { "apple-touch-icon.png": [180, 180], "favicon-192.png": [192, 192], "favicon-512.png": [512, 512] };
+  for (const [name, size] of Object.entries(expect)) {
+    const actual = pngSize(path.join(dist, name));
+    if (actual[0] !== size[0] || actual[1] !== size[1]) problems.push(`${name} is ${actual.join("x")}`);
+  }
+  const ico = fs.readFileSync(path.join(dist, "favicon.ico"));
+  if (ico.readUInt16LE(4) !== 3 || ico[6] !== 16 || ico[22] !== 32 || ico[38] !== 48) {
+    problems.push("favicon.ico is not 16, 32 and 48");
   }
   const homeHtml = fs.readFileSync(path.join(dist, "index.html"), "utf8");
-  if (!homeHtml.includes("favicon-192x192.png") || homeHtml.includes("favicon-32.png") || homeHtml.includes("favicon-192.png\"")) {
+  if (!homeHtml.includes('href="/favicon-192.png"') && !homeHtml.includes('href="/preview-2026/favicon-192.png"')) {
     problems.push("home favicon links");
   }
 
@@ -234,7 +247,7 @@ export function validate(dist, options = {}) {
     const service = fs.readFileSync(path.join(dist, "services", "it-support", "index.html"), "utf8");
     if (!service.includes('href="/preview-2026/contact/"')) problems.push("preview inline link");
     const manifest = fs.readFileSync(path.join(dist, "site.webmanifest"), "utf8");
-    if (!manifest.includes("/preview-2026/favicon-192x192.png")) problems.push("preview manifest");
+    if (!manifest.includes("/preview-2026/favicon-192.png") || !manifest.includes("192x192")) problems.push("preview manifest");
     const missing = fs.readFileSync(path.join(dist, "404.html"), "utf8");
     if (!missing.includes('<meta name="robots" content="noindex, nofollow" />')) problems.push("preview 404 robots");
     if (!missing.includes('href="/preview-2026/et/"')) problems.push("preview 404 links");
