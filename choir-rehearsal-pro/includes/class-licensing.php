@@ -17,6 +17,7 @@ final class Choir_Rehearsal_Pro_Licensing {
 	public static function register(): void {
 		add_action( 'init', array( self::class, 'boot' ), 5 );
 		add_action( 'admin_notices', array( self::class, 'maybe_admin_notices' ) );
+		add_action( 'admin_footer', array( self::class, 'license_screen_help' ) );
 	}
 
 	public static function boot(): void {
@@ -132,5 +133,30 @@ final class Choir_Rehearsal_Pro_Licensing {
 			);
 			echo '</p></div>';
 		}
+	}
+
+	/**
+	 * Install and update help on Choir Rehearsal → Pro License.
+	 */
+	public static function license_screen_help(): void {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		$page = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( (string) $_GET['page'] ) ) : '';
+		if ( 'choir-rehearsal-pro-license' !== $page ) {
+			return;
+		}
+
+		echo '<div class="wrap" style="max-width:640px;margin-top:1.5em">';
+		echo '<h2>' . esc_html__( 'Installing and updating', 'choir-rehearsal-pro' ) . '</h2>';
+		echo '<ol>';
+		echo '<li>' . esc_html__( 'Download the Pro zip from your shop.compath.ee account.', 'choir-rehearsal-pro' ) . '</li>';
+		echo '<li>' . esc_html__( 'Upload it beside Choir Rehearsal (Lite): Plugins → Add New → Upload Plugin. Do not replace Lite.', 'choir-rehearsal-pro' ) . '</li>';
+		echo '<li>' . esc_html__( 'Activate the license on this screen.', 'choir-rehearsal-pro' ) . '</li>';
+		echo '</ol>';
+		echo '<p>' . esc_html__( 'From version 0.5.0, WordPress installs newer Pro versions automatically (Dashboard → Updates or Plugins) while this license is active. On the Plugins screen you can also turn on auto-updates for Compath Choir Rehearsal Pro.', 'choir-rehearsal-pro' ) . '</p>';
+		echo '<p>' . esc_html__( 'If you are on a Pro version older than 0.5.0, download 0.5.0 from your shop account once and replace the plugin: deactivate and delete the old Pro, then upload the new zip, or use WordPress “Replace current with uploaded”. Activate the license here. After that, no manual updates.', 'choir-rehearsal-pro' ) . '</p>';
+		echo '</div>';
 	}
 }

@@ -74,6 +74,10 @@ Email: license key + download choir-rehearsal-pro.zip
         ↓
 Customer site: install Choir Rehearsal (Lite) + Choir Rehearsal Pro
         ↓
+Choir Rehearsal → Pro License → activate key
+        ↓
+From Pro 0.5.0: WordPress updates Pro automatically while the license is active
+        ↓
 api.compath.ee → ERPLY paid invoice (automatic)
 ```
 
@@ -83,6 +87,8 @@ api.compath.ee → ERPLY paid invoice (automatic)
 2. Run `./scripts/build-pro-zip.sh` → `dist/choir-rehearsal-pro.zip`.
 3. Product → Secure Storage → upload zip → **Enable license creation** → set **Current Release** → Save.
 4. Customers activate under **Choir Rehearsal → Pro License**.
+5. **Current Release** is what the in-plugin updater offers. From 0.5.0, WordPress installs that release automatically for sites with an active license (**Dashboard → Updates** / **Plugins**, or plugin auto-updates).
+6. Customers on Pro older than 0.5.0 must download this zip once and replace the plugin manually, then activate the license. Later versions need no manual install.
 
 See `choir-rehearsal-pro/docs/surecart-licensing.md`.
 
@@ -93,7 +99,7 @@ See `choir-rehearsal-pro/docs/surecart-licensing.md`.
 | **Lite** | `choir-rehearsal.zip` — free, wordpress.org / GitHub, max 4 tracks, no mic |
 | **Pro** | `choir-rehearsal-pro.zip` — requires Lite: unlimited tracks, recording, search, editor Play, PDF panel |
 
-Pro buyers get **both** zips. Install order is always **Lite first, then Pro**. Never replace the Lite plugin folder with Pro.
+Pro buyers get **both** zips. Install order is always **Lite first, then Pro**. Never replace the Lite plugin folder with Pro. After the first install, activate the license under **Choir Rehearsal → Pro License**. From Pro 0.5.0, further Pro updates come through WordPress while that license is active. A Pro copy older than 0.5.0 needs one manual replacement with the 0.5.0 zip from the shop account.
 
 See [lite-pro-updates.md](lite-pro-updates.md) for the full Lite → Pro process and how to publish GitHub updates.
 

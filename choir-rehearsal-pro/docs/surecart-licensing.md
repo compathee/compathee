@@ -19,9 +19,13 @@ Pro uses the official [SureCart WordPress SDK](https://github.com/surecart/wordp
 
 ## Customer flow
 
-1. Install Lite, then Pro.
+1. Install Lite from WordPress.org (or GitHub), then upload the Pro zip from the shop.compath.ee account beside it. Do not replace Lite.
 2. **Choir Rehearsal → Pro License** → paste key → Activate.
 3. Pro features unlock when `activation_id` is stored locally.
+4. From **0.5.0**, WordPress offers Pro updates automatically (**Dashboard → Updates** or **Plugins**) while the license stays active. Customers can also enable auto-updates for the plugin.
+5. Anyone still on Pro **older than 0.5.0** (no licensing SDK) must download 0.5.0 from their shop account once and replace the plugin manually (deactivate/delete the old Pro and upload the new zip, or use **Replace current with uploaded**), then activate the license. After that, updates are automatic.
+
+The SDK updater starts with the client (`licensing/src/Client.php` constructs `Updater` for `CHOIR_REHEARSAL_PRO_FILE`). The plugin folder slug is `choir-rehearsal-pro`, matching `release.json`. `License::get_current_release()` requires both a stored license key and an activation id, so update packages are requested only for an activated license.
 
 ## Files
 
