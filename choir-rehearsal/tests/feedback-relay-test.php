@@ -287,6 +287,19 @@ check('example config has empty secrets', str_contains($example, "'jira_email'  
 check('two-letter case key', 'WP-12' === Choir_Feedback_Relay::issue_key(array('code' => 201, 'body' => '{"key":"WP-12"}')));
 
 $workflow = (string) file_get_contents(dirname(__DIR__, 2) . '/.github/workflows/deploy-rehearsal-site.yml');
-check('workflow publishes the relay', str_contains($workflow, 'deploy/api/feedback.php') && str_contains($workflow, 'api/feedback.php'));
+check(
+	'workflow does not upload api',
+	!str_contains($workflow, 'deploy/api/feedback.php')
+	&& !str_contains($workflow, 'chmod 644 api/feedback.php')
+	&& str_contains($workflow, 'api/**')
+	&& str_contains($workflow, 'dangerous-clean-slate: false')
+);
+$relay_src = (string) file_get_contents(dirname(__DIR__) . '/docs/deploy/api/feedback.php');
+$override_at = strpos($relay_src, "getenv( 'CHOIR_FEEDBACK_CONFIG' )");
+$beside_at = strpos($relay_src, "__DIR__ . '/config.php'");
+$private_at = strpos($relay_src, "dirname( __DIR__, 2 ) . '/private/feedback-config.php'");
+check('config path prefers api/config.php', false !== $override_at && false !== $beside_at && false !== $private_at && $override_at < $beside_at && $beside_at < $private_at);
+$api_htaccess = (string) file_get_contents(dirname(__DIR__) . '/docs/deploy/api/.htaccess');
+check('api htaccess hides listings and config', str_contains($api_htaccess, 'Options -Indexes') && str_contains($api_htaccess, 'config\\.php'));
 
 exit($fail > 0 ? 1 : 0);

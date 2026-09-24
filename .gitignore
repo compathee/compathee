@@ -1,2 +1,4 @@
 dist/
 choir-rehearsal/docs/deploy/api/config.php
+choir-rehearsal/docs/deploy/api/feedback-mail.log
+choir-rehearsal/docs/deploy/api/feedback-rate/

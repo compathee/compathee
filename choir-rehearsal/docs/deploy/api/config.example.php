@@ -1,9 +1,11 @@
 <?php
 /**
- * Copy this file to the private directory OUTSIDE the web root:
- *   /domains/rehearsal.compath.ee/private/feedback-config.php
+ * Copy this file beside feedback.php and name it config.php:
+ *   /domains/rehearsal.compath.ee/public_html/api/config.php
  *
- * Do not commit the real file. Do not upload it into public_html.
+ * .htaccess in that folder denies config.php. Do not commit the real file.
+ * If config.php is absent, the script falls back to
+ *   /domains/rehearsal.compath.ee/private/feedback-config.php
  *
  * @return array<string, mixed>
  */

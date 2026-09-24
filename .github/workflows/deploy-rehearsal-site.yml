@@ -20,13 +20,11 @@ jobs:
       - name: Prepare static shell (loads content from GitHub at runtime)
         run: |
           set -euo pipefail
-          mkdir -p deploy/api
+          mkdir -p deploy
           cp choir-rehearsal/docs/product-page.html deploy/index.html
           cp choir-rehearsal/docs/deploy/.htaccess deploy/.htaccess
           cp choir-rehearsal/docs/deploy/health.txt deploy/health.txt
-          cp choir-rehearsal/docs/deploy/api/feedback.php deploy/api/feedback.php
-          cp choir-rehearsal/docs/deploy/api/.htaccess deploy/api/.htaccess
-          ls -la deploy/ deploy/api/
+          ls -la deploy/
           echo "Shell deployed once — page content comes from product-data.json on GitHub"
 
       - name: Deploy to rehearsal.compath.ee (FTP/FTPS)
@@ -39,7 +37,12 @@ jobs:
           port: 21
           local-dir: deploy/
           server-dir: ${{ secrets.REHEARSAL_FTP_REMOTE_DIR }}
+          # api/ holds the live relay, config.php, feedback-rate/, and logs.
+          # This job uploads only the static shell and must not replace that folder.
           dangerous-clean-slate: false
+          exclude: |
+            api/**
+            **/api/**
 
       - name: Fix remote permissions (Apache 403)
         env:
@@ -60,9 +63,6 @@ jobs:
           chmod 644 index.html
           chmod 644 .htaccess
           chmod 644 health.txt
-          chmod 755 api
-          chmod 644 api/feedback.php
-          chmod 644 api/.htaccess
           bye
           EOF
 

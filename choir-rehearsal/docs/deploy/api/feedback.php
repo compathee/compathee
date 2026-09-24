@@ -3,7 +3,8 @@
  * Choir Rehearsal feedback relay.
  *
  * Hosted at https://rehearsal.compath.ee/api/feedback.php
- * Secrets live in private/feedback-config.php, outside the web root.
+ * Secrets live in api/config.php, denied by .htaccess. A private/ path
+ * outside the web root is only a fallback.
  */
 
 declare(strict_types=1);
@@ -20,6 +21,11 @@ final class Choir_Feedback_Relay {
 		$override = getenv( 'CHOIR_FEEDBACK_CONFIG' );
 		if ( is_string( $override ) && '' !== $override ) {
 			return $override;
+		}
+
+		$beside = __DIR__ . '/config.php';
+		if ( is_file( $beside ) ) {
+			return $beside;
 		}
 
 		return dirname( __DIR__, 2 ) . '/private/feedback-config.php';
