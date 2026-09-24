@@ -374,27 +374,155 @@ final class Choir_Rehearsal_Feedback {
 	/**
 	 * @return list<string>
 	 */
-	public static function labels_for_type( string $type ): array {
+	public static function labels_for_type( string $type, bool $pro = false ): array {
 		$labels = array( 'feedback' );
 		if ( 'bug' === $type ) {
 			$labels[] = 'bug';
 		} elseif ( 'wish' === $type ) {
 			$labels[] = 'enhancement';
 		}
+		if ( $pro ) {
+			$labels[] = 'pro';
+		}
 
 		return $labels;
 	}
 
-	public static function issue_title( string $title ): string {
+	public static function issue_title( string $title, bool $pro = false ): string {
 		$title = self::to_plain_text( $title );
 		$title = preg_replace( '/\s+/u', ' ', $title ) ?? $title;
 		$title = self::limit_chars( trim( $title ), 120 );
+		$prefix = $pro ? '[Choir Rehearsal][Pro] ' : '[Choir Rehearsal] ';
 
-		return '[Choir Rehearsal] ' . $title;
+		return $prefix . $title;
 	}
 
 	/**
-	 * @param array{type: string, email: string, role: string, plugin_version: string, wp_version: string, php_version: string, site_url: string, description: string} $fields
+	 * Local SureCart record used for the GitHub issue. No remote call by itself.
+	 *
+	 * @param array<string, mixed> $options sc_* values from the Pro license option.
+	 * @return array{pro: bool, status: string, license_id: string, activation_id: string, customer_id: string, purchase_id: string, order_id: string, license_key: string}
+	 */
+	public static function license_snapshot( bool $is_pro, array $options ): array {
+		$status_raw = strtolower( self::option_string( $options, 'sc_license_status' ) );
+		$inactive   = array( 'expired', 'revoked', 'invalid', 'inactive', 'canceled', 'cancelled', 'unlicensed' );
+		if ( in_array( $status_raw, $inactive, true ) ) {
+			$status = 'cancelled' === $status_raw ? 'canceled' : $status_raw;
+			$pro    = false;
+		} elseif ( $is_pro ) {
+			$status = 'active';
+			$pro    = true;
+		} else {
+			$status = 'Lite';
+			$pro    = false;
+		}
+
+		return array(
+			'pro'           => $pro,
+			'status'        => $status,
+			'license_id'    => self::option_string( $options, 'sc_license_id' ),
+			'activation_id' => self::option_string( $options, 'sc_activation_id' ),
+			'customer_id'   => self::option_string( $options, 'sc_customer_id' ),
+			'purchase_id'   => self::option_string( $options, 'sc_purchase_id' ),
+			'order_id'      => self::option_string( $options, 'sc_order_id' ),
+			'license_key'   => self::option_string( $options, 'sc_license_key' ),
+		);
+	}
+
+	/**
+	 * @param array<string, mixed> $options
+	 */
+	private static function option_string( array $options, string $key ): string {
+		if ( ! isset( $options[ $key ] ) || ! is_scalar( $options[ $key ] ) ) {
+			return '';
+		}
+
+		return trim( (string) $options[ $key ] );
+	}
+
+	/**
+	 * @return array{pro: bool, status: string, license_id: string, activation_id: string, customer_id: string, purchase_id: string, order_id: string, license_key: string}
+	 */
+	public static function current_license(): array {
+		if ( ! function_exists( 'get_option' ) ) {
+			return self::license_snapshot( false, array() );
+		}
+
+		if ( class_exists( 'Choir_Rehearsal_Pro_Licensing', false ) ) {
+			Choir_Rehearsal_Pro_Licensing::refresh_cached_details();
+			return self::license_snapshot(
+				Choir_Rehearsal_Pro_Licensing::is_licensed(),
+				Choir_Rehearsal_Pro_Licensing::stored_options()
+			);
+		}
+
+		return self::license_snapshot( false, array() );
+	}
+
+	/**
+	 * Accept either a license_snapshot() result or the same shape.
+	 *
+	 * @param array<string, mixed> $license
+	 * @return array{pro: bool, status: string, license_id: string, activation_id: string, customer_id: string, purchase_id: string, order_id: string, license_key: string}
+	 */
+	public static function normalize_license( array $license ): array {
+		return self::license_snapshot(
+			! empty( $license['pro'] ),
+			array(
+				'sc_license_status' => $license['status'] ?? '',
+				'sc_license_id'     => $license['license_id'] ?? '',
+				'sc_activation_id'  => $license['activation_id'] ?? '',
+				'sc_customer_id'    => $license['customer_id'] ?? '',
+				'sc_purchase_id'    => $license['purchase_id'] ?? '',
+				'sc_order_id'       => $license['order_id'] ?? '',
+				'sc_license_key'    => $license['license_key'] ?? '',
+			)
+		);
+	}
+
+	public static function mask_license_key( string $key ): string {
+		$key = trim( $key );
+		$len = strlen( $key );
+		if ( $len < 8 ) {
+			return str_repeat( '*', max( 4, $len ) );
+		}
+
+		return substr( $key, 0, 4 ) . str_repeat( '*', $len - 8 ) . substr( $key, -4 );
+	}
+
+	/**
+	 * English lines for developers. Role and license names are not translated.
+	 *
+	 * @param array{pro: bool, status: string, license_id: string, activation_id: string, customer_id: string, purchase_id: string, order_id: string, license_key: string} $license
+	 * @return list<string>
+	 */
+	public static function license_lines( array $license ): array {
+		$lines = array( 'License: ' . $license['status'] );
+		$ids   = array(
+			'License ID'    => $license['license_id'],
+			'Purchase ID'   => $license['purchase_id'],
+			'Order ID'      => $license['order_id'],
+			'Customer ID'   => $license['customer_id'],
+			'Activation ID' => $license['activation_id'],
+		);
+		$public = false;
+		foreach ( $ids as $label => $value ) {
+			if ( '' === $value ) {
+				continue;
+			}
+			$public  = true;
+			$lines[] = $label . ': ' . self::to_plain_text( $value );
+		}
+
+		if ( ! $public && '' !== $license['license_key'] && 'Lite' !== $license['status'] ) {
+			$lines[] = 'License key: ' . self::mask_license_key( $license['license_key'] );
+		}
+
+		return $lines;
+	}
+
+	/**
+	 * @param array{type: string, email: string, role: string, plugin_version: string, wp_version: string, php_version: string, site_url: string, description: string, license?: array<string, mixed>} $fields
 	 */
 	public static function issue_body( array $fields ): string {
 		$type_labels = array(
@@ -405,6 +533,9 @@ final class Choir_Rehearsal_Feedback {
 		$type = $type_labels[ $fields['type'] ] ?? 'Other';
 		$role = '' !== $fields['role'] ? $fields['role'] : Choir_Rehearsal_Roles::LABEL_GUEST;
 		$email = '' !== $fields['email'] ? $fields['email'] : '(not provided)';
+		$license = isset( $fields['license'] ) && is_array( $fields['license'] )
+			? self::normalize_license( $fields['license'] )
+			: self::license_snapshot( false, array() );
 
 		$lines = array(
 			'Type: ' . $type,
@@ -414,10 +545,13 @@ final class Choir_Rehearsal_Feedback {
 			'WordPress version: ' . $fields['wp_version'],
 			'PHP version: ' . $fields['php_version'],
 			'Site: ' . $fields['site_url'],
-			'',
-			'Message:',
-			$fields['description'],
 		);
+		foreach ( self::license_lines( $license ) as $line ) {
+			$lines[] = $line;
+		}
+		$lines[] = '';
+		$lines[] = 'Message:';
+		$lines[] = $fields['description'];
 
 		return implode( "\n", $lines );
 	}
@@ -594,6 +728,12 @@ final class Choir_Rehearsal_Feedback {
 			$role = Choir_Rehearsal_Roles::LABEL_GUEST;
 		}
 
+		$license = self::normalize_license(
+			isset( $context['license'] ) && is_array( $context['license'] )
+				? $context['license']
+				: self::current_license()
+		);
+
 		$body = self::issue_body(
 			array(
 				'type'           => $type,
@@ -604,15 +744,16 @@ final class Choir_Rehearsal_Feedback {
 				'php_version'    => self::to_plain_text( isset( $context['php_version'] ) && is_scalar( $context['php_version'] ) ? (string) $context['php_version'] : PHP_VERSION ),
 				'site_url'       => self::to_plain_text( isset( $context['site_url'] ) && is_scalar( $context['site_url'] ) ? (string) $context['site_url'] : '' ),
 				'description'    => $description,
+				'license'        => $license,
 			)
 		);
 
 		$created = self::create_issue(
 			$repo['owner'],
 			$repo['repo'],
-			self::issue_title( $title ),
+			self::issue_title( $title, ! empty( $license['pro'] ) ),
 			$body,
-			self::labels_for_type( $type ),
+			self::labels_for_type( $type, ! empty( $license['pro'] ) ),
 			$token,
 			$transport
 		);
@@ -793,6 +934,7 @@ final class Choir_Rehearsal_Feedback {
 		return match ( $name ) {
 			'bug' => 'd73a4a',
 			'enhancement' => 'a2eeef',
+			'pro' => '6f42c1',
 			default => '1f4fd8',
 		};
 	}

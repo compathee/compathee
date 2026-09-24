@@ -372,4 +372,170 @@ Choir_Rehearsal_Feedback::render_panel();
 $guest_html = (string) ob_get_clean();
 check('guest form still renders', str_contains($guest_html, 'name="email"') && str_contains($guest_html, 'value=""') && str_contains($guest_html, 'value="bug"') && str_contains($guest_html, 'value="wish"'));
 
+$enqueue_at = strpos($feedback, 'function enqueue_assets');
+$panel_fn = strpos($feedback, 'function render_panel');
+$enqueue_src = (false !== $enqueue_at && false !== $panel_fn) ? substr($feedback, $enqueue_at, $panel_fn - $enqueue_at) : '';
+check('front end has no license fields', !str_contains($enqueue_src, 'license') && !str_contains($js, 'license_key') && !str_contains($logged_in_html, 'License ID') && !str_contains($logged_in_html, 'sc_license'));
+
+$secret = 'ZZZZ-SECRET-KEY-9999';
+$pro = Choir_Rehearsal_Feedback::license_snapshot(true, array(
+	'sc_license_status' => 'active',
+	'sc_license_id' => 'li_priority_1',
+	'sc_activation_id' => 'act_site_1',
+	'sc_customer_id' => 'cus_buyer_1',
+	'sc_purchase_id' => 'pur_sale_1',
+	'sc_license_key' => $secret,
+));
+check('pro snapshot is active', $pro['pro'] && 'active' === $pro['status']);
+
+$calls = array();
+Choir_Rehearsal_Feedback::submit_feedback(
+	array(
+		'type' => 'bug',
+		'title' => 'Pro player stops',
+		'description' => 'Stops on the second verse.',
+		'email' => '',
+	),
+	context(array('license' => $pro)),
+	static fn(string $key): array => array(),
+	static function (): void {
+	},
+	static function (string $method, string $url, array $payload, string $sent_token) use (&$calls): array {
+		unset($method, $url, $sent_token);
+		$calls[] = $payload;
+		return array(
+			'code' => 201,
+			'message' => 'Created',
+			'data' => array('number' => 21, 'html_url' => 'https://github.com/compathee/compathee/issues/21'),
+		);
+	}
+);
+$pro_body = (string) ($calls[0]['body'] ?? '');
+check('pro title marker', ($calls[0]['title'] ?? '') === '[Choir Rehearsal][Pro] Pro player stops');
+check('pro label', ($calls[0]['labels'] ?? array()) === array('feedback', 'bug', 'pro'));
+check(
+	'pro identifier',
+	str_contains($pro_body, 'License: active')
+	&& str_contains($pro_body, 'License ID: li_priority_1')
+	&& str_contains($pro_body, 'Customer ID: cus_buyer_1')
+	&& str_contains($pro_body, 'Purchase ID: pur_sale_1')
+	&& str_contains($pro_body, 'Activation ID: act_site_1')
+	&& str_contains($pro_body, 'Site: https://choir.example/')
+);
+check('pro body hides full key', !str_contains($pro_body, $secret) && !str_contains($pro_body, 'SECRET') && !str_contains($pro_body, 'License key:'));
+
+$key_only = 'ABCD1234WXYZ5678';
+$masked = Choir_Rehearsal_Feedback::license_snapshot(true, array(
+	'sc_license_status' => 'active',
+	'sc_license_key' => $key_only,
+));
+$masked_body = Choir_Rehearsal_Feedback::issue_body(array(
+	'type' => 'bug',
+	'email' => '',
+	'role' => 'Singer',
+	'plugin_version' => '0.4.61',
+	'wp_version' => '6.8',
+	'php_version' => '8.3.6',
+	'site_url' => 'https://choir.example/',
+	'description' => 'Masked key only.',
+	'license' => $masked,
+));
+check('masked key when no public id', str_contains($masked_body, 'License key: ABCD********5678') && !str_contains($masked_body, $key_only) && !str_contains($masked_body, '1234WXYZ'));
+
+$lite = Choir_Rehearsal_Feedback::license_snapshot(false, array('sc_license_key' => $secret));
+$calls = array();
+Choir_Rehearsal_Feedback::submit_feedback(
+	array(
+		'type' => 'wish',
+		'title' => 'Lite wish',
+		'description' => 'A wish from Lite.',
+		'email' => '',
+	),
+	context(array('license' => $lite)),
+	static fn(string $key): array => array(),
+	static function (): void {
+	},
+	static function (string $method, string $url, array $payload, string $sent_token) use (&$calls): array {
+		unset($method, $url, $sent_token);
+		$calls[] = $payload;
+		return array('code' => 201, 'message' => 'Created', 'data' => array('number' => 22));
+	}
+);
+$lite_body = (string) ($calls[0]['body'] ?? '');
+check('lite has no pro label', ($calls[0]['labels'] ?? array()) === array('feedback', 'enhancement'));
+check('lite title has no marker', ($calls[0]['title'] ?? '') === '[Choir Rehearsal] Lite wish');
+check('lite license line', str_contains($lite_body, 'License: Lite') && !str_contains($lite_body, $secret) && !str_contains($lite_body, '[Pro]'));
+
+$expired = Choir_Rehearsal_Feedback::license_snapshot(true, array(
+	'sc_license_status' => 'expired',
+	'sc_license_id' => 'li_old',
+	'sc_license_key' => $secret,
+));
+check('expired is not pro', !$expired['pro'] && 'expired' === $expired['status']);
+$expired_body = Choir_Rehearsal_Feedback::issue_body(array(
+	'type' => 'bug',
+	'email' => '',
+	'role' => 'Singer',
+	'plugin_version' => '0.4.61',
+	'wp_version' => '6.8',
+	'php_version' => '8.3.6',
+	'site_url' => 'https://choir.example/',
+	'description' => 'Expired license.',
+	'license' => $expired,
+));
+check('expired body', str_contains($expired_body, 'License: expired') && str_contains($expired_body, 'License ID: li_old') && !str_contains($expired_body, $secret));
+check('expired title', Choir_Rehearsal_Feedback::issue_title('Expired', $expired['pro']) === '[Choir Rehearsal] Expired');
+check('expired labels', Choir_Rehearsal_Feedback::labels_for_type('bug', $expired['pro']) === array('feedback', 'bug'));
+
+$calls = array();
+Choir_Rehearsal_Feedback::create_issue(
+	'compathee',
+	'compathee',
+	'[Choir Rehearsal][Pro] Missing pro label',
+	"License: active\n",
+	array('feedback', 'bug', 'pro'),
+	$token,
+	static function (string $method, string $url, array $payload) use (&$calls): array {
+		unset($method);
+		$calls[] = array('url' => $url, 'payload' => $payload);
+		if (str_ends_with($url, '/labels')) {
+			return array('code' => 201, 'message' => 'Created', 'data' => array('name' => $payload['name'] ?? ''));
+		}
+		if (1 === count($calls)) {
+			return array('code' => 422, 'message' => 'Validation Failed label pro is invalid', 'data' => array());
+		}
+		return array(
+			'code' => 201,
+			'message' => 'Created',
+			'data' => array('number' => 23, 'html_url' => 'https://github.com/compathee/compathee/issues/23'),
+		);
+	}
+);
+$created_names = array();
+foreach ($calls as $call) {
+	if (isset($call['payload']['name']) && is_string($call['payload']['name'])) {
+		$created_names[] = $call['payload']['name'];
+	}
+}
+check('pro label is created when missing', in_array('pro', $created_names, true) && in_array('feedback', $created_names, true));
+
+require dirname(__DIR__, 2) . '/choir-rehearsal-pro/licensing/src/License.php';
+$stored = new stdClass();
+\SureCart\Licensing\License::remember_public_details($stored, (object) array(
+	'status' => 'Active',
+	'key' => $secret,
+	'customer' => (object) array('id' => 'cus_from_api'),
+	'purchase' => 'pur_from_api',
+	'order' => array('id' => 'ord_from_api'),
+));
+check(
+	'activation stores public ids not the key',
+	($stored->license_status ?? '') === 'active'
+	&& ($stored->customer_id ?? '') === 'cus_from_api'
+	&& ($stored->purchase_id ?? '') === 'pur_from_api'
+	&& ($stored->order_id ?? '') === 'ord_from_api'
+	&& !isset($stored->license_key)
+);
+check('email is not a customer id', '' === \SureCart\Licensing\License::public_id('singer@example.com'));
+
 exit($fail > 0 ? 1 : 0);

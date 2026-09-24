@@ -56,6 +56,10 @@ final class Choir_Rehearsal_Pro_Licensing {
 		);
 	}
 
+	public const OPTION_KEY = 'compathchoirrehearsalpro_license_options';
+
+	private const CACHE_KEY = 'choir_rehearsal_pro_license_cache';
+
 	/**
 	 * Local check only (no network). Used for feature gates on every request.
 	 */
@@ -66,7 +70,7 @@ final class Choir_Rehearsal_Pro_Licensing {
 			return true;
 		}
 
-		$options = self::license_options();
+		$options = self::stored_options();
 		$activation_id = isset( $options['sc_activation_id'] ) ? (string) $options['sc_activation_id'] : '';
 		$license_key   = isset( $options['sc_license_key'] ) ? (string) $options['sc_license_key'] : '';
 
@@ -74,13 +78,45 @@ final class Choir_Rehearsal_Pro_Licensing {
 	}
 
 	/**
+	 * Local SureCart option array. Does not call the API.
+	 *
 	 * @return array<string, mixed>
 	 */
-	private static function license_options(): array {
+	public static function stored_options(): array {
 		// SureCart Settings option key: lowercase name without spaces + _license_options
-		$key = 'compathchoirrehearsalpro_license_options';
-		$opts = get_option( $key, array() );
+		$opts = get_option( self::OPTION_KEY, array() );
 		return is_array( $opts ) ? $opts : array();
+	}
+
+	/**
+	 * Fill customer, purchase, order, and status from SureCart at most every 12 hours.
+	 * Feedback still works from the values already stored at activation when this fails.
+	 */
+	public static function refresh_cached_details(): void {
+		if ( ! function_exists( 'get_transient' ) || false !== get_transient( self::CACHE_KEY ) ) {
+			return;
+		}
+
+		$ttl = 12 * 3600;
+		if ( ! self::$client instanceof \SureCart\Licensing\Client ) {
+			set_transient( self::CACHE_KEY, 'skip', 3600 );
+			return;
+		}
+
+		$key = (string) self::$client->settings()->license_key;
+		if ( '' === $key ) {
+			set_transient( self::CACHE_KEY, 'skip', 3600 );
+			return;
+		}
+
+		$license = self::$client->license()->retrieve( $key );
+		if ( ! is_wp_error( $license ) ) {
+			\SureCart\Licensing\License::remember_public_details( self::$client->settings(), $license );
+		} else {
+			$ttl = 3600;
+		}
+
+		set_transient( self::CACHE_KEY, '1', $ttl );
 	}
 
 	public static function public_token(): string {
