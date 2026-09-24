@@ -25,6 +25,8 @@
     "more": "Read more",
     "required": "Required fields are marked.",
     "privacyNote": "We use the form only to reply.",
+    "previewBadge": "Preview",
+    "previewForm": "This is a preview. The form is turned off, so this page does not send email. Call +372 55520482 on a weekday.",
     "rights": "Compath OÜ, Tallinn."
   },
   "slugs": {

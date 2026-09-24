@@ -93,3 +93,13 @@ The new HTML can stay on disk during rollback. With `index.php` restored and the
 | `COMPATH_FTP_REMOTE_DIR` | `/public_html/` |
 
 The workflow file is `.github/workflows/deploy-compath-site.yml`. It runs only from `workflow_dispatch`.
+
+## Preview at /preview-2026/
+
+The owner can review the new site before the cutover. Build it with `node compath-site/build.mjs --preview`. Upload every file in `PREVIEW-FTP-PATHS.txt` to `/public_html/preview-2026/`, including `.htaccess`. Do not merge that file into `/public_html/.htaccess`.
+
+The preview `.htaccess` applies only inside that folder. It sets `DirectoryIndex index.html`, turns indexes off, and sends `X-Robots-Tag: noindex, nofollow`. It has no rewrite rules. The Sitebuilder site at `/` stays as it is.
+
+Open `https://compath.ee/preview-2026/`, `/preview-2026/et/` and `/preview-2026/ru/`. `health.txt` in that folder says `preview OK`. The contact form is not on these pages. Removing the preview later is deleting `/public_html/preview-2026/` only.
+
+The manual workflow `.github/workflows/deploy-compath-preview.yml` uploads `dist-preview/` to `${COMPATH_FTP_REMOTE_DIR}preview-2026/`. `COMPATH_FTP_REMOTE_DIR` must end with a slash (`/public_html/`). It never deletes remote files and does not upload the production site.

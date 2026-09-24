@@ -23,9 +23,11 @@
     try { saved = localStorage.getItem(storageKey); } catch (error) {}
     var ua = navigator.userAgent || "";
     var bot = /bot|crawler|spider|slurp|gptbot|oai-searchbot|claudebot|perplexity|google-extended|facebookexternalhit|embedly|quora|pinterest|redditbot|ia_archiver|semrush|ahrefs|yandex|baidu|duckduck/i;
+    var base = document.documentElement.getAttribute("data-base") || "";
+    var homePath = base ? base + "/" : "/";
     if (saved && map[saved]) {
       go(saved, true);
-    } else if (!navigator.webdriver && !bot.test(ua) && current === "en" && location.pathname === "/") {
+    } else if (!navigator.webdriver && !bot.test(ua) && current === "en" && (location.pathname === homePath || (base && location.pathname === base))) {
       // First visit only rewrites the English home. A link to /et/ or /ru/
       // is already a language choice, and crawlers must keep the URL they fetched.
       var list = navigator.languages || [navigator.language || "en"];

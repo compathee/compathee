@@ -4,6 +4,8 @@ import path from "node:path";
 
 const root = import.meta.dirname;
 const dist = path.join(root, "dist");
+const previewDist = path.join(root, "dist-preview");
+const previewBase = "/preview-2026";
 const redirects = JSON.parse(fs.readFileSync(path.join(root, "redirects.json"), "utf8")).map((rule) => ({
   re: new RegExp(`^${rule.from}$`),
   to: rule.to,
@@ -30,11 +32,11 @@ function redirectTarget(urlPath) {
   return hit ? hit.to : null;
 }
 
-function fileFor(urlPath) {
+function fileFor(urlPath, rootDir) {
   const relative = decodeURIComponent(urlPath.split("?")[0]);
   const clean = path.normalize(relative).replace(/^(\.\.(\/|\\|$))+/, "");
-  const full = path.join(dist, clean);
-  if (!full.startsWith(dist)) return null;
+  const full = path.join(rootDir, clean);
+  if (full !== rootDir && !full.startsWith(rootDir + path.sep)) return null;
   if (fs.existsSync(full) && fs.statSync(full).isDirectory()) {
     const index = path.join(full, "index.html");
     return fs.existsSync(index) ? index : null;
@@ -82,28 +84,39 @@ function previewContact(request, response) {
 
 const server = http.createServer((request, response) => {
   const url = new URL(request.url || "/", "http://127.0.0.1");
+  const hostedPreview = url.pathname === previewBase || url.pathname.startsWith(`${previewBase}/`);
   if (request.method === "POST" && url.pathname === "/api/contact.php") {
     previewContact(request, response);
     return;
   }
-  const target = redirectTarget(url.pathname);
-  if (target) {
-    response.writeHead(301, { Location: target });
-    response.end();
-    return;
+  if (!hostedPreview) {
+    const target = redirectTarget(url.pathname);
+    if (target) {
+      response.writeHead(301, { Location: target });
+      response.end();
+      return;
+    }
   }
-  const file = fileFor(url.pathname);
+  const file = hostedPreview
+    ? fileFor(url.pathname.slice(previewBase.length) || "/", previewDist)
+    : fileFor(url.pathname, dist);
+  const headers = {};
+  if (hostedPreview) headers["X-Robots-Tag"] = "noindex, nofollow";
   if (!file) {
-    const missing = fs.readFileSync(path.join(dist, "404.html"));
-    response.writeHead(404, { "Content-Type": "text/html; charset=utf-8" });
+    const missingRoot = hostedPreview ? previewDist : dist;
+    const missing = fs.readFileSync(path.join(missingRoot, "404.html"));
+    headers["Content-Type"] = "text/html; charset=utf-8";
+    response.writeHead(404, headers);
     response.end(missing);
     return;
   }
   const ext = path.extname(file);
-  response.writeHead(200, { "Content-Type": types[ext] || "application/octet-stream" });
+  headers["Content-Type"] = types[ext] || "application/octet-stream";
+  response.writeHead(200, headers);
   response.end(fs.readFileSync(file));
 });
 
 server.listen(port, "127.0.0.1", () => {
   console.log(`Compath preview at http://127.0.0.1:${port}/`);
+  console.log(`Hosted preview copy at http://127.0.0.1:${port}${previewBase}/`);
 });

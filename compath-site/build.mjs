@@ -3,7 +3,9 @@ import path from "node:path";
 import { validate } from "./check.mjs";
 
 const root = import.meta.dirname;
-const dist = path.join(root, "dist");
+const preview = process.argv.includes("--preview");
+const basePath = preview ? "/preview-2026" : "";
+const dist = path.join(root, preview ? "dist-preview" : "dist");
 const origin = "https://compath.ee";
 const updated = "2026-09-24";
 const langs = ["en", "et", "ru"].map((code) =>
@@ -43,7 +45,7 @@ function inline(src) {
   for (const match of String(src).matchAll(re)) {
     html += esc(src.slice(index, match.index));
     if (match[1]) {
-      const href = match[2];
+      const href = match[2].startsWith("/") ? pub(match[2]) : match[2];
       const external = href.startsWith("http") && !href.startsWith(origin);
       html += `<a href="${esc(href)}"${external ? ' rel="noopener noreferrer"' : ""}>${esc(match[1])}</a>`;
     } else {
@@ -64,6 +66,11 @@ function urlFor(lang, id) {
 
 function abs(urlPath) {
   return origin + urlPath;
+}
+
+function pub(sitePath) {
+  if (!basePath || !sitePath.startsWith("/")) return sitePath;
+  return sitePath === "/" ? `${basePath}/` : `${basePath}${sitePath}`;
 }
 
 function serviceById(lang, id) {
@@ -199,11 +206,11 @@ function layout(lang, id, main, graph) {
   const title = page.title;
   const description = page.description;
   const canonical = abs(urlFor(lang, id));
-  const alternates = Object.fromEntries(langs.map((item) => [item.code, urlFor(item, id)]));
-  const og = `${origin}/assets/og-${lang.code}.webp`;
-  const robots = noindexIds.has(id) ? "noindex, follow" : "index, follow";
+  const alternates = Object.fromEntries(langs.map((item) => [item.code, pub(urlFor(item, id))]));
+  const og = `${origin}${pub(`/assets/og-${lang.code}.webp`)}`;
+  const robots = basePath ? "noindex, nofollow" : (noindexIds.has(id) ? "noindex, follow" : "index, follow");
   return `<!DOCTYPE html>
-<html lang="${lang.htmlLang}" data-lang="${lang.code}">
+<html lang="${lang.htmlLang}" data-lang="${lang.code}"${basePath ? ` data-base="${basePath}"` : ""}>
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -230,21 +237,21 @@ ${langs.filter((item) => item.code !== lang.code).map((item) => `<meta property=
 <meta name="twitter:description" content="${esc(description)}" />
 <meta name="twitter:image" content="${og}" />
 <meta name="twitter:image:alt" content="${esc(title)}" />
-<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-<link rel="icon" href="/favicon.ico" sizes="any" />
-<link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
-<link rel="icon" href="/favicon-192.png" type="image/png" sizes="192x192" />
-<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-<link rel="manifest" href="/site.webmanifest" />
-<link rel="stylesheet" href="/assets/site.css" />
+<link rel="icon" href="${pub("/favicon.svg")}" type="image/svg+xml" />
+<link rel="icon" href="${pub("/favicon.ico")}" sizes="any" />
+<link rel="icon" href="${pub("/favicon-32.png")}" type="image/png" sizes="32x32" />
+<link rel="icon" href="${pub("/favicon-192.png")}" type="image/png" sizes="192x192" />
+<link rel="apple-touch-icon" href="${pub("/apple-touch-icon.png")}" />
+<link rel="manifest" href="${pub("/site.webmanifest")}" />
+<link rel="stylesheet" href="${pub("/assets/site.css")}" />
 ${ld(graph)}
 </head>
 <body>
 <a class="skip" href="#main">${esc(lang.ui.skip)}</a>
 <div class="accent"></div>
-<header class="site-header">
+<header class="site-header">${basePath ? `\n  <p class="preview-badge">${esc(lang.ui.previewBadge)}</p>` : ""}
   <div class="wrap header__bar">
-    <a class="brand" href="${urlFor(lang, "home")}"><img class="brand__mark" src="/assets/mark.svg" alt="" width="32" height="32" /><span class="brand__name">Compath</span></a>
+    <a class="brand" href="${pub(urlFor(lang, "home"))}"><img class="brand__mark" src="${pub("/assets/mark.svg")}" alt="" width="32" height="32" /><span class="brand__name">Compath</span></a>
     <nav class="nav" aria-label="${esc(lang.ui.navLabel)}">
       ${navLink(lang, id, "home")}
       ${navLink(lang, id, "services")}
@@ -263,7 +270,7 @@ ${main}
 </main>
 ${footer(lang)}
 <script type="application/json" id="lang-map">${JSON.stringify(alternates)}</script>
-<script src="/assets/site.js" defer></script>
+<script src="${pub("/assets/site.js")}" defer></script>
 </body>
 </html>
 `;
@@ -273,7 +280,7 @@ function navLink(lang, current, id) {
   const active = id === "services"
     ? ["services", "it", "plugins", "amazon"].includes(current)
     : current === id;
-  return `<a href="${urlFor(lang, id)}"${active ? ' aria-current="page"' : ""}>${esc(lang.ui[id])}</a>`;
+  return `<a href="${pub(urlFor(lang, id))}"${active ? ' aria-current="page"' : ""}>${esc(lang.ui[id])}</a>`;
 }
 
 function footer(lang) {
@@ -296,7 +303,7 @@ function footer(lang) {
       <p><a href="${mapUrl}" rel="noopener noreferrer">${esc(lang.ui.map)}</a></p>
     </div>
     <nav class="footer-nav" aria-label="${esc(lang.ui.footerNav)}">
-      ${links.map(([id, name]) => `<a href="${urlFor(lang, id)}">${esc(name)}</a>`).join("")}
+      ${links.map(([id, name]) => `<a href="${pub(urlFor(lang, id))}">${esc(name)}</a>`).join("")}
     </nav>
     <div>
       <p><span class="meta">${esc(lang.ui.phoneLabel)}</span><br /><a href="tel:+37255520482">+372 55520482</a></p>
@@ -311,7 +318,7 @@ function footer(lang) {
 function crumbs(lang, items) {
   const html = `<nav aria-label="Breadcrumb"><ol class="crumbs">${items.map((item, index) => {
     const last = index === items.length - 1;
-    return `<li>${last ? esc(item.name) : `<a href="${item.path}">${esc(item.name)}</a>`}</li>`;
+    return `<li>${last ? esc(item.name) : `<a href="${pub(item.path)}">${esc(item.name)}</a>`}</li>`;
   }).join("")}</ol></nav>`;
   const data = breadcrumb(items.map((item) => ({ name: item.name, url: abs(item.path) })));
   return { html, data };
@@ -329,19 +336,19 @@ function productLinks(lang, includePage) {
     { href: product.wporg, label: lang.product.ctaLite, external: true },
     { href: product.shop, label: lang.product.ctaPro, primary: true, external: true },
   ];
-  if (includePage) links.splice(1, 0, { href: urlFor(lang, "choir"), label: lang.product.ctaPage });
+  if (includePage) links.splice(1, 0, { href: pub(urlFor(lang, "choir")), label: lang.product.ctaPage });
   return actions(links);
 }
 
 function figure(lang, eager) {
   return `<figure class="frame">
-  <img src="/assets/choir-rehearsal.webp" width="1200" height="800" alt="${esc(lang.product.imageAlt)}"${eager ? ' decoding="async"' : ' loading="lazy" decoding="async"'} />
+  <img src="${pub("/assets/choir-rehearsal.webp")}" width="1200" height="800" alt="${esc(lang.product.imageAlt)}"${eager ? ' decoding="async"' : ' loading="lazy" decoding="async"'} />
   <figcaption>${esc(lang.product.imageCaption)}</figcaption>
 </figure>`;
 }
 
 function home(lang) {
-  const cards = lang.services.map((service, index) => `<li><a href="${urlFor(lang, service.id)}"><span class="num">${String(index + 1).padStart(2, "0")}</span><h3>${esc(service.name)}</h3><p>${esc(service.summary)}</p></a></li>`).join("");
+  const cards = lang.services.map((service, index) => `<li><a href="${pub(urlFor(lang, service.id))}"><span class="num">${String(index + 1).padStart(2, "0")}</span><h3>${esc(service.name)}</h3><p>${esc(service.summary)}</p></a></li>`).join("");
   const why = lang.pages.home.why.map((item) => `<article><h3>${esc(item.title)}</h3><p>${esc(item.text)}</p></article>`).join("");
   const features = lang.product.features.map((item) => `<article class="feature"><h3>${esc(item.title)}</h3><p>${esc(item.text)}</p></article>`).join("");
   const main = `<section class="hero"><div class="wrap">
@@ -349,8 +356,8 @@ function home(lang) {
     <h1>${esc(lang.pages.home.h1)}</h1>
     <p class="lead">${esc(lang.pages.home.lead)}</p>
     ${actions([
-      { href: urlFor(lang, "services"), label: lang.pages.home.ctaServices, primary: true },
-      { href: urlFor(lang, "contact"), label: lang.pages.home.ctaContact },
+      { href: pub(urlFor(lang, "services")), label: lang.pages.home.ctaServices, primary: true },
+      { href: pub(urlFor(lang, "contact")), label: lang.pages.home.ctaContact },
     ])}
   </div></section>
   <section class="section"><div class="wrap">
@@ -377,7 +384,7 @@ function home(lang) {
   <section class="cta-band"><div class="wrap">
     <h2>${esc(lang.pages.home.ctaTitle)}</h2>
     <p>${esc(lang.pages.home.ctaText)}</p>
-    ${actions([{ href: urlFor(lang, "contact"), label: lang.ui.contact, primary: true }])}
+    ${actions([{ href: pub(urlFor(lang, "contact")), label: lang.ui.contact, primary: true }])}
   </div></section>`;
   const graph = [
     organization(),
@@ -403,7 +410,7 @@ function servicesPage(lang) {
   const sections = lang.services.map((service) => `<section id="${esc(service.id)}">
     <h2>${esc(service.name)}</h2>
     <p>${esc(service.summary)}</p>
-    <p><a href="${urlFor(lang, service.id)}">${esc(lang.ui.more)}</a></p>
+    <p><a href="${pub(urlFor(lang, service.id))}">${esc(lang.ui.more)}</a></p>
   </section>`).join("");
   const main = `<header class="page-head"><div class="wrap">
     ${trail.html}
@@ -427,7 +434,7 @@ function servicePage(lang, id) {
     if (block.ul) return `<ul>${block.ul.map((item) => `<li>${inline(item)}</li>`).join("")}</ul>`;
     return "";
   }).join("\n");
-  const others = lang.services.filter((item) => item.id !== id).map((item) => `<li><a href="${urlFor(lang, item.id)}">${esc(item.name)}</a></li>`).join("");
+  const others = lang.services.filter((item) => item.id !== id).map((item) => `<li><a href="${pub(urlFor(lang, item.id))}">${esc(item.name)}</a></li>`).join("");
   const main = `<header class="page-head"><div class="wrap">
     ${trail.html}
     <h1>${esc(service.h1)}</h1>
@@ -478,7 +485,7 @@ function choirPage(lang) {
     <h2>${esc(copy.langTitle)}</h2>
     <p>${esc(copy.languages)}</p>
     ${productLinks(lang, false)}
-    <p><a href="${urlFor(lang, "plugins")}">${esc(copy.pluginLink)}</a></p>
+    <p><a href="${pub(urlFor(lang, "plugins"))}">${esc(copy.pluginLink)}</a></p>
   </div></div>`;
   const app = software(lang);
   return layout(lang, "choir", main, [organization(), app, { "@type": "WebPage", "@id": `${abs(urlFor(lang, "choir"))}#webpage`, url: abs(urlFor(lang, "choir")), name: copy.title, inLanguage: lang.code, mainEntity: { "@id": app["@id"] } }, trail.data]);
@@ -507,8 +514,8 @@ function contactPage(lang) {
     <p><a href="${mapUrl}" rel="noopener noreferrer">${esc(lang.ui.map)}</a></p>
     <p id="mail-slot" data-u="support" data-h="compath.ee"></p>
     </div>
-    <form id="contact-form" class="form" method="post" action="/api/contact.php" data-sending="${esc(form.sending)}" data-success="${esc(form.success)}" data-invalid="${esc(form.invalid)}" data-error="${esc(form.error)}">
-      <p class="meta">${esc(lang.ui.required)} ${esc(lang.ui.privacyNote)} <a href="${urlFor(lang, "privacy")}">${esc(lang.ui.privacy)}</a></p>
+    ${basePath ? `<div class="preview-note" role="note"><p>${esc(lang.ui.previewForm)}</p></div>` : `<form id="contact-form" class="form" method="post" action="/api/contact.php" data-sending="${esc(form.sending)}" data-success="${esc(form.success)}" data-invalid="${esc(form.invalid)}" data-error="${esc(form.error)}">
+      <p class="meta">${esc(lang.ui.required)} ${esc(lang.ui.privacyNote)} <a href="${pub(urlFor(lang, "privacy"))}">${esc(lang.ui.privacy)}</a></p>
       <div class="hp" aria-hidden="true"><label for="company">${esc(form.hp)}</label><input id="company" name="company" type="text" tabindex="-1" autocomplete="off" value="" /></div>
       <input type="hidden" name="locale" value="${lang.code}" />
       <label for="name">${esc(form.name)} <span aria-hidden="true">*</span><input id="name" name="name" type="text" required maxlength="120" autocomplete="name" /></label>
@@ -517,7 +524,7 @@ function contactPage(lang) {
       <label for="message">${esc(form.message)} <span aria-hidden="true">*</span><textarea id="message" name="message" required minlength="10" maxlength="5000"></textarea></label>
       <button class="btn btn--primary" type="submit">${esc(form.submit)}</button>
       <p id="form-status" class="status" role="status"></p>
-    </form>
+    </form>`}
   </div></div>`;
   return layout(lang, "contact", main, [
     organization(),
@@ -535,7 +542,7 @@ function prosePage(lang, id) {
   ]);
   const body = page.sections
     ? `<p class="meta">${esc(page.updated)}</p>${page.sections.map((section) => `<h2>${esc(section.h2)}</h2>${section.paragraphs.map((paragraph) => `<p>${inline(paragraph)}</p>`).join("")}`).join("")}`
-    : `<p>${esc(page.text)}</p><p><a href="${urlFor(lang, "contact")}">${esc(lang.ui.contact)}</a></p>`;
+    : `<p>${esc(page.text)}</p><p><a href="${pub(urlFor(lang, "contact"))}">${esc(lang.ui.contact)}</a></p>`;
   const main = `<header class="page-head"><div class="wrap">${trail.html}<h1>${esc(page.h1)}</h1></div></header>
   <div class="section"><div class="wrap prose">${body}</div></div>`;
   const graph = [organization(), trail.data];
@@ -566,8 +573,8 @@ function copyAssets() {
     name: "Compath OÜ",
     short_name: "Compath",
     icons: [
-      { src: "/favicon-192.png", sizes: "192x192", type: "image/png" },
-      { src: "/favicon-512.png", sizes: "512x512", type: "image/png" },
+      { src: pub("/favicon-192.png"), sizes: "192x192", type: "image/png" },
+      { src: pub("/favicon-512.png"), sizes: "512x512", type: "image/png" },
     ],
     theme_color: "#1f4fd8",
     background_color: "#ffffff",
@@ -686,26 +693,69 @@ function notFound() {
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Page not found | Compath OÜ</title>
-<meta name="robots" content="noindex" />
+<meta name="robots" content="${basePath ? "noindex, nofollow" : "noindex"}" />
 <link rel="canonical" href="${origin}/404.html" />
-<link rel="stylesheet" href="/assets/site.css" />
-<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<link rel="stylesheet" href="${pub("/assets/site.css")}" />
+<link rel="icon" href="${pub("/favicon.svg")}" type="image/svg+xml" />
 </head>
 <body>
-<div class="accent"></div>
+<div class="accent"></div>${basePath ? `\n<p class="preview-badge">Preview</p>` : ""}
 <main id="main" class="section"><div class="wrap">
 <h1>Page not found</h1>
 <p>Lehte ei leitud. Страница не найдена.</p>
 <ul>
-<li><a href="/">English</a></li>
-<li><a href="/et/">Eesti</a></li>
-<li><a href="/ru/">Русский</a></li>
+<li><a href="${pub("/")}">English</a></li>
+<li><a href="${pub("/et/")}">Eesti</a></li>
+<li><a href="${pub("/ru/")}">Русский</a></li>
 </ul>
 </div></main>
 </body>
 </html>
 `;
   fs.writeFileSync(path.join(dist, "404.html"), html);
+}
+
+function previewHtaccess() {
+  const text = `# Folder rules for /public_html/preview-2026/ only.
+# Apache reads this file for this directory and its children.
+# It does not replace /public_html/.htaccess and does not change
+# the Sitebuilder site at the web root.
+# These lines do not redirect any URL, so they cannot change the
+# Sitebuilder pages outside this folder. noindex does not depend
+# on a robots.txt in this folder or at the web root.
+
+DirectoryIndex index.html
+Options -Indexes
+
+<IfModule mod_headers.c>
+Header always set X-Robots-Tag "noindex, nofollow"
+</IfModule>
+
+ErrorDocument 404 /preview-2026/404.html
+`;
+  fs.writeFileSync(path.join(dist, ".htaccess"), text);
+}
+
+function previewFtpList() {
+  const files = [];
+  function walk(dir) {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) walk(full);
+      else files.push("/public_html/preview-2026/" + path.relative(dist, full).split(path.sep).join("/"));
+    }
+  }
+  walk(dist);
+  files.sort();
+  const text = [
+    "Preview files uploaded from compath-site/dist-preview/ to /public_html/preview-2026/.",
+    "This list is separate from the production upload in FTP-PATHS.txt.",
+    "The folder .htaccess is part of this upload. It does not replace the web-root .htaccess.",
+    "",
+    ...files,
+    "",
+  ].join("\n");
+  fs.writeFileSync(path.join(root, "PREVIEW-FTP-PATHS.txt"), text);
 }
 
 function ftpList() {
@@ -752,15 +802,21 @@ for (const lang of langs) {
   writePage(urlFor(lang, "thanks"), prosePage(lang, "thanks"));
   writePage(urlFor(lang, "formError"), prosePage(lang, "formError"));
 }
-robots();
-sitemap();
-llms();
-htaccess();
 notFound();
-fs.writeFileSync(path.join(dist, "health.txt"), "deploy OK\n");
-ftpList();
+if (preview) {
+  previewHtaccess();
+  fs.writeFileSync(path.join(dist, "health.txt"), "preview OK\n");
+  previewFtpList();
+} else {
+  robots();
+  sitemap();
+  llms();
+  htaccess();
+  fs.writeFileSync(path.join(dist, "health.txt"), "deploy OK\n");
+  ftpList();
+}
 
-const problems = validate(dist);
+const problems = validate(dist, { preview });
 if (problems.length) {
   console.error(problems.join("\n"));
   process.exit(1);

@@ -53,6 +53,28 @@ a:hover { text-decoration: none; }
   background: var(--blue);
 }
 
+.preview-badge {
+  margin: 0;
+  background: var(--navy);
+  color: var(--white);
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  line-height: 1;
+  padding: 6px 12px;
+}
+
+.preview-note {
+  background: var(--band);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px 18px;
+}
+
+.preview-note p { margin: 0; }
+
 .wrap {
   width: min(var(--max), calc(100% - 40px));
   margin-inline: auto;

@@ -32,8 +32,14 @@ function contrast(hexA, hexB) {
   return (hi + 0.05) / (lo + 0.05);
 }
 
-export function validate(dist) {
+export function validate(dist, options = {}) {
+  const preview = options.preview === true;
+  const base = "/preview-2026";
   const problems = [];
+  if (!fs.existsSync(dist)) {
+    problems.push(`${preview ? "preview" : "production"} output missing: ${dist}`);
+    return problems;
+  }
   const files = walk(dist).filter((file) => file.endsWith(".html") || file.endsWith(".txt") || file.endsWith(".xml") || file.endsWith(".css") || file.endsWith(".js"));
   const banned = ["mailto:", "support@compath.ee", "sisterz", "tõlketeenus"];
   for (const file of files) {
@@ -53,6 +59,27 @@ export function validate(dist) {
     if (h1.length !== 1) problems.push(`${rel} has ${h1.length} h1 elements`);
     if (!/<html lang="(en|et|ru)"/.test(html)) problems.push(`${rel} missing lang`);
     if (!html.includes('rel="canonical"')) problems.push(`${rel} missing canonical`);
+    if (preview) {
+      if (!html.includes('<meta name="robots" content="noindex, nofollow" />')) {
+        problems.push(`${rel} preview robots meta`);
+      }
+      if (html.includes("/preview-2026/") && html.includes('rel="canonical" href="https://compath.ee/preview-2026')) {
+        problems.push(`${rel} canonical uses the preview path`);
+      }
+      const canonical = html.match(/rel="canonical" href="([^"]+)"/);
+      if (!canonical || !canonical[1].startsWith(`${origin}/`) || canonical[1].includes(base)) {
+        problems.push(`${rel} canonical must be the future production URL`);
+      }
+      for (const link of html.matchAll(/hreflang="[^"]+" href="([^"]+)"/g)) {
+        if (link[1].includes(base)) problems.push(`${rel} hreflang points at preview`);
+      }
+      if (!html.includes(`href="${base}/assets/site.css"`) || !html.includes('class="preview-badge"')) {
+        problems.push(`${rel} missing preview base path or badge`);
+      }
+      if (html.includes("/api/contact.php") || html.includes("<form")) problems.push(`${rel} preview still has a contact form`);
+    } else if (html.includes(base)) {
+      problems.push(`${rel} production page links into the preview path`);
+    }
     for (const code of ["en", "et", "ru", "x-default"]) {
       if (!html.includes(`hreflang="${code}"`)) problems.push(`${rel} missing hreflang ${code}`);
     }
@@ -72,6 +99,7 @@ export function validate(dist) {
         problems.push(`${rel} JSON-LD is not a schema.org @graph`);
         continue;
       }
+      if (preview && block[1].includes(base)) problems.push(`${rel} JSON-LD mentions the preview path`);
       const types = data["@graph"].flatMap((node) => [].concat(node["@type"] || []));
       if (rel === "index.html" || rel === path.join("et", "index.html") || rel === path.join("ru", "index.html")) {
         if (!types.includes("LocalBusiness") || !types.includes("SoftwareApplication") || !types.includes("Service")) {
@@ -151,21 +179,55 @@ export function validate(dist) {
     if (ratio < 4.5) problems.push(`contrast ${fg} on ${bg} is ${ratio.toFixed(2)}`);
   }
 
-  const robots = fs.readFileSync(path.join(dist, "robots.txt"), "utf8");
-  for (const bot of ["Googlebot", "Bingbot", "GPTBot", "OAI-SearchBot", "ClaudeBot", "PerplexityBot", "Google-Extended"]) {
-    if (!robots.includes(`User-agent: ${bot}`)) problems.push(`robots missing ${bot}`);
+  if (preview) {
+    for (const name of ["robots.txt", "sitemap.xml", "llms.txt"]) {
+      if (fs.existsSync(path.join(dist, name))) problems.push(`preview contains ${name}`);
+    }
+    const htaccess = path.join(dist, ".htaccess");
+    if (!fs.existsSync(htaccess)) problems.push("preview missing .htaccess");
+    else {
+      const text = fs.readFileSync(htaccess, "utf8");
+      if (!text.includes('X-Robots-Tag "noindex, nofollow"')) problems.push("preview htaccess missing X-Robots-Tag");
+      if (/RewriteRule|RewriteEngine/i.test(text)) problems.push("preview htaccess must not rewrite");
+      if (!text.includes("this directory")) problems.push("preview htaccess missing folder-scope note");
+    }
+    const home = fs.readFileSync(path.join(dist, "index.html"), "utf8");
+    if (!home.includes('rel="canonical" href="https://compath.ee/"')) problems.push("preview home canonical");
+    if (!home.includes('hreflang="et" href="https://compath.ee/et/"')) problems.push("preview home hreflang");
+    if (!home.includes('hreflang="x-default" href="https://compath.ee/et/"')) problems.push("preview x-default");
+    if (!home.includes('href="/preview-2026/"') || !home.includes('href="/preview-2026/services/"')) problems.push("preview home links");
+    const et = fs.readFileSync(path.join(dist, "et", "index.html"), "utf8");
+    if (!et.includes('rel="canonical" href="https://compath.ee/et/"')) problems.push("preview et canonical");
+    if (!et.includes('href="/preview-2026/et/teenused/"')) problems.push("preview et links");
+    const contact = fs.readFileSync(path.join(dist, "contact", "index.html"), "utf8");
+    if (!contact.includes("preview-note") || !contact.includes("does not send email")) problems.push("preview contact note");
+    const service = fs.readFileSync(path.join(dist, "services", "it-support", "index.html"), "utf8");
+    if (!service.includes('href="/preview-2026/contact/"')) problems.push("preview inline link");
+    const manifest = fs.readFileSync(path.join(dist, "site.webmanifest"), "utf8");
+    if (!manifest.includes("/preview-2026/favicon-192.png")) problems.push("preview manifest");
+    const missing = fs.readFileSync(path.join(dist, "404.html"), "utf8");
+    if (!missing.includes('<meta name="robots" content="noindex, nofollow" />')) problems.push("preview 404 robots");
+    if (!missing.includes('href="/preview-2026/et/"')) problems.push("preview 404 links");
+  } else {
+    const robots = fs.readFileSync(path.join(dist, "robots.txt"), "utf8");
+    for (const bot of ["Googlebot", "Bingbot", "GPTBot", "OAI-SearchBot", "ClaudeBot", "PerplexityBot", "Google-Extended"]) {
+      if (!robots.includes(`User-agent: ${bot}`)) problems.push(`robots missing ${bot}`);
+    }
+    const sitemap = fs.readFileSync(path.join(dist, "sitemap.xml"), "utf8");
+    if (!sitemap.includes('hreflang="x-default"') || !sitemap.includes(`${origin}/et/`)) problems.push("sitemap hreflang");
+    if (!fs.readFileSync(path.join(dist, "llms.txt"), "utf8").includes("Choir Rehearsal")) problems.push("llms.txt");
+    const contact = fs.readFileSync(path.join(dist, "contact", "index.html"), "utf8");
+    if (!contact.includes('action="/api/contact.php"')) problems.push("production contact form");
   }
-  const sitemap = fs.readFileSync(path.join(dist, "sitemap.xml"), "utf8");
-  if (!sitemap.includes('hreflang="x-default"') || !sitemap.includes(`${origin}/et/`)) problems.push("sitemap hreflang");
-  if (!fs.readFileSync(path.join(dist, "llms.txt"), "utf8").includes("Choir Rehearsal")) problems.push("llms.txt");
   return problems;
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
-  const problems = validate(path.join(root, "dist"));
+  const preview = process.argv.includes("--preview");
+  const problems = validate(path.join(root, preview ? "dist-preview" : "dist"), { preview });
   if (problems.length) {
     console.error(problems.join("\n"));
     process.exit(1);
   }
-  console.log("OK");
+  console.log(preview ? "preview OK" : "OK");
 }
