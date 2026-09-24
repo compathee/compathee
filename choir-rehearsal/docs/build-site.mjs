@@ -65,6 +65,7 @@ function esc(text) {
 function linkify(text) {
   return esc(text)
     .replace(/https:\/\/shop\.compath\.ee\/products\/choir-rehearsal-pro\//g, `<a href="${SHOP}">${SHOP}</a>`)
+    .replace(/support@compath\.ee/g, '<a href="mailto:support@compath.ee">support@compath.ee</a>')
     .replace(/order@compath\.ee/g, '<a href="mailto:order@compath.ee">order@compath.ee</a>')
     .replace(/\+372 55520482/g, '<a href="tel:+37255520482">+372 55520482</a>')
     .replace(/WordPress\.org/g, `<a href="${WP}">WordPress.org</a>`)
@@ -90,6 +91,12 @@ function jsonLd(code, pack, faqs) {
         url: 'https://compath.ee',
         telephone: '+372 55520482',
         email: 'order@compath.ee',
+        contactPoint: {
+          '@type': 'ContactPoint',
+          contactType: 'customer support',
+          email: 'support@compath.ee',
+          availableLanguage: ['en', 'et', 'ru']
+        },
         address: {
           '@type': 'PostalAddress',
           streetAddress: 'Ahtri 12',
@@ -285,16 +292,18 @@ function renderPage(code) {
 		<section class="card" id="demo"><h2>${esc(pack.demoTitle)}</h2><p>${esc(pack.demoIntro)}</p><p><a class="btn btn--accent" href="${DEMO}">${esc(pack.tryDemo)}</a></p><div class="demo-grid">${accounts}</div><p class="meta">${esc(pack.demoShared)}</p><p id="copy-status" class="visually-hidden" aria-live="polite"></p></section>
 		<section class="card" id="order"><h2>${esc(pack.orderTitle)}</h2><p>${linkify(pack.orderIntro)}</p><div class="pricing">${plans}</div><div class="order-cta"><a class="btn btn--accent" href="${SHOP}">${esc(pack.orderCta)}</a><span class="meta">${esc(pack.orderCtaMeta)}</span></div><h3>${esc(pack.howToOrder)}</h3><ol class="steps">${(pack.orderSteps || []).map((step) => `<li>${linkify(step)}</li>`).join('')}</ol><p class="meta">${esc(pack.discountNote)}</p></section>
 		<section class="card" id="install"><h2>${esc(pack.installTitle)}</h2><h3>${esc(pack.selfService)}</h3><ol class="steps">${(pack.installSteps || []).map((step) => `<li>${linkify(step)}</li>`).join('')}</ol><h3>${esc(pack.updatesTitle)}</h3><ul>${(pack.updates || []).map((item) => item.label ? `<li><strong>${esc(item.label)}:</strong> ${linkify(item.text)}</li>` : `<li>${linkify(item.text)}</li>`).join('')}</ul><h3>${esc(pack.rolesTitle)}</h3><ul>${(pack.roles || []).map((role) => `<li><strong>${esc(role.name)}</strong> — ${esc(role.text)}</li>`).join('')}</ul></section>
-		<section class="card" id="faq"><h2>${esc(pack.faqTitle)}</h2><div class="faq">${faqs.map((item) => `<details><summary>${esc(item.q)}</summary><p>${linkify(item.a)}</p></details>`).join('')}</div></section>
+		<section class="card" id="faq"><h2>${esc(pack.faqTitle)}</h2><p class="support-line">${linkify(extra.supportLine)}</p><div class="faq">${faqs.map((item) => `<details><summary>${esc(item.q)}</summary><p>${linkify(item.a)}</p></details>`).join('')}</div></section>
 		<section class="card changelog" id="changelog"><h2>${esc(pack.changelogTitle)}</h2><p class="meta">${esc(pack.changelogMeta)}</p>${changelog}<nav class="pager" aria-label="${esc(pack.ui.pagination)}">${pagerButtons.join('')}</nav><p id="changelog-status" class="visually-hidden" aria-live="polite">${esc(pack.ui.page.replace('{n}', '1'))}</p></section>
 	</main>
 	<footer class="footer">
 		<nav aria-label="${esc(extra.languagesLabel)}">${footerLangs}</nav>
+		<p>${esc(extra.supportLabel)} <a href="mailto:support@compath.ee">support@compath.ee</a></p>
 		<p>Choir Rehearsal · <a href="${ORIGIN}/">rehearsal.compath.ee</a> · <a href="https://compath.ee">compath.ee</a> · <a href="https://github.com/compathee/compathee">GitHub</a> · <a href="mailto:order@compath.ee">order@compath.ee</a></p>
 		<p>© Compath OÜ, Ahtri 12, Tallinn</p><p>${esc(pack.licenseLine || '')}</p>
 	</footer>
 	<script>window.REHEARSAL_PAGE = ${JSON.stringify(cfg)};</script>
 	<script>${client}</script>
+	<!-- AI chat widget: insert script here -->
 </body>
 </html>
 `;
@@ -346,7 +355,8 @@ function llms() {
   lines.push('## Support');
   lines.push('');
   lines.push('Compath OÜ, Ahtri 12, Tallinn, Estonia');
-  lines.push('order@compath.ee');
+  lines.push('Support: support@compath.ee');
+  lines.push('Orders: order@compath.ee');
   lines.push('+372 55520482');
   lines.push('');
   lines.push('## Languages');
@@ -390,6 +400,8 @@ function validate(html, code) {
   const extra = seo[code];
   if ([...html.matchAll(/<h1[\s>]/g)].length !== 1) errors.push('h1 count');
   if (!html.includes('href="https://compath.ee/"') || !html.includes('alt="Compath"') || !html.includes('title="Compath OÜ"') || !html.includes('/compath-logo.png')) errors.push('logo');
+  if (!html.includes('mailto:support@compath.ee') || !html.includes(extra.supportLine.replace('support@compath.ee', '')) || !html.includes('>support@compath.ee</a>')) errors.push('support');
+  if (!html.includes('<!-- AI chat widget: insert script here -->')) errors.push('chat placeholder');
   if (!html.includes(extra.whatIsTitle) || !html.includes(extra.whatIs)) errors.push('missing what-is');
   if (extra.seoTitle.length > 60) errors.push(`title ${extra.seoTitle.length}`);
   if (extra.seoDescription.length < 140 || extra.seoDescription.length > 165) errors.push(`description ${extra.seoDescription.length}`);
@@ -406,6 +418,9 @@ function validate(html, code) {
     if (/aggregateRating|Review/.test(ld[1])) errors.push('unexpected rating');
     const app = graph['@graph'].find((node) => node['@type'] === 'SoftwareApplication');
     if (app.operatingSystem !== 'WordPress' || app.downloadUrl !== WP) errors.push('app fields');
+    const org = graph['@graph'].find((node) => node['@type'] === 'Organization');
+    const point = org.contactPoint;
+    if (!point || point.contactType !== 'customer support' || point.email !== 'support@compath.ee' || JSON.stringify(point.availableLanguage) !== JSON.stringify(['en', 'et', 'ru'])) errors.push('contactPoint');
     if (!app.offers.some((offer) => offer.price === '0') || !app.offers.some((offer) => offer.price === '49' && offer.url === SHOP)) errors.push('offers');
     const faq = graph['@graph'].find((node) => node['@type'] === 'FAQPage');
     const visible = [...html.matchAll(/<summary>(.*?)<\/summary>/g)].map((match) => match[1]);
@@ -439,8 +454,11 @@ for (const [code, path] of LANGS) {
 }
 writeFileSync(join(dist, 'robots.txt'), robots());
 writeFileSync(join(dist, 'sitemap.xml'), sitemap());
-writeFileSync(join(dist, 'llms.txt'), llms());
-writeFileSync(join(dist, 'llms-full.txt'), llmsFull());
+const llmsText = llms();
+const llmsFullText = llmsFull();
+if (!llmsText.includes('support@compath.ee') || !llmsFullText.includes('support@compath.ee')) throw new Error('llms missing support');
+writeFileSync(join(dist, 'llms.txt'), llmsText);
+writeFileSync(join(dist, 'llms-full.txt'), llmsFullText);
 for (const name of ['.htaccess', 'health.txt', 'favicon.ico', 'favicon.svg', 'apple-touch-icon.png', 'favicon-192x192.png', 'favicon-512x512.png', 'site.webmanifest', 'og-image.png', 'compath-logo.png']) {
   copyFileSync(join(root, 'deploy', name), join(dist, name));
 }

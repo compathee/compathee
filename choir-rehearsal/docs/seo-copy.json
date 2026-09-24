@@ -7,6 +7,8 @@
     "imageAlt": "Choir Rehearsal, a rehearsal library for choirs",
     "switchLabel": "Language",
     "languagesLabel": "Languages",
+    "supportLabel": "Support:",
+    "supportLine": "Questions? Write to support@compath.ee",
     "faq": [
       {
         "q": "Is Choir Rehearsal free?",
@@ -26,7 +28,7 @@
       },
       {
         "q": "Where are the recordings stored?",
-        "a": "Songs, recordings, and scores stay on the choir’s own WordPress site. Compath OÜ does not host that library. The demo at demo.rehearsal.compath.ee is shared. Compath OÜ is at Ahtri 12, Tallinn, and answers at order@compath.ee or +372 55520482."
+        "a": "Songs, recordings, and scores stay on the choir’s own WordPress site. Compath OÜ does not host that library. The demo at demo.rehearsal.compath.ee is shared. Compath OÜ is at Ahtri 12, Tallinn, For help, write to support@compath.ee. Orders go to order@compath.ee, or call +372 55520482."
       }
     ]
   },
@@ -38,6 +40,8 @@
     "imageAlt": "Choir Rehearsal, kooride proovikogu",
     "switchLabel": "Keel",
     "languagesLabel": "Keeled",
+    "supportLabel": "Tugi:",
+    "supportLine": "Küsimused? Kirjutage aadressile support@compath.ee",
     "faq": [
       {
         "q": "Kas Choir Rehearsal on tasuta?",
@@ -57,7 +61,7 @@
       },
       {
         "q": "Kus salvestised asuvad?",
-        "a": "Laulud, salvestised ja noodid jäävad koori enda WordPressi lehele. Compath OÜ seda kogu ei majuta. Demo aadressil demo.rehearsal.compath.ee on ühine. Compath OÜ asub Tallinnas, Ahtri 12, ja vastab aadressil order@compath.ee või numbril +372 55520482."
+        "a": "Laulud, salvestised ja noodid jäävad koori enda WordPressi lehele. Compath OÜ seda kogu ei majuta. Demo aadressil demo.rehearsal.compath.ee on ühine. Compath OÜ asub Tallinnas, Ahtri 12, Abi saamiseks kirjutage aadressile support@compath.ee. Tellimused aadressile order@compath.ee või numbrile +372 55520482."
       }
     ]
   },
@@ -69,6 +73,8 @@
     "imageAlt": "Choir Rehearsal, библиотека репетиций для хора",
     "switchLabel": "Язык",
     "languagesLabel": "Языки",
+    "supportLabel": "Поддержка:",
+    "supportLine": "Вопросы? Напишите на support@compath.ee",
     "faq": [
       {
         "q": "Choir Rehearsal бесплатный?",
@@ -88,7 +94,7 @@
       },
       {
         "q": "Где хранятся записи?",
-        "a": "Произведения, записи и ноты остаются на собственном сайте хора на WordPress. Compath OÜ эту библиотеку не размещает. Демо на demo.rehearsal.compath.ee общее. Compath OÜ находится в Таллинне, Ahtri 12, и отвечает на order@compath.ee и +372 55520482."
+        "a": "Произведения, записи и ноты остаются на собственном сайте хора на WordPress. Compath OÜ эту библиотеку не размещает. Демо на demo.rehearsal.compath.ee общее. Compath OÜ находится в Таллинне, Ahtri 12, По вопросам поддержки пишите на support@compath.ee. Заказы — на order@compath.ee или по телефону +372 55520482."
       }
     ]
   },
@@ -100,6 +106,8 @@
     "imageAlt": "Choir Rehearsal, Probenbibliothek für Chöre",
     "switchLabel": "Sprache",
     "languagesLabel": "Sprachen",
+    "supportLabel": "Support:",
+    "supportLine": "Fragen? Schreiben Sie an support@compath.ee",
     "faq": [
       {
         "q": "Ist Choir Rehearsal kostenlos?",
@@ -119,7 +127,7 @@
       },
       {
         "q": "Wo liegen die Aufnahmen?",
-        "a": "Lieder, Aufnahmen und Noten bleiben auf der eigenen WordPress-Website des Chors. Compath OÜ hostet diese Bibliothek nicht. Die Demo unter demo.rehearsal.compath.ee ist gemeinsam. Compath OÜ sitzt in Tallinn, Ahtri 12, und ist über order@compath.ee oder +372 55520482 erreichbar."
+        "a": "Lieder, Aufnahmen und Noten bleiben auf der eigenen WordPress-Website des Chors. Compath OÜ hostet diese Bibliothek nicht. Die Demo unter demo.rehearsal.compath.ee ist gemeinsam. Compath OÜ sitzt in Tallinn, Ahtri 12, Hilfe: support@compath.ee. Bestellungen: order@compath.ee oder +372 55520482."
       }
     ]
   },
@@ -131,6 +139,8 @@
     "imageAlt": "Choir Rehearsal, bibliothèque de répétition pour chœurs",
     "switchLabel": "Langue",
     "languagesLabel": "Langues",
+    "supportLabel": "Assistance :",
+    "supportLine": "Une question ? Écrivez à support@compath.ee",
     "faq": [
       {
         "q": "Choir Rehearsal est-il gratuit ?",
@@ -150,7 +160,7 @@
       },
       {
         "q": "Où sont stockés les enregistrements ?",
-        "a": "Les chants, enregistrements et partitions restent sur le site WordPress du chœur. Compath OÜ n’héberge pas cette bibliothèque. La démo sur demo.rehearsal.compath.ee est partagée. Compath OÜ est à Tallinn, Ahtri 12, et répond à order@compath.ee ou au +372 55520482."
+        "a": "Les chants, enregistrements et partitions restent sur le site WordPress du chœur. Compath OÜ n’héberge pas cette bibliothèque. La démo sur demo.rehearsal.compath.ee est partagée. Compath OÜ est à Tallinn, Ahtri 12, Pour de l’aide, écrivez à support@compath.ee. Commandes : order@compath.ee ou +372 55520482."
       }
     ]
   },
@@ -162,6 +172,8 @@
     "imageAlt": "Choir Rehearsal, biblioteca di prove per cori",
     "switchLabel": "Lingua",
     "languagesLabel": "Lingue",
+    "supportLabel": "Assistenza:",
+    "supportLine": "Domande? Scrivete a support@compath.ee",
     "faq": [
       {
         "q": "Choir Rehearsal è gratuito?",
@@ -181,7 +193,7 @@
       },
       {
         "q": "Dove restano le registrazioni?",
-        "a": "Brani, registrazioni e spartiti restano sul sito WordPress del coro. Compath OÜ non ospita quella biblioteca. La demo su demo.rehearsal.compath.ee è condivisa. Compath OÜ è a Tallinn, Ahtri 12, e risponde a order@compath.ee o al +372 55520482."
+        "a": "Brani, registrazioni e spartiti restano sul sito WordPress del coro. Compath OÜ non ospita quella biblioteca. La demo su demo.rehearsal.compath.ee è condivisa. Compath OÜ è a Tallinn, Ahtri 12, Per assistenza scrivete a support@compath.ee. Ordini: order@compath.ee oppure +372 55520482."
       }
     ]
   },
@@ -193,6 +205,8 @@
     "imageAlt": "Choir Rehearsal, biblioteca de ensayo para coros",
     "switchLabel": "Idioma",
     "languagesLabel": "Idiomas",
+    "supportLabel": "Soporte:",
+    "supportLine": "¿Preguntas? Escriba a support@compath.ee",
     "faq": [
       {
         "q": "¿Choir Rehearsal es gratis?",
@@ -212,7 +226,7 @@
       },
       {
         "q": "¿Dónde se guardan las grabaciones?",
-        "a": "Las obras, grabaciones y partituras se quedan en el sitio WordPress del coro. Compath OÜ no aloja esa biblioteca. La demo en demo.rehearsal.compath.ee es compartida. Compath OÜ está en Tallin, Ahtri 12, y responde en order@compath.ee o en el +372 55520482."
+        "a": "Las obras, grabaciones y partituras se quedan en el sitio WordPress del coro. Compath OÜ no aloja esa biblioteca. La demo en demo.rehearsal.compath.ee es compartida. Compath OÜ está en Tallin, Ahtri 12, Para ayuda, escriba a support@compath.ee. Pedidos: order@compath.ee o +372 55520482."
       }
     ]
   },
@@ -224,6 +238,8 @@
     "imageAlt": "Choir Rehearsal, övningsbibliotek för körer",
     "switchLabel": "Språk",
     "languagesLabel": "Språk",
+    "supportLabel": "Support:",
+    "supportLine": "Frågor? Skriv till support@compath.ee",
     "faq": [
       {
         "q": "Är Choir Rehearsal gratis?",
@@ -243,7 +259,7 @@
       },
       {
         "q": "Var lagras inspelningarna?",
-        "a": "Sånger, inspelningar och noter stannar på körens egen WordPress-webbplats. Compath OÜ driftar inte det biblioteket. Demon på demo.rehearsal.compath.ee är delad. Compath OÜ finns på Ahtri 12 i Tallinn och svarar på order@compath.ee eller +372 55520482."
+        "a": "Sånger, inspelningar och noter stannar på körens egen WordPress-webbplats. Compath OÜ driftar inte det biblioteket. Demon på demo.rehearsal.compath.ee är delad. Compath OÜ finns på Ahtri 12 i Tallinn För hjälp, skriv till support@compath.ee. Beställningar: order@compath.ee eller +372 55520482."
       }
     ]
   },
@@ -255,6 +271,8 @@
     "imageAlt": "Choir Rehearsal, kuorojen harjoituskirjasto",
     "switchLabel": "Kieli",
     "languagesLabel": "Kielet",
+    "supportLabel": "Tuki:",
+    "supportLine": "Kysyttävää? Kirjoita osoitteeseen support@compath.ee",
     "faq": [
       {
         "q": "Onko Choir Rehearsal maksuton?",
@@ -274,7 +292,7 @@
       },
       {
         "q": "Missä tallenteet ovat?",
-        "a": "Laulut, tallenteet ja nuotit jäävät kuoron omalle WordPress-sivustolle. Compath OÜ ei ylläpidä sitä kirjastoa. Demo osoitteessa demo.rehearsal.compath.ee on yhteinen. Compath OÜ sijaitsee Tallinnassa osoitteessa Ahtri 12 ja vastaa osoitteessa order@compath.ee tai numerossa +372 55520482."
+        "a": "Laulut, tallenteet ja nuotit jäävät kuoron omalle WordPress-sivustolle. Compath OÜ ei ylläpidä sitä kirjastoa. Demo osoitteessa demo.rehearsal.compath.ee on yhteinen. Compath OÜ sijaitsee Tallinnassa osoitteessa Ahtri 12 Apua saat osoitteesta support@compath.ee. Tilaukset osoitteeseen order@compath.ee tai numeroon +372 55520482."
       }
     ]
   }

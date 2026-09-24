@@ -36,7 +36,8 @@ This demo is shared. Everyone uses these same logins, so the library can change 
 ## Support
 
 Compath OÜ, Ahtri 12, Tallinn, Estonia
-order@compath.ee
+Support: support@compath.ee
+Orders: order@compath.ee
 +372 55520482
 
 ## Languages
