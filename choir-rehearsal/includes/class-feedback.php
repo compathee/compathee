@@ -558,12 +558,12 @@ final class Choir_Rehearsal_Feedback {
 	 * message is sent to this address. Logged-in users see their profile email
 	 * filled in and can change it.
 	 *
-	 * @param string $case  Case number such as DBT-57.
+	 * @param string $case  Case number such as WP-57.
 	 * @param string $email Address that receives the confirmation.
 	 */
 	public static function success_message( string $case, string $email ): string {
 		return sprintf(
-			/* translators: 1: case number such as DBT-57, 2: email address */
+			/* translators: 1: case number such as WP-57, 2: email address */
 			__( 'Request received, case number %1$s. A confirmation has been sent to %2$s.', 'compath-choir-rehearsal' ),
 			$case,
 			$email

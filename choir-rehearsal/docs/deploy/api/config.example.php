@@ -11,7 +11,7 @@ return array(
 	'jira_base'       => 'https://compath.atlassian.net',
 	'jira_email'      => '',
 	'jira_token'      => '',
-	'jira_project'    => 'DBT',
+	'jira_project'    => 'WP',
 	'jira_issue_type' => 'Task',
 	'smtp_host'       => 'compath.ee',
 	'smtp_port'       => 465,

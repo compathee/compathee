@@ -29,7 +29,7 @@ function config(): array {
 		'jira_base' => 'https://compath.atlassian.net',
 		'jira_email' => 'dev@compath.ee',
 		'jira_token' => $GLOBALS['secret_token'],
-		'jira_project' => 'DBT',
+		'jira_project' => 'WP',
 		'jira_issue_type' => 'Task',
 		'smtp_host' => 'compath.ee',
 		'smtp_port' => 465,
@@ -77,7 +77,7 @@ function post(string $raw, ?callable $jira = null, ?callable $mail = null, ?call
 	$logs = array();
 	$jira ??= static function (string $method, string $url, array $body, string $user, string $token) use (&$jira_calls): array {
 		$jira_calls[] = compact('method', 'url', 'body', 'user', 'token');
-		return array('code' => 201, 'body' => '{"key":"DBT-57"}');
+		return array('code' => 201, 'body' => '{"key":"WP-57"}');
 	};
 	$mail ??= static function (array $message) use (&$mail_calls): bool {
 		$mail_calls[] = $message;
@@ -109,7 +109,7 @@ function post(string $raw, ?callable $jira = null, ?callable $mail = null, ?call
 $get = Choir_Feedback_Relay::handle('GET', payload(), config(), '203.0.113.10', 1, static fn(): array => array('code' => 500, 'body' => ''), static fn(): bool => false, null, static fn(): bool => true);
 check('get rejected', 405 === $get['status'] && false === $get['body']['ok']);
 
-$big = Choir_Feedback_Relay::handle('POST', str_repeat('a', Choir_Feedback_Relay::MAX_BODY + 1), config(), '203.0.113.10', 1, static fn(): array => array('code' => 201, 'body' => '{"key":"DBT-1"}'), static fn(): bool => true, null, static fn(): bool => true);
+$big = Choir_Feedback_Relay::handle('POST', str_repeat('a', Choir_Feedback_Relay::MAX_BODY + 1), config(), '203.0.113.10', 1, static fn(): array => array('code' => 201, 'body' => '{"key":"WP-1"}'), static fn(): bool => true, null, static fn(): bool => true);
 check('oversized rejected', 413 === $big['status']);
 
 [$honey] = post(payload(array('company' => 'Acme')));
@@ -125,7 +125,7 @@ check('rate limit', 429 === $limited['status'] && 'rate_limited' === $limited['b
 $fields = $jira_calls[0]['body']['fields'] ?? array();
 check('lite summary', ($fields['summary'] ?? '') === '[CR] Player stops');
 check('lite labels', ($fields['labels'] ?? array()) === array('choir-rehearsal', 'feedback'));
-check('jira project and type', ($fields['project']['key'] ?? '') === 'DBT' && ($fields['issuetype']['name'] ?? '') === 'Task');
+check('jira project and type', ($fields['project']['key'] ?? '') === 'WP' && ($fields['issuetype']['name'] ?? '') === 'Task');
 check('jira url', str_contains((string) ($jira_calls[0]['url'] ?? ''), 'https://compath.atlassian.net/rest/api/3/issue'));
 $description = '';
 foreach (($fields['description']['content'][0]['content'] ?? array()) as $node) {
@@ -134,8 +134,8 @@ foreach (($fields['description']['content'][0]['content'] ?? array()) as $node) 
 	}
 }
 check('english metadata', str_contains($description, 'Type: Bug') && str_contains($description, 'Role: Singer') && str_contains($description, 'License: Lite') && str_contains($description, 'Locale: en_US') && str_contains($description, 'The sticky player stops'));
-check('lite response', 200 === $lite['status'] && true === $lite['body']['ok'] && 'DBT-57' === $lite['body']['case']);
-check('english mail', str_contains((string) $mail_calls[0]['body'], 'Case number: DBT-57') && str_contains((string) $mail_calls[0]['body'], 'We will write back when a fix ships.') && str_contains((string) $mail_calls[0]['body'], 'The sticky player stops') && ($mail_calls[0]['from_email'] ?? '') === 'support@compath.ee' && ($mail_calls[0]['reply_to'] ?? '') === 'support@compath.ee');
+check('lite response', 200 === $lite['status'] && true === $lite['body']['ok'] && 'WP-57' === $lite['body']['case']);
+check('english mail', str_contains((string) $mail_calls[0]['body'], 'Case number: WP-57') && str_contains((string) $mail_calls[0]['body'], 'We will write back when a fix ships.') && str_contains((string) $mail_calls[0]['body'], 'The sticky player stops') && ($mail_calls[0]['from_email'] ?? '') === 'support@compath.ee' && ($mail_calls[0]['reply_to'] ?? '') === 'support@compath.ee');
 check('secrets stay out of the response', !str_contains((string) json_encode($lite), $secret_token) && !str_contains((string) json_encode($lite), $smtp_pass));
 
 [$pro, $jira_calls] = post(payload(array(
@@ -196,11 +196,11 @@ $label_calls = array();
 		if (1 === count($label_calls)) {
 			return array('code' => 400, 'body' => '{"errors":{"labels":"label pro is invalid"}}');
 		}
-		return array('code' => 201, 'body' => '{"key":"DBT-58"}');
+		return array('code' => 201, 'body' => '{"key":"WP-58"}');
 	}
 );
 check('retries without labels', 2 === count($label_calls) && isset($label_calls[0]['fields']['labels']) && !isset($label_calls[1]['fields']['labels']));
-check('label retry still returns the key', 'DBT-58' === $labeled['body']['case']);
+check('label retry still returns the key', 'WP-58' === $labeled['body']['case']);
 
 $logs = array();
 [$mailed, , $mail_calls, $logs] = post(
@@ -210,12 +210,12 @@ $logs = array();
 		return false;
 	}
 );
-check('estonian confirmation', str_contains((string) $mail_calls[0]['subject'], 'DBT-57') && str_contains((string) $mail_calls[0]['body'], 'Juhtumi number: DBT-57') && str_contains((string) $mail_calls[0]['body'], 'Mängija jäi seisma.') && str_contains((string) $mail_calls[0]['body'], 'kui parandus on valmis'));
-check('mail failure still succeeds', true === $mailed['body']['ok'] && 'DBT-57' === $mailed['body']['case'] && str_contains(implode("\n", $logs), 'confirmation email failed for DBT-57'));
+check('estonian confirmation', str_contains((string) $mail_calls[0]['subject'], 'WP-57') && str_contains((string) $mail_calls[0]['body'], 'Juhtumi number: WP-57') && str_contains((string) $mail_calls[0]['body'], 'Mängija jäi seisma.') && str_contains((string) $mail_calls[0]['body'], 'kui parandus on valmis'));
+check('mail failure still succeeds', true === $mailed['body']['ok'] && 'WP-57' === $mailed['body']['case'] && str_contains(implode("\n", $logs), 'confirmation email failed for WP-57'));
 check('mail log hides secrets', !str_contains(implode("\n", $logs), $secret_token) && !str_contains(implode("\n", $logs), $smtp_pass));
 
 [, , $mail_calls] = post(payload(array('locale' => 'ru_RU', 'message' => 'Плеер остановился.')));
-check('russian confirmation', str_contains((string) $mail_calls[0]['body'], 'Номер обращения: DBT-57') && str_contains((string) $mail_calls[0]['body'], 'Плеер остановился.') && str_contains((string) $mail_calls[0]['body'], 'когда исправление будет готово'));
+check('russian confirmation', str_contains((string) $mail_calls[0]['body'], 'Номер обращения: WP-57') && str_contains((string) $mail_calls[0]['body'], 'Плеер остановился.') && str_contains((string) $mail_calls[0]['body'], 'когда исправление будет готово'));
 
 $down = Choir_Feedback_Relay::handle(
 	'POST',
@@ -272,7 +272,7 @@ $smtp_ok = Choir_Feedback_Relay::smtp_converse(
 	config(),
 	Choir_Feedback_Relay::confirmation(
 		array('locale' => 'ru', 'message' => 'Плеер остановился.', 'email' => 'singer@example.com'),
-		'DBT-57',
+		'WP-57',
 		config()
 	)
 );
@@ -283,7 +283,8 @@ check('smtp auth login', str_contains($data, "AUTH LOGIN\r\n") && str_contains($
 check('russian subject is encoded', str_contains($data, '=?UTF-8?B?') && str_contains($data, 'Плеер остановился.'));
 
 $example = (string) file_get_contents(dirname(__DIR__) . '/docs/deploy/api/config.example.php');
-check('example config has empty secrets', str_contains($example, "'jira_token'      => ''") && str_contains($example, "'smtp_pass'       => ''") && !str_contains($example, $secret_token));
+check('example config has empty secrets', str_contains($example, "'jira_project'    => 'WP'") && str_contains($example, "'jira_token'      => ''") && str_contains($example, "'smtp_pass'       => ''") && !str_contains($example, $secret_token));
+check('two-letter case key', 'WP-12' === Choir_Feedback_Relay::issue_key(array('code' => 201, 'body' => '{"key":"WP-12"}')));
 
 $workflow = (string) file_get_contents(dirname(__DIR__, 2) . '/.github/workflows/deploy-rehearsal-site.yml');
 check('workflow publishes the relay', str_contains($workflow, 'deploy/api/feedback.php') && str_contains($workflow, 'api/feedback.php'));

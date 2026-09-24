@@ -108,7 +108,7 @@ function submit_with(array $input, array $context): array {
 				'code' => 200,
 				'data' => array(
 					'ok' => true,
-					'case' => 'DBT-57',
+					'case' => 'WP-57',
 				),
 			);
 		}
@@ -145,7 +145,7 @@ foreach (array(
 		'privacy' => 'Teie e-posti kasutame ainult sellele päringule vastamiseks.',
 		'need_email' => 'Palun sisesta kehtiv e-posti aadress.',
 		'wait' => 'Oota enne järgmise tagasiside saatmist.',
-		'sent' => 'Päring vastu võetud, juhtumi number DBT-57. Kinnitus on saadetud aadressile singer@example.com.',
+		'sent' => 'Päring vastu võetud, juhtumi number WP-57. Kinnitus on saadetud aadressile singer@example.com.',
 	),
 	'ru_RU' => array(
 		'button' => 'Отправить отзыв',
@@ -159,7 +159,7 @@ foreach (array(
 		'privacy' => 'Электронная почта используется только для ответа на этот запрос.',
 		'need_email' => 'Введите действительный адрес электронной почты.',
 		'wait' => 'Подождите перед отправкой следующего отзыва.',
-		'sent' => 'Запрос получен, номер обращения DBT-57. Подтверждение отправлено на singer@example.com.',
+		'sent' => 'Запрос получен, номер обращения WP-57. Подтверждение отправлено на singer@example.com.',
 	),
 ) as $locale => $expect) {
 	load_catalog($locale);
@@ -178,7 +178,7 @@ foreach (array(
 	check("$locale rate limit", $limited['message'] === $expect['wait'] && 'rate_limited' === $limited['code']);
 
 	$sent = submit_with($base_input, $base_context);
-	check("$locale case received", $sent['message'] === $expect['sent'] && 'DBT-57' === $sent['case']);
+	check("$locale case received", $sent['message'] === $expect['sent'] && 'WP-57' === $sent['case']);
 
 	$body = Choir_Rehearsal_Feedback::issue_body(array(
 		'type' => 'bug',

@@ -345,6 +345,10 @@ final class Choir_Feedback_Relay {
 		$user = self::plain( $config['jira_email'] ?? '' );
 		$token = (string) ( $config['jira_token'] ?? '' );
 		$project = self::plain( $config['jira_project'] ?? '' );
+		if ( '' === $project ) {
+			$project                = 'WP';
+			$config['jira_project'] = 'WP';
+		}
 		$type = self::plain( $config['jira_issue_type'] ?? '' );
 		if ( '' === $base || ! self::is_email( $user ) || '' === trim( $token ) || '' === $project || '' === $type ) {
 			return array( 'ok' => false, 'key' => '' );
@@ -380,7 +384,7 @@ final class Choir_Feedback_Relay {
 	 */
 	public static function jira_fields( array $config, array $input, bool $with_labels ): array {
 		$fields = array(
-			'project'   => array( 'key' => self::plain( $config['jira_project'] ?? 'DBT' ) ),
+			'project'   => array( 'key' => self::plain( $config['jira_project'] ?? 'WP' ) ),
 			'issuetype' => array( 'name' => self::plain( $config['jira_issue_type'] ?? 'Task' ) ),
 			'summary'   => self::summary( $input ),
 			'description' => self::adf( self::description( $input ) ),

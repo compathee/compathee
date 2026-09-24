@@ -32,11 +32,11 @@ Fill in:
 
 | Key | Value |
 |-----|--------|
-| `jira_email` | Atlassian account email allowed to create issues in project DBT |
+| `jira_email` | Atlassian account email allowed to create issues in project WP |
 | `jira_token` | Jira Cloud API token for that account |
 | `smtp_pass` | Password for `compath@compath.ee` |
 
-Defaults already match the decided hosts: Jira `https://compath.atlassian.net`, project `DBT`, issue type `Task`, SMTP `compath.ee:465`, login `compath@compath.ee`, From `Compath Support <support@compath.ee>`, Reply-To `support@compath.ee`.
+Defaults already match the decided hosts: Jira `https://compath.atlassian.net`, project `WP`, issue type `Task`, SMTP `compath.ee:465`, login `compath@compath.ee`, From `Compath Support <support@compath.ee>`, Reply-To `support@compath.ee`.
 
 The PHP user must be able to create `/domains/rehearsal.compath.ee/private/feedback-rate/` (per-IP counters) and append `/domains/rehearsal.compath.ee/private/feedback-mail.log`. If the rate directory cannot be written, requests are still accepted and a line is logged.
 
@@ -51,7 +51,7 @@ The PHP user must be able to create `/domains/rehearsal.compath.ee/private/feedb
 - `pro` (boolean) and `license` (SureCart ids; masked key only when no public id)
 - `company` honeypot, must be empty
 
-Response: `{"ok":true,"case":"DBT-57"}`. A failed confirmation email still returns that JSON; the failure is appended to `feedback-mail.log` without the API token or SMTP password.
+Response: `{"ok":true,"case":"WP-57"}`. A failed confirmation email still returns that JSON; the failure is appended to `feedback-mail.log` without the API token or SMTP password.
 
 Jira summary: `[CR][Pro] …` or `[CR] …`. Labels: `choir-rehearsal`, `feedback`, and `pro` on Pro sites. Description stays English. The email follows the locale: Estonian for `et` / `et_EE`, Russian for `ru*`, English otherwise.
 

@@ -63,7 +63,7 @@ function input(array $overrides = []): array {
 	);
 }
 
-function relay_ok(string $case = 'DBT-57'): array {
+function relay_ok(string $case = 'WP-57'): array {
 	return array(
 		'code' => 200,
 		'data' => array(
@@ -77,7 +77,7 @@ check('default endpoint', Choir_Rehearsal_Feedback::ENDPOINT === 'https://rehear
 check('endpoint filter name', Choir_Rehearsal_Feedback::ENDPOINT_FILTER === 'choir_rehearsal_feedback_endpoint');
 check('https endpoint accepted', Choir_Rehearsal_Feedback::is_https_url('https://rehearsal.compath.ee/api/feedback.php'));
 check('http endpoint rejected', !Choir_Rehearsal_Feedback::is_https_url('http://rehearsal.compath.ee/api/feedback.php'));
-check('case shape', Choir_Rehearsal_Feedback::is_case('DBT-57') && !Choir_Rehearsal_Feedback::is_case('dbt-57') && !Choir_Rehearsal_Feedback::is_case('DBT-57;'));
+check('case shape', Choir_Rehearsal_Feedback::is_case('WP-57') && !Choir_Rehearsal_Feedback::is_case('dbt-57') && !Choir_Rehearsal_Feedback::is_case('WP-57;'));
 
 $plain = Choir_Rehearsal_Feedback::to_plain_text("<script>alert(1)</script><b>Hello</b> &amp; choir");
 check('plain text strips tags', $plain === 'Hello & choir');
@@ -167,15 +167,15 @@ $sent = Choir_Rehearsal_Feedback::submit_feedback(
 	},
 	static function (string $url, array $payload) use (&$calls): array {
 		$calls[] = compact('url', 'payload');
-		return relay_ok('DBT-15');
+		return relay_ok('WP-15');
 	}
 );
 $payload = $calls[0]['payload'] ?? array();
 check('posts to relay', ($calls[0]['url'] ?? '') === 'https://rehearsal.compath.ee/api/feedback.php');
 check('payload title and message', ($payload['title'] ?? '') === 'Player stops' && str_contains((string) ($payload['message'] ?? ''), 'It stops.') && !str_contains((string) ($payload['message'] ?? ''), '<') && !str_contains((string) ($payload['message'] ?? ''), 'onerror'));
 check('payload metadata', ($payload['type'] ?? '') === 'bug' && ($payload['role'] ?? '') === 'Guest' && ($payload['locale'] ?? '') === 'et' && ($payload['plugin_version'] ?? '') === '0.4.61' && ($payload['site_url'] ?? '') === 'https://choir.example/' && ($payload['email'] ?? '') === 'singer@example.com' && ($payload['name'] ?? '') === 'Ada' && ($payload['edition'] ?? '') === 'Lite' && false === ($payload['pro'] ?? true));
-check('success case', $sent['ok'] && 'DBT-15' === $sent['case'] && 'sent' === $sent['code']);
-check('success message', 'Request received, case number DBT-15. A confirmation has been sent to singer@example.com.' === $sent['message']);
+check('success case', $sent['ok'] && 'WP-15' === $sent['case'] && 'sent' === $sent['code']);
+check('success message', 'Request received, case number WP-15. A confirmation has been sent to singer@example.com.' === $sent['message']);
 check('rate bucket recorded', ($saved['u7'] ?? array()) === array(1_000_000));
 
 $calls = array();
@@ -327,7 +327,7 @@ Choir_Rehearsal_Feedback::submit_feedback(
 	static function (string $url, array $payload) use (&$calls): array {
 		unset($url);
 		$calls[] = $payload;
-		return relay_ok('DBT-21');
+		return relay_ok('WP-21');
 	}
 );
 $pro_payload = $calls[0] ?? array();
@@ -375,7 +375,7 @@ Choir_Rehearsal_Feedback::submit_feedback(
 	static function (string $url, array $payload) use (&$calls): array {
 		unset($url);
 		$calls[] = $payload;
-		return relay_ok('DBT-22');
+		return relay_ok('WP-22');
 	}
 );
 $lite_payload = $calls[0] ?? array();
@@ -461,7 +461,7 @@ Choir_Rehearsal_Feedback::submit_feedback(
 	static function (string $url, array $payload) use (&$calls): array {
 		unset($url);
 		$calls[] = $payload;
-		return relay_ok('DBT-24');
+		return relay_ok('WP-24');
 	}
 );
 check('guest issue uses site locale', ($calls[0]['locale'] ?? '') === 'en_US');
