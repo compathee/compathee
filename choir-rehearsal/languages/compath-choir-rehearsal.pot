@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Compath Choir Rehearsal 0.4.61\n"
 "Report-Msgid-Bugs-To: https://rehearsal.compath.ee\n"
-"POT-Creation-Date: 2026-09-24 08:28+0000\n"
+"POT-Creation-Date: 2026-09-24 08:40+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -35,7 +35,7 @@ msgid "Please enter your username and password."
 msgstr ""
 
 #: includes/class-admin.php:36 includes/class-admin.php:37
-#: includes/class-admin.php:304
+#: includes/class-admin.php:295
 msgid "Settings"
 msgstr ""
 
@@ -71,8 +71,8 @@ msgid ""
 "or editor Play preview."
 msgstr ""
 
-#: includes/class-admin.php:110 includes/class-admin.php:258
-#: includes/class-admin.php:313 includes/class-admin.php:778
+#: includes/class-admin.php:110 includes/class-admin.php:249
+#: includes/class-admin.php:304 includes/class-admin.php:769
 #: includes/class-frontend.php:374
 msgid "Buy Pro"
 msgstr ""
@@ -143,432 +143,419 @@ msgstr ""
 msgid "Only signed-in choir roles can open the full private library."
 msgstr ""
 
-#. translators: 1: Singer role name (English, not translated), 2: Voice Leader role name (English, not translated)
-#: includes/class-admin.php:210
-#, php-format
-msgid ""
-"Activation adds WordPress roles %1$s (listen) and %2$s (manage songs). "
-"Assign them under Users. Settings stay Administrator-only. Public songs "
-"remain open to guests."
-msgstr ""
-
-#: includes/class-admin.php:220
+#: includes/class-admin.php:211
 msgid "Choir roles"
 msgstr ""
 
-#: includes/class-admin.php:223
+#: includes/class-admin.php:214
 msgid "browse and listen to the rehearsal library"
 msgstr ""
 
-#: includes/class-admin.php:224
+#: includes/class-admin.php:215
 msgid "listen plus add/edit songs in the admin"
 msgstr ""
 
-#: includes/class-admin.php:225
+#: includes/class-admin.php:216
 msgid "full access including plugin Settings"
 msgstr ""
 
-#: includes/class-admin.php:227
-msgid "Role names Singer and Voice Leader are kept in English on purpose."
-msgstr ""
-
-#: includes/class-admin.php:233
+#: includes/class-admin.php:224
 msgid "Update JSON URL"
 msgstr ""
 
-#: includes/class-admin.php:236
+#: includes/class-admin.php:227
 msgid ""
 "Optional override. If empty, the plugin checks GitHub Releases, then falls "
 "back to the latest release asset update.json."
 msgstr ""
 
-#: includes/class-admin.php:240
+#: includes/class-admin.php:231
 msgid "GitHub repository"
 msgstr ""
 
-#: includes/class-admin.php:243
+#: includes/class-admin.php:234
 msgid ""
 "Used when Update JSON URL is empty. Each Lite release should include compath-"
 "choir-rehearsal.zip and update.json assets."
 msgstr ""
 
-#: includes/class-admin.php:253
+#: includes/class-admin.php:244
 msgid "Choir Rehearsal Pro"
 msgstr ""
 
-#: includes/class-admin.php:254
+#: includes/class-admin.php:245
 msgid ""
 "Unlimited tracks, microphone recording, search by song title, and Play "
 "preview in the editor. Keep this Lite plugin installed — Pro is a separate "
 "add-on."
 msgstr ""
 
-#: includes/class-admin.php:266
+#: includes/class-admin.php:257
 msgid "Check for plugin updates"
 msgstr ""
 
-#: includes/class-admin.php:268
+#: includes/class-admin.php:259
 msgid "Contacts GitHub Releases and shows the result on this page."
 msgstr ""
 
-#: includes/class-admin.php:271
+#: includes/class-admin.php:262
 msgid "Refresh permalinks"
 msgstr ""
 
 #. translators: %s: library page URL
-#: includes/class-admin.php:280
+#: includes/class-admin.php:271
 #, php-format
 msgid "Song list URL: %s"
 msgstr ""
 
-#: includes/class-admin.php:287
+#: includes/class-admin.php:278
 msgid "Edit rehearsal page"
 msgstr ""
 
-#: includes/class-admin.php:289
+#: includes/class-admin.php:280
 msgid "Appearance → Menus"
 msgstr ""
 
-#: includes/class-admin.php:325 includes/class-post-types.php:82
+#: includes/class-admin.php:316 includes/class-post-types.php:82
 msgid "Tracks"
 msgstr ""
 
-#: includes/class-admin.php:326
+#: includes/class-admin.php:317
 msgid "Score"
 msgstr ""
 
-#: includes/class-admin.php:327
+#: includes/class-admin.php:318
 msgid "Visibility"
 msgstr ""
 
-#: includes/class-admin.php:347
+#: includes/class-admin.php:338
 msgid "Public"
 msgstr ""
 
-#: includes/class-admin.php:348
+#: includes/class-admin.php:339
 msgid "Private"
 msgstr ""
 
-#: includes/class-admin.php:402 includes/class-admin.php:415
+#: includes/class-admin.php:393 includes/class-admin.php:406
 msgid "Back to song list"
 msgstr ""
 
-#: includes/class-admin.php:431
+#: includes/class-admin.php:422
 msgid ""
 "Add the song title, upload a PDF score, then record or upload each voice "
 "part."
 msgstr ""
 
-#: includes/class-admin.php:433
+#: includes/class-admin.php:424
 msgid ""
 "Add the song title, upload a PDF score, then upload each voice part (up to 4 "
 "tracks in Lite)."
 msgstr ""
 
-#: includes/class-admin.php:445 includes/class-admin.php:451
-#: includes/class-admin.php:676
+#: includes/class-admin.php:436 includes/class-admin.php:442
+#: includes/class-admin.php:667
 msgid "Make private"
 msgstr ""
 
-#: includes/class-admin.php:445 includes/class-admin.php:451
-#: includes/class-admin.php:675
+#: includes/class-admin.php:436 includes/class-admin.php:442
+#: includes/class-admin.php:666
 msgid "Make public"
 msgstr ""
 
-#: includes/class-admin.php:458 includes/class-admin.php:677
+#: includes/class-admin.php:449 includes/class-admin.php:668
 msgid "Anyone can view and listen without signing in."
 msgstr ""
 
-#: includes/class-admin.php:459 includes/class-admin.php:678
+#: includes/class-admin.php:450 includes/class-admin.php:669
 msgid "Only signed-in users can access this song (when login is required)."
 msgstr ""
 
-#: includes/class-admin.php:470
+#: includes/class-admin.php:461
 msgid "Sheet Music (PDF)"
 msgstr ""
 
-#: includes/class-admin.php:479
+#: includes/class-admin.php:470
 msgid "Voice Tracks"
 msgstr ""
 
-#: includes/class-admin.php:550 includes/class-admin.php:739
-#: includes/class-admin.php:740 includes/class-frontend.php:225
-#: includes/class-frontend.php:806 includes/class-frontend.php:807
+#: includes/class-admin.php:541 includes/class-admin.php:730
+#: includes/class-admin.php:731 includes/class-frontend.php:225
+#: includes/class-frontend.php:792 includes/class-frontend.php:793
 msgid "Expand PDF"
 msgstr ""
 
-#: includes/class-admin.php:551 includes/class-admin.php:743
-#: includes/class-admin.php:744 includes/class-admin.php:755
-#: includes/class-frontend.php:226 includes/class-frontend.php:810
-#: includes/class-frontend.php:811 includes/class-frontend.php:821
+#: includes/class-admin.php:542 includes/class-admin.php:734
+#: includes/class-admin.php:735 includes/class-admin.php:746
+#: includes/class-frontend.php:226 includes/class-frontend.php:796
+#: includes/class-frontend.php:797 includes/class-frontend.php:807
 msgid "Close full screen"
 msgstr ""
 
-#: includes/class-admin.php:575 includes/class-frontend.php:122
+#: includes/class-admin.php:566 includes/class-frontend.php:122
 msgid "Now playing"
 msgstr ""
 
-#: includes/class-admin.php:576 includes/class-admin.php:641
-#: includes/class-admin.php:905 includes/class-admin.php:906
-#: includes/class-frontend.php:123 includes/class-frontend.php:887
-#: includes/class-frontend.php:906
+#: includes/class-admin.php:567 includes/class-admin.php:632
+#: includes/class-admin.php:896 includes/class-admin.php:897
+#: includes/class-frontend.php:123 includes/class-frontend.php:873
+#: includes/class-frontend.php:892
 msgid "Play"
 msgstr ""
 
-#: includes/class-admin.php:577 includes/class-frontend.php:124
+#: includes/class-admin.php:568 includes/class-frontend.php:124
 msgid "Pause"
 msgstr ""
 
-#: includes/class-admin.php:578 includes/class-frontend.php:125
-#: includes/class-frontend.php:925
+#: includes/class-admin.php:569 includes/class-frontend.php:125
+#: includes/class-frontend.php:911
 msgid "Close player"
 msgstr ""
 
-#: includes/class-admin.php:592 includes/class-admin.php:650
-#: includes/class-admin.php:939
+#: includes/class-admin.php:583 includes/class-admin.php:641
+#: includes/class-admin.php:930
 msgid "Preview video"
 msgstr ""
 
-#: includes/class-admin.php:593 includes/class-frontend.php:196
+#: includes/class-admin.php:584 includes/class-frontend.php:196
 msgid "Hide video"
 msgstr ""
 
-#: includes/class-admin.php:607 includes/class-admin.php:665
-#: includes/class-admin.php:964 includes/class-admin.php:965
-#: includes/class-frontend.php:139 includes/class-frontend.php:912
-#: includes/class-frontend.php:913
+#: includes/class-admin.php:598 includes/class-admin.php:656
+#: includes/class-admin.php:955 includes/class-admin.php:956
+#: includes/class-frontend.php:139 includes/class-frontend.php:898
+#: includes/class-frontend.php:899
 msgid "Open piano"
 msgstr ""
 
-#: includes/class-admin.php:608 includes/class-frontend.php:140
-#: includes/class-frontend.php:934
+#: includes/class-admin.php:599 includes/class-frontend.php:140
+#: includes/class-frontend.php:920
 msgid "Close piano"
 msgstr ""
 
-#: includes/class-admin.php:622 includes/class-admin.php:666
-#: includes/class-admin.php:974 includes/class-admin.php:975
+#: includes/class-admin.php:613 includes/class-admin.php:657
+#: includes/class-admin.php:965 includes/class-admin.php:966
 #: includes/class-frontend.php:154
 msgid "Open metronome"
 msgstr ""
 
-#: includes/class-admin.php:623 includes/class-frontend.php:155
-#: includes/class-frontend.php:945
+#: includes/class-admin.php:614 includes/class-frontend.php:155
+#: includes/class-frontend.php:931
 msgid "Close metronome"
 msgstr ""
 
-#: includes/class-admin.php:624 includes/class-frontend.php:156
-#: includes/class-frontend.php:951
+#: includes/class-admin.php:615 includes/class-frontend.php:156
+#: includes/class-frontend.php:937
 msgid "Start"
 msgstr ""
 
-#: includes/class-admin.php:625 includes/class-admin.php:660
-#: includes/class-admin.php:982 includes/class-frontend.php:157
+#: includes/class-admin.php:616 includes/class-admin.php:651
+#: includes/class-admin.php:973 includes/class-frontend.php:157
 msgid "Stop"
 msgstr ""
 
-#: includes/class-admin.php:639 includes/class-admin.php:893
+#: includes/class-admin.php:630 includes/class-admin.php:884
 msgid "Upload"
 msgstr ""
 
-#: includes/class-admin.php:640 includes/class-admin.php:897
+#: includes/class-admin.php:631 includes/class-admin.php:888
 msgid "Record"
 msgstr ""
 
-#: includes/class-admin.php:642
+#: includes/class-admin.php:633
 msgid "Use this audio"
 msgstr ""
 
-#: includes/class-admin.php:643 includes/class-admin.php:949
+#: includes/class-admin.php:634 includes/class-admin.php:940
 msgid "Remove"
 msgstr ""
 
-#: includes/class-admin.php:644 includes/class-post-types.php:83
+#: includes/class-admin.php:635 includes/class-post-types.php:83
 msgid "Track"
 msgstr ""
 
-#: includes/class-admin.php:645 includes/class-admin.php:881
-#: includes/class-admin.php:887
+#: includes/class-admin.php:636 includes/class-admin.php:872
+#: includes/class-admin.php:878
 msgid "No audio selected"
 msgstr ""
 
-#: includes/class-admin.php:646 includes/class-admin.php:868
+#: includes/class-admin.php:637 includes/class-admin.php:859
 msgid "Audio"
 msgstr ""
 
-#: includes/class-admin.php:647 includes/class-admin.php:878
-#: includes/class-frontend.php:849
+#: includes/class-admin.php:638 includes/class-admin.php:869
+#: includes/class-frontend.php:835
 msgid "YouTube"
 msgstr ""
 
-#: includes/class-admin.php:648 includes/class-admin.php:917
+#: includes/class-admin.php:639 includes/class-admin.php:908
 msgid "YouTube URL"
 msgstr ""
 
-#: includes/class-admin.php:649 includes/class-admin.php:928
+#: includes/class-admin.php:640 includes/class-admin.php:919
 msgid ""
 "Official YouTube player opens on the song page (video stays visible). Not "
 "for downloading audio."
 msgstr ""
 
-#: includes/class-admin.php:651
+#: includes/class-admin.php:642
 msgid "Select PDF"
 msgstr ""
 
-#: includes/class-admin.php:652
+#: includes/class-admin.php:643
 msgid "Use this PDF"
 msgstr ""
 
-#: includes/class-admin.php:653 includes/class-admin.php:728
+#: includes/class-admin.php:644 includes/class-admin.php:719
 msgid "No PDF selected"
 msgstr ""
 
-#: includes/class-admin.php:654 includes/class-admin.php:731
+#: includes/class-admin.php:645 includes/class-admin.php:722
 msgid "Remove PDF"
 msgstr ""
 
-#: includes/class-admin.php:655 includes/class-frontend.php:803
-#: includes/class-frontend.php:804
+#: includes/class-admin.php:646 includes/class-frontend.php:789
+#: includes/class-frontend.php:790
 msgid "Sheet music"
 msgstr ""
 
-#: includes/class-admin.php:656 includes/class-admin.php:752
-#: includes/class-frontend.php:727 includes/class-frontend.php:818
+#: includes/class-admin.php:647 includes/class-admin.php:743
+#: includes/class-frontend.php:713 includes/class-frontend.php:804
 msgid "Previous"
 msgstr ""
 
-#: includes/class-admin.php:657 includes/class-admin.php:754
-#: includes/class-frontend.php:728 includes/class-frontend.php:820
+#: includes/class-admin.php:648 includes/class-admin.php:745
+#: includes/class-frontend.php:714 includes/class-frontend.php:806
 msgid "Next"
 msgstr ""
 
-#: includes/class-admin.php:658
+#: includes/class-admin.php:649
 msgid "Swipe left or right to change pages"
 msgstr ""
 
-#: includes/class-admin.php:659 includes/class-admin.php:960
+#: includes/class-admin.php:650 includes/class-admin.php:951
 msgid "Start recording"
 msgstr ""
 
-#: includes/class-admin.php:661
+#: includes/class-admin.php:652
 msgid "Pause recording"
 msgstr ""
 
-#: includes/class-admin.php:662
+#: includes/class-admin.php:653
 msgid "Resume recording"
 msgstr ""
 
-#: includes/class-admin.php:663 includes/class-admin.php:983
+#: includes/class-admin.php:654 includes/class-admin.php:974
 msgid "Use recording"
 msgstr ""
 
-#: includes/class-admin.php:664 includes/class-admin.php:984
+#: includes/class-admin.php:655 includes/class-admin.php:975
 msgid "Cancel"
 msgstr ""
 
-#: includes/class-admin.php:667
+#: includes/class-admin.php:658
 msgid "Recording…"
 msgstr ""
 
-#: includes/class-admin.php:668
+#: includes/class-admin.php:659
 msgid "Paused"
 msgstr ""
 
-#: includes/class-admin.php:669 includes/class-admin.php:955
+#: includes/class-admin.php:660 includes/class-admin.php:946
 msgid "Click start and sing your voice part."
 msgstr ""
 
-#: includes/class-admin.php:670
+#: includes/class-admin.php:661
 msgid "Uploading…"
 msgstr ""
 
-#: includes/class-admin.php:671
+#: includes/class-admin.php:662
 msgid "Microphone access was denied."
 msgstr ""
 
-#: includes/class-admin.php:672
+#: includes/class-admin.php:663
 msgid "Microphone recording is not supported in this browser."
 msgstr ""
 
-#: includes/class-admin.php:673
+#: includes/class-admin.php:664
 msgid "Upload failed. Please try again."
 msgstr ""
 
-#: includes/class-admin.php:674
+#: includes/class-admin.php:665
 msgid "Save the song first, then you can record voice tracks."
 msgstr ""
 
 #. translators: %d: maximum track count
-#: includes/class-admin.php:684
+#: includes/class-admin.php:675
 #, php-format
 msgid ""
 "Lite edition allows up to %d voice tracks per song. Upgrade to Pro for "
 "unlimited tracks, microphone recording, and Play preview in the editor."
 msgstr ""
 
-#: includes/class-admin.php:723
+#: includes/class-admin.php:714
 msgid ""
 "Upload a PDF score. It appears below like on the public song page — swipe "
 "left/right to change pages while you record."
 msgstr ""
 
-#: includes/class-admin.php:730
+#: includes/class-admin.php:721
 msgid "Upload / Select PDF"
 msgstr ""
 
-#: includes/class-admin.php:747
+#: includes/class-admin.php:738
 msgid "Swipe to change pages · pinch to zoom"
 msgstr ""
 
-#: includes/class-admin.php:749
+#: includes/class-admin.php:740
 msgid "No PDF selected yet."
 msgstr ""
 
-#: includes/class-admin.php:752 includes/class-frontend.php:223
-#: includes/class-frontend.php:818
+#: includes/class-admin.php:743 includes/class-frontend.php:223
+#: includes/class-frontend.php:804
 msgid "Previous page"
 msgstr ""
 
-#: includes/class-admin.php:754 includes/class-frontend.php:224
-#: includes/class-frontend.php:820
+#: includes/class-admin.php:745 includes/class-frontend.php:224
+#: includes/class-frontend.php:806
 msgid "Next page"
 msgstr ""
 
-#: includes/class-admin.php:755 includes/class-frontend.php:821
+#: includes/class-admin.php:746 includes/class-frontend.php:807
 msgid "Close"
 msgstr ""
 
-#: includes/class-admin.php:771
+#: includes/class-admin.php:762
 msgid ""
 "Voice parts look like the public song page. Use the icons on the right to "
 "upload, record, or play."
 msgstr ""
 
 #. translators: 1: max tracks, 2: upgrade link HTML
-#: includes/class-admin.php:776
+#: includes/class-admin.php:767
 #, php-format
 msgid ""
 "Add one voice part per row (up to %1$d in Lite). Upload audio with the icon "
 "on the right. %2$s"
 msgstr ""
 
-#: includes/class-admin.php:782
+#: includes/class-admin.php:773
 msgid "Add one voice part per row. Upload audio with the icon on the right."
 msgstr ""
 
-#: includes/class-admin.php:805
+#: includes/class-admin.php:796
 msgid "Add track"
 msgstr ""
 
-#: includes/class-admin.php:854
+#: includes/class-admin.php:845
 msgid "Voice"
 msgstr ""
 
-#: includes/class-admin.php:859
+#: includes/class-admin.php:850
 msgid "Track source"
 msgstr ""
 
 #. translators: 1: song title, 2: voice label
-#: includes/class-admin.php:1104
+#: includes/class-admin.php:1095
 #, php-format
 msgid "%1$s — %2$s"
 msgstr ""
@@ -705,13 +692,6 @@ msgstr ""
 msgid "Feedback"
 msgstr ""
 
-#: includes/class-feedback.php:243
-msgid ""
-"Singer, Voice Leader, Administrator, and guests can send a wish or bug from "
-"the song list. The site creates a GitHub issue. Lite and Pro both include "
-"this."
-msgstr ""
-
 #: includes/class-feedback.php:246
 msgid "GitHub repository for feedback"
 msgstr ""
@@ -770,24 +750,12 @@ msgstr ""
 msgid "Please wait before sending more feedback."
 msgstr ""
 
-#: includes/class-feedback.php:805
-msgid ""
-"Could not send feedback. Please ask an administrator to check the GitHub "
-"token."
-msgstr ""
-
-#: includes/class-feedback.php:808
-msgid ""
-"Could not send feedback. Please ask an administrator to check the GitHub "
-"repository."
-msgstr ""
-
-#: includes/class-frontend.php:83 includes/class-frontend.php:667
+#: includes/class-frontend.php:83 includes/class-frontend.php:653
 msgid "Edit"
 msgstr ""
 
 #. translators: %d: number of tracks
-#: includes/class-frontend.php:85 includes/class-frontend.php:658
+#: includes/class-frontend.php:85 includes/class-frontend.php:644
 #, php-format
 msgid "%d track"
 msgid_plural "%d tracks"
@@ -800,18 +768,18 @@ msgstr[1] ""
 msgid "%d tracks"
 msgstr ""
 
-#: includes/class-frontend.php:88 includes/class-frontend.php:679
-#: includes/class-frontend.php:680
+#: includes/class-frontend.php:88 includes/class-frontend.php:665
+#: includes/class-frontend.php:666
 msgid "PDF score attached"
 msgstr ""
 
-#: includes/class-frontend.php:89 includes/class-frontend.php:693
-#: includes/class-frontend.php:694
+#: includes/class-frontend.php:89 includes/class-frontend.php:679
+#: includes/class-frontend.php:680
 msgid "Public — available without login"
 msgstr ""
 
-#: includes/class-frontend.php:90 includes/class-frontend.php:707
-#: includes/class-frontend.php:708
+#: includes/class-frontend.php:90 includes/class-frontend.php:693
+#: includes/class-frontend.php:694
 msgid "Has YouTube track"
 msgstr ""
 
@@ -823,8 +791,8 @@ msgstr ""
 msgid "Could not copy the link. Please copy it from the address bar."
 msgstr ""
 
-#: includes/class-frontend.php:195 includes/class-frontend.php:856
-#: includes/class-frontend.php:858
+#: includes/class-frontend.php:195 includes/class-frontend.php:842
+#: includes/class-frontend.php:844
 msgid "Watch video"
 msgstr ""
 
@@ -842,7 +810,7 @@ msgid ""
 "to access the full rehearsal library."
 msgstr ""
 
-#: includes/class-frontend.php:301 includes/class-frontend.php:484
+#: includes/class-frontend.php:301 includes/class-frontend.php:470
 #: includes/class-pages.php:88
 msgid "Rehearsal Library"
 msgstr ""
@@ -893,111 +861,95 @@ msgstr ""
 msgid "Full library requires a choir role"
 msgstr ""
 
-#. translators: 1: Singer role name (English), 2: Voice Leader role name (English)
-#: includes/class-frontend.php:406
-#, php-format
-msgid ""
-"Public songs above are open to everyone. Ask an administrator to assign you "
-"the %1$s or %2$s role for the full rehearsal library."
-msgstr ""
-
-#: includes/class-frontend.php:425
+#: includes/class-frontend.php:418
 msgid "This song is private"
 msgstr ""
 
-#. translators: 1: Singer role name (English), 2: Voice Leader role name (English)
-#: includes/class-frontend.php:431
-#, php-format
-msgid ""
-"Ask an administrator to assign you the %1$s or %2$s role to open private "
-"rehearsal songs."
-msgstr ""
-
-#: includes/class-frontend.php:483
+#: includes/class-frontend.php:469
 msgid "Public songs"
 msgstr ""
 
-#: includes/class-frontend.php:490
+#: includes/class-frontend.php:476
 msgid "Search songs"
 msgstr ""
 
-#: includes/class-frontend.php:495
+#: includes/class-frontend.php:481
 msgid "Search by title…"
 msgstr ""
 
-#: includes/class-frontend.php:506
+#: includes/class-frontend.php:492
 msgid ""
 "No public songs yet. Sign in below for the full library, or ask an editor to "
 "make a song public."
 msgstr ""
 
-#: includes/class-frontend.php:507
+#: includes/class-frontend.php:493
 msgid "No songs yet."
 msgstr ""
 
-#: includes/class-frontend.php:514
+#: includes/class-frontend.php:500
 msgid "Add the first song"
 msgstr ""
 
-#: includes/class-frontend.php:521
+#: includes/class-frontend.php:507
 msgid "These songs are open to listen and view without signing in."
 msgstr ""
 
-#: includes/class-frontend.php:526
+#: includes/class-frontend.php:512
 msgid "No songs match your search."
 msgstr ""
 
-#: includes/class-frontend.php:737
+#: includes/class-frontend.php:723
 msgid "Song list pages"
 msgstr ""
 
 #. translators: 1: first song number on page, 2: last song number on page, 3: total songs
-#: includes/class-frontend.php:743
+#: includes/class-frontend.php:729
 #, php-format
 msgid "Showing %1$d–%2$d of %3$d songs"
 msgstr ""
 
-#: includes/class-frontend.php:764
+#: includes/class-frontend.php:750
 msgid "All songs"
 msgstr ""
 
-#: includes/class-frontend.php:773 includes/class-frontend.php:774
+#: includes/class-frontend.php:759 includes/class-frontend.php:760
 msgid "Share"
 msgstr ""
 
-#: includes/class-frontend.php:793
+#: includes/class-frontend.php:779
 msgid "Edit song"
 msgstr ""
 
-#: includes/class-frontend.php:827 includes/class-frontend.php:828
+#: includes/class-frontend.php:813 includes/class-frontend.php:814
 msgid "Voice tracks"
 msgstr ""
 
-#: includes/class-frontend.php:830
+#: includes/class-frontend.php:816
 msgid "No tracks uploaded yet."
 msgstr ""
 
-#: includes/class-frontend.php:920
+#: includes/class-frontend.php:906
 msgid "Seek"
 msgstr ""
 
-#: includes/class-frontend.php:933
+#: includes/class-frontend.php:919
 msgid "Piano"
 msgstr ""
 
-#: includes/class-frontend.php:939
+#: includes/class-frontend.php:925
 msgid "Two octave piano keyboard"
 msgstr ""
 
-#: includes/class-frontend.php:944
+#: includes/class-frontend.php:930
 msgid "Metronome"
 msgstr ""
 
-#: includes/class-frontend.php:954
+#: includes/class-frontend.php:940
 msgid "BPM"
 msgstr ""
 
-#: includes/class-frontend.php:955
+#: includes/class-frontend.php:941
 msgid "Tempo"
 msgstr ""
 
@@ -1305,6 +1257,61 @@ msgstr ""
 
 #: includes/class-rest.php:87
 msgid "You must sign in to view this song."
+msgstr ""
+
+#. translators: 1: Singer, 2: Voice Leader, 3: Administrator, 4: Guest. Substituted role names stay English.
+#: includes/class-roles.php:84
+#, php-format
+msgid ""
+"Activation adds WordPress roles %1$s (listen) and %2$s (manage songs). "
+"Assign them under Users. Settings stay limited to %3$s. Public songs remain "
+"open to %4$s."
+msgstr ""
+
+#. translators: 1: Singer, 2: Voice Leader, 3: Administrator, 4: Guest. Substituted role names stay English.
+#: includes/class-roles.php:95
+#, php-format
+msgid "Role names %1$s, %2$s, %3$s, and %4$s are kept in English on purpose."
+msgstr ""
+
+#. translators: 1: Singer, 2: Voice Leader, 3: Administrator, 4: Guest. Substituted role names stay English.
+#: includes/class-roles.php:106
+#, php-format
+msgid ""
+"%1$s, %2$s, %3$s, and %4$s can send a wish or bug from the song list. The "
+"site creates a GitHub issue. Lite and Pro both include this."
+msgstr ""
+
+#. translators: 1: Administrator, 2: Singer, 3: Voice Leader. Substituted role names stay English.
+#: includes/class-roles.php:117
+#, php-format
+msgid ""
+"Public songs above are open to everyone. Ask someone with the %1$s role to "
+"assign you the %2$s or %3$s role for the full rehearsal library."
+msgstr ""
+
+#. translators: 1: Administrator, 2: Singer, 3: Voice Leader. Substituted role names stay English.
+#: includes/class-roles.php:127
+#, php-format
+msgid ""
+"Ask someone with the %1$s role to assign you the %2$s or %3$s role to open "
+"private rehearsal songs."
+msgstr ""
+
+#. translators: %s: Administrator role name. The role name stays English.
+#: includes/class-roles.php:137
+#, php-format
+msgid ""
+"Could not send feedback. Please ask someone with the %s role to check the "
+"GitHub token."
+msgstr ""
+
+#. translators: %s: Administrator role name. The role name stays English.
+#: includes/class-roles.php:145
+#, php-format
+msgid ""
+"Could not send feedback. Please ask someone with the %s role to check the "
+"GitHub repository."
 msgstr ""
 
 #: includes/class-updater.php:68

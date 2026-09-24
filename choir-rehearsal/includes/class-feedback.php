@@ -240,7 +240,7 @@ final class Choir_Rehearsal_Feedback {
 			<th scope="row"><?php esc_html_e( 'Feedback', 'compath-choir-rehearsal' ); ?></th>
 			<td>
 				<p class="description" style="margin-top:0;">
-					<?php esc_html_e( 'Singer, Voice Leader, Administrator, and guests can send a wish or bug from the song list. The site creates a GitHub issue. Lite and Pro both include this.', 'compath-choir-rehearsal' ); ?>
+					<?php echo esc_html( Choir_Rehearsal_Roles::describe_feedback_audience() ); ?>
 				</p>
 				<p>
 					<label for="<?php echo esc_attr( self::OPTION_REPO ); ?>"><?php esc_html_e( 'GitHub repository for feedback', 'compath-choir-rehearsal' ); ?></label><br />
@@ -403,7 +403,7 @@ final class Choir_Rehearsal_Feedback {
 			'other' => 'Other',
 		);
 		$type = $type_labels[ $fields['type'] ] ?? 'Other';
-		$role = '' !== $fields['role'] ? $fields['role'] : 'guest';
+		$role = '' !== $fields['role'] ? $fields['role'] : Choir_Rehearsal_Roles::LABEL_GUEST;
 		$email = '' !== $fields['email'] ? $fields['email'] : '(not provided)';
 
 		$lines = array(
@@ -589,9 +589,9 @@ final class Choir_Rehearsal_Feedback {
 			$save_bucket( $key, $stamps );
 		}
 
-		$role = self::to_plain_text( isset( $context['role'] ) && is_scalar( $context['role'] ) ? (string) $context['role'] : 'guest' );
+		$role = self::to_plain_text( isset( $context['role'] ) && is_scalar( $context['role'] ) ? (string) $context['role'] : Choir_Rehearsal_Roles::LABEL_GUEST );
 		if ( '' === $role ) {
-			$role = 'guest';
+			$role = Choir_Rehearsal_Roles::LABEL_GUEST;
 		}
 
 		$body = self::issue_body(
@@ -802,10 +802,10 @@ final class Choir_Rehearsal_Feedback {
 	 */
 	private static function failure_message( array $response ): string {
 		if ( in_array( $response['code'], array( 401, 403 ), true ) ) {
-			return __( 'Could not send feedback. Please ask an administrator to check the GitHub token.', 'compath-choir-rehearsal' );
+			return Choir_Rehearsal_Roles::ask_administrator_github_token();
 		}
 		if ( 404 === $response['code'] ) {
-			return __( 'Could not send feedback. Please ask an administrator to check the GitHub repository.', 'compath-choir-rehearsal' );
+			return Choir_Rehearsal_Roles::ask_administrator_github_repository();
 		}
 
 		return __( 'Could not send feedback. Please try again later.', 'compath-choir-rehearsal' );
@@ -932,7 +932,7 @@ final class Choir_Rehearsal_Feedback {
 
 	private static function current_role(): string {
 		if ( ! is_user_logged_in() ) {
-			return 'guest';
+			return Choir_Rehearsal_Roles::LABEL_GUEST;
 		}
 
 		$label = Choir_Rehearsal_Access::get_role_badge_label();
@@ -945,7 +945,7 @@ final class Choir_Rehearsal_Feedback {
 			return $user->roles[0];
 		}
 
-		return 'guest';
+		return Choir_Rehearsal_Roles::LABEL_GUEST;
 	}
 
 	private static function limit_chars( string $value, int $max ): string {

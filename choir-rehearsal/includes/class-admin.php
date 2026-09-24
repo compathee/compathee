@@ -203,16 +203,7 @@ final class Choir_Rehearsal_Admin {
 								<?php esc_html_e( 'Only signed-in choir roles can open the full private library.', 'compath-choir-rehearsal' ); ?>
 							</label>
 							<p class="description">
-								<?php
-								echo esc_html(
-									sprintf(
-										/* translators: 1: Singer role name (English, not translated), 2: Voice Leader role name (English, not translated) */
-										__( 'Activation adds WordPress roles %1$s (listen) and %2$s (manage songs). Assign them under Users. Settings stay Administrator-only. Public songs remain open to guests.', 'compath-choir-rehearsal' ),
-										Choir_Rehearsal_Roles::LABEL_SINGER,
-										Choir_Rehearsal_Roles::LABEL_VOICE_LEADER
-									)
-								);
-								?>
+								<?php echo esc_html( Choir_Rehearsal_Roles::describe_activation() ); ?>
 							</p>
 						</td>
 					</tr>
@@ -222,9 +213,9 @@ final class Choir_Rehearsal_Admin {
 							<ul style="margin: 0; list-style: disc; padding-left: 1.25em;">
 								<li><strong><?php echo esc_html( Choir_Rehearsal_Roles::LABEL_SINGER ); ?></strong> — <?php esc_html_e( 'browse and listen to the rehearsal library', 'compath-choir-rehearsal' ); ?></li>
 								<li><strong><?php echo esc_html( Choir_Rehearsal_Roles::LABEL_VOICE_LEADER ); ?></strong> — <?php esc_html_e( 'listen plus add/edit songs in the admin', 'compath-choir-rehearsal' ); ?></li>
-								<li><strong>Administrator</strong> — <?php esc_html_e( 'full access including plugin Settings', 'compath-choir-rehearsal' ); ?></li>
+								<li><strong><?php echo esc_html( Choir_Rehearsal_Roles::LABEL_ADMINISTRATOR ); ?></strong> — <?php esc_html_e( 'full access including plugin Settings', 'compath-choir-rehearsal' ); ?></li>
 							</ul>
-							<p class="description"><?php esc_html_e( 'Role names Singer and Voice Leader are kept in English on purpose.', 'compath-choir-rehearsal' ); ?></p>
+							<p class="description"><?php echo esc_html( Choir_Rehearsal_Roles::describe_role_names_policy() ); ?></p>
 						</td>
 					</tr>
 					<?php Choir_Rehearsal_Feedback::render_settings_rows(); ?>

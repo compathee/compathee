@@ -16,6 +16,7 @@ if (!function_exists('__')) {
 	}
 }
 
+require dirname(__DIR__) . '/includes/class-roles.php';
 require dirname(__DIR__) . '/includes/class-feedback.php';
 
 $token = 'github_pat_TESTTOKENVALUE123456';
