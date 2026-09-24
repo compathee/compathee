@@ -63,6 +63,7 @@ The plugin is licensed under GPL. Install Lite yourself for free from WordPress.
 1. Open [shop.compath.ee/products/choir-rehearsal-pro](https://shop.compath.ee/products/choir-rehearsal-pro/) or email **order@compath.ee**.
 2. After payment — download `choir-rehearsal-pro.zip` from your SureCart account.
 3. Keep Lite installed → **Plugins → Upload** Pro add-on → Activate.
+4. **Choir Rehearsal → Pro License** → paste the key from your shop account → Activate License.
 
 ---
 
@@ -77,7 +78,8 @@ The plugin is licensed under GPL. Install Lite yourself for free from WordPress.
 ### Updates
 
 - **Lite:** WordPress.org directory updates (Plugins → Updates). GitHub Releases remain an alternative.
-- **Pro add-on:** new zip from SureCart customer dashboard (until licensed auto-updates).
+- **Pro 0.5.0 and later:** WordPress installs updates automatically (Dashboard → Updates or Plugins) while the license is active. You can also enable auto-updates for the plugin.
+- **Pro older than 0.5.0:** download 0.5.0 once from your shop account and replace the plugin (deactivate and delete the old Pro, then upload the new zip, or use Replace current with uploaded). Activate the license under Choir Rehearsal → Pro License. After that, no manual updates.
 
 ### Roles
 
