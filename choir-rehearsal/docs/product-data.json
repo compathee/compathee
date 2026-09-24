@@ -1,7 +1,7 @@
 {
-  "title": "Choir Rehearsal",
-  "tagline": "A private rehearsal library for choirs: songs, voice tracks, PDF scores, and easy listening on phone or desktop.",
-  "overview": "Choir Rehearsal helps choir members learn new pieces by voice part. Editors upload PDF scores and audio for each voice. Singers visit /rehearsal/, pick a song, and listen. Lite is free from GitHub; Pro is a separate add-on from shop.compath.ee (keep Lite installed — do not replace it).",
+  "title": "Compath Choir Rehearsal",
+  "tagline": "A private rehearsal library for choirs: songs, voice tracks, optional YouTube embeds, PDF scores, and easy listening on phone or desktop.",
+  "overview": "Choir Rehearsal helps choir members learn new pieces by voice part. A Voice Leader uploads PDF scores and audio — or links an official YouTube video per voice track. Singers visit /rehearsal/, pick a song, and listen. Lite is free from WordPress.org and GitHub; Pro is a separate add-on from shop.compath.ee (keep Lite installed — do not replace it).",
   "requirements": "WordPress 6.4+, PHP 8.0+",
   "owner": "Compath OÜ, Tallinn, Estonia",
   "firstCustomer": {
@@ -13,9 +13,10 @@
     "PDF scores — attach sheet music and flip pages in the built-in viewer",
     "Voice tracks — bass, tenor, alto, soprano and more",
     "Sticky player — listen while reading the score",
+    "YouTube tracks — optional official embed per voice part (video stays visible; no download)",
     "Private access — optional login-only rehearsal pages",
-    "Editor & singer roles — editors manage, singers listen",
-    "Lite (free) — up to 4 tracks per song, audio upload, GitHub updates",
+    "Singer & Voice Leader roles — WordPress roles created on install (English names)",
+    "Lite (free) — WordPress.org or GitHub, up to 4 tracks per song, audio upload",
     "Pro add-on — unlimited tracks, mic recording, search, editor Play, embedded PDF in the editor"
   ],
   "featureCards": [
@@ -40,19 +41,24 @@
       "text": "Listen while reading the score — player stays at the bottom of the screen."
     },
     {
+      "icon": "youtube",
+      "title": "YouTube tracks",
+      "text": "Per-track Audio / YouTube switch. Official embed on the song page — video stays visible."
+    },
+    {
       "icon": "lock",
       "title": "Private access",
       "text": "Optional login-only rehearsal pages for your choir members."
     },
     {
       "icon": "users",
-      "title": "Editor & singer roles",
-      "text": "Editors manage the library; singers browse, listen, and view PDFs."
+      "title": "Singer & Voice Leader roles",
+      "text": "Activation adds Singer (listen) and Voice Leader (manage songs). Administrator opens Settings. Role names stay in English."
     },
     {
       "icon": "lite",
       "title": "Lite — free",
-      "text": "Up to 4 tracks per song, audio upload, GitHub updates."
+      "text": "WordPress.org or GitHub. Up to 4 tracks per song, audio upload, optional YouTube embeds."
     },
     {
       "icon": "pro",
@@ -66,11 +72,11 @@
       "price": "Free",
       "featured": false,
       "items": [
-        "Download from GitHub Releases",
+        "Free from WordPress.org or GitHub Releases",
         "Up to 4 voice tracks per song",
         "PDF scores and sticky player",
-        "Upload audio (no microphone recording)",
-        "Updates via WordPress (Check for updates)"
+        "Upload audio or link official YouTube per track",
+        "Updates via WordPress.org (GitHub Releases remain an alternative)"
       ]
     },
     {
@@ -88,6 +94,7 @@
         "Search songs by title",
         "PDF icon on songs that have a score attached",
         "1 choir website",
+        "From 0.5.0, WordPress updates Pro automatically while the license is active",
         "Priority email support"
       ]
     },
@@ -98,8 +105,8 @@
       "items": [
         "One-time setup on your WordPress site",
         "/rehearsal/ page created",
-        "Roles and access configured",
-        "Editor training (1 session)",
+        "Singer and Voice Leader roles configured",
+        "Voice Leader training (1 session)",
         "First year of Pro included"
       ]
     }
@@ -108,17 +115,325 @@
   "orderSteps": [
     "Open https://shop.compath.ee/products/choir-rehearsal-pro/ (or email order@compath.ee for setup services).",
     "After payment, download choir-rehearsal-pro.zip from your SureCart customer dashboard.",
-    "Keep Choir Rehearsal (Lite) installed. Upload and activate the Pro add-on beside it — do not replace Lite."
+    "Keep Choir Rehearsal (Lite) installed. Upload and activate the Pro add-on beside it — do not replace Lite.",
+    "Open Choir Rehearsal → Pro License and activate the key from your shop account. From Pro 0.5.0, WordPress installs later updates automatically while the license is active."
   ],
   "installSteps": [
-    "Download choir-rehearsal.zip (Lite) from GitHub Releases.",
-    "In WordPress: Plugins → Add New → Upload Plugin — activate Lite.",
-    "Pro customers: upload choir-rehearsal-pro.zip next and activate it. Settings should show Edition: Pro.",
-    "The plugin creates a /rehearsal/ page with the [choir_rehearsal] shortcode.",
-    "Add a song: Choir Rehearsal → Add Song — title, PDF, voice tracks.",
-    "Give singers WordPress accounts (Subscriber). Editors need Editor or Administrator."
+    "Install Lite from WordPress.org (search “Compath Choir Rehearsal”) or upload the zip from GitHub Releases.",
+    "In WordPress: Plugins → Add New → activate Compath Choir Rehearsal (Lite).",
+    "Pro customers: download choir-rehearsal-pro.zip from your shop.compath.ee account, upload it beside Lite (Plugins → Add New → Upload Plugin), and activate it. Do not replace Lite.",
+    "Activate the license under Choir Rehearsal → Pro License. Paste the key from your shop account.",
+    "From Pro 0.5.0, updates install automatically in WordPress (Dashboard → Updates or Plugins) while the license is active. You can also enable auto-updates for the plugin.",
+    "If your Pro version is older than 0.5.0, download 0.5.0 from your shop account once and replace the plugin: deactivate and delete the old Pro, then upload the new zip, or use WordPress “Replace current with uploaded”. Activate the license. After that, no manual updates.",
+    "The plugin creates a /rehearsal/ page with the [choir_rehearsal] shortcode and WordPress roles Singer and Voice Leader (English names).",
+    "Add a song: Choir Rehearsal → Add Song — title, PDF, voice tracks (Audio or YouTube per track; needs Voice Leader or Administrator).",
+    "Assign Users → Singer for listening, Voice Leader for managing songs. Settings remain Administrator-only."
   ],
   "changelog": [
+    {
+      "version": "0.5.0",
+      "summary": "Pro license and automatic updates",
+      "items": [
+        "Pro add-on: activate the license under Choir Rehearsal → Pro License",
+        "From 0.5.0, WordPress installs Pro updates while the license is active",
+        "Pro older than 0.5.0 needs one manual replacement, then updates are automatic"
+      ],
+      "open": true
+    },
+    {
+      "version": "0.4.63",
+      "summary": "Permalinks for every writing system",
+      "items": [
+        "Song permalinks use ICU Any-Latin for Arabic, CJK, and other scripts when php-intl is available",
+        "If romanization is empty, the slug falls back to song-{id}",
+        "Applies to Lite and Pro"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.62",
+      "summary": "Fix Cyrillic song permalinks",
+      "items": [
+        "Percent-encoded titles are decoded before transliteration, so Russian titles no longer become hex-dump slugs",
+        "Existing hex-dump song slugs are repaired on upgrade"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.61",
+      "summary": "Per-track YouTube source",
+      "items": [
+        "Song editor: Audio / YouTube switch per voice track",
+        "YouTube tracks open the official embed on the song page (video stays visible)",
+        "Song list shows a YouTube icon next to PDF and public badges"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.60",
+      "summary": "Singer and Voice Leader roles",
+      "items": [
+        "Activation creates WordPress roles Singer (listen) and Voice Leader (manage songs); names stay in English",
+        "Song admin for Voice Leader and Administrator; plugin Settings for Administrator only",
+        "Full private library requires Singer, Voice Leader, or Administrator"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.59",
+      "summary": "Public globe badge in song list",
+      "items": [
+        "Logged-in song list shows a globe next to the PDF icon for public songs",
+        "Small gap between PDF and globe badges"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.58",
+      "summary": "HTTPS media URLs in admin",
+      "items": [
+        "Force HTTPS for PDF and audio attachment URLs on SSL pages",
+        "Fixes mixed-content blank PDF/waveforms in wp-admin when siteurl is still http://"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.57",
+      "summary": "Stable /rehearsal/ library URL",
+      "items": [
+        "Keep the songs library URL permanently at /rehearsal/ (never localize the page slug)"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.56",
+      "summary": "Fix RU/ET translation mojibake",
+      "items": [
+        "Regenerate UTF-8 PO/MO/l10n.php for et, et_EE, and ru_RU"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.55",
+      "summary": "SoftMe admin PDF blank canvas",
+      "items": [
+        "Defer PDF.js paint until the Sheet Music metabox has a usable width"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.54",
+      "summary": "Editor PDF for all editions",
+      "items": [
+        "Song editor embedded PDF preview available in Lite and Pro"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.44",
+      "summary": "Safe activate beside old plugin folder",
+      "items": [
+        "Activating a second copy no longer causes a fatal error",
+        "Admin notice explains keeping a single compath-choir-rehearsal folder"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.42",
+      "summary": "Plugin Check: custom page select",
+      "items": [
+        "Replace wp_dropdown_pages with a fully escaped custom select"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.41",
+      "summary": "Final Plugin Check cleanup",
+      "items": [
+        "Escape wp_dropdown_pages arguments and output via wp_kses",
+        "Verify login nonce when reading redirect_to"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.40",
+      "summary": "WordPress.org Plugin Check fixes",
+      "items": [
+        "Fix Plugin Check errors (output escaping, translators comments, wp_delete_file)",
+        "Address Plugin Check warnings (input sanitization, uninstall prefixes, textdomain)"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.39",
+      "summary": "Compath Choir Rehearsal brand and package slug",
+      "items": [
+        "Display name: Compath Choir Rehearsal",
+        "Release zip and WordPress.org folder slug: compath-choir-rehearsal",
+        "Text domain and database keys unchanged (no song data migration)"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.38",
+      "summary": "Mobile PDF fullscreen close button",
+      "items": [
+        "Fullscreen close (X) is ported to the document body above the sticky player and recording dock",
+        "Toolbar Close control remains available in expanded PDF on mobile"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.37",
+      "summary": "Fix PDF page navigation",
+      "items": [
+        "Previous/Next and swipe turn pages again when consecutive pages share the same size"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.36",
+      "summary": "Fix mic recording scrubber on desktop",
+      "items": [
+        "Sticky player resolves MediaRecorder WebM duration so scrubbing works on desktop Chrome",
+        "New microphone uploads convert to WAV when the capture format is not seekable"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.35",
+      "summary": "Fix song page freeze",
+      "items": [
+        "Remove body-class MutationObserver that froze the song editor",
+        "PDF viewer skips no-op re-renders"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.34",
+      "summary": "Mobile floating recording controls",
+      "items": [
+        "While recording on mobile, a floating bar with record, pause, stop, and cancel stays above the player",
+        "Appears when the recording panel scrolls off-screen or PDF is expanded",
+        "Pause and resume continue the same take"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.33",
+      "summary": "Player and recorder UI polish",
+      "items": [
+        "Larger piano and metronome icons in the recording panel",
+        "Metronome removed from the sticky player (recording only)",
+        "Public player waveform no longer shows a white frame",
+        "Expanded PDF on song pages shows a clear X close control"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.32",
+      "summary": "Metronome tool",
+      "items": [
+        "Sticky player and recording panel open a metronome with tempo slider (40–208 BPM)",
+        "Recording start row: Start / piano / metronome (70% / 15% / 15%)"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.31",
+      "summary": "Cleaner sticky player scrubber",
+      "items": [
+        "Track title no longer overlays the waveform",
+        "Time and close sit to the right of a narrower scrubber"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.30",
+      "summary": "Piano in recording panel",
+      "items": [
+        "Song editor: piano icon to the right of Start recording",
+        "Start recording and piano share one row (70% / 30%)"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.29",
+      "summary": "Sticky player piano",
+      "items": [
+        "Piano icon on the sticky player opens a 2-octave keyboard",
+        "Scroll horizontally with finger or mouse; Web Audio electric-piano timbre",
+        "Track keeps playing while you play notes"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.28",
+      "summary": "Player scrubber + PDF zoom fixes",
+      "items": [
+        "Sticky player: blue waveform behind scrubber, white track removed",
+        "PDF expand fits the page to screen width",
+        "Expand button becomes a matching X; pinch keeps the scale"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.27",
+      "summary": "Compact sticky player",
+      "items": [
+        "Waveform fills the player as background from Play to the right edge",
+        "Scrubber overlays the waveform; bar height is minimal"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.26",
+      "summary": "Editor and player waveforms",
+      "items": [
+        "Song editor shows the track waveform between voice name and Upload",
+        "Sticky player shows a waveform under the seek bar"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.25",
+      "summary": "Track waveforms",
+      "items": [
+        "Blue oscillogram on each voice track from audio file",
+        "Public song page: between voice name and Play",
+        "Song editor: between voice name and Upload"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.24",
+      "summary": "PDF full screen and theme-proof Play",
+      "items": [
+        "Play buttons always blue with white triangle/text",
+        "PDF expand to almost full screen; player strip stays below",
+        "Pinch-to-zoom on PDF scores"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.23",
+      "summary": "WordPress.org Plugin Check fixes",
+      "items": [
+        "WordPress.org zip omits class-updater.php (plugin_updater_detected)",
+        "readme.txt Tested up to 7.1"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.22",
+      "summary": "WordPress.org ready",
+      "items": [
+        "WordPress.org package disables GitHub self-updater",
+        "PDF.js bundled locally (guideline: no third-party CDN for JS)",
+        "Settings explains WordPress.org updates on .org builds"
+      ],
+      "open": false
+    },
     {
       "version": "0.4.21",
       "summary": "Reliable plugin updater",
@@ -127,7 +442,7 @@
         "Fallback reads update.json from the latest Lite release asset when the API is unavailable",
         "Check for plugin updates returns to Settings with available / up to date / failed notices"
       ],
-      "open": true
+      "open": false
     },
     {
       "version": "0.4.20",
@@ -380,5 +695,1899 @@
       ],
       "open": false
     }
-  ]
+  ],
+  "liteVersion": "0.4.63",
+  "proVersion": "0.5.0",
+  "locales": {
+    "en": {
+      "metaDescription": "Compath Choir Rehearsal for WordPress. Free Lite on WordPress.org, Pro at shop.compath.ee for €49 per year. Current Lite 0.4.63, Pro 0.5.0.",
+      "documentTitle": "Compath Choir Rehearsal — rehearsal library for choirs",
+      "badge": "WordPress plugin · Lite {lite} · Pro {pro}",
+      "getLite": "Get Lite on WordPress.org",
+      "downloadZip": "Download zip",
+      "orderPro": "Order Pro",
+      "tryDemo": "Try the demo",
+      "demoTitle": "Live demo",
+      "demoIntro": "Open the shared rehearsal library. Public songs are visible without an account. Sign in with a demo account for the full library.",
+      "demoShared": "This demo is shared. Everyone uses these same logins, so the library can change while you look at it.",
+      "demoSingerText": "For listening.",
+      "demoLeaderText": "For managing songs.",
+      "demoUser": "Username",
+      "demoPassword": "Password",
+      "demoCopy": "Copy",
+      "demoCopied": "Copied",
+      "howToInstall": "How to install",
+      "overviewTitle": "Overview",
+      "requirementsLabel": "Requirements",
+      "ownerLabel": "Owner and developer",
+      "firstCustomerLabel": "First customer",
+      "orderTitle": "Order and subscription",
+      "orderIntro": "Lite is free in the WordPress.org plugin directory (GPL). Pro is a separate add-on from shop.compath.ee — keep Lite installed and activate Pro beside it.",
+      "orderCta": "Order Pro — €49 / year",
+      "orderCtaMeta": "Opens shop.compath.ee checkout",
+      "howToOrder": "How to order",
+      "discountNote": "Discounts are available for non-profit choirs and educational projects — ask when you order.",
+      "installTitle": "Installation",
+      "selfService": "Self-service",
+      "updatesTitle": "Updates",
+      "rolesTitle": "User roles",
+      "faqTitle": "Questions",
+      "changelogTitle": "Changelog",
+      "changelogMeta": "Release notes stay in English. Eight versions per page.",
+      "title": "Compath Choir Rehearsal",
+      "tagline": "A private rehearsal library for choirs: songs, voice tracks, optional YouTube embeds, PDF scores, and easy listening on phone or desktop.",
+      "overview": "Choir Rehearsal helps choir members learn new pieces by voice part. A Voice Leader uploads PDF scores and audio — or links an official YouTube video per voice track. Singers visit /rehearsal/, pick a song, and listen. Lite is free from WordPress.org and GitHub; Pro is a separate add-on from shop.compath.ee (keep Lite installed — do not replace it).",
+      "requirements": "WordPress 6.4+, PHP 8.0+",
+      "featureCards": [
+        {
+          "icon": "library",
+          "title": "Song library",
+          "text": "Paginated song list on your choir website with shortcode embedding."
+        },
+        {
+          "icon": "pdf",
+          "title": "PDF scores",
+          "text": "Attach sheet music and flip pages in the built-in viewer."
+        },
+        {
+          "icon": "voices",
+          "title": "Voice tracks",
+          "text": "Bass, tenor, alto, soprano and more — one audio part per voice."
+        },
+        {
+          "icon": "player",
+          "title": "Sticky player",
+          "text": "Listen while reading the score — player stays at the bottom of the screen."
+        },
+        {
+          "icon": "youtube",
+          "title": "YouTube tracks",
+          "text": "Per-track Audio / YouTube switch. Official embed on the song page — video stays visible."
+        },
+        {
+          "icon": "lock",
+          "title": "Private access",
+          "text": "Optional login-only rehearsal pages for your choir members."
+        },
+        {
+          "icon": "users",
+          "title": "Singer & Voice Leader roles",
+          "text": "Activation adds Singer (listen) and Voice Leader (manage songs). Administrator opens Settings. Role names stay in English."
+        },
+        {
+          "icon": "lite",
+          "title": "Lite — free",
+          "text": "WordPress.org or GitHub. Up to 4 tracks per song, audio upload, optional YouTube embeds."
+        },
+        {
+          "icon": "pro",
+          "title": "Pro add-on",
+          "text": "Unlimited tracks, mic recording, search by title, Play preview, and embedded PDF preview in the editor."
+        }
+      ],
+      "pricing": [
+        {
+          "name": "Lite",
+          "price": "Free",
+          "featured": false,
+          "items": [
+            "Free from WordPress.org or GitHub Releases",
+            "Up to 4 voice tracks per song",
+            "PDF scores and sticky player",
+            "Upload audio or link official YouTube per track",
+            "Updates via WordPress.org (GitHub Releases remain an alternative)"
+          ]
+        },
+        {
+          "name": "Pro — subscription",
+          "price": "€49 / year",
+          "featured": true,
+          "ctaUrl": "https://shop.compath.ee/products/choir-rehearsal-pro/",
+          "ctaLabel": "Order Pro",
+          "items": [
+            "Install beside Lite (separate add-on)",
+            "Unlimited voice tracks per song",
+            "Microphone recording in the admin",
+            "Play preview of voice tracks in the song editor",
+            "Embedded PDF score in the song editor (swipe pages)",
+            "Search songs by title",
+            "PDF icon on songs that have a score attached",
+            "1 choir website",
+            "From 0.5.0, WordPress updates Pro automatically while the license is active",
+            "Priority email support"
+          ]
+        },
+        {
+          "name": "Done-for-you setup",
+          "price": "from €120",
+          "featured": false,
+          "items": [
+            "One-time setup on your WordPress site",
+            "/rehearsal/ page created",
+            "Singer and Voice Leader roles configured",
+            "Voice Leader training (1 session)",
+            "First year of Pro included"
+          ]
+        }
+      ],
+      "orderSteps": [
+        "Open https://shop.compath.ee/products/choir-rehearsal-pro/ (or email order@compath.ee for setup services).",
+        "After payment, download choir-rehearsal-pro.zip from your SureCart customer dashboard.",
+        "Keep Choir Rehearsal (Lite) installed. Upload and activate the Pro add-on beside it — do not replace Lite.",
+        "Open Choir Rehearsal → Pro License and activate the key from your shop account. From Pro 0.5.0, WordPress installs later updates automatically while the license is active."
+      ],
+      "installSteps": [
+        "Install Lite from WordPress.org (search “Compath Choir Rehearsal”) or upload the zip from GitHub Releases.",
+        "In WordPress: Plugins → Add New → activate Compath Choir Rehearsal (Lite).",
+        "Pro customers: download choir-rehearsal-pro.zip from your shop.compath.ee account, upload it beside Lite (Plugins → Add New → Upload Plugin), and activate it. Do not replace Lite.",
+        "Activate the license under Choir Rehearsal → Pro License. Paste the key from your shop account.",
+        "From Pro 0.5.0, updates install automatically in WordPress (Dashboard → Updates or Plugins) while the license is active. You can also enable auto-updates for the plugin.",
+        "If your Pro version is older than 0.5.0, download 0.5.0 from your shop account once and replace the plugin: deactivate and delete the old Pro, then upload the new zip, or use WordPress “Replace current with uploaded”. Activate the license. After that, no manual updates.",
+        "The plugin creates a /rehearsal/ page with the [choir_rehearsal] shortcode and WordPress roles Singer and Voice Leader (English names).",
+        "Add a song: Choir Rehearsal → Add Song — title, PDF, voice tracks (Audio or YouTube per track; needs Voice Leader or Administrator).",
+        "Assign Users → Singer for listening, Voice Leader for managing songs. Settings remain Administrator-only."
+      ],
+      "updates": [
+        {
+          "label": "Lite",
+          "text": "updates through WordPress.org like any directory plugin (Dashboard → Updates). GitHub Releases remain available as an alternative."
+        },
+        {
+          "label": "Pro 0.5.0 and later",
+          "text": "updates install automatically in WordPress (Dashboard → Updates or Plugins) while the license is active. You can enable auto-updates for the plugin."
+        },
+        {
+          "label": "Pro older than 0.5.0",
+          "text": "download 0.5.0 once from your shop.compath.ee account and replace the plugin, then activate the license under Choir Rehearsal → Pro License. After that, updates are automatic."
+        },
+        {
+          "label": "",
+          "text": "Installed version: Choir Rehearsal → Settings."
+        }
+      ],
+      "roles": [
+        {
+          "name": "Singer",
+          "text": "browse songs, listen, and view the PDF. The role name stays in English."
+        },
+        {
+          "name": "Voice Leader",
+          "text": "add and edit songs, upload audio or link YouTube, and record with Pro."
+        },
+        {
+          "name": "Administrator",
+          "text": "full access, including plugin Settings."
+        },
+        {
+          "name": "Guest",
+          "text": "can open songs marked public, without an account."
+        }
+      ],
+      "faq": [
+        {
+          "q": "How do Pro updates work?",
+          "a": "From Pro 0.5.0, WordPress installs updates automatically (Dashboard → Updates or Plugins) while the license is active. You can also turn on auto-updates for the plugin. A Pro install older than 0.5.0 must be replaced once from your shop account, then the license is activated under Choir Rehearsal → Pro License."
+        },
+        {
+          "q": "Do I still need Lite?",
+          "a": "Yes. Keep Compath Choir Rehearsal (Lite) installed and activate Pro beside it. Do not replace Lite."
+        },
+        {
+          "q": "What do the roles mean?",
+          "a": "Singer listens. Voice Leader manages songs. Administrator also opens Settings. Guest sees public songs only. These role names stay in English in every language."
+        },
+        {
+          "q": "What does Pro cost?",
+          "a": "€49 per year for one choir website, from shop.compath.ee."
+        }
+      ],
+      "ui": {
+        "prev": "Previous",
+        "next": "Next",
+        "pagination": "Changelog pages",
+        "page": "Page {n}"
+      },
+      "licenseLine": "Licensed under GPL-2.0-or-later"
+    },
+    "ru": {
+      "metaDescription": "Compath Choir Rehearsal для WordPress. Бесплатный Lite на WordPress.org, Pro на shop.compath.ee за 49 € в год. Сейчас Lite 0.4.63, Pro 0.5.0.",
+      "documentTitle": "Compath Choir Rehearsal — библиотека репетиций для хора",
+      "badge": "Плагин WordPress · Lite {lite} · Pro {pro}",
+      "getLite": "Lite на WordPress.org",
+      "downloadZip": "Скачать zip",
+      "orderPro": "Заказать Pro",
+      "tryDemo": "Попробовать демо",
+      "demoTitle": "Демо",
+      "demoIntro": "Откройте общую библиотеку репетиций. Публичные песни видны без входа. Для полной библиотеки войдите с демо-учёткой.",
+      "demoShared": "Это общее демо. Все входят с этими же данными, поэтому библиотека может меняться, пока вы её смотрите.",
+      "demoSingerText": "Для прослушивания.",
+      "demoLeaderText": "Для ведения песен.",
+      "demoUser": "Имя пользователя",
+      "demoPassword": "Пароль",
+      "demoCopy": "Копировать",
+      "demoCopied": "Скопировано",
+      "howToInstall": "Как установить",
+      "overviewTitle": "Обзор",
+      "requirementsLabel": "Требования",
+      "ownerLabel": "Владелец и разработчик",
+      "firstCustomerLabel": "Первый заказчик",
+      "orderTitle": "Заказ и подписка",
+      "orderIntro": "Lite бесплатен в каталоге плагинов WordPress.org (GPL). Pro — отдельное дополнение с shop.compath.ee: Lite не удаляйте, активируйте Pro рядом.",
+      "orderCta": "Заказать Pro — 49 €/год",
+      "orderCtaMeta": "Откроется оплата на shop.compath.ee",
+      "howToOrder": "Как заказать",
+      "discountNote": "Для некоммерческих хоров и учебных проектов возможна скидка — напишите при заказе.",
+      "installTitle": "Установка",
+      "selfService": "Самостоятельно",
+      "updatesTitle": "Обновления",
+      "rolesTitle": "Роли",
+      "faqTitle": "Вопросы",
+      "changelogTitle": "Журнал изменений",
+      "changelogMeta": "Текст релизов остаётся на английском. На странице восемь версий.",
+      "title": "Compath Choir Rehearsal",
+      "tagline": "Закрытая библиотека репетиций для хора: песни, партии, по желанию ролики YouTube, ноты PDF и удобное прослушивание с телефона или компьютера.",
+      "overview": "Choir Rehearsal помогает разучивать новые произведения по партиям. Voice Leader загружает PDF с нотами и аудио — или указывает официальное видео YouTube для каждой партии. Singer открывает /rehearsal/, выбирает песню и слушает. Lite бесплатен на WordPress.org и GitHub; Pro — отдельное дополнение с shop.compath.ee (Lite не заменяйте, ставьте Pro рядом).",
+      "requirements": "WordPress 6.4+, PHP 8.0+",
+      "featureCards": [
+        {
+          "icon": "library",
+          "title": "Библиотека песен",
+          "text": "Постраничный список песен на сайте хора. Список можно встроить шорткодом."
+        },
+        {
+          "icon": "pdf",
+          "title": "Ноты PDF",
+          "text": "Прикрепите ноты и листайте страницы во встроенном просмотрщике."
+        },
+        {
+          "icon": "voices",
+          "title": "Партии голосов",
+          "text": "Бас, тенор, альт, сопрано и другие — своя аудиодорожка на каждую партию."
+        },
+        {
+          "icon": "player",
+          "title": "Плеер внизу",
+          "text": "Слушайте, читая ноты: плеер остаётся внизу экрана."
+        },
+        {
+          "icon": "youtube",
+          "title": "Дорожки YouTube",
+          "text": "Для каждой партии источник Audio или YouTube. На странице песни открывается официальный плеер, видео остаётся на экране."
+        },
+        {
+          "icon": "lock",
+          "title": "Закрытый доступ",
+          "text": "Страницы репетиций можно открыть только после входа."
+        },
+        {
+          "icon": "users",
+          "title": "Роли Singer и Voice Leader",
+          "text": "При активации появляются роли Singer (слушает) и Voice Leader (ведёт песни). Administrator открывает настройки. Названия ролей не переводятся."
+        },
+        {
+          "icon": "lite",
+          "title": "Lite — бесплатно",
+          "text": "WordPress.org или GitHub. До 4 дорожек на песню, загрузка аудио и по желанию YouTube."
+        },
+        {
+          "icon": "pro",
+          "title": "Дополнение Pro",
+          "text": "Без лимита дорожек, запись с микрофона, поиск по названию, предпрослушивание Play и PDF в редакторе."
+        }
+      ],
+      "pricing": [
+        {
+          "name": "Lite",
+          "price": "Бесплатно",
+          "featured": false,
+          "items": [
+            "Бесплатно на WordPress.org или в релизах GitHub",
+            "До 4 голосовых дорожек на песню",
+            "Ноты PDF и нижний плеер",
+            "Загрузка аудио или официальный YouTube для каждой партии",
+            "Обновления через WordPress.org (релизы GitHub остаются запасным способом)"
+          ]
+        },
+        {
+          "name": "Pro — подписка",
+          "price": "49 €/год",
+          "featured": true,
+          "items": [
+            "Ставится рядом с Lite (отдельное дополнение)",
+            "Без лимита голосовых дорожек",
+            "Запись с микрофона в админке",
+            "Предпрослушивание Play в редакторе песни",
+            "Ноты PDF прямо в редакторе (листание страниц)",
+            "Поиск песен по названию",
+            "Значок PDF у песен с нотами",
+            "1 сайт хора",
+            "С версии 0.5.0 WordPress обновляет Pro сам, пока лицензия активна",
+            "Приоритетная поддержка по почте"
+          ],
+          "ctaUrl": "https://shop.compath.ee/products/choir-rehearsal-pro/",
+          "ctaLabel": "Заказать Pro"
+        },
+        {
+          "name": "Настройка под ключ",
+          "price": "от 120 €",
+          "featured": false,
+          "items": [
+            "Однократная настройка на вашем сайте WordPress",
+            "Создаётся страница /rehearsal/",
+            "Настраиваются роли Singer и Voice Leader",
+            "Обучение для Voice Leader (1 занятие)",
+            "Первый год Pro включён"
+          ]
+        }
+      ],
+      "orderSteps": [
+        "Откройте https://shop.compath.ee/products/choir-rehearsal-pro/ (для настройки под ключ напишите на order@compath.ee).",
+        "После оплаты скачайте choir-rehearsal-pro.zip в кабинете покупателя SureCart.",
+        "Оставьте Choir Rehearsal (Lite) установленным. Загрузите и активируйте дополнение Pro рядом — не заменяйте им Lite.",
+        "Откройте Choir Rehearsal → Pro License и активируйте ключ из кабинета магазина. Начиная с Pro 0.5.0 дальнейшие обновления WordPress ставит сам, пока лицензия активна."
+      ],
+      "installSteps": [
+        "Установите Lite с WordPress.org (поиск «Compath Choir Rehearsal») или загрузите zip из релизов GitHub.",
+        "В WordPress: Плагины → Добавить новый → активируйте Compath Choir Rehearsal (Lite).",
+        "Для Pro: скачайте choir-rehearsal-pro.zip в кабинете shop.compath.ee, загрузите его рядом с Lite (Плагины → Добавить новый → Загрузить плагин) и активируйте. Lite не заменяйте.",
+        "Активируйте лицензию в Choir Rehearsal → Pro License. Вставьте ключ из кабинета магазина.",
+        "С Pro 0.5.0 обновления ставятся сами в WordPress (Консоль → Обновления или Плагины), пока лицензия активна. Для плагина можно включить автообновления.",
+        "Если Pro старше 0.5.0, один раз скачайте 0.5.0 в кабинете магазина и замените плагин: деактивируйте и удалите старый Pro, затем загрузите новый zip, либо воспользуйтесь «Заменить текущий загруженным». Активируйте лицензию. Дальше вручную ничего делать не нужно.",
+        "Плагин создаёт страницу /rehearsal/ со шорткодом [choir_rehearsal] и роли WordPress Singer и Voice Leader (названия по-английски).",
+        "Добавьте песню: Choir Rehearsal → Add Song — название, PDF, партии (Audio или YouTube; нужна роль Voice Leader или Administrator).",
+        "Назначьте пользователям Singer для прослушивания и Voice Leader для ведения песен. Settings доступны только роли Administrator."
+      ],
+      "updates": [
+        {
+          "label": "Lite",
+          "text": "обновляется через WordPress.org, как любой плагин из каталога (Консоль → Обновления). Релизы GitHub остаются запасным способом."
+        },
+        {
+          "label": "Pro 0.5.0 и новее",
+          "text": "обновления ставятся сами в WordPress (Консоль → Обновления или Плагины), пока лицензия активна. Для плагина можно включить автообновления."
+        },
+        {
+          "label": "Pro старше 0.5.0",
+          "text": "один раз скачайте 0.5.0 в кабинете shop.compath.ee и замените плагин, затем активируйте лицензию в Choir Rehearsal → Pro License. После этого обновления идут сами."
+        },
+        {
+          "label": "",
+          "text": "Установленная версия: Choir Rehearsal → Settings."
+        }
+      ],
+      "roles": [
+        {
+          "name": "Singer",
+          "text": "смотрит песни, слушает и открывает PDF. Название роли остаётся по-английски."
+        },
+        {
+          "name": "Voice Leader",
+          "text": "добавляет и правит песни, загружает аудио или указывает YouTube, с Pro может записывать."
+        },
+        {
+          "name": "Administrator",
+          "text": "полный доступ, включая Settings плагина."
+        },
+        {
+          "name": "Guest",
+          "text": "открывает песни, отмеченные как публичные, без учётной записи."
+        }
+      ],
+      "faq": [
+        {
+          "q": "Как обновляется Pro?",
+          "a": "С версии Pro 0.5.0 WordPress ставит обновления сам (Консоль → Обновления или Плагины), пока лицензия активна. Для плагина можно включить автообновления. Pro старше 0.5.0 нужно один раз заменить архивом из кабинета магазина и затем активировать лицензию в Choir Rehearsal → Pro License."
+        },
+        {
+          "q": "Lite всё ещё нужен?",
+          "a": "Да. Compath Choir Rehearsal (Lite) должен оставаться установленным, а Pro активируется рядом. Lite не заменяйте."
+        },
+        {
+          "q": "Что означают роли?",
+          "a": "Singer слушает. Voice Leader ведёт песни. Administrator дополнительно открывает Settings. Guest видит только публичные песни. Эти названия ролей во всех языках остаются английскими."
+        },
+        {
+          "q": "Сколько стоит Pro?",
+          "a": "49 € в год за один сайт хора, на shop.compath.ee."
+        }
+      ],
+      "ui": {
+        "prev": "Назад",
+        "next": "Дальше",
+        "pagination": "Страницы журнала изменений",
+        "page": "Страница {n}"
+      },
+      "licenseLine": "Лицензия: GPL-2.0-or-later"
+    },
+    "et": {
+      "metaDescription": "Compath Choir Rehearsal WordPressile. Tasuta Lite WordPress.org-is, Pro shop.compath.ee-s hinnaga 49 € aastas. Praegu Lite 0.4.63, Pro 0.5.0.",
+      "documentTitle": "Compath Choir Rehearsal — proovikogu kooridele",
+      "badge": "WordPressi plugin · Lite {lite} · Pro {pro}",
+      "getLite": "Lite WordPress.org-ist",
+      "downloadZip": "Laadi zip",
+      "orderPro": "Telli Pro",
+      "tryDemo": "Proovi demot",
+      "demoTitle": "Proovidemo",
+      "demoIntro": "Avage ühine proovikogu. Avalikud laulud on näha ilma kontota. Täiskogu jaoks logige sisse demokontoga.",
+      "demoShared": "See demo on ühine. Kõik kasutavad samu sisselogimisandmeid, nii et kogu võib vaatamise ajal muutuda.",
+      "demoSingerText": "Kuulamiseks.",
+      "demoLeaderText": "Laulude haldamiseks.",
+      "demoUser": "Kasutajanimi",
+      "demoPassword": "Parool",
+      "demoCopy": "Kopeeri",
+      "demoCopied": "Kopeeritud",
+      "howToInstall": "Kuidas paigaldada",
+      "overviewTitle": "Ülevaade",
+      "requirementsLabel": "Nõuded",
+      "ownerLabel": "Omanik ja arendaja",
+      "firstCustomerLabel": "Esimene klient",
+      "orderTitle": "Tellimine",
+      "orderIntro": "Lite on WordPress.org-i pluginakataloogis tasuta (GPL). Pro on eraldi lisand aadressilt shop.compath.ee — jätke Lite alles ja aktiveerige Pro selle kõrvale.",
+      "orderCta": "Telli Pro — 49 €/aastas",
+      "orderCtaMeta": "Avaneb shop.compath.ee kassa",
+      "howToOrder": "Kuidas tellida",
+      "discountNote": "Mittetulunduskooridele ja õppeprojektidele on soodustus — küsige tellides.",
+      "installTitle": "Paigaldus",
+      "selfService": "Ise paigaldades",
+      "updatesTitle": "Uuendused",
+      "rolesTitle": "Rollid",
+      "faqTitle": "Küsimused",
+      "changelogTitle": "Muudatused",
+      "changelogMeta": "Väljalaske märkmed jäävad inglise keelde. Lehel on kaheksa versiooni.",
+      "title": "Compath Choir Rehearsal",
+      "tagline": "Kooride privaatne proovikogu: laulud, häälepartiid, soovi korral YouTube’i manused, PDF-noodid ja mugav kuulamine telefonis või arvutis.",
+      "overview": "Choir Rehearsal aitab uusi teoseid häälepartiide kaupa selgeks õppida. Voice Leader laadib üles PDF-noodid ja heli — või lisab igale partiile ametliku YouTube’i video. Singer avab /rehearsal/, valib laulu ja kuulab. Lite on tasuta WordPress.org-is ja GitHubis; Pro on eraldi lisand aadressilt shop.compath.ee (ärge asendage Lite’i, paigaldage Pro kõrvale).",
+      "requirements": "WordPress 6.4+, PHP 8.0+",
+      "featureCards": [
+        {
+          "icon": "library",
+          "title": "Laulude kogu",
+          "text": "Lehekülgedega laululoend koori veebis. Loendi saab lehele lisada lühikoodiga."
+        },
+        {
+          "icon": "pdf",
+          "title": "PDF-noodid",
+          "text": "Lisage noodid ja keerake lehti sisseehitatud vaatajas."
+        },
+        {
+          "icon": "voices",
+          "title": "Häälepartiid",
+          "text": "Bass, tenor, alt, sopran ja teised — igale häälele oma helirida."
+        },
+        {
+          "icon": "player",
+          "title": "Alumine mängija",
+          "text": "Kuulake nooti lugedes: mängija jääb ekraani allserva."
+        },
+        {
+          "icon": "youtube",
+          "title": "YouTube’i lood",
+          "text": "Iga partii allikas on Audio või YouTube. Laulu lehel avaneb ametlik mängija, video jääb nähtavale."
+        },
+        {
+          "icon": "lock",
+          "title": "Suletud ligipääs",
+          "text": "Proovilehed saab soovi korral avada ainult pärast sisselogimist."
+        },
+        {
+          "icon": "users",
+          "title": "Rollid Singer ja Voice Leader",
+          "text": "Aktiveerimisel tekivad rollid Singer (kuulab) ja Voice Leader (haldab laule). Administrator avab sätted. Rollinimed jäävad inglise keelde."
+        },
+        {
+          "icon": "lite",
+          "title": "Lite — tasuta",
+          "text": "WordPress.org või GitHub. Kuni 4 lugu laulu kohta, helifaili üleslaadimine ja soovi korral YouTube."
+        },
+        {
+          "icon": "pro",
+          "title": "Pro lisand",
+          "text": "Piiramatu arv lugusid, salvestamine mikrofoniga, otsing pealkirja järgi, Play eelvaade ja PDF redaktoris."
+        }
+      ],
+      "pricing": [
+        {
+          "name": "Lite",
+          "price": "Tasuta",
+          "featured": false,
+          "items": [
+            "Tasuta WordPress.org-ist või GitHubi väljalasetest",
+            "Kuni 4 häälelugu laulu kohta",
+            "PDF-noodid ja alumine mängija",
+            "Laadige heli üles või lisage igale partiile ametlik YouTube",
+            "Uuendused WordPress.org-i kaudu (GitHubi väljalasked jäävad varuvariandiks)"
+          ]
+        },
+        {
+          "name": "Pro — tellimus",
+          "price": "49 €/aastas",
+          "featured": true,
+          "items": [
+            "Paigaldatakse Lite kõrvale (eraldi lisand)",
+            "Piiramatu arv häälelugusid",
+            "Salvestamine mikrofoniga halduses",
+            "Play eelvaade laulu redaktoris",
+            "PDF-noot otse redaktoris (lehtede keeramine)",
+            "Otsing pealkirja järgi",
+            "PDF-ikoon lauludel, millel on noot",
+            "1 koori veebisait",
+            "Alates versioonist 0.5.0 uuendab WordPress Pro ise, kuni litsents on aktiivne",
+            "Eelisjärjekorras e-posti tugi"
+          ],
+          "ctaUrl": "https://shop.compath.ee/products/choir-rehearsal-pro/",
+          "ctaLabel": "Telli Pro"
+        },
+        {
+          "name": "Seadistus meie poolt",
+          "price": "alates 120 €",
+          "featured": false,
+          "items": [
+            "Ühekordne seadistus teie WordPressi saidil",
+            "Luakse leht /rehearsal/",
+            "Seadistatakse rollid Singer ja Voice Leader",
+            "Voice Leaderi koolitus (1 seanss)",
+            "Esimene Pro aasta on hinna sees"
+          ]
+        }
+      ],
+      "orderSteps": [
+        "Avage https://shop.compath.ee/products/choir-rehearsal-pro/ (seadistuse tellimiseks kirjutage aadressile order@compath.ee).",
+        "Pärast makset laadige choir-rehearsal-pro.zip alla oma SureCarti kliendikontolt.",
+        "Jätke Choir Rehearsal (Lite) paigaldatuks. Laadige Pro lisand üles ja aktiveerige see kõrvale — ärge asendage Lite’i.",
+        "Avage Choir Rehearsal → Pro License ja aktiveerige poe kontolt saadud võti. Alates Pro versioonist 0.5.0 paigaldab WordPress hilisemad uuendused ise, kuni litsents on aktiivne."
+      ],
+      "installSteps": [
+        "Paigaldage Lite WordPress.org-ist (otsige „Compath Choir Rehearsal”) või laadige zip GitHubi väljalasetest.",
+        "WordPressis: Pluginad → Lisa uus → aktiveerige Compath Choir Rehearsal (Lite).",
+        "Pro jaoks: laadige choir-rehearsal-pro.zip oma shop.compath.ee kontolt, pange see Lite kõrvale (Pluginad → Lisa uus → Laadi plugin üles) ja aktiveerige. Ärge asendage Lite’i.",
+        "Aktiveerige litsents kohas Choir Rehearsal → Pro License. Kleepige võti poe kontolt.",
+        "Alates Pro versioonist 0.5.0 paigaldatakse uuendused WordPressis automaatselt (Töölaud → Uuendused või Pluginad), kuni litsents on aktiivne. Pluginale saab sisse lülitada ka automaatsed uuendused.",
+        "Kui Pro on vanem kui 0.5.0, laadige 0.5.0 poe kontolt üks kord alla ja asendage plugin: deaktiveerige ja kustutage vana Pro, seejärel laadige uus zip, või kasutage valikut „Asenda praegune üleslaadituga”. Aktiveerige litsents. Pärast seda käsitsi samme pole.",
+        "Plugin loob lehe /rehearsal/ lühikoodiga [choir_rehearsal] ning WordPressi rollid Singer ja Voice Leader (nimed jäävad inglise keelde).",
+        "Lisage laul: Choir Rehearsal → Add Song — pealkiri, PDF, partiid (Audio või YouTube; vaja on rolli Voice Leader või Administrator).",
+        "Määrake kasutajatele Singer kuulamiseks ja Voice Leader laulude haldamiseks. Settings jääb ainult rollile Administrator."
+      ],
+      "updates": [
+        {
+          "label": "Lite",
+          "text": "uueneb WordPress.org-i kaudu nagu teised kataloogi pluginad (Töölaud → Uuendused). GitHubi väljalasked jäävad varuvariandiks."
+        },
+        {
+          "label": "Pro 0.5.0 ja uuem",
+          "text": "uuendused paigaldatakse WordPressis automaatselt (Töölaud → Uuendused või Pluginad), kuni litsents on aktiivne. Pluginale saab sisse lülitada ka automaatsed uuendused."
+        },
+        {
+          "label": "Pro vanem kui 0.5.0",
+          "text": "laadige 0.5.0 oma shop.compath.ee kontolt üks kord alla ja asendage plugin, seejärel aktiveerige litsents kohas Choir Rehearsal → Pro License. Pärast seda tulevad uuendused ise."
+        },
+        {
+          "label": "",
+          "text": "Paigaldatud versioon: Choir Rehearsal → Settings."
+        }
+      ],
+      "roles": [
+        {
+          "name": "Singer",
+          "text": "sirvib laule, kuulab ja vaatab PDF-i. Rollinimi jääb inglise keelde."
+        },
+        {
+          "name": "Voice Leader",
+          "text": "lisab ja muudab laule, laadib heli või lingib YouTube’i ning saab Pro-ga salvestada."
+        },
+        {
+          "name": "Administrator",
+          "text": "täielik ligipääs, sealhulgas plugina Settings."
+        },
+        {
+          "name": "Guest",
+          "text": "avaneb avalikuks märgitud laulud ilma kontota."
+        }
+      ],
+      "faq": [
+        {
+          "q": "Kuidas Pro uueneb?",
+          "a": "Alates Pro versioonist 0.5.0 paigaldab WordPress uuendused automaatselt (Töölaud → Uuendused või Pluginad), kuni litsents on aktiivne. Pluginale saab sisse lülitada ka automaatsed uuendused. Pro-st, mis on vanem kui 0.5.0, tuleb üks kord asendada poe kontolt laaditud paketiga ja seejärel aktiveerida litsents kohas Choir Rehearsal → Pro License."
+        },
+        {
+          "q": "Kas Lite on endiselt vajalik?",
+          "a": "Jah. Compath Choir Rehearsal (Lite) jääb paigaldatuks ja Pro aktiveeritakse selle kõrvale. Ärge asendage Lite’i."
+        },
+        {
+          "q": "Mida rollid tähendavad?",
+          "a": "Singer kuulab. Voice Leader haldab laule. Administrator avab ka menüü Settings. Guest näeb ainult avalikke laule. Need rollinimed jäävad igas keeles inglise keelde."
+        },
+        {
+          "q": "Kui palju Pro maksab?",
+          "a": "49 € aastas ühe koori veebisaidi kohta, aadressil shop.compath.ee."
+        }
+      ],
+      "ui": {
+        "prev": "Eelmine",
+        "next": "Järgmine",
+        "pagination": "Muudatuste leheküljed",
+        "page": "Lehekülg {n}"
+      },
+      "licenseLine": "Litsents: GPL-2.0-or-later"
+    },
+    "de": {
+      "metaDescription": "Compath Choir Rehearsal für WordPress. Lite kostenlos auf WordPress.org, Pro auf shop.compath.ee für 49 € pro Jahr. Aktuell Lite 0.4.63, Pro 0.5.0.",
+      "documentTitle": "Compath Choir Rehearsal — Probenbibliothek für Chöre",
+      "badge": "WordPress-Plugin · Lite {lite} · Pro {pro}",
+      "getLite": "Lite auf WordPress.org",
+      "downloadZip": "Zip herunterladen",
+      "orderPro": "Pro bestellen",
+      "tryDemo": "Demo ausprobieren",
+      "demoTitle": "Live-Demo",
+      "demoIntro": "Öffnen Sie die gemeinsame Probenbibliothek. Öffentliche Lieder sind ohne Konto sichtbar. Für die ganze Bibliothek melden Sie sich mit einem Demokonto an.",
+      "demoShared": "Diese Demo ist gemeinsam. Alle nutzen dieselben Zugangsdaten, deshalb kann sich die Bibliothek ändern, während Sie sie ansehen.",
+      "demoSingerText": "Zum Zuhören.",
+      "demoLeaderText": "Zum Pflegen der Lieder.",
+      "demoUser": "Benutzername",
+      "demoPassword": "Passwort",
+      "demoCopy": "Kopieren",
+      "demoCopied": "Kopiert",
+      "howToInstall": "So wird installiert",
+      "overviewTitle": "Überblick",
+      "requirementsLabel": "Voraussetzungen",
+      "ownerLabel": "Inhaber und Entwickler",
+      "firstCustomerLabel": "Erster Kunde",
+      "orderTitle": "Bestellung und Abo",
+      "orderIntro": "Lite ist im Plugin-Verzeichnis von WordPress.org kostenlos (GPL). Pro ist eine eigene Erweiterung von shop.compath.ee — Lite bleibt installiert, Pro wird daneben aktiviert.",
+      "orderCta": "Pro bestellen — 49 €/Jahr",
+      "orderCtaMeta": "Öffnet die Kasse auf shop.compath.ee",
+      "howToOrder": "So bestellen Sie",
+      "discountNote": "Für gemeinnützige Chöre und Bildungsprojekte gibt es einen Nachlass — fragen Sie bei der Bestellung.",
+      "installTitle": "Installation",
+      "selfService": "Selbst einrichten",
+      "updatesTitle": "Aktualisierungen",
+      "rolesTitle": "Rollen",
+      "faqTitle": "Fragen",
+      "changelogTitle": "Änderungen",
+      "changelogMeta": "Die Versionshinweise bleiben auf Englisch. Acht Versionen pro Seite.",
+      "licenseLine": "Lizenziert unter GPL-2.0-or-later",
+      "tagline": "Eine geschlossene Probenbibliothek für Chöre: Lieder, Stimmen, auf Wunsch YouTube, PDF-Noten und bequemes Hören am Telefon oder Computer.",
+      "overview": "Choir Rehearsal hilft, neue Stücke stimmenweise zu lernen. Voice Leader lädt PDF-Noten und Audio hoch — oder verlinkt für jede Stimme ein offizielles YouTube-Video. Singer öffnet /rehearsal/, wählt ein Lied und hört zu. Lite ist kostenlos auf WordPress.org und GitHub; Pro ist eine eigene Erweiterung von shop.compath.ee (Lite nicht ersetzen, Pro daneben installieren).",
+      "featureCards": [
+        {
+          "icon": "library",
+          "title": "Liedbibliothek",
+          "text": "Seitenweise Liederliste auf der Chorwebsite. Die Liste lässt sich per Shortcode einbinden."
+        },
+        {
+          "icon": "pdf",
+          "title": "PDF-Noten",
+          "text": "Noten anhängen und im eingebauten Betrachter umblättern."
+        },
+        {
+          "icon": "voices",
+          "title": "Stimmen",
+          "text": "Bass, Tenor, Alt, Sopran und weitere — eine Tonspur je Stimme."
+        },
+        {
+          "icon": "player",
+          "title": "Player unten",
+          "text": "Hören und Noten lesen: Der Player bleibt am unteren Bildschirmrand."
+        },
+        {
+          "icon": "youtube",
+          "title": "YouTube-Spuren",
+          "text": "Je Spur Audio oder YouTube. Auf der Liedseite öffnet sich der offizielle Player, das Video bleibt sichtbar."
+        },
+        {
+          "icon": "lock",
+          "title": "Geschlossener Zugang",
+          "text": "Probenseiten können nur nach der Anmeldung geöffnet werden."
+        },
+        {
+          "icon": "users",
+          "title": "Rollen Singer und Voice Leader",
+          "text": "Bei der Aktivierung entstehen Singer (hört zu) und Voice Leader (pflegt Lieder). Administrator öffnet Settings. Die Rollennamen bleiben Englisch."
+        },
+        {
+          "icon": "lite",
+          "title": "Lite — kostenlos",
+          "text": "WordPress.org oder GitHub. Bis zu 4 Spuren je Lied, Audio-Upload und auf Wunsch YouTube."
+        },
+        {
+          "icon": "pro",
+          "title": "Pro-Erweiterung",
+          "text": "Unbegrenzt Spuren, Aufnahme per Mikrofon, Suche nach Titel, Play-Vorschau und PDF im Editor."
+        }
+      ],
+      "pricing": [
+        {
+          "name": "Lite",
+          "price": "Kostenlos",
+          "featured": false,
+          "items": [
+            "Kostenlos auf WordPress.org oder über GitHub-Releases",
+            "Bis zu 4 Stimmspuren je Lied",
+            "PDF-Noten und Player unten",
+            "Audio hochladen oder je Spur offizielles YouTube verlinken",
+            "Aktualisierungen über WordPress.org (GitHub-Releases bleiben die Alternative)"
+          ]
+        },
+        {
+          "name": "Pro — Abo",
+          "price": "49 €/Jahr",
+          "featured": true,
+          "ctaUrl": "https://shop.compath.ee/products/choir-rehearsal-pro/",
+          "ctaLabel": "Pro bestellen",
+          "items": [
+            "Wird neben Lite installiert (eigene Erweiterung)",
+            "Unbegrenzt Stimmspuren je Lied",
+            "Mikrofonaufnahme in der Verwaltung",
+            "Play-Vorschau der Spuren im Liededitor",
+            "PDF-Noten direkt im Liededitor (Seiten umblättern)",
+            "Suche nach dem Liedtitel",
+            "PDF-Symbol bei Liedern mit Noten",
+            "1 Chorwebsite",
+            "Ab 0.5.0 aktualisiert WordPress Pro selbst, solange die Lizenz aktiv ist",
+            "Vorrangiger E-Mail-Support"
+          ]
+        },
+        {
+          "name": "Einrichtung durch uns",
+          "price": "ab 120 €",
+          "featured": false,
+          "items": [
+            "Einmalige Einrichtung auf Ihrer WordPress-Website",
+            "Seite /rehearsal/ wird angelegt",
+            "Rollen Singer und Voice Leader werden eingerichtet",
+            "Schulung für Voice Leader (1 Termin)",
+            "Das erste Pro-Jahr ist enthalten"
+          ]
+        }
+      ],
+      "orderSteps": [
+        "Öffnen Sie https://shop.compath.ee/products/choir-rehearsal-pro/ (für die Einrichtung schreiben Sie an order@compath.ee).",
+        "Nach der Zahlung choir-rehearsal-pro.zip im SureCart-Kundenkonto herunterladen.",
+        "Choir Rehearsal (Lite) installiert lassen. Die Pro-Erweiterung daneben hochladen und aktivieren — Lite nicht ersetzen.",
+        "Choir Rehearsal → Pro License öffnen und den Schlüssel aus dem Shop-Konto aktivieren. Ab Pro 0.5.0 installiert WordPress spätere Aktualisierungen selbst, solange die Lizenz aktiv ist."
+      ],
+      "installSteps": [
+        "Installieren Sie Lite über WordPress.org (Suche nach „Compath Choir Rehearsal“) oder laden Sie die Zip aus den GitHub-Releases hoch.",
+        "In WordPress: Plugins → Installieren → Compath Choir Rehearsal (Lite) aktivieren.",
+        "Für Pro: choir-rehearsal-pro.zip im Konto auf shop.compath.ee herunterladen, neben Lite hochladen (Plugins → Installieren → Plugin hochladen) und aktivieren. Lite nicht ersetzen.",
+        "Die Lizenz unter Choir Rehearsal → Pro License aktivieren. Den Schlüssel aus dem Shop-Konto einfügen.",
+        "Ab Pro 0.5.0 installiert WordPress Aktualisierungen selbst (Dashboard → Aktualisierungen oder Plugins), solange die Lizenz aktiv ist. Für das Plugin können automatische Aktualisierungen eingeschaltet werden.",
+        "Ist Pro älter als 0.5.0, laden Sie 0.5.0 einmal aus dem Shop-Konto herunter und ersetzen das Plugin: altes Pro deaktivieren und löschen, dann die neue Zip hochladen, oder „Aktuelles durch hochgeladenes ersetzen“ verwenden. Lizenz aktivieren. Danach ist nichts mehr von Hand nötig.",
+        "Das Plugin legt die Seite /rehearsal/ mit dem Shortcode [choir_rehearsal] an sowie die WordPress-Rollen Singer und Voice Leader (englische Namen).",
+        "Lied hinzufügen: Choir Rehearsal → Add Song — Titel, PDF, Stimmen (Audio oder YouTube je Spur; nötig ist die Rolle Voice Leader oder Administrator).",
+        "Nutzer zuweisen: Singer zum Zuhören, Voice Leader zum Pflegen der Lieder. Settings bleibt nur für Administrator."
+      ],
+      "updates": [
+        {
+          "label": "Lite",
+          "text": "wird über WordPress.org aktualisiert, wie jedes Verzeichnis-Plugin (Dashboard → Aktualisierungen). GitHub-Releases bleiben die Alternative."
+        },
+        {
+          "label": "Pro 0.5.0 und neuer",
+          "text": "Aktualisierungen installiert WordPress selbst (Dashboard → Aktualisierungen oder Plugins), solange die Lizenz aktiv ist. Für das Plugin können automatische Aktualisierungen eingeschaltet werden."
+        },
+        {
+          "label": "Pro älter als 0.5.0",
+          "text": "laden Sie 0.5.0 einmal im Konto auf shop.compath.ee herunter und ersetzen das Plugin, dann aktivieren Sie die Lizenz unter Choir Rehearsal → Pro License. Danach kommen die Aktualisierungen von selbst."
+        },
+        {
+          "label": "",
+          "text": "Installierte Version: Choir Rehearsal → Settings."
+        }
+      ],
+      "roles": [
+        {
+          "name": "Singer",
+          "text": "sieht die Lieder, hört zu und öffnet das PDF. Der Rollenname bleibt Englisch."
+        },
+        {
+          "name": "Voice Leader",
+          "text": "legt Lieder an und bearbeitet sie, lädt Audio hoch oder verlinkt YouTube und kann mit Pro aufnehmen."
+        },
+        {
+          "name": "Administrator",
+          "text": "voller Zugriff, einschließlich Settings des Plugins."
+        },
+        {
+          "name": "Guest",
+          "text": "öffnet als öffentlich markierte Lieder ohne Konto."
+        }
+      ],
+      "faq": [
+        {
+          "q": "Wie wird Pro aktualisiert?",
+          "a": "Ab Pro 0.5.0 installiert WordPress Aktualisierungen selbst (Dashboard → Aktualisierungen oder Plugins), solange die Lizenz aktiv ist. Für das Plugin können automatische Aktualisierungen eingeschaltet werden. Pro älter als 0.5.0 muss einmal durch das Paket aus dem Shop-Konto ersetzt werden, danach wird die Lizenz unter Choir Rehearsal → Pro License aktiviert."
+        },
+        {
+          "q": "Brauche ich Lite weiter?",
+          "a": "Ja. Compath Choir Rehearsal (Lite) bleibt installiert, Pro wird daneben aktiviert. Lite nicht ersetzen."
+        },
+        {
+          "q": "Was bedeuten die Rollen?",
+          "a": "Singer hört zu. Voice Leader pflegt die Lieder. Administrator öffnet zusätzlich Settings. Guest sieht nur öffentliche Lieder. Diese Rollennamen bleiben in jeder Sprache Englisch."
+        },
+        {
+          "q": "Was kostet Pro?",
+          "a": "49 € pro Jahr für eine Chorwebsite, auf shop.compath.ee."
+        }
+      ],
+      "ui": {
+        "prev": "Zurück",
+        "next": "Weiter",
+        "pagination": "Seiten des Änderungsprotokolls",
+        "page": "Seite {n}"
+      },
+      "title": "Compath Choir Rehearsal",
+      "requirements": "WordPress 6.4+, PHP 8.0+"
+    },
+    "fr": {
+      "metaDescription": "Compath Choir Rehearsal pour WordPress. Lite gratuit sur WordPress.org, Pro sur shop.compath.ee à 49 € par an. Actuellement Lite 0.4.63, Pro 0.5.0.",
+      "documentTitle": "Compath Choir Rehearsal — bibliothèque de répétition pour chœurs",
+      "badge": "Extension WordPress · Lite {lite} · Pro {pro}",
+      "getLite": "Lite sur WordPress.org",
+      "downloadZip": "Télécharger le zip",
+      "orderPro": "Commander Pro",
+      "tryDemo": "Essayer la démo",
+      "demoTitle": "Démo en ligne",
+      "demoIntro": "Ouvrez la bibliothèque de répétition partagée. Les chants publics sont visibles sans compte. Connectez-vous avec un compte de démo pour toute la bibliothèque.",
+      "demoShared": "Cette démo est partagée. Tout le monde utilise les mêmes identifiants, la bibliothèque peut donc changer pendant que vous la consultez.",
+      "demoSingerText": "Pour écouter.",
+      "demoLeaderText": "Pour gérer les chants.",
+      "demoUser": "Identifiant",
+      "demoPassword": "Mot de passe",
+      "demoCopy": "Copier",
+      "demoCopied": "Copié",
+      "howToInstall": "Comment installer",
+      "overviewTitle": "Aperçu",
+      "requirementsLabel": "Prérequis",
+      "ownerLabel": "Propriétaire et développeur",
+      "firstCustomerLabel": "Premier client",
+      "orderTitle": "Commande et abonnement",
+      "orderIntro": "Lite est gratuit dans le répertoire des extensions WordPress.org (GPL). Pro est une extension séparée sur shop.compath.ee — gardez Lite et activez Pro à côté.",
+      "orderCta": "Commander Pro — 49 €/an",
+      "orderCtaMeta": "Ouvre le paiement sur shop.compath.ee",
+      "howToOrder": "Comment commander",
+      "discountNote": "Les chœurs associatifs et les projets éducatifs peuvent obtenir une remise — demandez-la en commandant.",
+      "installTitle": "Installation",
+      "selfService": "Installation par vous-même",
+      "updatesTitle": "Mises à jour",
+      "rolesTitle": "Rôles",
+      "faqTitle": "Questions",
+      "changelogTitle": "Journal",
+      "changelogMeta": "Les notes de version restent en anglais. Huit versions par page.",
+      "licenseLine": "Licence GPL-2.0-or-later",
+      "tagline": "Une bibliothèque de répétition privée pour les chœurs : chants, pupitres, vidéos YouTube au choix, partitions PDF et écoute facile sur téléphone ou ordinateur.",
+      "overview": "Choir Rehearsal aide à apprendre une œuvre pupitre par pupitre. Voice Leader envoie les partitions PDF et l’audio — ou indique une vidéo YouTube officielle pour chaque pupitre. Singer ouvre /rehearsal/, choisit un chant et écoute. Lite est gratuit sur WordPress.org et GitHub ; Pro est une extension séparée sur shop.compath.ee (ne remplacez pas Lite, installez Pro à côté).",
+      "featureCards": [
+        {
+          "icon": "library",
+          "title": "Bibliothèque de chants",
+          "text": "Liste paginée sur le site du chœur. La liste s’intègre avec un shortcode."
+        },
+        {
+          "icon": "pdf",
+          "title": "Partitions PDF",
+          "text": "Joignez la partition et tournez les pages dans le lecteur intégré."
+        },
+        {
+          "icon": "voices",
+          "title": "Pupitres",
+          "text": "Basse, ténor, alto, soprano et d’autres — une piste audio par pupitre."
+        },
+        {
+          "icon": "player",
+          "title": "Lecteur en bas",
+          "text": "Écoutez en lisant la partition : le lecteur reste en bas de l’écran."
+        },
+        {
+          "icon": "youtube",
+          "title": "Pistes YouTube",
+          "text": "Chaque piste est Audio ou YouTube. La page du chant ouvre le lecteur officiel, la vidéo reste visible."
+        },
+        {
+          "icon": "lock",
+          "title": "Accès privé",
+          "text": "Les pages de répétition peuvent n’être ouvertes qu’après connexion."
+        },
+        {
+          "icon": "users",
+          "title": "Rôles Singer et Voice Leader",
+          "text": "L’activation crée Singer (écoute) et Voice Leader (gère les chants). Administrator ouvre Settings. Les noms de rôles restent en anglais."
+        },
+        {
+          "icon": "lite",
+          "title": "Lite — gratuit",
+          "text": "WordPress.org ou GitHub. Jusqu’à 4 pistes par chant, envoi audio et YouTube au choix."
+        },
+        {
+          "icon": "pro",
+          "title": "Extension Pro",
+          "text": "Pistes illimitées, enregistrement au micro, recherche par titre, aperçu Play et PDF dans l’éditeur."
+        }
+      ],
+      "pricing": [
+        {
+          "name": "Lite",
+          "price": "Gratuit",
+          "featured": false,
+          "items": [
+            "Gratuit sur WordPress.org ou via les publications GitHub",
+            "Jusqu’à 4 pistes vocales par chant",
+            "Partitions PDF et lecteur en bas",
+            "Envoyez l’audio ou liez un YouTube officiel par piste",
+            "Mises à jour via WordPress.org (les publications GitHub restent une alternative)"
+          ]
+        },
+        {
+          "name": "Pro — abonnement",
+          "price": "49 €/an",
+          "featured": true,
+          "ctaUrl": "https://shop.compath.ee/products/choir-rehearsal-pro/",
+          "ctaLabel": "Commander Pro",
+          "items": [
+            "S’installe à côté de Lite (extension séparée)",
+            "Pistes vocales illimitées par chant",
+            "Enregistrement au micro dans l’administration",
+            "Aperçu Play des pistes dans l’éditeur",
+            "Partition PDF dans l’éditeur (feuilletage)",
+            "Recherche par titre",
+            "Icône PDF sur les chants qui ont une partition",
+            "1 site de chœur",
+            "Depuis 0.5.0, WordPress met Pro à jour tout seul tant que la licence est active",
+            "Assistance e-mail prioritaire"
+          ]
+        },
+        {
+          "name": "Installation par nos soins",
+          "price": "à partir de 120 €",
+          "featured": false,
+          "items": [
+            "Installation unique sur votre site WordPress",
+            "Création de la page /rehearsal/",
+            "Rôles Singer et Voice Leader configurés",
+            "Formation de Voice Leader (1 séance)",
+            "La première année de Pro est incluse"
+          ]
+        }
+      ],
+      "orderSteps": [
+        "Ouvrez https://shop.compath.ee/products/choir-rehearsal-pro/ (pour une installation, écrivez à order@compath.ee).",
+        "Après le paiement, téléchargez choir-rehearsal-pro.zip depuis votre compte client SureCart.",
+        "Laissez Choir Rehearsal (Lite) installé. Téléversez et activez l’extension Pro à côté — ne remplacez pas Lite.",
+        "Ouvrez Choir Rehearsal → Pro License et activez la clé de votre compte boutique. À partir de Pro 0.5.0, WordPress installe ensuite les mises à jour tout seul tant que la licence est active."
+      ],
+      "installSteps": [
+        "Installez Lite depuis WordPress.org (recherchez « Compath Choir Rehearsal ») ou téléversez le zip des publications GitHub.",
+        "Dans WordPress : Extensions → Ajouter → activez Compath Choir Rehearsal (Lite).",
+        "Pour Pro : téléchargez choir-rehearsal-pro.zip depuis votre compte shop.compath.ee, téléversez-le à côté de Lite (Extensions → Ajouter → Téléverser une extension) et activez-le. Ne remplacez pas Lite.",
+        "Activez la licence dans Choir Rehearsal → Pro License. Collez la clé de votre compte boutique.",
+        "À partir de Pro 0.5.0, les mises à jour s’installent toutes seules dans WordPress (Tableau de bord → Mises à jour ou Extensions) tant que la licence est active. Vous pouvez aussi activer les mises à jour automatiques de l’extension.",
+        "Si Pro est plus ancien que 0.5.0, téléchargez 0.5.0 une fois depuis votre compte boutique et remplacez l’extension : désactivez et supprimez l’ancien Pro, puis téléversez le nouveau zip, ou utilisez « Remplacer l’extension actuelle par celle téléversée ». Activez la licence. Ensuite, plus rien à faire à la main.",
+        "L’extension crée la page /rehearsal/ avec le shortcode [choir_rehearsal] et les rôles WordPress Singer et Voice Leader (noms en anglais).",
+        "Ajoutez un chant : Choir Rehearsal → Add Song — titre, PDF, pupitres (Audio ou YouTube par piste ; il faut le rôle Voice Leader ou Administrator).",
+        "Attribuez Singer pour l’écoute et Voice Leader pour la gestion des chants. Settings reste réservé à Administrator."
+      ],
+      "updates": [
+        {
+          "label": "Lite",
+          "text": "se met à jour via WordPress.org, comme toute extension du répertoire (Tableau de bord → Mises à jour). Les publications GitHub restent une alternative."
+        },
+        {
+          "label": "Pro 0.5.0 et suivants",
+          "text": "WordPress installe les mises à jour tout seul (Tableau de bord → Mises à jour ou Extensions) tant que la licence est active. Vous pouvez activer les mises à jour automatiques de l’extension."
+        },
+        {
+          "label": "Pro antérieur à 0.5.0",
+          "text": "téléchargez 0.5.0 une fois depuis votre compte shop.compath.ee et remplacez l’extension, puis activez la licence dans Choir Rehearsal → Pro License. Ensuite, les mises à jour arrivent seules."
+        },
+        {
+          "label": "",
+          "text": "Version installée : Choir Rehearsal → Settings."
+        }
+      ],
+      "roles": [
+        {
+          "name": "Singer",
+          "text": "parcourt les chants, écoute et ouvre le PDF. Le nom du rôle reste en anglais."
+        },
+        {
+          "name": "Voice Leader",
+          "text": "ajoute et modifie les chants, envoie l’audio ou lie YouTube, et peut enregistrer avec Pro."
+        },
+        {
+          "name": "Administrator",
+          "text": "accès complet, y compris Settings de l’extension."
+        },
+        {
+          "name": "Guest",
+          "text": "ouvre les chants marqués publics, sans compte."
+        }
+      ],
+      "faq": [
+        {
+          "q": "Comment Pro se met-il à jour ?",
+          "a": "À partir de Pro 0.5.0, WordPress installe les mises à jour tout seul (Tableau de bord → Mises à jour ou Extensions) tant que la licence est active. Vous pouvez aussi activer les mises à jour automatiques. Un Pro plus ancien que 0.5.0 doit être remplacé une fois par le paquet du compte boutique, puis la licence est activée dans Choir Rehearsal → Pro License."
+        },
+        {
+          "q": "Faut-il encore Lite ?",
+          "a": "Oui. Compath Choir Rehearsal (Lite) reste installé et Pro s’active à côté. Ne remplacez pas Lite."
+        },
+        {
+          "q": "Que signifient les rôles ?",
+          "a": "Singer écoute. Voice Leader gère les chants. Administrator ouvre aussi Settings. Guest ne voit que les chants publics. Ces noms de rôles restent en anglais dans toutes les langues."
+        },
+        {
+          "q": "Combien coûte Pro ?",
+          "a": "49 € par an pour un site de chœur, sur shop.compath.ee."
+        }
+      ],
+      "ui": {
+        "prev": "Précédent",
+        "next": "Suivant",
+        "pagination": "Pages du journal",
+        "page": "Page {n}"
+      },
+      "title": "Compath Choir Rehearsal",
+      "requirements": "WordPress 6.4+, PHP 8.0+"
+    },
+    "it": {
+      "metaDescription": "Compath Choir Rehearsal per WordPress. Lite gratuito su WordPress.org, Pro su shop.compath.ee a 49 € all’anno. Ora Lite 0.4.63, Pro 0.5.0.",
+      "documentTitle": "Compath Choir Rehearsal — biblioteca di prove per cori",
+      "badge": "Plugin WordPress · Lite {lite} · Pro {pro}",
+      "getLite": "Lite su WordPress.org",
+      "downloadZip": "Scarica lo zip",
+      "orderPro": "Ordina Pro",
+      "tryDemo": "Prova la demo",
+      "demoTitle": "Demo dal vivo",
+      "demoIntro": "Apri la biblioteca di prove condivisa. I brani pubblici si vedono senza account. Per tutta la biblioteca accedi con un account demo.",
+      "demoShared": "Questa demo è condivisa. Tutti usano gli stessi dati di accesso, quindi la biblioteca può cambiare mentre la consulti.",
+      "demoSingerText": "Per ascoltare.",
+      "demoLeaderText": "Per gestire i brani.",
+      "demoUser": "Nome utente",
+      "demoPassword": "Password",
+      "demoCopy": "Copia",
+      "demoCopied": "Copiato",
+      "howToInstall": "Come si installa",
+      "overviewTitle": "Panoramica",
+      "requirementsLabel": "Requisiti",
+      "ownerLabel": "Proprietario e sviluppatore",
+      "firstCustomerLabel": "Primo cliente",
+      "orderTitle": "Ordine e abbonamento",
+      "orderIntro": "Lite è gratuito nella directory dei plugin di WordPress.org (GPL). Pro è un componente separato da shop.compath.ee — lascia Lite installato e attiva Pro accanto.",
+      "orderCta": "Ordina Pro — 49 €/anno",
+      "orderCtaMeta": "Apre il pagamento su shop.compath.ee",
+      "howToOrder": "Come ordinare",
+      "discountNote": "Per i cori non profit e i progetti didattici c’è uno sconto — chiedilo quando ordini.",
+      "installTitle": "Installazione",
+      "selfService": "Installazione autonoma",
+      "updatesTitle": "Aggiornamenti",
+      "rolesTitle": "Ruoli",
+      "faqTitle": "Domande",
+      "changelogTitle": "Novità",
+      "changelogMeta": "Le note di versione restano in inglese. Otto versioni per pagina.",
+      "licenseLine": "Licenza GPL-2.0-or-later",
+      "tagline": "Una biblioteca di prove riservata per i cori: brani, parti, video YouTube se vuoi, spartiti PDF e ascolto comodo da telefono o computer.",
+      "overview": "Choir Rehearsal aiuta a imparare i brani nuovi parte per parte. Voice Leader carica gli spartiti PDF e l’audio — oppure collega un video YouTube ufficiale per ogni parte. Singer apre /rehearsal/, sceglie un brano e ascolta. Lite è gratuito su WordPress.org e GitHub; Pro è un componente separato da shop.compath.ee (non sostituire Lite, installa Pro accanto).",
+      "featureCards": [
+        {
+          "icon": "library",
+          "title": "Archivio brani",
+          "text": "Elenco paginato sul sito del coro. L’elenco si inserisce con uno shortcode."
+        },
+        {
+          "icon": "pdf",
+          "title": "Spartiti PDF",
+          "text": "Allega lo spartito e sfoglia le pagine nel lettore integrato."
+        },
+        {
+          "icon": "voices",
+          "title": "Parti vocali",
+          "text": "Basso, tenore, contralto, soprano e altre — una traccia audio per parte."
+        },
+        {
+          "icon": "player",
+          "title": "Lettore in basso",
+          "text": "Ascolta mentre leggi lo spartito: il lettore resta in fondo allo schermo."
+        },
+        {
+          "icon": "youtube",
+          "title": "Tracce YouTube",
+          "text": "Ogni traccia è Audio o YouTube. Nella pagina del brano si apre il lettore ufficiale e il video resta visibile."
+        },
+        {
+          "icon": "lock",
+          "title": "Accesso riservato",
+          "text": "Le pagine di prova si possono aprire solo dopo l’accesso."
+        },
+        {
+          "icon": "users",
+          "title": "Ruoli Singer e Voice Leader",
+          "text": "L’attivazione crea Singer (ascolta) e Voice Leader (gestisce i brani). Administrator apre Settings. I nomi dei ruoli restano in inglese."
+        },
+        {
+          "icon": "lite",
+          "title": "Lite — gratis",
+          "text": "WordPress.org o GitHub. Fino a 4 tracce per brano, caricamento audio e YouTube se serve."
+        },
+        {
+          "icon": "pro",
+          "title": "Componente Pro",
+          "text": "Tracce illimitate, registrazione dal microfono, ricerca per titolo, anteprima Play e PDF nell’editor."
+        }
+      ],
+      "pricing": [
+        {
+          "name": "Lite",
+          "price": "Gratis",
+          "featured": false,
+          "items": [
+            "Gratis da WordPress.org o dalle release GitHub",
+            "Fino a 4 tracce vocali per brano",
+            "Spartiti PDF e lettore in basso",
+            "Carica l’audio o collega un YouTube ufficiale per traccia",
+            "Aggiornamenti da WordPress.org (le release GitHub restano un’alternativa)"
+          ]
+        },
+        {
+          "name": "Pro — abbonamento",
+          "price": "49 €/anno",
+          "featured": true,
+          "ctaUrl": "https://shop.compath.ee/products/choir-rehearsal-pro/",
+          "ctaLabel": "Ordina Pro",
+          "items": [
+            "Si installa accanto a Lite (componente separato)",
+            "Tracce vocali illimitate per brano",
+            "Registrazione dal microfono in amministrazione",
+            "Anteprima Play delle tracce nell’editor",
+            "Spartito PDF nell’editor (sfoglia le pagine)",
+            "Ricerca per titolo",
+            "Icona PDF sui brani che hanno lo spartito",
+            "1 sito del coro",
+            "Dalla 0.5.0 WordPress aggiorna Pro da solo finché la licenza è attiva",
+            "Assistenza e-mail prioritaria"
+          ]
+        },
+        {
+          "name": "Configurazione da noi",
+          "price": "da 120 €",
+          "featured": false,
+          "items": [
+            "Configurazione una tantum sul tuo sito WordPress",
+            "Viene creata la pagina /rehearsal/",
+            "Ruoli Singer e Voice Leader configurati",
+            "Formazione per Voice Leader (1 incontro)",
+            "Il primo anno di Pro è incluso"
+          ]
+        }
+      ],
+      "orderSteps": [
+        "Apri https://shop.compath.ee/products/choir-rehearsal-pro/ (per la configurazione scrivi a order@compath.ee).",
+        "Dopo il pagamento scarica choir-rehearsal-pro.zip dal tuo account cliente SureCart.",
+        "Lascia installato Choir Rehearsal (Lite). Carica e attiva il componente Pro accanto — non sostituire Lite.",
+        "Apri Choir Rehearsal → Pro License e attiva la chiave del tuo account shop. Da Pro 0.5.0 WordPress installa gli aggiornamenti successivi da solo finché la licenza è attiva."
+      ],
+      "installSteps": [
+        "Installa Lite da WordPress.org (cerca «Compath Choir Rehearsal») oppure carica lo zip dalle release GitHub.",
+        "In WordPress: Plugin → Aggiungi nuovo → attiva Compath Choir Rehearsal (Lite).",
+        "Per Pro: scarica choir-rehearsal-pro.zip dal tuo account shop.compath.ee, caricalo accanto a Lite (Plugin → Aggiungi nuovo → Carica plugin) e attivalo. Non sostituire Lite.",
+        "Attiva la licenza in Choir Rehearsal → Pro License. Incolla la chiave del tuo account shop.",
+        "Da Pro 0.5.0 gli aggiornamenti si installano da soli in WordPress (Bacheca → Aggiornamenti o Plugin) finché la licenza è attiva. Puoi anche attivare gli aggiornamenti automatici del plugin.",
+        "Se Pro è precedente alla 0.5.0, scarica 0.5.0 una volta dal tuo account shop e sostituisci il plugin: disattiva ed elimina il vecchio Pro, poi carica il nuovo zip, oppure usa «Sostituisci quello attuale con quello caricato». Attiva la licenza. Dopo non serve più farlo a mano.",
+        "Il plugin crea la pagina /rehearsal/ con lo shortcode [choir_rehearsal] e i ruoli WordPress Singer e Voice Leader (nomi in inglese).",
+        "Aggiungi un brano: Choir Rehearsal → Add Song — titolo, PDF, parti (Audio o YouTube per traccia; serve il ruolo Voice Leader o Administrator).",
+        "Assegna Singer per l’ascolto e Voice Leader per la gestione dei brani. Settings resta solo per Administrator."
+      ],
+      "updates": [
+        {
+          "label": "Lite",
+          "text": "si aggiorna tramite WordPress.org, come ogni plugin della directory (Bacheca → Aggiornamenti). Le release GitHub restano un’alternativa."
+        },
+        {
+          "label": "Pro 0.5.0 e successivi",
+          "text": "WordPress installa gli aggiornamenti da solo (Bacheca → Aggiornamenti o Plugin) finché la licenza è attiva. Puoi attivare anche gli aggiornamenti automatici del plugin."
+        },
+        {
+          "label": "Pro precedente alla 0.5.0",
+          "text": "scarica 0.5.0 una volta dal tuo account shop.compath.ee e sostituisci il plugin, poi attiva la licenza in Choir Rehearsal → Pro License. Dopo, gli aggiornamenti arrivano da soli."
+        },
+        {
+          "label": "",
+          "text": "Versione installata: Choir Rehearsal → Settings."
+        }
+      ],
+      "roles": [
+        {
+          "name": "Singer",
+          "text": "sfoglia i brani, ascolta e apre il PDF. Il nome del ruolo resta in inglese."
+        },
+        {
+          "name": "Voice Leader",
+          "text": "aggiunge e modifica i brani, carica l’audio o collega YouTube e con Pro può registrare."
+        },
+        {
+          "name": "Administrator",
+          "text": "accesso completo, Settings del plugin compreso."
+        },
+        {
+          "name": "Guest",
+          "text": "apre i brani segnati come pubblici, senza account."
+        }
+      ],
+      "faq": [
+        {
+          "q": "Come si aggiorna Pro?",
+          "a": "Da Pro 0.5.0 WordPress installa gli aggiornamenti da solo (Bacheca → Aggiornamenti o Plugin) finché la licenza è attiva. Puoi anche attivare gli aggiornamenti automatici del plugin. Un Pro precedente alla 0.5.0 va sostituito una volta con il pacchetto dell’account shop, poi si attiva la licenza in Choir Rehearsal → Pro License."
+        },
+        {
+          "q": "Lite serve ancora?",
+          "a": "Sì. Compath Choir Rehearsal (Lite) resta installato e Pro si attiva accanto. Non sostituire Lite."
+        },
+        {
+          "q": "Cosa significano i ruoli?",
+          "a": "Singer ascolta. Voice Leader gestisce i brani. Administrator apre anche Settings. Guest vede solo i brani pubblici. Questi nomi di ruolo restano in inglese in ogni lingua."
+        },
+        {
+          "q": "Quanto costa Pro?",
+          "a": "49 € all’anno per un sito del coro, su shop.compath.ee."
+        }
+      ],
+      "ui": {
+        "prev": "Indietro",
+        "next": "Avanti",
+        "pagination": "Pagine delle novità",
+        "page": "Pagina {n}"
+      },
+      "title": "Compath Choir Rehearsal",
+      "requirements": "WordPress 6.4+, PHP 8.0+"
+    },
+    "es": {
+      "metaDescription": "Compath Choir Rehearsal para WordPress. Lite gratis en WordPress.org, Pro en shop.compath.ee por 49 € al año. Ahora Lite 0.4.63, Pro 0.5.0.",
+      "documentTitle": "Compath Choir Rehearsal — biblioteca de ensayo para coros",
+      "badge": "Plugin de WordPress · Lite {lite} · Pro {pro}",
+      "getLite": "Lite en WordPress.org",
+      "downloadZip": "Descargar el zip",
+      "orderPro": "Pedir Pro",
+      "tryDemo": "Probar la demo",
+      "demoTitle": "Demo en vivo",
+      "demoIntro": "Abre la biblioteca de ensayo compartida. Las obras públicas se ven sin cuenta. Entra con una cuenta de demo para la biblioteca completa.",
+      "demoShared": "Esta demo es compartida. Todo el mundo usa los mismos datos de acceso, así que la biblioteca puede cambiar mientras la miras.",
+      "demoSingerText": "Para escuchar.",
+      "demoLeaderText": "Para gestionar las obras.",
+      "demoUser": "Usuario",
+      "demoPassword": "Contraseña",
+      "demoCopy": "Copiar",
+      "demoCopied": "Copiado",
+      "howToInstall": "Cómo instalar",
+      "overviewTitle": "Resumen",
+      "requirementsLabel": "Requisitos",
+      "ownerLabel": "Propietario y desarrollador",
+      "firstCustomerLabel": "Primer cliente",
+      "orderTitle": "Pedido y suscripción",
+      "orderIntro": "Lite es gratis en el directorio de plugins de WordPress.org (GPL). Pro es un complemento aparte de shop.compath.ee — deja Lite instalado y activa Pro al lado.",
+      "orderCta": "Pedir Pro — 49 €/año",
+      "orderCtaMeta": "Abre el pago en shop.compath.ee",
+      "howToOrder": "Cómo pedir",
+      "discountNote": "Los coros sin ánimo de lucro y los proyectos educativos pueden tener descuento — pregúntalo al pedir.",
+      "installTitle": "Instalación",
+      "selfService": "Instalación por tu cuenta",
+      "updatesTitle": "Actualizaciones",
+      "rolesTitle": "Roles",
+      "faqTitle": "Preguntas",
+      "changelogTitle": "Cambios",
+      "changelogMeta": "Las notas de versión siguen en inglés. Ocho versiones por página.",
+      "licenseLine": "Licencia GPL-2.0-or-later",
+      "tagline": "Una biblioteca de ensayo privada para coros: obras, voces, vídeos de YouTube si quieres, partituras PDF y escucha cómoda en el teléfono o el ordenador.",
+      "overview": "Choir Rehearsal ayuda a aprender obras nuevas por voces. Voice Leader sube las partituras PDF y el audio — o enlaza un vídeo oficial de YouTube para cada voz. Singer abre /rehearsal/, elige una obra y escucha. Lite es gratis en WordPress.org y GitHub; Pro es un complemento aparte de shop.compath.ee (no sustituyas Lite, instala Pro al lado).",
+      "featureCards": [
+        {
+          "icon": "library",
+          "title": "Biblioteca de obras",
+          "text": "Lista paginada en la web del coro. La lista se inserta con un shortcode."
+        },
+        {
+          "icon": "pdf",
+          "title": "Partituras PDF",
+          "text": "Adjunta la partitura y pasa las páginas en el visor integrado."
+        },
+        {
+          "icon": "voices",
+          "title": "Voces",
+          "text": "Bajo, tenor, contralto, soprano y más — una pista de audio por voz."
+        },
+        {
+          "icon": "player",
+          "title": "Reproductor abajo",
+          "text": "Escucha mientras lees la partitura: el reproductor se queda al pie de la pantalla."
+        },
+        {
+          "icon": "youtube",
+          "title": "Pistas de YouTube",
+          "text": "Cada pista es Audio o YouTube. En la página de la obra se abre el reproductor oficial y el vídeo sigue visible."
+        },
+        {
+          "icon": "lock",
+          "title": "Acceso privado",
+          "text": "Las páginas de ensayo se pueden abrir solo después de entrar."
+        },
+        {
+          "icon": "users",
+          "title": "Roles Singer y Voice Leader",
+          "text": "Al activar se crean Singer (escucha) y Voice Leader (gestiona las obras). Administrator abre Settings. Los nombres de los roles siguen en inglés."
+        },
+        {
+          "icon": "lite",
+          "title": "Lite — gratis",
+          "text": "WordPress.org o GitHub. Hasta 4 pistas por obra, subida de audio y YouTube si hace falta."
+        },
+        {
+          "icon": "pro",
+          "title": "Complemento Pro",
+          "text": "Pistas ilimitadas, grabación con el micrófono, búsqueda por título, vista previa Play y PDF en el editor."
+        }
+      ],
+      "pricing": [
+        {
+          "name": "Lite",
+          "price": "Gratis",
+          "featured": false,
+          "items": [
+            "Gratis en WordPress.org o en las publicaciones de GitHub",
+            "Hasta 4 pistas de voz por obra",
+            "Partituras PDF y reproductor abajo",
+            "Sube el audio o enlaza un YouTube oficial por pista",
+            "Actualizaciones por WordPress.org (las publicaciones de GitHub siguen como alternativa)"
+          ]
+        },
+        {
+          "name": "Pro — suscripción",
+          "price": "49 €/año",
+          "featured": true,
+          "ctaUrl": "https://shop.compath.ee/products/choir-rehearsal-pro/",
+          "ctaLabel": "Pedir Pro",
+          "items": [
+            "Se instala junto a Lite (complemento aparte)",
+            "Pistas de voz ilimitadas por obra",
+            "Grabación con micrófono en la administración",
+            "Vista previa Play de las pistas en el editor",
+            "Partitura PDF en el editor (pasar páginas)",
+            "Búsqueda por título",
+            "Icono PDF en las obras que tienen partitura",
+            "1 sitio del coro",
+            "Desde 0.5.0 WordPress actualiza Pro solo mientras la licencia está activa",
+            "Soporte por correo con prioridad"
+          ]
+        },
+        {
+          "name": "Montaje por nosotros",
+          "price": "desde 120 €",
+          "featured": false,
+          "items": [
+            "Montaje único en tu sitio WordPress",
+            "Se crea la página /rehearsal/",
+            "Roles Singer y Voice Leader configurados",
+            "Formación de Voice Leader (1 sesión)",
+            "El primer año de Pro está incluido"
+          ]
+        }
+      ],
+      "orderSteps": [
+        "Abre https://shop.compath.ee/products/choir-rehearsal-pro/ (para el montaje escribe a order@compath.ee).",
+        "Después del pago descarga choir-rehearsal-pro.zip desde tu cuenta de cliente de SureCart.",
+        "Deja Choir Rehearsal (Lite) instalado. Sube y activa el complemento Pro al lado — no sustituyas Lite.",
+        "Abre Choir Rehearsal → Pro License y activa la clave de tu cuenta de la tienda. Desde Pro 0.5.0 WordPress instala las actualizaciones siguientes solo mientras la licencia está activa."
+      ],
+      "installSteps": [
+        "Instala Lite desde WordPress.org (busca «Compath Choir Rehearsal») o sube el zip de las publicaciones de GitHub.",
+        "En WordPress: Plugins → Añadir nuevo → activa Compath Choir Rehearsal (Lite).",
+        "Para Pro: descarga choir-rehearsal-pro.zip de tu cuenta de shop.compath.ee, súbelo junto a Lite (Plugins → Añadir nuevo → Subir plugin) y actívalo. No sustituyas Lite.",
+        "Activa la licencia en Choir Rehearsal → Pro License. Pega la clave de tu cuenta de la tienda.",
+        "Desde Pro 0.5.0 las actualizaciones se instalan solas en WordPress (Escritorio → Actualizaciones o Plugins) mientras la licencia está activa. También puedes activar las actualizaciones automáticas del plugin.",
+        "Si Pro es anterior a 0.5.0, descarga 0.5.0 una vez de tu cuenta de la tienda y sustituye el plugin: desactiva y borra el Pro antiguo, luego sube el zip nuevo, o usa «Reemplazar el actual por el subido». Activa la licencia. Después ya no hace falta hacerlo a mano.",
+        "El plugin crea la página /rehearsal/ con el shortcode [choir_rehearsal] y los roles de WordPress Singer y Voice Leader (nombres en inglés).",
+        "Añade una obra: Choir Rehearsal → Add Song — título, PDF, voces (Audio o YouTube por pista; hace falta el rol Voice Leader o Administrator).",
+        "Asigna Singer para escuchar y Voice Leader para gestionar las obras. Settings queda solo para Administrator."
+      ],
+      "updates": [
+        {
+          "label": "Lite",
+          "text": "se actualiza por WordPress.org, como cualquier plugin del directorio (Escritorio → Actualizaciones). Las publicaciones de GitHub siguen como alternativa."
+        },
+        {
+          "label": "Pro 0.5.0 y posteriores",
+          "text": "WordPress instala las actualizaciones solo (Escritorio → Actualizaciones o Plugins) mientras la licencia está activa. Puedes activar también las actualizaciones automáticas del plugin."
+        },
+        {
+          "label": "Pro anterior a 0.5.0",
+          "text": "descarga 0.5.0 una vez de tu cuenta de shop.compath.ee y sustituye el plugin, luego activa la licencia en Choir Rehearsal → Pro License. Después las actualizaciones llegan solas."
+        },
+        {
+          "label": "",
+          "text": "Versión instalada: Choir Rehearsal → Settings."
+        }
+      ],
+      "roles": [
+        {
+          "name": "Singer",
+          "text": "recorre las obras, escucha y abre el PDF. El nombre del rol sigue en inglés."
+        },
+        {
+          "name": "Voice Leader",
+          "text": "añade y edita obras, sube audio o enlaza YouTube, y con Pro puede grabar."
+        },
+        {
+          "name": "Administrator",
+          "text": "acceso completo, incluido Settings del plugin."
+        },
+        {
+          "name": "Guest",
+          "text": "abre las obras marcadas como públicas, sin cuenta."
+        }
+      ],
+      "faq": [
+        {
+          "q": "¿Cómo se actualiza Pro?",
+          "a": "Desde Pro 0.5.0 WordPress instala las actualizaciones solo (Escritorio → Actualizaciones o Plugins) mientras la licencia está activa. También puedes activar las actualizaciones automáticas del plugin. Un Pro anterior a 0.5.0 hay que sustituirlo una vez por el paquete de la cuenta de la tienda y luego activar la licencia en Choir Rehearsal → Pro License."
+        },
+        {
+          "q": "¿Sigue haciendo falta Lite?",
+          "a": "Sí. Compath Choir Rehearsal (Lite) sigue instalado y Pro se activa al lado. No sustituyas Lite."
+        },
+        {
+          "q": "¿Qué significan los roles?",
+          "a": "Singer escucha. Voice Leader gestiona las obras. Administrator abre también Settings. Guest solo ve las obras públicas. Esos nombres de rol siguen en inglés en todos los idiomas."
+        },
+        {
+          "q": "¿Cuánto cuesta Pro?",
+          "a": "49 € al año por un sitio del coro, en shop.compath.ee."
+        }
+      ],
+      "ui": {
+        "prev": "Anterior",
+        "next": "Siguiente",
+        "pagination": "Páginas del registro",
+        "page": "Página {n}"
+      },
+      "title": "Compath Choir Rehearsal",
+      "requirements": "WordPress 6.4+, PHP 8.0+"
+    },
+    "sv": {
+      "metaDescription": "Compath Choir Rehearsal för WordPress. Lite är gratis på WordPress.org, Pro på shop.compath.ee för 49 € per år. Nu Lite 0.4.63, Pro 0.5.0.",
+      "documentTitle": "Compath Choir Rehearsal — övningsbibliotek för körer",
+      "badge": "WordPress-tillägg · Lite {lite} · Pro {pro}",
+      "getLite": "Lite på WordPress.org",
+      "downloadZip": "Ladda ner zip",
+      "orderPro": "Beställ Pro",
+      "tryDemo": "Prova demon",
+      "demoTitle": "Livedemo",
+      "demoIntro": "Öppna det delade övningsbiblioteket. Offentliga sånger syns utan konto. Logga in med ett demokonto för hela biblioteket.",
+      "demoShared": "Demon är delad. Alla använder samma inloggning, så biblioteket kan ändras medan du tittar.",
+      "demoSingerText": "För att lyssna.",
+      "demoLeaderText": "För att sköta sångerna.",
+      "demoUser": "Användarnamn",
+      "demoPassword": "Lösenord",
+      "demoCopy": "Kopiera",
+      "demoCopied": "Kopierat",
+      "howToInstall": "Så installerar du",
+      "overviewTitle": "Översikt",
+      "requirementsLabel": "Krav",
+      "ownerLabel": "Ägare och utvecklare",
+      "firstCustomerLabel": "Första kunden",
+      "orderTitle": "Beställning och prenumeration",
+      "orderIntro": "Lite är gratis i tilläggskatalogen på WordPress.org (GPL). Pro är ett separat tillägg från shop.compath.ee — låt Lite vara installerat och aktivera Pro bredvid.",
+      "orderCta": "Beställ Pro — 49 €/år",
+      "orderCtaMeta": "Öppnar kassan på shop.compath.ee",
+      "howToOrder": "Så beställer du",
+      "discountNote": "Ideella körer och utbildningsprojekt kan få rabatt — fråga när du beställer.",
+      "installTitle": "Installation",
+      "selfService": "Installera själv",
+      "updatesTitle": "Uppdateringar",
+      "rolesTitle": "Roller",
+      "faqTitle": "Frågor",
+      "changelogTitle": "Ändringar",
+      "changelogMeta": "Versionsanteckningarna är kvar på engelska. Åtta versioner per sida.",
+      "licenseLine": "Licens GPL-2.0-or-later",
+      "tagline": "Ett privat övningsbibliotek för körer: sånger, stämmor, YouTube-videor om du vill, PDF-noter och enkel lyssning i telefon eller dator.",
+      "overview": "Choir Rehearsal hjälper kören att lära sig nya verk stämma för stämma. Voice Leader laddar upp PDF-noter och ljud — eller länkar en officiell YouTube-video för varje stämma. Singer öppnar /rehearsal/, väljer en sång och lyssnar. Lite är gratis på WordPress.org och GitHub; Pro är ett separat tillägg från shop.compath.ee (byt inte ut Lite, installera Pro bredvid).",
+      "featureCards": [
+        {
+          "icon": "library",
+          "title": "Sångbibliotek",
+          "text": "Sidindelad lista på körens webbplats. Listan kan bäddas in med en shortcode."
+        },
+        {
+          "icon": "pdf",
+          "title": "PDF-noter",
+          "text": "Bifoga noter och bläddra i den inbyggda visaren."
+        },
+        {
+          "icon": "voices",
+          "title": "Stämmor",
+          "text": "Bas, tenor, alt, sopran och fler — ett ljudspår per stämma."
+        },
+        {
+          "icon": "player",
+          "title": "Spelare längst ner",
+          "text": "Lyssna medan du läser noterna: spelaren stannar längst ner på skärmen."
+        },
+        {
+          "icon": "youtube",
+          "title": "YouTube-spår",
+          "text": "Varje spår är Audio eller YouTube. På sångsidan öppnas den officiella spelaren och videon syns kvar."
+        },
+        {
+          "icon": "lock",
+          "title": "Begränsad åtkomst",
+          "text": "Övningssidorna kan öppnas först efter inloggning."
+        },
+        {
+          "icon": "users",
+          "title": "Rollerna Singer och Voice Leader",
+          "text": "Aktivering skapar Singer (lyssnar) och Voice Leader (sköter sånger). Administrator öppnar Settings. Rollnamnen är kvar på engelska."
+        },
+        {
+          "icon": "lite",
+          "title": "Lite — gratis",
+          "text": "WordPress.org eller GitHub. Upp till 4 spår per sång, uppladdning av ljud och YouTube om du vill."
+        },
+        {
+          "icon": "pro",
+          "title": "Pro-tillägg",
+          "text": "Obegränsat antal spår, inspelning med mikrofon, sökning på titel, Play-förhandsvisning och PDF i redigeraren."
+        }
+      ],
+      "pricing": [
+        {
+          "name": "Lite",
+          "price": "Gratis",
+          "featured": false,
+          "items": [
+            "Gratis från WordPress.org eller GitHub-utgåvor",
+            "Upp till 4 stämspår per sång",
+            "PDF-noter och spelare längst ner",
+            "Ladda upp ljud eller länka officiell YouTube per spår",
+            "Uppdateringar via WordPress.org (GitHub-utgåvor finns kvar som alternativ)"
+          ]
+        },
+        {
+          "name": "Pro — prenumeration",
+          "price": "49 €/år",
+          "featured": true,
+          "ctaUrl": "https://shop.compath.ee/products/choir-rehearsal-pro/",
+          "ctaLabel": "Beställ Pro",
+          "items": [
+            "Installeras bredvid Lite (eget tillägg)",
+            "Obegränsat antal stämspår per sång",
+            "Mikrofoninspelning i administrationen",
+            "Play-förhandsvisning av spår i sångredigeraren",
+            "PDF-noter direkt i redigeraren (bläddra sidor)",
+            "Sök på titel",
+            "PDF-ikon på sånger som har noter",
+            "1 körwebbplats",
+            "Från 0.5.0 uppdaterar WordPress Pro själv så länge licensen är aktiv",
+            "Prioriterad e-postsupport"
+          ]
+        },
+        {
+          "name": "Uppsättning av oss",
+          "price": "från 120 €",
+          "featured": false,
+          "items": [
+            "Engångsuppsättning på er WordPress-webbplats",
+            "Sidan /rehearsal/ skapas",
+            "Rollerna Singer och Voice Leader ställs in",
+            "Utbildning för Voice Leader (1 tillfälle)",
+            "Första Pro-året ingår"
+          ]
+        }
+      ],
+      "orderSteps": [
+        "Öppna https://shop.compath.ee/products/choir-rehearsal-pro/ (för uppsättning, skriv till order@compath.ee).",
+        "Efter betalning laddar du ner choir-rehearsal-pro.zip från ditt SureCart-kundkonto.",
+        "Låt Choir Rehearsal (Lite) vara installerat. Ladda upp och aktivera Pro-tillägget bredvid — byt inte ut Lite.",
+        "Öppna Choir Rehearsal → Pro License och aktivera nyckeln från butikskontot. Från Pro 0.5.0 installerar WordPress senare uppdateringar själv så länge licensen är aktiv."
+      ],
+      "installSteps": [
+        "Installera Lite från WordPress.org (sök efter ”Compath Choir Rehearsal”) eller ladda upp zip-filen från GitHub-utgåvorna.",
+        "I WordPress: Tillägg → Lägg till nytt → aktivera Compath Choir Rehearsal (Lite).",
+        "För Pro: ladda ner choir-rehearsal-pro.zip från ditt shop.compath.ee-konto, ladda upp det bredvid Lite (Tillägg → Lägg till nytt → Ladda upp tillägg) och aktivera. Byt inte ut Lite.",
+        "Aktivera licensen under Choir Rehearsal → Pro License. Klistra in nyckeln från butikskontot.",
+        "Från Pro 0.5.0 installeras uppdateringar av sig själva i WordPress (Panel → Uppdateringar eller Tillägg) så länge licensen är aktiv. Du kan också slå på automatiska uppdateringar för tillägget.",
+        "Om Pro är äldre än 0.5.0, ladda ner 0.5.0 en gång från butikskontot och ersätt tillägget: inaktivera och ta bort gamla Pro, ladda sedan upp den nya zip-filen, eller använd ”Ersätt nuvarande med uppladdad”. Aktivera licensen. Efter det behövs inga manuella steg.",
+        "Tillägget skapar sidan /rehearsal/ med shortcoden [choir_rehearsal] och WordPress-rollerna Singer och Voice Leader (engelska namn).",
+        "Lägg till en sång: Choir Rehearsal → Add Song — titel, PDF, stämmor (Audio eller YouTube per spår; rollen Voice Leader eller Administrator krävs).",
+        "Tilldela Singer för lyssning och Voice Leader för att sköta sånger. Settings är bara för Administrator."
+      ],
+      "updates": [
+        {
+          "label": "Lite",
+          "text": "uppdateras via WordPress.org, som andra katalogtillägg (Panel → Uppdateringar). GitHub-utgåvor finns kvar som alternativ."
+        },
+        {
+          "label": "Pro 0.5.0 och senare",
+          "text": "WordPress installerar uppdateringar själv (Panel → Uppdateringar eller Tillägg) så länge licensen är aktiv. Du kan slå på automatiska uppdateringar för tillägget."
+        },
+        {
+          "label": "Pro äldre än 0.5.0",
+          "text": "ladda ner 0.5.0 en gång från ditt shop.compath.ee-konto och ersätt tillägget, aktivera sedan licensen under Choir Rehearsal → Pro License. Efter det kommer uppdateringarna av sig själva."
+        },
+        {
+          "label": "",
+          "text": "Installerad version: Choir Rehearsal → Settings."
+        }
+      ],
+      "roles": [
+        {
+          "name": "Singer",
+          "text": "bläddrar bland sånger, lyssnar och öppnar PDF. Rollnamnet är kvar på engelska."
+        },
+        {
+          "name": "Voice Leader",
+          "text": "lägger till och ändrar sånger, laddar upp ljud eller länkar YouTube, och kan spela in med Pro."
+        },
+        {
+          "name": "Administrator",
+          "text": "full åtkomst, inklusive tilläggets Settings."
+        },
+        {
+          "name": "Guest",
+          "text": "öppnar sånger som är markerade som offentliga, utan konto."
+        }
+      ],
+      "faq": [
+        {
+          "q": "Hur uppdateras Pro?",
+          "a": "Från Pro 0.5.0 installerar WordPress uppdateringar själv (Panel → Uppdateringar eller Tillägg) så länge licensen är aktiv. Du kan också slå på automatiska uppdateringar. Pro som är äldre än 0.5.0 måste bytas en gång mot paketet från butikskontot, sedan aktiveras licensen under Choir Rehearsal → Pro License."
+        },
+        {
+          "q": "Behövs Lite fortfarande?",
+          "a": "Ja. Compath Choir Rehearsal (Lite) ska vara installerat och Pro aktiveras bredvid. Byt inte ut Lite."
+        },
+        {
+          "q": "Vad betyder rollerna?",
+          "a": "Singer lyssnar. Voice Leader sköter sångerna. Administrator öppnar också Settings. Guest ser bara offentliga sånger. De här rollnamnen är engelska på alla språk."
+        },
+        {
+          "q": "Vad kostar Pro?",
+          "a": "49 € per år för en körwebbplats, på shop.compath.ee."
+        }
+      ],
+      "ui": {
+        "prev": "Föregående",
+        "next": "Nästa",
+        "pagination": "Sidor i ändringsloggen",
+        "page": "Sida {n}"
+      },
+      "title": "Compath Choir Rehearsal",
+      "requirements": "WordPress 6.4+, PHP 8.0+"
+    },
+    "fi": {
+      "metaDescription": "Compath Choir Rehearsal WordPressille. Lite on maksuton WordPress.orgissa, Pro shop.compath.ee-sivustolla hintaan 49 € vuodessa. Nyt Lite 0.4.63, Pro 0.5.0.",
+      "documentTitle": "Compath Choir Rehearsal — harjoituskirjasto kuoroille",
+      "badge": "WordPress-lisäosa · Lite {lite} · Pro {pro}",
+      "getLite": "Lite WordPress.orgista",
+      "downloadZip": "Lataa zip",
+      "orderPro": "Tilaa Pro",
+      "tryDemo": "Kokeile demoa",
+      "demoTitle": "Live-demo",
+      "demoIntro": "Avaa yhteinen harjoituskirjasto. Julkiset laulut näkyvät ilman tiliä. Koko kirjastoon kirjaudutaan demotilillä.",
+      "demoShared": "Demo on yhteinen. Kaikki käyttävät samoja tunnuksia, joten kirjasto voi muuttua katselun aikana.",
+      "demoSingerText": "Kuunteluun.",
+      "demoLeaderText": "Laulujen hoitoon.",
+      "demoUser": "Käyttäjätunnus",
+      "demoPassword": "Salasana",
+      "demoCopy": "Kopioi",
+      "demoCopied": "Kopioitu",
+      "howToInstall": "Näin asennat",
+      "overviewTitle": "Yleiskuva",
+      "requirementsLabel": "Vaatimukset",
+      "ownerLabel": "Omistaja ja kehittäjä",
+      "firstCustomerLabel": "Ensimmäinen asiakas",
+      "orderTitle": "Tilaus",
+      "orderIntro": "Lite on maksuton WordPress.orgin lisäosahakemistossa (GPL). Pro on erillinen lisäosa osoitteesta shop.compath.ee — jätä Lite paikalleen ja ota Pro käyttöön sen rinnalle.",
+      "orderCta": "Tilaa Pro — 49 €/vuosi",
+      "orderCtaMeta": "Avaa kassan osoitteessa shop.compath.ee",
+      "howToOrder": "Näin tilaat",
+      "discountNote": "Yleishyödyllisille kuoroille ja opetusprojekteille on alennus — kysy tilatessa.",
+      "installTitle": "Asennus",
+      "selfService": "Oma asennus",
+      "updatesTitle": "Päivitykset",
+      "rolesTitle": "Roolit",
+      "faqTitle": "Kysymykset",
+      "changelogTitle": "Muutokset",
+      "changelogMeta": "Julkaisutiedot jäävät englanniksi. Sivulla on kahdeksan versiota.",
+      "licenseLine": "Lisenssi GPL-2.0-or-later",
+      "tagline": "Kuorojen yksityinen harjoituskirjasto: laulut, stemmat, halutessa YouTube-videot, PDF-nuotit ja helppo kuuntelu puhelimella tai tietokoneella.",
+      "overview": "Choir Rehearsal auttaa opettelemaan uudet teokset stemmoittain. Voice Leader lataa PDF-nuotit ja äänen — tai liittää joka stemmalle virallisen YouTube-videon. Singer avaa /rehearsal/, valitsee laulun ja kuuntelee. Lite on maksuton WordPress.orgissa ja GitHubissa; Pro on erillinen lisäosa osoitteesta shop.compath.ee (älä korvaa Liteä, asenna Pro rinnalle).",
+      "featureCards": [
+        {
+          "icon": "library",
+          "title": "Laulukirjasto",
+          "text": "Sivuittain jaettu lista kuoron sivustolla. Listan voi upottaa lyhytkoodilla."
+        },
+        {
+          "icon": "pdf",
+          "title": "PDF-nuotit",
+          "text": "Liitä nuotit ja selaa sivuja sisäänrakennetussa katselimessa."
+        },
+        {
+          "icon": "voices",
+          "title": "Stemmat",
+          "text": "Basso, tenori, altto, sopraano ja muut — yksi ääniraita stemmaa kohti."
+        },
+        {
+          "icon": "player",
+          "title": "Soitin alareunassa",
+          "text": "Kuuntele nuottia lukiessa: soitin pysyy näytön alareunassa."
+        },
+        {
+          "icon": "youtube",
+          "title": "YouTube-raidat",
+          "text": "Jokainen raita on Audio tai YouTube. Laulun sivulla avautuu virallinen soitin, ja video jää näkyviin."
+        },
+        {
+          "icon": "lock",
+          "title": "Rajattu pääsy",
+          "text": "Harjoitussivut voi avata vain kirjautumisen jälkeen."
+        },
+        {
+          "icon": "users",
+          "title": "Roolit Singer ja Voice Leader",
+          "text": "Käyttöönotto luo roolit Singer (kuuntelee) ja Voice Leader (hoitaa lauluja). Administrator avaa Settingsin. Roolien nimet jäävät englanniksi."
+        },
+        {
+          "icon": "lite",
+          "title": "Lite — maksuton",
+          "text": "WordPress.org tai GitHub. Enintään 4 raitaa laulua kohti, äänen lataus ja halutessa YouTube."
+        },
+        {
+          "icon": "pro",
+          "title": "Pro-lisäosa",
+          "text": "Rajaton määrä raitoja, mikrofonitallennus, haku otsikon mukaan, Play-esikatselu ja PDF muokkaimessa."
+        }
+      ],
+      "pricing": [
+        {
+          "name": "Lite",
+          "price": "Maksuton",
+          "featured": false,
+          "items": [
+            "Maksuton WordPress.orgista tai GitHub-julkaisuista",
+            "Enintään 4 stemmaraitaa laulua kohti",
+            "PDF-nuotit ja soitin alareunassa",
+            "Lataa ääni tai liitä virallinen YouTube joka raidalle",
+            "Päivitykset WordPress.orgin kautta (GitHub-julkaisut jäävät varavaihtoehdoksi)"
+          ]
+        },
+        {
+          "name": "Pro — tilaus",
+          "price": "49 €/vuosi",
+          "featured": true,
+          "ctaUrl": "https://shop.compath.ee/products/choir-rehearsal-pro/",
+          "ctaLabel": "Tilaa Pro",
+          "items": [
+            "Asennetaan Liten rinnalle (erillinen lisäosa)",
+            "Rajaton määrä stemmaraitoja laulua kohti",
+            "Mikrofonitallennus hallinnassa",
+            "Play-esikatselu muokkaimessa",
+            "PDF-nuotti suoraan muokkaimessa (sivujen selaus)",
+            "Haku otsikon mukaan",
+            "PDF-kuvake lauluilla, joilla on nuotti",
+            "1 kuoron verkkosivusto",
+            "Versiosta 0.5.0 WordPress päivittää Pron itse, kun lisenssi on voimassa",
+            "Sähköpostituki etusijalla"
+          ]
+        },
+        {
+          "name": "Asennus meiltä",
+          "price": "alkaen 120 €",
+          "featured": false,
+          "items": [
+            "Kertaluonteinen asennus WordPress-sivustollenne",
+            "Sivu /rehearsal/ luodaan",
+            "Roolit Singer ja Voice Leader asetetaan",
+            "Voice Leaderin koulutus (1 kerta)",
+            "Ensimmäinen Pro-vuosi sisältyy hintaan"
+          ]
+        }
+      ],
+      "orderSteps": [
+        "Avaa https://shop.compath.ee/products/choir-rehearsal-pro/ (asennuksen tilaamiseen kirjoita osoitteeseen order@compath.ee).",
+        "Maksun jälkeen lataa choir-rehearsal-pro.zip SureCart-asiakastililtäsi.",
+        "Jätä Choir Rehearsal (Lite) asennetuksi. Siirrä Pro-lisäosa ja ota se käyttöön rinnalle — älä korvaa Liteä.",
+        "Avaa Choir Rehearsal → Pro License ja aktivoi kaupan tilin avain. Pro-versiosta 0.5.0 alkaen WordPress asentaa myöhemmät päivitykset itse, kun lisenssi on voimassa."
+      ],
+      "installSteps": [
+        "Asenna Lite WordPress.orgista (hae ”Compath Choir Rehearsal”) tai siirrä zip GitHub-julkaisuista.",
+        "WordPressissä: Lisäosat → Lisää uusi → ota käyttöön Compath Choir Rehearsal (Lite).",
+        "Prota varten: lataa choir-rehearsal-pro.zip shop.compath.ee-tililtäsi, siirrä se Liten rinnalle (Lisäosat → Lisää uusi → Siirrä lisäosa) ja ota käyttöön. Älä korvaa Liteä.",
+        "Aktivoi lisenssi kohdassa Choir Rehearsal → Pro License. Liitä avain kaupan tililtä.",
+        "Pro-versiosta 0.5.0 alkaen päivitykset asentuvat WordPressissä itsestään (Ohjausnäkymä → Päivitykset tai Lisäosat), kun lisenssi on voimassa. Lisäosalle voi kytkeä myös automaattiset päivitykset.",
+        "Jos Pro on vanhempi kuin 0.5.0, lataa 0.5.0 kaupan tililtä kerran ja korvaa lisäosa: poista vanha Pro käytöstä ja poista se, siirrä sitten uusi zip, tai käytä toimintoa ”Korvaa nykyinen siirretyllä”. Aktivoi lisenssi. Sen jälkeen käsin ei tarvitse tehdä mitään.",
+        "Lisäosa luo sivun /rehearsal/ lyhytkoodilla [choir_rehearsal] sekä WordPress-roolit Singer ja Voice Leader (nimet jäävät englanniksi).",
+        "Lisää laulu: Choir Rehearsal → Add Song — otsikko, PDF, stemmat (Audio tai YouTube raitaa kohti; tarvitaan rooli Voice Leader tai Administrator).",
+        "Anna käyttäjille Singer kuunteluun ja Voice Leader laulujen hoitoon. Settings jää vain roolille Administrator."
+      ],
+      "updates": [
+        {
+          "label": "Lite",
+          "text": "päivittyy WordPress.orgin kautta kuten muut hakemiston lisäosat (Ohjausnäkymä → Päivitykset). GitHub-julkaisut jäävät varavaihtoehdoksi."
+        },
+        {
+          "label": "Pro 0.5.0 ja uudempi",
+          "text": "WordPress asentaa päivitykset itse (Ohjausnäkymä → Päivitykset tai Lisäosat), kun lisenssi on voimassa. Lisäosalle voi kytkeä myös automaattiset päivitykset."
+        },
+        {
+          "label": "Pro vanhempi kuin 0.5.0",
+          "text": "lataa 0.5.0 shop.compath.ee-tililtäsi kerran ja korvaa lisäosa, aktivoi sitten lisenssi kohdassa Choir Rehearsal → Pro License. Sen jälkeen päivitykset tulevat itsestään."
+        },
+        {
+          "label": "",
+          "text": "Asennettu versio: Choir Rehearsal → Settings."
+        }
+      ],
+      "roles": [
+        {
+          "name": "Singer",
+          "text": "selaa lauluja, kuuntelee ja avaa PDF:n. Roolin nimi jää englanniksi."
+        },
+        {
+          "name": "Voice Leader",
+          "text": "lisää ja muokkaa lauluja, lataa ääntä tai linkittää YouTuben ja voi Prolla tallentaa."
+        },
+        {
+          "name": "Administrator",
+          "text": "täysi pääsy, myös lisäosan Settings."
+        },
+        {
+          "name": "Guest",
+          "text": "avaa julkisiksi merkityt laulut ilman tiliä."
+        }
+      ],
+      "faq": [
+        {
+          "q": "Miten Pro päivittyy?",
+          "a": "Pro-versiosta 0.5.0 alkaen WordPress asentaa päivitykset itse (Ohjausnäkymä → Päivitykset tai Lisäosat), kun lisenssi on voimassa. Lisäosalle voi kytkeä myös automaattiset päivitykset. Pro, joka on vanhempi kuin 0.5.0, korvataan kerran kaupan tilin paketilla ja lisenssi aktivoidaan kohdassa Choir Rehearsal → Pro License."
+        },
+        {
+          "q": "Tarvitaanko Lite yhä?",
+          "a": "Kyllä. Compath Choir Rehearsal (Lite) jää asennetuksi ja Pro otetaan käyttöön sen rinnalle. Älä korvaa Liteä."
+        },
+        {
+          "q": "Mitä roolit tarkoittavat?",
+          "a": "Singer kuuntelee. Voice Leader hoitaa lauluja. Administrator avaa myös Settingsin. Guest näkee vain julkiset laulut. Nämä roolien nimet jäävät englanniksi kaikilla kielillä."
+        },
+        {
+          "q": "Mitä Pro maksaa?",
+          "a": "49 € vuodessa yhdeltä kuoron verkkosivustolta, osoitteessa shop.compath.ee."
+        }
+      ],
+      "ui": {
+        "prev": "Edellinen",
+        "next": "Seuraava",
+        "pagination": "Muutoslokin sivut",
+        "page": "Sivu {n}"
+      },
+      "title": "Compath Choir Rehearsal",
+      "requirements": "WordPress 6.4+, PHP 8.0+"
+    }
+  }
 }
