@@ -36,7 +36,8 @@ This demo is shared. Everyone uses these same logins, so the library can change 
 ## Support
 
 Compath OÜ, Ahtri 12, Tallinn, Estonia
-order@compath.ee
+Support: support@compath.ee
+Orders: order@compath.ee
 +372 55520482
 
 ## Languages
@@ -80,7 +81,7 @@ This website is in English, Estonian, Russian, German, French, Italian, Spanish,
 
 ### Where are the recordings stored?
 
-Songs, recordings, and scores stay on the choir’s own WordPress site. Compath OÜ does not host that library. The demo at demo.rehearsal.compath.ee is shared. Compath OÜ is at Ahtri 12, Tallinn, and answers at order@compath.ee or +372 55520482.
+Songs, recordings, and scores stay on the choir’s own WordPress site. Compath OÜ does not host that library. The demo at demo.rehearsal.compath.ee is shared. Compath OÜ is at Ahtri 12, Tallinn, For help, write to support@compath.ee. Orders go to order@compath.ee, or call +372 55520482.
 
 ### How do Pro updates work?
 
