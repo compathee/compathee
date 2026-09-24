@@ -185,9 +185,10 @@ foreach (array(
 		'wp_version' => '6.8',
 		'php_version' => '8.3.6',
 		'site_url' => 'https://choir.example/',
+		'locale' => $locale,
 		'description' => 'The player stops.',
 	));
-	check("$locale github body stays English", str_contains($body, 'Type: Bug') && str_contains($body, 'Role: guest') && str_contains($body, 'Message:'));
+	check("$locale github body stays English", str_contains($body, 'Type: Bug') && str_contains($body, 'Role: guest') && str_contains($body, 'Message:') && str_contains($body, 'Locale: ' . $locale));
 }
 
 foreach (array('et', 'et_EE', 'ru_RU') as $locale) {

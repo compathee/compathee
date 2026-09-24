@@ -129,6 +129,7 @@ final class Choir_Rehearsal_Feedback {
 				'wp_version'     => (string) get_bloginfo( 'version' ),
 				'php_version'    => PHP_VERSION,
 				'site_url'       => (string) home_url( '/' ),
+				'locale'         => self::sender_locale(),
 				'now'            => time(),
 				'rate_keys'      => self::rate_keys(),
 			),
@@ -522,7 +523,45 @@ final class Choir_Rehearsal_Feedback {
 	}
 
 	/**
-	 * @param array{type: string, email: string, role: string, plugin_version: string, wp_version: string, php_version: string, site_url: string, description: string, license?: array<string, mixed>} $fields
+	 * Logged-in user's locale, or the site locale for a guest.
+	 */
+	public static function sender_locale(): string {
+		$locale = '';
+		if ( function_exists( 'is_user_logged_in' ) && is_user_logged_in() && function_exists( 'get_user_locale' ) ) {
+			$locale = self::sanitize_locale( (string) get_user_locale() );
+		}
+		if ( '' === $locale && function_exists( 'get_locale' ) ) {
+			$locale = self::sanitize_locale( (string) get_locale() );
+		}
+
+		return $locale;
+	}
+
+	/**
+	 * @param array<string, mixed> $context
+	 */
+	private static function locale_from_context( array $context ): string {
+		if ( isset( $context['locale'] ) && is_scalar( $context['locale'] ) ) {
+			$locale = self::sanitize_locale( (string) $context['locale'] );
+			if ( '' !== $locale ) {
+				return $locale;
+			}
+		}
+
+		return self::sender_locale();
+	}
+
+	public static function sanitize_locale( string $locale ): string {
+		$locale = trim( $locale );
+		if ( 1 !== preg_match( '/\A[A-Za-z]{2,3}(?:_[A-Za-z0-9]{2,8}){0,2}\z/', $locale ) ) {
+			return '';
+		}
+
+		return $locale;
+	}
+
+	/**
+	 * @param array{type: string, email: string, role: string, plugin_version: string, wp_version: string, php_version: string, site_url: string, description: string, locale?: string, license?: array<string, mixed>} $fields
 	 */
 	public static function issue_body( array $fields ): string {
 		$type_labels = array(
@@ -545,6 +584,7 @@ final class Choir_Rehearsal_Feedback {
 			'WordPress version: ' . $fields['wp_version'],
 			'PHP version: ' . $fields['php_version'],
 			'Site: ' . $fields['site_url'],
+			'Locale: ' . ( isset( $fields['locale'] ) && is_string( $fields['locale'] ) ? self::sanitize_locale( $fields['locale'] ) : self::sender_locale() ),
 		);
 		foreach ( self::license_lines( $license ) as $line ) {
 			$lines[] = $line;
@@ -743,6 +783,7 @@ final class Choir_Rehearsal_Feedback {
 				'wp_version'     => self::to_plain_text( isset( $context['wp_version'] ) && is_scalar( $context['wp_version'] ) ? (string) $context['wp_version'] : '' ),
 				'php_version'    => self::to_plain_text( isset( $context['php_version'] ) && is_scalar( $context['php_version'] ) ? (string) $context['php_version'] : PHP_VERSION ),
 				'site_url'       => self::to_plain_text( isset( $context['site_url'] ) && is_scalar( $context['site_url'] ) ? (string) $context['site_url'] : '' ),
+				'locale'         => self::locale_from_context( $context ),
 				'description'    => $description,
 				'license'        => $license,
 			)

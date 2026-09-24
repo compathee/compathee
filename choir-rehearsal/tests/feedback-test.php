@@ -141,7 +141,7 @@ $sent = Choir_Rehearsal_Feedback::submit_feedback(
 		'description' => "It stops.\n<script>nope</script><img src=x onerror=alert(1)>",
 		'email'       => 'not-an-email',
 	),
-	context(array('role' => 'guest', 'repo' => 'not a repo')),
+	context(array('role' => 'guest', 'repo' => 'not a repo', 'locale' => 'et')),
 	static fn(string $key): array => array(),
 	static function (string $key, array $stamps) use (&$saved): void {
 		$saved[$key] = $stamps;
@@ -161,7 +161,7 @@ $sent = Choir_Rehearsal_Feedback::submit_feedback(
 check('fallback repo url', isset($calls[0]['url']) && str_contains($calls[0]['url'], '/repos/compathee/compathee/issues'));
 check('issue title prefix', isset($calls[0]['payload']['title']) && $calls[0]['payload']['title'] === '[Choir Rehearsal] Player stops');
 $body = (string) ($calls[0]['payload']['body'] ?? '');
-check('issue body metadata', str_contains($body, 'Type: Bug') && str_contains($body, 'Role: guest') && str_contains($body, 'Plugin version: 0.4.61') && str_contains($body, 'WordPress version: 6.8') && str_contains($body, 'PHP version: 8.3.6') && str_contains($body, 'Site: https://choir.example/'));
+check('issue body metadata', str_contains($body, 'Type: Bug') && str_contains($body, 'Role: guest') && str_contains($body, 'Plugin version: 0.4.61') && str_contains($body, 'WordPress version: 6.8') && str_contains($body, 'PHP version: 8.3.6') && str_contains($body, 'Site: https://choir.example/') && str_contains($body, 'Locale: et'));
 check('invalid email omitted', str_contains($body, 'Contact: (not provided)'));
 check('issue body has no html', !str_contains($body, '<') && !str_contains($body, '>') && !str_contains($body, 'onerror') && str_contains($body, 'It stops.'));
 check('bug labels', ($calls[0]['payload']['labels'] ?? array()) === array('feedback', 'bug'));
@@ -537,5 +537,55 @@ check(
 	&& !isset($stored->license_key)
 );
 check('email is not a customer id', '' === \SureCart\Licensing\License::public_id('singer@example.com'));
+
+if (!function_exists('get_user_locale')) {
+	function get_user_locale(): string {
+		return (string) ($GLOBALS['choir_user_locale'] ?? '');
+	}
+}
+if (!function_exists('get_locale')) {
+	function get_locale(): string {
+		return (string) ($GLOBALS['choir_site_locale'] ?? '');
+	}
+}
+
+$GLOBALS['choir_feedback_logged_in'] = true;
+$GLOBALS['choir_user_locale'] = 'et_EE';
+$GLOBALS['choir_site_locale'] = 'en_US';
+check('logged-in locale', 'et_EE' === Choir_Rehearsal_Feedback::sender_locale());
+
+$GLOBALS['choir_feedback_logged_in'] = false;
+$GLOBALS['choir_user_locale'] = 'en_US';
+$GLOBALS['choir_site_locale'] = 'ru_RU';
+check('guest locale', 'ru_RU' === Choir_Rehearsal_Feedback::sender_locale());
+
+$GLOBALS['choir_feedback_logged_in'] = true;
+$GLOBALS['choir_user_locale'] = '';
+$GLOBALS['choir_site_locale'] = 'et';
+check('empty user locale uses site', 'et' === Choir_Rehearsal_Feedback::sender_locale());
+check('locale rejects extra text', '' === Choir_Rehearsal_Feedback::sanitize_locale("ru_RU\nInjected"));
+
+$GLOBALS['choir_feedback_logged_in'] = false;
+$GLOBALS['choir_site_locale'] = 'en_US';
+$calls = array();
+Choir_Rehearsal_Feedback::submit_feedback(
+	array(
+		'type' => 'other',
+		'title' => 'Guest note',
+		'description' => 'Sent without a locale field.',
+		'email' => '',
+	),
+	context(array()),
+	static fn(string $key): array => array(),
+	static function (): void {
+	},
+	static function (string $method, string $url, array $payload, string $sent_token) use (&$calls): array {
+		unset($method, $url, $sent_token);
+		$calls[] = $payload;
+		return array('code' => 201, 'message' => 'Created', 'data' => array('number' => 24));
+	}
+);
+check('guest issue uses site locale', str_contains((string) ($calls[0]['body'] ?? ''), 'Locale: en_US'));
+check('locale is not a request field', !str_contains($js, 'locale') && !str_contains($feedback, "get_param( 'locale'"));
 
 exit($fail > 0 ? 1 : 0);
