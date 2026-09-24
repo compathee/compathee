@@ -23,7 +23,7 @@
 		const iframe = document.createElement('iframe');
 		const sep = embedUrl.indexOf('?') === -1 ? '?' : '&';
 		iframe.src = embedUrl + sep + 'rel=0';
-		iframe.title = 'YouTube video player';
+		iframe.title = i18n.playerTitle || 'YouTube video player';
 		iframe.width = '560';
 		iframe.height = '315';
 		iframe.allow =

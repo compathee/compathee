@@ -330,6 +330,12 @@ if (!function_exists('esc_html_e')) {
 		echo $text;
 	}
 }
+if (!function_exists('esc_attr_e')) {
+	function esc_attr_e(string $text, string $domain = ''): void {
+		unset($domain);
+		echo $text;
+	}
+}
 if (!function_exists('esc_attr')) {
 	function esc_attr(string $text): string {
 		return htmlspecialchars($text, ENT_QUOTES, 'UTF-8');

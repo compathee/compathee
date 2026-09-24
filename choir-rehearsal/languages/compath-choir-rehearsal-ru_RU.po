@@ -2,6 +2,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Compath Choir Rehearsal 0.4.53\n"
 "Language: ru_RU\n"
+"PO-Revision-Date: 2026-09-24 08:30+0000\n"
+"Last-Translator: Choir Rehearsal\n"
+"Language-Team: Russian\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -120,7 +123,7 @@ msgid "Check for plugin updates"
 msgstr "Проверить обновления плагина"
 
 msgid "Choir Rehearsal"
-msgstr "Репетиции хора"
+msgstr "Choir Rehearsal"
 
 msgid "Choir Rehearsal migration"
 msgstr "Миграция Choir Rehearsal"
@@ -129,7 +132,7 @@ msgid "Choir Rehearsal Pro"
 msgstr "Choir Rehearsal Pro"
 
 msgid "Choir Rehearsal Settings"
-msgstr "Настройки репетиций"
+msgstr "Настройки Choir Rehearsal"
 
 msgid "Choir Rehearsal: duplicate Lite entries were removed from active plugins. Reload this page if Pro or features still look inactive."
 msgstr "Choir Rehearsal: дублирующие записи Lite удалены из активных плагинов. Обновите страницу, если Pro или функции всё ещё неактивны."
@@ -432,7 +435,7 @@ msgid "Optional override. If empty, the plugin checks GitHub Releases, then fall
 msgstr "Необязательное переопределение. Если пусто, плагин проверяет GitHub Releases, затем берёт update.json из последнего релиза."
 
 msgid "Other"
-msgstr "Прочее"
+msgstr "Другое"
 
 msgid "Password"
 msgstr "Пароль"
@@ -498,7 +501,7 @@ msgid "Public songs above are open to everyone. Sign in with your WordPress acco
 msgstr "Публичные песни выше открыты всем. Войдите через WordPress, чтобы открыть полную библиотеку репетиций."
 
 msgid "Public — available without login"
-msgstr ""
+msgstr "Публичная — доступна без входа"
 
 msgid "recommended for existing sites"
 msgstr "рекомендуется для существующих сайтов"
@@ -916,7 +919,7 @@ msgid "Please enter a type, title, and description."
 msgstr "Укажите тип, заголовок и описание."
 
 msgid "Feedback is not configured."
-msgstr "Отзывы не настроены."
+msgstr "Форма отзывов не настроена."
 
 msgid "Please wait before sending more feedback."
 msgstr "Подождите перед отправкой следующего отзыва."
@@ -926,3 +929,12 @@ msgstr "Не удалось отправить отзыв. Попросите а
 
 msgid "Could not send feedback. Please ask an administrator to check the GitHub repository."
 msgstr "Не удалось отправить отзыв. Попросите администратора проверить репозиторий GitHub."
+
+msgid "Short summary"
+msgstr "Краткое описание"
+
+msgid "What happened, or what you wish for"
+msgstr "Что случилось или какое у вас пожелание"
+
+msgid "YouTube video player"
+msgstr "Видеоплеер YouTube"

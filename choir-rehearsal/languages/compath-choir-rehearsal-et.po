@@ -2,6 +2,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Compath Choir Rehearsal 0.4.53\n"
 "Language: et\n"
+"PO-Revision-Date: 2026-09-24 08:30+0000\n"
+"Last-Translator: Choir Rehearsal\n"
+"Language-Team: Estonian\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -119,7 +122,7 @@ msgid "Check for plugin updates"
 msgstr "Kontrolli plugina uuendusi"
 
 msgid "Choir Rehearsal"
-msgstr "Koori proovid"
+msgstr "Choir Rehearsal"
 
 msgid "Choir Rehearsal migration"
 msgstr "Choir Rehearsal migratsioon"
@@ -128,7 +131,7 @@ msgid "Choir Rehearsal Pro"
 msgstr "Choir Rehearsal Pro"
 
 msgid "Choir Rehearsal Settings"
-msgstr "Koori proovide seaded"
+msgstr "Choir Rehearsal seaded"
 
 msgid "Choir Rehearsal: duplicate Lite entries were removed from active plugins. Reload this page if Pro or features still look inactive."
 msgstr "Choir Rehearsal: topelt Lite kirjed eemaldati aktiivsete pluginate nimekirjast. Laadi leht uuesti, kui Pro või funktsioonid tunduvad endiselt mitteaktiivsed."
@@ -925,3 +928,12 @@ msgstr "Tagasisidet ei õnnestunud saata. Palu administraatoril kontrollida GitH
 
 msgid "Could not send feedback. Please ask an administrator to check the GitHub repository."
 msgstr "Tagasisidet ei õnnestunud saata. Palu administraatoril kontrollida GitHubi hoidlat."
+
+msgid "Short summary"
+msgstr "Lühike kokkuvõte"
+
+msgid "What happened, or what you wish for"
+msgstr "Mis juhtus või mida soovid"
+
+msgid "YouTube video player"
+msgstr "YouTube’i videopleier"

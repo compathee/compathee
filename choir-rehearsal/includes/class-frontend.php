@@ -192,8 +192,9 @@ final class Choir_Rehearsal_Frontend {
 					'choir-rehearsal-youtube',
 					'choirRehearsalYoutube',
 					array(
-						'open'  => __( 'Watch video', 'compath-choir-rehearsal' ),
-						'close' => __( 'Hide video', 'compath-choir-rehearsal' ),
+						'open'        => __( 'Watch video', 'compath-choir-rehearsal' ),
+						'close'       => __( 'Hide video', 'compath-choir-rehearsal' ),
+						'playerTitle' => __( 'YouTube video player', 'compath-choir-rehearsal' ),
 					)
 				);
 			}

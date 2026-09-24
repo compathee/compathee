@@ -211,11 +211,11 @@ final class Choir_Rehearsal_Feedback {
 				</p>
 				<p class="choir-feedback__field">
 					<label for="choir-feedback-title"><?php esc_html_e( 'Title', 'compath-choir-rehearsal' ); ?></label>
-					<input type="text" id="choir-feedback-title" name="title" required maxlength="120" />
+					<input type="text" id="choir-feedback-title" name="title" required maxlength="120" placeholder="<?php esc_attr_e( 'Short summary', 'compath-choir-rehearsal' ); ?>" />
 				</p>
 				<p class="choir-feedback__field">
 					<label for="choir-feedback-description"><?php esc_html_e( 'Description', 'compath-choir-rehearsal' ); ?></label>
-					<textarea id="choir-feedback-description" name="description" required maxlength="4000" rows="5"></textarea>
+					<textarea id="choir-feedback-description" name="description" required maxlength="4000" rows="5" placeholder="<?php esc_attr_e( 'What happened, or what you wish for', 'compath-choir-rehearsal' ); ?>"></textarea>
 				</p>
 				<p class="choir-feedback__field">
 					<label for="choir-feedback-email"><?php esc_html_e( 'Contact email (optional)', 'compath-choir-rehearsal' ); ?></label>
