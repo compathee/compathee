@@ -56,6 +56,12 @@ WordPress roles created on plugin activation. Names stay in English. **Singer** 
 
 Yes. Use the shortcode `[choir_rehearsal]`.
 
+= How do updates work? =
+
+The WordPress.org copy of this plugin updates through WordPress (Dashboard → Updates), like other directory plugins.
+
+Sites that also run the separate Pro add-on receive Pro updates through WordPress starting with Pro 0.5.0, while that add-on’s license is active (Dashboard → Updates or Plugins). Auto-updates can be enabled for the Pro plugin on the Plugins screen. A Pro install older than 0.5.0 must be replaced once from the customer account (upload the new zip, or use Replace current with uploaded), then the license is activated under Choir Rehearsal → Pro License. Later Pro versions need no manual install.
+
 = Can I use YouTube instead of an audio file? =
 
 Yes. In the song editor, set a voice track’s source to **YouTube** and paste a youtube.com or youtu.be URL. On the song page a button opens the official YouTube embed (video stays visible). This is for listening/reference only — the plugin does not download or convert YouTube audio.

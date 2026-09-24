@@ -34,10 +34,11 @@ After purchase on [shop.compath.ee/products/choir-rehearsal-pro](https://shop.co
 1. Keep **Choir Rehearsal** installed and active.
 2. Download `choir-rehearsal-pro.zip` from the SureCart customer dashboard (or the email after payment).
 3. **Plugins → Add New → Upload Plugin** → upload the Pro zip → **Activate**.
-4. Refresh **Choir Rehearsal → Settings**.
+4. Open **Choir Rehearsal → Pro License**, paste the key from the shop account, and click **Activate License**.
+5. Refresh **Choir Rehearsal → Settings**.
    - **Edition** must show `Pro`.
    - **Buy Pro** button disappears.
-5. Check a song: Record, Play, and embedded PDF available; more than 4 tracks allowed; search on the public library.
+6. Check a song: Record, Play, and embedded PDF available; more than 4 tracks allowed; search on the public library.
 
 If Pro is uploaded but Lite is missing, WordPress shows: *Choir Rehearsal Pro requires the Choir Rehearsal plugin*.
 
@@ -89,12 +90,16 @@ If you install the *same* version that you just published, Check for plugin upda
 
 ## Publisher: ship a new Pro version (SureCart only)
 
-1. Bump version in `choir-rehearsal-pro/choir-rehearsal-pro.php`.
-2. Zip folder `choir-rehearsal-pro/` → `choir-rehearsal-pro.zip`.
-3. SureCart product **Choir Rehearsal Pro** → replace **Current release** download.
+1. Bump the version in `choir-rehearsal-pro/choir-rehearsal-pro.php` and set the same version in `release.json` (the updater compares the plugin header with `release.json` `version`; `slug` stays `choir-rehearsal-pro`).
+2. Run `./scripts/build-pro-zip.sh` so the zip root folder is `choir-rehearsal-pro/`.
+3. SureCart product **Choir Rehearsal Pro** → upload the zip and set it as **Current Release**.
 4. Do not put Pro on public GitHub Releases.
 
-Pro customers update Pro by downloading the new zip from their SureCart account until a licensed updater is added.
+### How customers update Pro
+
+From **0.5.0**, an activated license receives Pro updates through WordPress (**Dashboard → Updates** or **Plugins**). Customers can turn on auto-updates for **Compath Choir Rehearsal Pro** on the Plugins screen. Updates are offered only while the license is activated on that site.
+
+Pro older than 0.5.0 has no updater. Those sites download **0.5.0** from the shop account once and replace the plugin (deactivate and delete the old Pro, then upload the new zip, or use **Replace current with uploaded**). Then activate the license under **Choir Rehearsal → Pro License**. After that, no manual installs.
 
 ---
 
