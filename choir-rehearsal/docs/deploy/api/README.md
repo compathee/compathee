@@ -28,15 +28,14 @@ Create the private directory next to `public_html` (not inside it):
 
 Copy `config.example.php` there. The script resolves that path as two levels above `api/` (`public_html/api` → domain root → `private/feedback-config.php`). Override with the environment variable `CHOIR_FEEDBACK_CONFIG` if the layout differs.
 
-Fill in:
+The example already sets `jira_email` to `compath@compath.ee`. That account is the Basic-auth user for `https://compath.atlassian.net`, project `WP`. Issue types there are Task and Sub-task; the relay creates a Task. Fill in only the secrets:
 
 | Key | Value |
 |-----|--------|
-| `jira_email` | Atlassian account email allowed to create issues in project WP |
-| `jira_token` | Jira Cloud API token for that account |
+| `jira_token` | Jira Cloud API token for `compath@compath.ee`. Keep it out of git. |
 | `smtp_pass` | Password for `compath@compath.ee` |
 
-Defaults already match the decided hosts: Jira `https://compath.atlassian.net`, project `WP`, issue type `Task`, SMTP `compath.ee:465`, login `compath@compath.ee`, From `Compath Support <support@compath.ee>`, Reply-To `support@compath.ee`.
+Other defaults already match: Jira `https://compath.atlassian.net`, project `WP`, issue type `Task`, SMTP `compath.ee:465`, login `compath@compath.ee`, From `Compath Support <support@compath.ee>`, Reply-To `support@compath.ee`.
 
 The PHP user must be able to create `/domains/rehearsal.compath.ee/private/feedback-rate/` (per-IP counters) and append `/domains/rehearsal.compath.ee/private/feedback-mail.log`. If the rate directory cannot be written, requests are still accepted and a line is logged.
 

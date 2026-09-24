@@ -79,4 +79,4 @@ FTP нужен только когда меняется сам `product-page.htm
 
 Конфиг (создать вручную, вне webroot): `/domains/rehearsal.compath.ee/private/feedback-config.php`
 
-Образец: [deploy/api/config.example.php](deploy/api/config.example.php). Ключ проекта — `WP` (задачи вида `WP-12`). Заполнить `jira_email`, `jira_token`, `smtp_pass`. Подробности в [deploy/api/README.md](deploy/api/README.md).
+Образец: [deploy/api/config.example.php](deploy/api/config.example.php). Ключ проекта — `WP` (задачи вида `WP-12`). Почта Jira в образце — `compath@compath.ee`. Заполнить только `jira_token` и `smtp_pass` (токен в git не класть). Подробности в [deploy/api/README.md](deploy/api/README.md).

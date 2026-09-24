@@ -9,7 +9,7 @@
  */
 return array(
 	'jira_base'       => 'https://compath.atlassian.net',
-	'jira_email'      => '',
+	'jira_email'      => 'compath@compath.ee',
 	'jira_token'      => '',
 	'jira_project'    => 'WP',
 	'jira_issue_type' => 'Task',

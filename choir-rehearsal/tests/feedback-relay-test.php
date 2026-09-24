@@ -283,7 +283,7 @@ check('smtp auth login', str_contains($data, "AUTH LOGIN\r\n") && str_contains($
 check('russian subject is encoded', str_contains($data, '=?UTF-8?B?') && str_contains($data, 'Плеер остановился.'));
 
 $example = (string) file_get_contents(dirname(__DIR__) . '/docs/deploy/api/config.example.php');
-check('example config has empty secrets', str_contains($example, "'jira_project'    => 'WP'") && str_contains($example, "'jira_token'      => ''") && str_contains($example, "'smtp_pass'       => ''") && !str_contains($example, $secret_token));
+check('example config has empty secrets', str_contains($example, "'jira_email'      => 'compath@compath.ee'") && str_contains($example, "'jira_project'    => 'WP'") && str_contains($example, "'jira_token'      => ''") && str_contains($example, "'smtp_pass'       => ''") && !str_contains($example, $secret_token));
 check('two-letter case key', 'WP-12' === Choir_Feedback_Relay::issue_key(array('code' => 201, 'body' => '{"key":"WP-12"}')));
 
 $workflow = (string) file_get_contents(dirname(__DIR__, 2) . '/.github/workflows/deploy-rehearsal-site.yml');
