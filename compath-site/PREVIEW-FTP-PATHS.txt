@@ -6,7 +6,7 @@ The folder .htaccess is part of this upload. It does not replace the web-root .h
 /public_html/preview-2026/404.html
 /public_html/preview-2026/apple-touch-icon.png
 /public_html/preview-2026/assets/choir-rehearsal.webp
-/public_html/preview-2026/assets/mark.svg
+/public_html/preview-2026/assets/logo.png
 /public_html/preview-2026/assets/og-en.png
 /public_html/preview-2026/assets/og-en.webp
 /public_html/preview-2026/assets/og-et.png

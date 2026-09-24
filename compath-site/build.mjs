@@ -13,6 +13,7 @@ const langs = ["en", "et", "ru"].map((code) =>
 );
 const byCode = Object.fromEntries(langs.map((lang) => [lang.code, lang]));
 const redirects = JSON.parse(fs.readFileSync(path.join(root, "redirects.json"), "utf8"));
+const logoMeta = JSON.parse(fs.readFileSync(path.join(root, "assets", "brand", "logo-meta.json"), "utf8"));
 const product = {
   bare: "https://rehearsal.compath.ee/",
   localized: {
@@ -94,7 +95,7 @@ function organization() {
     legalName: "Compath OÜ",
     url: `${origin}/`,
     image: `${origin}/assets/og-en.webp`,
-    logo: `${origin}/assets/mark.svg`,
+    logo: `${origin}/assets/logo.png`,
     telephone: "+37255520482",
     vatID: "EE101244231",
     identifier: {
@@ -219,7 +220,7 @@ function layout(lang, id, main, graph) {
 <link rel="canonical" href="${canonical}" />
 ${hreflang(id)}
 <meta name="robots" content="${robots}" />
-<meta name="theme-color" content="#1f4fd8" />
+<meta name="theme-color" content="#e85d04" />
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="Compath OÜ" />
 <meta property="og:locale" content="${lang.ogLocale}" />
@@ -251,7 +252,7 @@ ${ld(graph)}
 <div class="accent"></div>
 <header class="site-header">${basePath ? `\n  <p class="preview-badge">${esc(lang.ui.previewBadge)}</p>` : ""}
   <div class="wrap header__bar">
-    <a class="brand" href="${pub(urlFor(lang, "home"))}"><img class="brand__mark" src="${pub("/assets/mark.svg")}" alt="" width="32" height="32" /><span class="brand__name">Compath</span></a>
+    <a class="brand" href="${pub(urlFor(lang, "home"))}"><img class="brand__logo" src="${pub("/assets/logo.png")}" alt="Compath" width="${logoMeta.width}" height="${logoMeta.height}" /></a>
     <nav class="nav" aria-label="${esc(lang.ui.navLabel)}">
       ${navLink(lang, id, "home")}
       ${navLink(lang, id, "services")}
@@ -559,16 +560,17 @@ function writePage(urlPath, html) {
 function copyAssets() {
   const assets = path.join(dist, "assets");
   fs.mkdirSync(assets, { recursive: true });
-  for (const name of ["site.css", "site.js", "mark.svg"]) {
+  for (const name of ["site.css", "site.js"]) {
     fs.copyFileSync(path.join(root, "assets", name), path.join(assets, name));
   }
   const brand = path.join(root, "assets", "brand");
+  const skip = new Set(["images.json", "choir-demo.webp", "compath-logo-source.png", "logo-meta.json", "logo-dots.png"]);
   for (const name of fs.readdirSync(brand)) {
-    if (name === "images.json" || name === "choir-demo.webp") continue;
-    const target = name.startsWith("og-") || name.startsWith("choir-") ? path.join(assets, name) : path.join(dist, name);
+    if (skip.has(name)) continue;
+    const inAssets = name.startsWith("og-") || name.startsWith("choir-") || name === "logo.png";
+    const target = inAssets ? path.join(assets, name) : path.join(dist, name);
     fs.copyFileSync(path.join(brand, name), target);
   }
-  fs.copyFileSync(path.join(root, "assets", "mark.svg"), path.join(dist, "favicon.svg"));
   fs.writeFileSync(path.join(dist, "site.webmanifest"), `${JSON.stringify({
     name: "Compath OÜ",
     short_name: "Compath",
@@ -576,7 +578,7 @@ function copyAssets() {
       { src: pub("/favicon-192.png"), sizes: "192x192", type: "image/png" },
       { src: pub("/favicon-512.png"), sizes: "512x512", type: "image/png" },
     ],
-    theme_color: "#1f4fd8",
+    theme_color: "#e85d04",
     background_color: "#ffffff",
     display: "standalone",
   }, null, 2)}\n`);

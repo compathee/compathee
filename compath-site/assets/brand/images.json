@@ -2,7 +2,7 @@
   "apple-touch-icon.png": {
     "width": 180,
     "height": 180,
-    "bytes": 5874
+    "bytes": 3107
   },
   "choir-demo.webp": {
     "width": 1160,
@@ -14,52 +14,67 @@
     "height": 800,
     "bytes": 57668
   },
+  "compath-logo-source.png": {
+    "width": 266,
+    "height": 78,
+    "bytes": 83268
+  },
   "favicon-192.png": {
     "width": 192,
     "height": 192,
-    "bytes": 6274
+    "bytes": 3284
   },
   "favicon-32.png": {
     "width": 32,
     "height": 32,
-    "bytes": 1038
+    "bytes": 812
   },
   "favicon-512.png": {
     "width": 512,
     "height": 512,
-    "bytes": 18374
+    "bytes": 4416
   },
   "favicon.ico": {
-    "bytes": 679
+    "bytes": 333
+  },
+  "logo-dots.png": {
+    "width": 119,
+    "height": 84,
+    "bytes": 2933
+  },
+  "logo.png": {
+    "width": 266,
+    "height": 72,
+    "bytes": 5534
   },
   "og-en.png": {
     "width": 1200,
     "height": 630,
-    "bytes": 28223
+    "bytes": 26911
   },
   "og-en.webp": {
     "width": 1200,
     "height": 630,
-    "bytes": 14274
+    "bytes": 13734
   },
   "og-et.png": {
     "width": 1200,
     "height": 630,
-    "bytes": 25368
+    "bytes": 24368
   },
   "og-et.webp": {
     "width": 1200,
     "height": 630,
-    "bytes": 12854
+    "bytes": 12452
   },
   "og-ru.png": {
     "width": 1200,
     "height": 630,
-    "bytes": 30868
+    "bytes": 29322
   },
   "og-ru.webp": {
     "width": 1200,
     "height": 630,
-    "bytes": 16040
+    "bytes": 14956
   }
 }

@@ -3,7 +3,7 @@ Static files uploaded from compath-site/dist/ (htaccess.snippet is merged by han
 /public_html/404.html
 /public_html/apple-touch-icon.png
 /public_html/assets/choir-rehearsal.webp
-/public_html/assets/mark.svg
+/public_html/assets/logo.png
 /public_html/assets/og-en.png
 /public_html/assets/og-en.webp
 /public_html/assets/og-et.png

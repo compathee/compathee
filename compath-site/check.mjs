@@ -85,6 +85,12 @@ export function validate(dist, options = {}) {
     }
     if (!html.includes('content="1200"') || !html.includes('content="630"')) problems.push(`${rel} missing OG size`);
     if (!html.includes(">ENG<") || !html.includes(">EST<") || !html.includes(">RUS<")) problems.push(`${rel} missing language labels`);
+    if (!html.includes('class="brand__logo"') || !html.includes('alt="Compath"') || !html.includes("logo.png")) {
+      problems.push(`${rel} missing official logo`);
+    }
+    const logoSize = html.match(/class="brand__logo"[^>]*width="(\d+)" height="(\d+)"/);
+    if (!logoSize || logoSize[1] === "0" || logoSize[2] === "0") problems.push(`${rel} logo width and height`);
+    if (html.includes("brand__name") || html.includes("mark.svg")) problems.push(`${rel} still uses the old mark`);
     const blocks = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)];
     if (!blocks.length) problems.push(`${rel} missing JSON-LD`);
     for (const block of blocks) {
@@ -167,12 +173,13 @@ export function validate(dist, options = {}) {
   }
 
   const pairs = [
-    ["#142033", "#ffffff"],
-    ["#3a465c", "#ffffff"],
-    ["#ffffff", "#1f4fd8"],
-    ["#ffffff", "#10192f"],
-    ["#d6e2ff", "#10192f"],
+    ["#1c1c1c", "#ffffff"],
+    ["#4a453f", "#ffffff"],
+    ["#ffffff", "#c04000"],
+    ["#ffffff", "#1c1c1c"],
+    ["#f0ebe4", "#1c1c1c"],
     ["#173ea8", "#ffffff"],
+    ["#c04000", "#ffffff"],
   ];
   for (const [fg, bg] of pairs) {
     const ratio = contrast(fg, bg);

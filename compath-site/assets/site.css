@@ -1,12 +1,16 @@
 :root {
+  --orange: #f26b00;
+  --amber: #f5b000;
+  --orange-deep: #c04000;
+  --orange-dark: #8c3000;
   --blue: #1f4fd8;
   --blue-dark: #173ea8;
-  --ink: #142033;
-  --muted: #3a465c;
-  --line: #d5ddea;
-  --paper: #f5f7fb;
-  --band: #eef3ff;
-  --navy: #10192f;
+  --ink: #1c1c1c;
+  --muted: #4a453f;
+  --line: #e4e0da;
+  --paper: #f7f5f2;
+  --band: #fff6ea;
+  --navy: #1c1c1c;
   --white: #fff;
   --ok: #0f6b45;
   --err: #8f1d1d;
@@ -50,7 +54,7 @@ a:hover { text-decoration: none; }
 
 .accent {
   height: 4px;
-  background: var(--blue);
+  background: linear-gradient(90deg, var(--amber), var(--orange) 55%, var(--orange-deep));
 }
 
 .preview-badge {
@@ -108,7 +112,7 @@ a:hover { text-decoration: none; }
   letter-spacing: -0.02em;
 }
 
-.brand__mark { display: block; }
+.brand__logo { display: block; }
 
 .nav {
   display: flex;
@@ -128,7 +132,7 @@ a:hover { text-decoration: none; }
   border-radius: 8px;
 }
 
-.nav a[aria-current="page"] { color: var(--blue-dark); box-shadow: inset 0 -2px 0 var(--blue); }
+.nav a[aria-current="page"] { color: var(--orange-deep); box-shadow: inset 0 -2px 0 var(--orange); }
 
 .lang {
   display: flex;
@@ -162,7 +166,7 @@ a:hover { text-decoration: none; }
 
 .eyebrow {
   margin: 0 0 12px;
-  color: var(--blue-dark);
+  color: var(--orange-deep);
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -193,8 +197,8 @@ h3 { margin: 0 0 8px; font-size: 1.2rem; }
   border: 2px solid transparent;
 }
 
-.btn--primary { background: var(--blue); color: var(--white); }
-.btn--primary:hover { background: var(--blue-dark); color: var(--white); }
+.btn--primary { background: var(--orange-deep); color: var(--white); }
+.btn--primary:hover { background: var(--orange-dark); color: var(--white); }
 .btn--ghost { background: var(--white); color: var(--blue-dark); border-color: var(--blue); }
 .btn--ghost:hover { background: var(--band); }
 
@@ -219,13 +223,13 @@ h3 { margin: 0 0 8px; font-size: 1.2rem; }
   background: var(--white);
   color: inherit;
   text-decoration: none;
-  box-shadow: 0 8px 24px rgba(16, 25, 47, 0.04);
+  box-shadow: 0 8px 24px rgba(28, 28, 28, 0.05);
 }
 
-.cards a:hover { border-color: var(--blue); }
+.cards a:hover { border-color: var(--orange); }
 
 .num {
-  color: var(--blue);
+  color: var(--orange-deep);
   font-weight: 800;
   font-size: 0.9rem;
   letter-spacing: 0.08em;
@@ -235,7 +239,7 @@ h3 { margin: 0 0 8px; font-size: 1.2rem; }
 
 .product-band {
   background: var(--band);
-  border-block: 1px solid #d5e1fb;
+  border-block: 1px solid #f0ddc0;
   padding: 64px 0;
 }
 
@@ -272,9 +276,9 @@ h3 { margin: 0 0 8px; font-size: 1.2rem; }
   padding: 18px;
 }
 
-.edition--pro { border-color: var(--blue); box-shadow: 0 0 0 1px rgba(31, 79, 216, 0.18); }
+.edition--pro { border-color: var(--orange); box-shadow: 0 0 0 1px rgba(242, 107, 0, 0.2); }
 
-.price { margin: 0 0 8px; color: var(--blue-dark); font-size: 1.35rem; font-weight: 800; }
+.price { margin: 0 0 8px; color: var(--orange-deep); font-size: 1.35rem; font-weight: 800; }
 
 .feature-grid { margin-top: 8px; }
 .prose ul, .edition ul, .who { margin: 8px 0 0; padding-left: 1.2rem; }
@@ -304,7 +308,7 @@ h3 { margin: 0 0 8px; font-size: 1.2rem; }
 
 .cta-band h2 { margin-bottom: 8px; }
 .cta-band p { margin: 0; max-width: 62ch; color: #e7ecf5; }
-.cta-band .btn--primary { background: var(--white); color: var(--blue-dark); }
+.cta-band .btn--primary { background: var(--white); color: var(--orange-deep); }
 
 .site-footer {
   background: var(--navy);
@@ -312,9 +316,9 @@ h3 { margin: 0 0 8px; font-size: 1.2rem; }
   padding: 40px 0 28px;
 }
 
-.site-footer a { color: #d6e2ff; }
-.site-footer .meta { color: #c5d4f7; }
-.site-footer .footer-nav a { color: #d6e2ff; padding-left: 0; }
+.site-footer a { color: #ffffff; }
+.site-footer .meta { color: #f0ebe4; }
+.site-footer .footer-nav a { color: #ffffff; padding-left: 0; }
 address { font-style: normal; }
 .footer-nav { display: flex; flex-direction: column; align-items: flex-start; }
 .legal { margin-top: 22px; color: #9fb4ef; font-size: 0.92rem; }
