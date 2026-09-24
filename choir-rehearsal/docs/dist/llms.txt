@@ -1,0 +1,61 @@
+# Choir Rehearsal
+
+> Choir practice tracks and SATB learning tracks for voice-part rehearsal on your own WordPress site. Listen on a phone. Lite is free. Pro is €49 a year.
+
+Choir Rehearsal is a choir rehearsal app for WordPress. It holds choir practice tracks for voice parts rehearsal on the choir’s own site: SATB learning tracks for soprano, alto, tenor, and bass, next to the PDF score. Singer listens on a phone. Voice Leader adds the songs. Lite is free. Pro is €49 a year.
+
+## Who it is for
+
+Choir singers and the people who run rehearsals. Inside WordPress the role names stay English: Singer, Voice Leader, Administrator, and Guest.
+
+## Lite and Pro
+
+- Lite: Free. Free from WordPress.org or GitHub Releases Up to 4 voice tracks per song PDF scores and sticky player Upload audio or link official YouTube per track Updates via WordPress.org (GitHub Releases remain an alternative)
+- Pro — subscription: €49 / year. Install beside Lite (separate add-on) Unlimited voice tracks per song Microphone recording in the admin Play preview of voice tracks in the song editor Embedded PDF score in the song editor (swipe pages) Search songs by title PDF icon on songs that have a score attached 1 choir website From 0.5.0, WordPress updates Pro automatically while the license is active Priority email support
+- Done-for-you setup: from €120. One-time setup on your WordPress site /rehearsal/ page created Singer and Voice Leader roles configured Voice Leader training (1 session) First year of Pro included
+
+## Install
+
+1. Install Lite from WordPress.org (search “Compath Choir Rehearsal”) or upload the zip from GitHub Releases.
+2. In WordPress: Plugins → Add New → activate Compath Choir Rehearsal (Lite).
+3. Pro customers: download choir-rehearsal-pro.zip from your shop.compath.ee account, upload it beside Lite (Plugins → Add New → Upload Plugin), and activate it. Do not replace Lite.
+4. Activate the license under Choir Rehearsal → Pro License. Paste the key from your shop account.
+5. From Pro 0.5.0, updates install automatically in WordPress (Dashboard → Updates or Plugins) while the license is active. You can also enable auto-updates for the plugin.
+6. If your Pro version is older than 0.5.0, download 0.5.0 from your shop account once and replace the plugin: deactivate and delete the old Pro, then upload the new zip, or use WordPress “Replace current with uploaded”. Activate the license. After that, no manual updates.
+7. The plugin creates a /rehearsal/ page with the [choir_rehearsal] shortcode and WordPress roles Singer and Voice Leader (English names).
+8. Add a song: Choir Rehearsal → Add Song — title, PDF, voice tracks (Audio or YouTube per track; needs Voice Leader or Administrator).
+9. Assign Users → Singer for listening, Voice Leader for managing songs. Settings remain Administrator-only.
+
+## Demo
+
+Shared demo: https://demo.rehearsal.compath.ee/rehearsal
+Singer login: demosinger / DMo5ingERzz26
+Voice Leader login: demoleader / DMoLiidERzz26
+This demo is shared. Everyone uses these same logins, so the library can change while you look at it.
+
+## Support
+
+Compath OÜ, Ahtri 12, Tallinn, Estonia
+order@compath.ee
++372 55520482
+
+## Languages
+
+- English: https://rehearsal.compath.ee/
+- Eesti: https://rehearsal.compath.ee/et/
+- Русский: https://rehearsal.compath.ee/ru/
+- Deutsch: https://rehearsal.compath.ee/de/
+- Français: https://rehearsal.compath.ee/fr/
+- Italiano: https://rehearsal.compath.ee/it/
+- Español: https://rehearsal.compath.ee/es/
+- Svenska: https://rehearsal.compath.ee/sv/
+- Suomi: https://rehearsal.compath.ee/fi/
+
+## Key URLs
+
+- Product site: https://rehearsal.compath.ee/
+- Lite on WordPress.org: https://wordpress.org/plugins/compath-choir-rehearsal/
+- Pro shop: https://shop.compath.ee/products/choir-rehearsal-pro/
+- Company: https://compath.ee
+- Source: https://github.com/compathee/compathee
+- Sitemap: https://rehearsal.compath.ee/sitemap.xml

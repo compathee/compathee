@@ -2,37 +2,33 @@
 
 Публичный сайт продукта: **[rehearsal.compath.ee](https://rehearsal.compath.ee)**
 
-## Как работает сайт (динамический контент)
+## Как работает сайт
 
-Страница **не хранит текст на сервере** — на FTP лежит только оболочка `index.html` (~15 KB).
+Текст каждой языковой страницы лежит в HTML. Скрипт `build-site.mjs` собирает страницы из `product-data.json` и `seo-copy.json`.
 
-При открытии сайта браузер загружает из GitHub:
+| URL | Файл |
+|-----|------|
+| `/` | английский `index.html` |
+| `/et/` `/ru/` `/de/` `/fr/` `/it/` `/es/` `/sv/` `/fi/` | `index.html` в папке языка |
+| `/robots.txt`, `/sitemap.xml`, `/llms.txt`, `/llms-full.txt` | для поисковых и AI-краулеров |
 
-| Файл | Содержимое |
-|------|------------|
-| `docs/product-data.json` | Описание, цены, changelog, инструкции |
-| `update.json` | Текущая версия и ссылка на zip |
-| GitHub Releases API | Резервная ссылка «Download» |
+`?lang=xx` перенаправляет на чистый адрес. Автовыбор языка по браузеру делает только JavaScript на `/`, и только если посетитель ещё не выбрал английский. Краулеры JavaScript не выполняют и остаются на запрошенном URL.
 
-**После релиза плагина** достаточно обновить JSON в репозитории на ветке, которую читает сайт (`cursor/rehearsal-copy-main-abc2`, затем `main`) — **перезагрузка FTP не нужна**.
-
-Оболочка `product-page.html` на FTP должна указывать актуальные ветки в `CONFIG.branches`. Если ветка сменилась — обновите HTML и задеплойте оболочку (workflow ниже).
+Значок версии Lite может обновиться из `update.json` на jsDelivr. Остальной текст меняется только после пересборки и загрузки HTML.
 
 ### Что редактировать при обновлении
 
-1. **`product-data.json`** — текст страницы, changelog (главный файл) → push в ветку из `CONFIG.branches`
-2. **`update.json`** — версия для WordPress-updater
-3. **`readme.txt`** — changelog для WordPress.org / плагина
+1. **`product-data.json`** и при необходимости **`seo-copy.json`**
+2. `node choir-rehearsal/docs/build-site.mjs`
+3. Загрузить содержимое `choir-rehearsal/docs/dist/` в корень сайта. Папку `api/` не трогать.
+4. **`update.json`** — версия для WordPress-updater
+5. **`readme.txt`** — changelog для WordPress.org / плагина
 
-Сайт сначала читает ветку `cursor/rehearsal-copy-main-abc2`, затем `main`. В шапке отдельно показаны Lite (релиз / `update.json`) и Pro (`proVersion` в JSON). Страница доступна на английском, эстонском, русском, немецком, французском, итальянском, испанском, шведском и финском (`?lang=en|et|ru|de|fr|it|es|sv|fi`).
-
-### Однократный деплой оболочки
-
-FTP нужен только когда меняется сам `product-page.html` (дизайн, JS):
+### Деплой
 
 **Actions → Deploy rehearsal.compath.ee → Run workflow**
 
-Или push с изменением `product-page.html`.
+Workflow сам запускает сборку и выкладывает только allow-list. `api/` не копируется.
 
 ## Альтернатива: GitHub Pages
 

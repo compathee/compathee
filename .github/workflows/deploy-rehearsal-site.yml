@@ -4,7 +4,11 @@ on:
   push:
     branches: [main, cursor/fix-plugin-updater-1441, cursor/choir-rehearsal-plugin-090e, cursor/sync-rehearsal-site-a04b]
     paths:
-      - 'choir-rehearsal/docs/product-page.html'
+      - 'choir-rehearsal/docs/product-data.json'
+      - 'choir-rehearsal/docs/seo-copy.json'
+      - 'choir-rehearsal/docs/build-site.mjs'
+      - 'choir-rehearsal/docs/site.css'
+      - 'choir-rehearsal/docs/site.js'
       - 'choir-rehearsal/docs/deploy/**'
       - '.github/workflows/deploy-rehearsal-site.yml'
   workflow_dispatch:
@@ -17,32 +21,23 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Prepare static shell (loads content from GitHub at runtime)
+      - name: Build static language pages
         run: |
           set -euo pipefail
-          mkdir -p deploy
-          # Allow-list of the web root. Add a file here to publish it.
+          node choir-rehearsal/docs/build-site.mjs
+          rm -rf deploy
+          mkdir deploy
+          # dist is an allow-list: language folders, crawl files, and the public assets.
           # Never copy choir-rehearsal/docs/deploy/api/ — that folder is live on the server.
-          cp choir-rehearsal/docs/product-page.html deploy/index.html
-          cp choir-rehearsal/docs/deploy/.htaccess deploy/.htaccess
-          cp choir-rehearsal/docs/deploy/health.txt deploy/health.txt
-          for name in \
-            favicon.ico \
-            favicon.svg \
-            apple-touch-icon.png \
-            favicon-192x192.png \
-            favicon-512x512.png \
-            site.webmanifest \
-            og-image.png
-          do
-            cp "choir-rehearsal/docs/deploy/${name}" "deploy/${name}"
-          done
+          cp -a choir-rehearsal/docs/dist/. deploy/
           if find deploy -type d -name api | grep -q .; then
             echo "Refusing to stage api/ for FTP" >&2
             exit 1
           fi
-          ls -la deploy/
-          echo "Shell deployed once — page content comes from product-data.json on GitHub"
+          find deploy -type d -exec chmod 755 {} \;
+          find deploy -type f -exec chmod 644 {} \;
+          find deploy -type f -o -type d | sort
+          echo "Static pages built from product-data.json"
 
       - name: Deploy to rehearsal.compath.ee (FTP/FTPS)
         uses: SamKirkland/FTP-Deploy-Action@v4.3.6
@@ -77,7 +72,27 @@ jobs:
           set ftp:ssl-protect-data true
           cd ${FTP_DIR}
           chmod 755 .
+          chmod 755 et
+          chmod 755 ru
+          chmod 755 de
+          chmod 755 fr
+          chmod 755 it
+          chmod 755 es
+          chmod 755 sv
+          chmod 755 fi
           chmod 644 index.html
+          chmod 644 et/index.html
+          chmod 644 ru/index.html
+          chmod 644 de/index.html
+          chmod 644 fr/index.html
+          chmod 644 it/index.html
+          chmod 644 es/index.html
+          chmod 644 sv/index.html
+          chmod 644 fi/index.html
+          chmod 644 robots.txt
+          chmod 644 sitemap.xml
+          chmod 644 llms.txt
+          chmod 644 llms-full.txt
           chmod 644 .htaccess
           chmod 644 health.txt
           chmod 644 favicon.ico

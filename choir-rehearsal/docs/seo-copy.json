@@ -1,0 +1,281 @@
+{
+  "en": {
+    "seoTitle": "Choir rehearsal app for WordPress",
+    "seoDescription": "Choir practice tracks and SATB learning tracks for voice-part rehearsal on your own WordPress site. Listen on a phone. Lite is free. Pro is €49 a year.",
+    "whatIsTitle": "What is Choir Rehearsal?",
+    "whatIs": "Choir Rehearsal is a choir rehearsal app for WordPress. It holds choir practice tracks for voice parts rehearsal on the choir’s own site: SATB learning tracks for soprano, alto, tenor, and bass, next to the PDF score. Singer listens on a phone. Voice Leader adds the songs. Lite is free. Pro is €49 a year.",
+    "imageAlt": "Choir Rehearsal, a rehearsal library for choirs",
+    "switchLabel": "Language",
+    "languagesLabel": "Languages",
+    "faq": [
+      {
+        "q": "Is Choir Rehearsal free?",
+        "a": "Lite is free on WordPress.org. Pro is €49 per year for one choir website. A done-for-you setup starts at €120 and includes the first year of Pro."
+      },
+      {
+        "q": "Does it work on phones?",
+        "a": "Yes. Singer opens the choir site in the phone browser, signs in, and listens. There is no separate app to install."
+      },
+      {
+        "q": "How does a singer get access?",
+        "a": "An Administrator creates a WordPress user and assigns the Singer role. The name of that role stays English. The singer then opens /rehearsal/ on the choir site and signs in. Guest can open songs marked public, without an account."
+      },
+      {
+        "q": "Which languages are available?",
+        "a": "This website is in English, Estonian, Russian, German, French, Italian, Spanish, Swedish, and Finnish. In WordPress the plugin menus stay English: Choir Rehearsal, Pro License, Settings, and Add Song. The role names Singer, Voice Leader, Administrator, and Guest stay English. WordPress itself can use your language."
+      },
+      {
+        "q": "Where are the recordings stored?",
+        "a": "Songs, recordings, and scores stay on the choir’s own WordPress site. Compath OÜ does not host that library. The demo at demo.rehearsal.compath.ee is shared. Compath OÜ is at Ahtri 12, Tallinn, and answers at order@compath.ee or +372 55520482."
+      }
+    ]
+  },
+  "et": {
+    "seoTitle": "Kooriproovid WordPressis",
+    "seoDescription": "Kooriharjutus ja häälepartiid WordPressis: proovipalad igale häälele, SATB ja PDF-noodid. Kuula telefonis. Lite on tasuta. Pro maksab 49 € aastas.",
+    "whatIsTitle": "Mis on Choir Rehearsal?",
+    "whatIs": "Choir Rehearsal on koori proovide rakendus WordPressis. Kooriharjutus käib häälepartiide kaupa: sopran, alt, tenor ja bass kuulevad oma pala ning loevad PDF-nooti. Singer kuulab telefonis. Voice Leader lisab laulud. Lite on tasuta. Pro maksab 49 € aastas.",
+    "imageAlt": "Choir Rehearsal, kooride proovikogu",
+    "switchLabel": "Keel",
+    "languagesLabel": "Keeled",
+    "faq": [
+      {
+        "q": "Kas Choir Rehearsal on tasuta?",
+        "a": "Lite on WordPress.orgis tasuta. Pro maksab 49 € aastas ühe koori veebilehe kohta. Paigaldus meie poolt algab 120 eurost ja sisaldab esimest Pro aastat."
+      },
+      {
+        "q": "Kas see töötab telefonis?",
+        "a": "Jah. Singer avab koori lehe telefoni brauseris, logib sisse ja kuulab. Eraldi rakendust ei ole vaja paigaldada."
+      },
+      {
+        "q": "Kuidas saab Singer ligipääsu?",
+        "a": "Administrator loob WordPressi kasutaja ja määrab rolli Singer. Rolli nimi jääb inglise keelde. Seejärel avab Singer koori lehel /rehearsal/ ja logib sisse. Guest avab avalikuks märgitud laulud ilma kontota."
+      },
+      {
+        "q": "Mis keeltes leht on?",
+        "a": "Veebileht on inglise, eesti, vene, saksa, prantsuse, itaalia, hispaania, rootsi ja soome keeles. WordPressis jäävad plugina menüüd inglise keelde: Choir Rehearsal, Pro License, Settings ja Add Song. Rollinimed Singer, Voice Leader, Administrator ja Guest jäävad inglise keelde. WordPress ise võib olla sinu keeles."
+      },
+      {
+        "q": "Kus salvestised asuvad?",
+        "a": "Laulud, salvestised ja noodid jäävad koori enda WordPressi lehele. Compath OÜ seda kogu ei majuta. Demo aadressil demo.rehearsal.compath.ee on ühine. Compath OÜ asub Tallinnas, Ahtri 12, ja vastab aadressil order@compath.ee või numbril +372 55520482."
+      }
+    ]
+  },
+  "ru": {
+    "seoTitle": "Репетиции хора на WordPress",
+    "seoDescription": "Репетиции хора и партии по голосам в плагине WordPress: дорожки SATB и PDF-ноты на сайте хора. Слушать можно с телефона. Lite бесплатно. Pro — 49 € в год.",
+    "whatIsTitle": "Что такое Choir Rehearsal?",
+    "whatIs": "Choir Rehearsal — приложение для репетиции хора на WordPress. Репетиции хора идут партиями по голосам: сопрано, альт, тенор и бас слушают свою дорожку рядом с PDF-нотами. Singer слушает с телефона. Voice Leader добавляет произведения. Lite бесплатный. Pro стоит 49 € в год.",
+    "imageAlt": "Choir Rehearsal, библиотека репетиций для хора",
+    "switchLabel": "Язык",
+    "languagesLabel": "Языки",
+    "faq": [
+      {
+        "q": "Choir Rehearsal бесплатный?",
+        "a": "Lite бесплатный на WordPress.org. Pro стоит 49 € в год за один сайт хора. Установка с нашей стороны начинается от 120 € и включает первый год Pro."
+      },
+      {
+        "q": "Работает ли на телефоне?",
+        "a": "Да. Singer открывает сайт хора в браузере телефона, входит и слушает. Отдельное приложение ставить не нужно."
+      },
+      {
+        "q": "Как Singer получает доступ?",
+        "a": "Administrator создаёт пользователя WordPress и назначает роль Singer. Название роли остаётся английским. Затем Singer открывает /rehearsal/ на сайте хора и входит. Guest открывает произведения, отмеченные как публичные, без учётной записи."
+      },
+      {
+        "q": "На каких языках сайт?",
+        "a": "Сайт на английском, эстонском, русском, немецком, французском, итальянском, испанском, шведском и финском. В WordPress меню плагина остаются английскими: Choir Rehearsal, Pro License, Settings и Add Song. Названия ролей Singer, Voice Leader, Administrator и Guest остаются английскими. Сам WordPress может быть на вашем языке."
+      },
+      {
+        "q": "Где хранятся записи?",
+        "a": "Произведения, записи и ноты остаются на собственном сайте хора на WordPress. Compath OÜ эту библиотеку не размещает. Демо на demo.rehearsal.compath.ee общее. Compath OÜ находится в Таллинне, Ahtri 12, и отвечает на order@compath.ee и +372 55520482."
+      }
+    ]
+  },
+  "de": {
+    "seoTitle": "Chorproben-App für WordPress",
+    "seoDescription": "Chorprobe mit Probenaufnahmen nach Stimmen: SATB-Lernspuren und PDF-Noten auf Ihrer WordPress-Seite. Lite ist kostenlos. Pro kostet 49 € pro Jahr.",
+    "whatIsTitle": "Was ist Choir Rehearsal?",
+    "whatIs": "Choir Rehearsal ist eine Chorproben-App für WordPress. Die Chorprobe läuft nach Stimmen: Sopran, Alt, Tenor und Bass üben mit eigenen Aufnahmen neben den PDF-Noten. Singer hört am Telefon. Voice Leader legt die Stücke an. Lite ist kostenlos. Pro kostet 49 € pro Jahr.",
+    "imageAlt": "Choir Rehearsal, Probenbibliothek für Chöre",
+    "switchLabel": "Sprache",
+    "languagesLabel": "Sprachen",
+    "faq": [
+      {
+        "q": "Ist Choir Rehearsal kostenlos?",
+        "a": "Lite ist auf WordPress.org kostenlos. Pro kostet 49 € pro Jahr für eine Chorwebsite. Die Einrichtung durch uns beginnt bei 120 € und enthält das erste Pro-Jahr."
+      },
+      {
+        "q": "Funktioniert es auf dem Telefon?",
+        "a": "Ja. Singer öffnet die Chorwebsite im Browser des Telefons, meldet sich an und hört zu. Eine eigene App ist nicht nötig."
+      },
+      {
+        "q": "Wie erhält Singer Zugang?",
+        "a": "Administrator legt einen WordPress-Benutzer an und weist die Rolle Singer zu. Der Rollenname bleibt Englisch. Danach öffnet man auf der Chorwebsite /rehearsal/ und meldet sich an. Guest öffnet als öffentlich markierte Lieder ohne Konto."
+      },
+      {
+        "q": "Welche Sprachen gibt es?",
+        "a": "Diese Website gibt es auf Englisch, Estnisch, Russisch, Deutsch, Französisch, Italienisch, Spanisch, Schwedisch und Finnisch. In WordPress bleiben die Menüs des Plugins Englisch: Choir Rehearsal, Pro License, Settings und Add Song. Die Rollennamen Singer, Voice Leader, Administrator und Guest bleiben Englisch. WordPress selbst kann in Ihrer Sprache laufen."
+      },
+      {
+        "q": "Wo liegen die Aufnahmen?",
+        "a": "Lieder, Aufnahmen und Noten bleiben auf der eigenen WordPress-Website des Chors. Compath OÜ hostet diese Bibliothek nicht. Die Demo unter demo.rehearsal.compath.ee ist gemeinsam. Compath OÜ sitzt in Tallinn, Ahtri 12, und ist über order@compath.ee oder +372 55520482 erreichbar."
+      }
+    ]
+  },
+  "fr": {
+    "seoTitle": "Répétition de chœur sur WordPress",
+    "seoDescription": "Répétition de chœur sur WordPress : pistes par pupitre, voix SATB et partitions PDF. Écoutez au téléphone. Lite est gratuit. Pro coûte 49 € par an.",
+    "whatIsTitle": "Qu’est-ce que Choir Rehearsal ?",
+    "whatIs": "Choir Rehearsal est une application de répétition pour les chœurs, sur WordPress. Chaque pupitre — soprano, alto, ténor, basse — a sa piste à côté de la partition PDF. Singer écoute sur son téléphone. Voice Leader ajoute les chants. Lite est gratuit. Pro coûte 49 € par an.",
+    "imageAlt": "Choir Rehearsal, bibliothèque de répétition pour chœurs",
+    "switchLabel": "Langue",
+    "languagesLabel": "Langues",
+    "faq": [
+      {
+        "q": "Choir Rehearsal est-il gratuit ?",
+        "a": "Lite est gratuit sur WordPress.org. Pro coûte 49 € par an pour un site de chœur. Une installation par nos soins commence à 120 € et comprend la première année de Pro."
+      },
+      {
+        "q": "Est-ce que cela marche sur téléphone ?",
+        "a": "Oui. Singer ouvre le site du chœur dans le navigateur du téléphone, se connecte et écoute. Il n’y a pas d’application séparée à installer."
+      },
+      {
+        "q": "Comment Singer obtient-il l’accès ?",
+        "a": "Administrator crée un utilisateur WordPress et attribue le rôle Singer. Le nom du rôle reste en anglais. On ouvre ensuite /rehearsal/ sur le site du chœur et on se connecte. Guest ouvre les chants marqués publics, sans compte."
+      },
+      {
+        "q": "Quelles langues sont proposées ?",
+        "a": "Ce site est en anglais, estonien, russe, allemand, français, italien, espagnol, suédois et finnois. Dans WordPress, les menus de l’extension restent en anglais : Choir Rehearsal, Pro License, Settings et Add Song. Les noms de rôles Singer, Voice Leader, Administrator et Guest restent en anglais. WordPress lui-même peut être dans votre langue."
+      },
+      {
+        "q": "Où sont stockés les enregistrements ?",
+        "a": "Les chants, enregistrements et partitions restent sur le site WordPress du chœur. Compath OÜ n’héberge pas cette bibliothèque. La démo sur demo.rehearsal.compath.ee est partagée. Compath OÜ est à Tallinn, Ahtri 12, et répond à order@compath.ee ou au +372 55520482."
+      }
+    ]
+  },
+  "it": {
+    "seoTitle": "Prove del coro su WordPress",
+    "seoDescription": "App per le prove del coro: tracce per parte vocale, voci SATB e spartiti PDF sul sito WordPress. Ascolta dal telefono. Lite è gratuito. Pro costa 49 € all’anno.",
+    "whatIsTitle": "Che cos’è Choir Rehearsal?",
+    "whatIs": "Choir Rehearsal è un’app per le prove del coro su WordPress. Ogni parte vocale — soprano, contralto, tenore, basso — ha la sua traccia accanto allo spartito PDF. Singer ascolta dal telefono. Voice Leader aggiunge i brani. Lite è gratuito. Pro costa 49 € all’anno.",
+    "imageAlt": "Choir Rehearsal, biblioteca di prove per cori",
+    "switchLabel": "Lingua",
+    "languagesLabel": "Lingue",
+    "faq": [
+      {
+        "q": "Choir Rehearsal è gratuito?",
+        "a": "Lite è gratuito su WordPress.org. Pro costa 49 € all’anno per un sito del coro. La configurazione fatta da noi parte da 120 € e include il primo anno di Pro."
+      },
+      {
+        "q": "Funziona sul telefono?",
+        "a": "Sì. Singer apre il sito del coro nel browser del telefono, accede e ascolta. Non serve un’app separata."
+      },
+      {
+        "q": "Come ottiene l’accesso Singer?",
+        "a": "Administrator crea un utente WordPress e assegna il ruolo Singer. Il nome del ruolo resta in inglese. Poi si apre /rehearsal/ sul sito del coro e si accede. Guest apre i brani segnati come pubblici, senza account."
+      },
+      {
+        "q": "Quali lingue sono disponibili?",
+        "a": "Questo sito è in inglese, estone, russo, tedesco, francese, italiano, spagnolo, svedese e finlandese. In WordPress i menu del plugin restano in inglese: Choir Rehearsal, Pro License, Settings e Add Song. I nomi dei ruoli Singer, Voice Leader, Administrator e Guest restano in inglese. WordPress stesso può essere nella tua lingua."
+      },
+      {
+        "q": "Dove restano le registrazioni?",
+        "a": "Brani, registrazioni e spartiti restano sul sito WordPress del coro. Compath OÜ non ospita quella biblioteca. La demo su demo.rehearsal.compath.ee è condivisa. Compath OÜ è a Tallinn, Ahtri 12, e risponde a order@compath.ee o al +372 55520482."
+      }
+    ]
+  },
+  "es": {
+    "seoTitle": "Ensayo coral en WordPress",
+    "seoDescription": "Aplicación de ensayo coral: pistas por voz, voces SATB y partituras PDF en tu sitio WordPress. Escucha en el móvil. Lite es gratis. Pro cuesta 49 € al año.",
+    "whatIsTitle": "¿Qué es Choir Rehearsal?",
+    "whatIs": "Choir Rehearsal es una aplicación de ensayo para coros en WordPress. Cada voz — soprano, contralto, tenor, bajo — tiene su pista de ensayo junto a la partitura PDF. Singer escucha en el móvil. Voice Leader añade las obras. Lite es gratis. Pro cuesta 49 € al año.",
+    "imageAlt": "Choir Rehearsal, biblioteca de ensayo para coros",
+    "switchLabel": "Idioma",
+    "languagesLabel": "Idiomas",
+    "faq": [
+      {
+        "q": "¿Choir Rehearsal es gratis?",
+        "a": "Lite es gratis en WordPress.org. Pro cuesta 49 € al año por un sitio del coro. El montaje que hacemos nosotros empieza en 120 € e incluye el primer año de Pro."
+      },
+      {
+        "q": "¿Funciona en el teléfono?",
+        "a": "Sí. Singer abre el sitio del coro en el navegador del teléfono, entra y escucha. No hace falta instalar otra aplicación."
+      },
+      {
+        "q": "¿Cómo obtiene acceso Singer?",
+        "a": "Administrator crea un usuario de WordPress y asigna el rol Singer. El nombre del rol sigue en inglés. Después se abre /rehearsal/ en el sitio del coro y se entra. Guest abre las obras marcadas como públicas, sin cuenta."
+      },
+      {
+        "q": "¿Qué idiomas hay?",
+        "a": "Este sitio está en inglés, estonio, ruso, alemán, francés, italiano, español, sueco y finés. En WordPress los menús del plugin siguen en inglés: Choir Rehearsal, Pro License, Settings y Add Song. Los nombres de los roles Singer, Voice Leader, Administrator y Guest siguen en inglés. El propio WordPress puede estar en tu idioma."
+      },
+      {
+        "q": "¿Dónde se guardan las grabaciones?",
+        "a": "Las obras, grabaciones y partituras se quedan en el sitio WordPress del coro. Compath OÜ no aloja esa biblioteca. La demo en demo.rehearsal.compath.ee es compartida. Compath OÜ está en Tallin, Ahtri 12, y responde en order@compath.ee o en el +372 55520482."
+      }
+    ]
+  },
+  "sv": {
+    "seoTitle": "Körövning i WordPress",
+    "seoDescription": "App för körövning: övningsspår per stämma, SATB-stämmor och PDF-noter på er egen WordPress-sida. Lyssna i telefonen. Lite är gratis. Pro kostar 49 € per år.",
+    "whatIsTitle": "Vad är Choir Rehearsal?",
+    "whatIs": "Choir Rehearsal är en app för körövning i WordPress. Varje stämma — sopran, alt, tenor och bas — har ett eget övningsspår bredvid PDF-noterna. Singer lyssnar i telefonen. Voice Leader lägger in sångerna. Lite är gratis. Pro kostar 49 € per år.",
+    "imageAlt": "Choir Rehearsal, övningsbibliotek för körer",
+    "switchLabel": "Språk",
+    "languagesLabel": "Språk",
+    "faq": [
+      {
+        "q": "Är Choir Rehearsal gratis?",
+        "a": "Lite är gratis på WordPress.org. Pro kostar 49 € per år för en körwebbplats. Uppsättning av oss börjar vid 120 € och inkluderar första Pro-året."
+      },
+      {
+        "q": "Fungerar det i telefonen?",
+        "a": "Ja. Singer öppnar körens webbplats i telefonens webbläsare, loggar in och lyssnar. Ingen separat app behövs."
+      },
+      {
+        "q": "Hur får Singer åtkomst?",
+        "a": "Administrator skapar en WordPress-användare och tilldelar rollen Singer. Rollnamnet är kvar på engelska. Sedan öppnar man /rehearsal/ på körens webbplats och loggar in. Guest öppnar sånger som är markerade som offentliga, utan konto."
+      },
+      {
+        "q": "Vilka språk finns?",
+        "a": "Webbplatsen finns på engelska, estniska, ryska, tyska, franska, italienska, spanska, svenska och finska. I WordPress är tilläggets menyer kvar på engelska: Choir Rehearsal, Pro License, Settings och Add Song. Rollnamnen Singer, Voice Leader, Administrator och Guest är kvar på engelska. Själva WordPress kan vara på ert språk."
+      },
+      {
+        "q": "Var lagras inspelningarna?",
+        "a": "Sånger, inspelningar och noter stannar på körens egen WordPress-webbplats. Compath OÜ driftar inte det biblioteket. Demon på demo.rehearsal.compath.ee är delad. Compath OÜ finns på Ahtri 12 i Tallinn och svarar på order@compath.ee eller +372 55520482."
+      }
+    ]
+  },
+  "fi": {
+    "seoTitle": "Kuoroharjoitus WordPressissä",
+    "seoDescription": "Kuoroharjoituksen sovellus: harjoitusraidat stemmoittain, SATB-stemmat ja PDF-nuotit WordPressissä. Lite on maksuton. Pro maksaa 49 € vuodessa.",
+    "whatIsTitle": "Mikä Choir Rehearsal on?",
+    "whatIs": "Choir Rehearsal on kuoroharjoituksen sovellus WordPressissä. Jokaisella stemmalla — sopraano, altto, tenori ja basso — on oma harjoitusraita PDF-nuotin vieressä. Singer kuuntelee puhelimella. Voice Leader lisää laulut. Lite on maksuton. Pro maksaa 49 € vuodessa.",
+    "imageAlt": "Choir Rehearsal, kuorojen harjoituskirjasto",
+    "switchLabel": "Kieli",
+    "languagesLabel": "Kielet",
+    "faq": [
+      {
+        "q": "Onko Choir Rehearsal maksuton?",
+        "a": "Lite on maksuton WordPress.orgissa. Pro maksaa 49 € vuodessa yhdeltä kuoron sivustolta. Asennus meiltä alkaa 120 eurosta ja sisältää ensimmäisen Pro-vuoden."
+      },
+      {
+        "q": "Toimiiko se puhelimella?",
+        "a": "Kyllä. Singer avaa kuoron sivuston puhelimen selaimessa, kirjautuu ja kuuntelee. Erillistä sovellusta ei tarvitse asentaa."
+      },
+      {
+        "q": "Miten Singer pääsee sisään?",
+        "a": "Administrator luo WordPress-käyttäjän ja antaa roolin Singer. Roolin nimi jää englanniksi. Sitten avataan kuoron sivuston /rehearsal/ ja kirjaudutaan. Guest avaa julkisiksi merkityt laulut ilman tiliä."
+      },
+      {
+        "q": "Millä kielillä sivusto on?",
+        "a": "Sivusto on englanniksi, viroksi, venäjäksi, saksaksi, ranskaksi, italiaksi, espanjaksi, ruotsiksi ja suomeksi. WordPressissä lisäosan valikot jäävät englanniksi: Choir Rehearsal, Pro License, Settings ja Add Song. Roolien nimet Singer, Voice Leader, Administrator ja Guest jäävät englanniksi. Itse WordPress voi olla omalla kielelläsi."
+      },
+      {
+        "q": "Missä tallenteet ovat?",
+        "a": "Laulut, tallenteet ja nuotit jäävät kuoron omalle WordPress-sivustolle. Compath OÜ ei ylläpidä sitä kirjastoa. Demo osoitteessa demo.rehearsal.compath.ee on yhteinen. Compath OÜ sijaitsee Tallinnassa osoitteessa Ahtri 12 ja vastaa osoitteessa order@compath.ee tai numerossa +372 55520482."
+      }
+    ]
+  }
+}
