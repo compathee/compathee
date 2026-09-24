@@ -252,10 +252,13 @@ function renderPage(code) {
 <body>
 	<a class="skip" href="#what">${esc(chrome.skip)}</a>
 	<div class="langbar">
+		<div class="langbar__inner">
+		<a class="langbar__brand" href="https://compath.ee/"><img src="/compath-logo.png" width="118" height="32" alt="Compath" title="Compath OÜ" /></a>
 		<label class="visually-hidden" for="lang">${esc(extra.switchLabel)}</label>
 		<select id="lang" name="lang">
 			${options}
 		</select>
+		</div>
 	</div>
 	<header class="hero"><div class="hero__inner">
 		<span class="hero__badge" data-lite-version="${esc(data.liteVersion)}">${esc(badge(pack))}</span>
@@ -386,6 +389,7 @@ function validate(html, code) {
   const errors = [];
   const extra = seo[code];
   if ([...html.matchAll(/<h1[\s>]/g)].length !== 1) errors.push('h1 count');
+  if (!html.includes('href="https://compath.ee/"') || !html.includes('alt="Compath"') || !html.includes('title="Compath OÜ"') || !html.includes('/compath-logo.png')) errors.push('logo');
   if (!html.includes(extra.whatIsTitle) || !html.includes(extra.whatIs)) errors.push('missing what-is');
   if (extra.seoTitle.length > 60) errors.push(`title ${extra.seoTitle.length}`);
   if (extra.seoDescription.length < 140 || extra.seoDescription.length > 165) errors.push(`description ${extra.seoDescription.length}`);
@@ -437,7 +441,7 @@ writeFileSync(join(dist, 'robots.txt'), robots());
 writeFileSync(join(dist, 'sitemap.xml'), sitemap());
 writeFileSync(join(dist, 'llms.txt'), llms());
 writeFileSync(join(dist, 'llms-full.txt'), llmsFull());
-for (const name of ['.htaccess', 'health.txt', 'favicon.ico', 'favicon.svg', 'apple-touch-icon.png', 'favicon-192x192.png', 'favicon-512x512.png', 'site.webmanifest', 'og-image.png']) {
+for (const name of ['.htaccess', 'health.txt', 'favicon.ico', 'favicon.svg', 'apple-touch-icon.png', 'favicon-192x192.png', 'favicon-512x512.png', 'site.webmanifest', 'og-image.png', 'compath-logo.png']) {
   copyFileSync(join(root, 'deploy', name), join(dist, name));
 }
 const robotsText = readFileSync(join(dist, 'robots.txt'), 'utf8');

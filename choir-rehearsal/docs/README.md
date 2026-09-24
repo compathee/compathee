@@ -50,6 +50,7 @@ Workflow сам запускает сборку и выкладывает тол
 | [product-page.md](product-page.md) | Markdown-копия (справочно) |
 | [deploy/.htaccess](deploy/.htaccess) | Apache: index + права |
 | [deploy/favicon.ico](deploy/favicon.ico) и соседние PNG/SVG | Значок вкладки. В корень FTP рядом с `index.html`. `api/` не выкладывать. |
+| [deploy/compath-logo.png](deploy/compath-logo.png) | Логотип Compath в шапке, ссылка на compath.ee. В корень FTP как `/compath-logo.png`. |
 
 ## FTP secrets (один раз)
 

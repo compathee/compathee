@@ -102,6 +102,7 @@ jobs:
           chmod 644 favicon-512x512.png
           chmod 644 site.webmanifest
           chmod 644 og-image.png
+          chmod 644 compath-logo.png
           bye
           EOF
 
