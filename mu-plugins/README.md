@@ -26,7 +26,7 @@ For `demosinger` and `demoleader` (override with `COMPATH_DEMO_GUARDED_LOGINS`):
 
 - Hides password, email, display name, nickname, and the other profile fields.
 - Rejects those changes from profile save, `wp_update_user`, user meta, the REST API (`/wp/v2/users/me` and `/wp/v2/users/<id>`, including application passwords), admin-ajax paths that call the same user APIs, and XML-RPC `wp.editProfile` / `wp.setOptions`.
-- Disables password reset, including a reset key that was already emailed, and disables application passwords.
+- Disables password reset, including a reset key that was already emailed, and disables application passwords for those users. The per-user filter is `wp_is_application_passwords_available_for_user`. The global `wp_is_application_passwords_available` filter is not used: WordPress runs it inside `determine_current_user`, and looking up the current user from that filter overflows the stack.
 - Sends `/wp-admin/` (dashboard, profile, plugins, users, settings) back to `/rehearsal/`.
 - Still allows the Voice Leader song screens (`choir_song` / `choir_track`), `admin-ajax.php`, and the uploader, so Add song and Manage library keep working. Singers are sent back to the rehearsal page from every admin screen.
 - Hides the admin bar.

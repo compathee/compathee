@@ -51,6 +51,16 @@ final class Compath_Rehearsal_Demo_Guard {
 
 	private static bool $notice_rendered = false;
 
+	/**
+	 * True while this class is calling wp_get_current_user() or current_user_can().
+	 * Those calls re-enter determine_current_user, which must not call back in.
+	 */
+	private static bool $resolving_actor = false;
+
+	private static bool $resolving_locale = false;
+
+	private static bool $resolving_caps = false;
+
 	/** @var string|array<int, mixed>|null */
 	private static $xmlrpc_edit_profile = null;
 
@@ -64,7 +74,6 @@ final class Compath_Rehearsal_Demo_Guard {
 		add_action( 'admin_head', array( self::class, 'hide_profile_fields' ) );
 		add_filter( 'show_password_fields', array( self::class, 'filter_show_password_fields' ), 10, 2 );
 		add_filter( 'wp_is_application_passwords_available_for_user', array( self::class, 'filter_application_passwords' ), 10, 2 );
-		add_filter( 'wp_is_application_passwords_available', array( self::class, 'filter_application_passwords_global' ) );
 		add_action( 'user_profile_update_errors', array( self::class, 'block_profile_update' ), 10, 3 );
 		add_filter( 'wp_pre_insert_user_data', array( self::class, 'filter_user_data' ), 10, 4 );
 		add_filter( 'insert_user_meta', array( self::class, 'filter_user_meta' ), 10, 4 );
@@ -161,6 +170,20 @@ final class Compath_Rehearsal_Demo_Guard {
 	public static function is_guarded_login( string $login ): bool {
 		$login = strtolower( trim( $login ) );
 		return '' !== $login && in_array( $login, self::logins(), true );
+	}
+
+	/**
+	 * WP_User::__get() returns false for a missing user_login (user ID 0 during
+	 * install). Passing that false into is_guarded_login() is a TypeError.
+	 *
+	 * @param mixed $user User object.
+	 */
+	private static function user_login_string( $user ): string {
+		if ( ! $user instanceof WP_User ) {
+			return '';
+		}
+		$login = $user->user_login;
+		return is_string( $login ) ? $login : '';
 	}
 
 	/**
@@ -424,9 +447,32 @@ final class Compath_Rehearsal_Demo_Guard {
 		if ( self::TEXT_DOMAIN !== $domain ) {
 			return $translation;
 		}
-		$locale = function_exists( 'determine_locale' ) ? (string) determine_locale() : 'en_US';
-		$custom = self::translate( $text, $locale );
+		$custom = self::translate( $text, self::locale_for_catalog() );
 		return $custom !== $text ? $custom : $translation;
+	}
+
+	/**
+	 * Site locale until the current user is set. determine_locale() can call
+	 * get_user_locale(), which calls wp_get_current_user(), while that user is
+	 * still being resolved.
+	 */
+	private static function locale_for_catalog(): string {
+		if ( self::$resolving_locale ) {
+			return 'en_US';
+		}
+		self::$resolving_locale = true;
+		$avoid_user             = self::$resolving_actor || ( function_exists( 'did_action' ) && ! did_action( 'set_current_user' ) );
+		if ( $avoid_user && function_exists( 'get_locale' ) ) {
+			$locale = (string) get_locale();
+		} elseif ( function_exists( 'determine_locale' ) ) {
+			$locale = (string) determine_locale();
+		} elseif ( function_exists( 'get_locale' ) ) {
+			$locale = (string) get_locale();
+		} else {
+			$locale = 'en_US';
+		}
+		self::$resolving_locale = false;
+		return '' !== $locale ? $locale : 'en_US';
 	}
 
 	/**
@@ -784,24 +830,22 @@ final class Compath_Rehearsal_Demo_Guard {
 	 * @param WP_User|mixed $profile_user Profile user.
 	 */
 	public static function filter_show_password_fields( bool $show, $profile_user ): bool {
-		if ( $profile_user instanceof WP_User && self::is_guarded_login( $profile_user->user_login ) && ! self::actor_is_admin() ) {
+		if ( $profile_user instanceof WP_User && self::is_guarded_login( self::user_login_string( $profile_user ) ) && ! self::actor_is_admin() ) {
 			return false;
 		}
 		return $show;
 	}
 
 	/**
+	 * Per-user only. The global wp_is_application_passwords_available filter runs
+	 * inside wp_validate_application_password(), which runs inside
+	 * determine_current_user(). Calling wp_get_current_user() from that filter
+	 * recurses until the stack overflows.
+	 *
 	 * @param WP_User|mixed $user User.
 	 */
 	public static function filter_application_passwords( bool $available, $user ): bool {
-		if ( $user instanceof WP_User && self::is_guarded_login( $user->user_login ) ) {
-			return false;
-		}
-		return $available;
-	}
-
-	public static function filter_application_passwords_global( bool $available ): bool {
-		if ( self::current_is_guarded() ) {
+		if ( $user instanceof WP_User && self::is_guarded_login( self::user_login_string( $user ) ) ) {
 			return false;
 		}
 		return $available;
@@ -876,7 +920,7 @@ final class Compath_Rehearsal_Demo_Guard {
 		if ( self::$restoring || ! $update || self::actor_is_admin() ) {
 			return $meta;
 		}
-		if ( ! $user instanceof WP_User || ! self::is_guarded_login( $user->user_login ) ) {
+		if ( ! $user instanceof WP_User || ! self::is_guarded_login( self::user_login_string( $user ) ) ) {
 			return $meta;
 		}
 		$prefix = isset( $GLOBALS['wpdb']->prefix ) ? (string) $GLOBALS['wpdb']->prefix : 'wp_';
@@ -898,17 +942,19 @@ final class Compath_Rehearsal_Demo_Guard {
 	 */
 	public static function block_locked_usermeta( $check, $user_id, $meta_key, $meta_value, $prev_value ) {
 		unset( $meta_value, $prev_value );
-		if ( null !== $check || self::$restoring || self::actor_is_admin() ) {
-			return $check;
-		}
-		if ( ! self::is_guarded_user_id( (int) $user_id ) ) {
+		if ( null !== $check || self::$restoring ) {
 			return $check;
 		}
 		$prefix = isset( $GLOBALS['wpdb']->prefix ) ? (string) $GLOBALS['wpdb']->prefix : 'wp_';
-		if ( self::is_locked_meta_key( (string) $meta_key, $prefix ) ) {
-			return false;
+		// Session tokens and other unlocked keys are written while WordPress is
+		// still resolving the current user. Do not touch wp_get_current_user() then.
+		if ( ! self::is_locked_meta_key( (string) $meta_key, $prefix ) ) {
+			return $check;
 		}
-		return $check;
+		if ( ! self::is_guarded_user_id( (int) $user_id ) || self::actor_is_admin() ) {
+			return $check;
+		}
+		return false;
 	}
 
 	/**
@@ -941,7 +987,8 @@ final class Compath_Rehearsal_Demo_Guard {
 		}
 		$posted = isset( $_POST['user_login'] ) ? sanitize_text_field( wp_unslash( (string) $_POST['user_login'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing
 		$match  = self::is_guarded_login_or_email( $posted, self::logins(), self::guarded_emails() );
-		if ( $user_data instanceof WP_User && ( self::is_guarded_login( $user_data->user_login ) || in_array( strtolower( $user_data->user_email ), self::guarded_emails(), true ) ) ) {
+		$email = ( $user_data instanceof WP_User && is_string( $user_data->user_email ) ) ? strtolower( $user_data->user_email ) : '';
+		if ( $user_data instanceof WP_User && ( self::is_guarded_login( self::user_login_string( $user_data ) ) || in_array( $email, self::guarded_emails(), true ) ) ) {
 			$match = true;
 		}
 		if ( $match ) {
@@ -957,7 +1004,7 @@ final class Compath_Rehearsal_Demo_Guard {
 		if ( ! $errors instanceof WP_Error ) {
 			return;
 		}
-		if ( $user instanceof WP_User && self::should_block_password_reset( self::is_guarded_login( $user->user_login ) ) ) {
+		if ( $user instanceof WP_User && self::should_block_password_reset( self::is_guarded_login( self::user_login_string( $user ) ) ) ) {
 			$errors->add( 'compath_demo_guard', __( 'Password reset is disabled for demo accounts.', self::TEXT_DOMAIN ) );
 		}
 	}
@@ -981,7 +1028,7 @@ final class Compath_Rehearsal_Demo_Guard {
 	 * @param WP_User|mixed $user User.
 	 */
 	public static function filter_password_change_email( bool $send, $user ): bool {
-		if ( $user instanceof WP_User && self::is_guarded_login( $user->user_login ) && ! self::actor_is_admin() && ! self::$restoring ) {
+		if ( $user instanceof WP_User && self::is_guarded_login( self::user_login_string( $user ) ) && ! self::actor_is_admin() && ! self::$restoring ) {
 			return false;
 		}
 		return $send;
@@ -1114,7 +1161,7 @@ final class Compath_Rehearsal_Demo_Guard {
 	 * @return list<string>
 	 */
 	public static function filter_map_meta_cap( array $caps, string $cap, int $user_id, array $args ): array {
-		if ( self::$restoring ) {
+		if ( self::$restoring || self::$resolving_caps ) {
 			return $caps;
 		}
 		if ( ! in_array( $cap, array( 'delete_user', 'remove_user', 'promote_user' ), true ) ) {
@@ -1124,7 +1171,11 @@ final class Compath_Rehearsal_Demo_Guard {
 		if ( ! self::is_guarded_user_id( $target ) ) {
 			return $caps;
 		}
-		if ( user_can( $user_id, 'manage_options' ) ) {
+		// user_can() maps caps again. Use the passed user id, not the current user.
+		self::$resolving_caps = true;
+		$is_manager           = function_exists( 'user_can' ) && user_can( $user_id, 'manage_options' );
+		self::$resolving_caps = false;
+		if ( $is_manager ) {
 			return $caps;
 		}
 		return array( 'do_not_allow' );
@@ -2201,23 +2252,50 @@ final class Compath_Rehearsal_Demo_Guard {
 		return new IXR_Error( 403, __( 'Demo accounts cannot be changed.', self::TEXT_DOMAIN ) );
 	}
 
-	private static function current_is_guarded(): bool {
-		if ( ! function_exists( 'wp_get_current_user' ) ) {
+	/**
+	 * False while the current user is still being determined. Calling
+	 * wp_get_current_user() or current_user_can() in that window re-enters
+	 * determine_current_user (application passwords, auth cookies, gettext).
+	 */
+	private static function current_user_ready(): bool {
+		if ( self::$resolving_actor ) {
 			return false;
 		}
-		$user = wp_get_current_user();
-		return $user instanceof WP_User && self::is_guarded_login( $user->user_login );
+		if ( function_exists( 'did_action' ) && did_action( 'set_current_user' ) > 0 ) {
+			return true;
+		}
+		global $current_user;
+		return isset( $current_user ) && $current_user instanceof WP_User;
+	}
+
+	private static function current_is_guarded(): bool {
+		if ( ! self::current_user_ready() || ! function_exists( 'wp_get_current_user' ) ) {
+			return false;
+		}
+		self::$resolving_actor = true;
+		$user                  = wp_get_current_user();
+		self::$resolving_actor = false;
+		return self::is_guarded_login( self::user_login_string( $user ) );
 	}
 
 	private static function actor_is_admin(): bool {
-		return function_exists( 'current_user_can' ) && current_user_can( 'manage_options' );
+		if ( ! self::current_user_ready() || ! function_exists( 'current_user_can' ) ) {
+			return false;
+		}
+		self::$resolving_actor = true;
+		$is_admin              = current_user_can( 'manage_options' );
+		self::$resolving_actor = false;
+		return $is_admin;
 	}
 
 	private static function current_can_manage_songs(): bool {
-		if ( ! function_exists( 'current_user_can' ) ) {
+		if ( ! self::current_user_ready() || ! function_exists( 'current_user_can' ) ) {
 			return false;
 		}
-		return current_user_can( 'choir_rehearsal_manage_songs' ) || current_user_can( 'edit_choir_songs' );
+		self::$resolving_actor = true;
+		$can                   = current_user_can( 'choir_rehearsal_manage_songs' ) || current_user_can( 'edit_choir_songs' );
+		self::$resolving_actor = false;
+		return $can;
 	}
 
 	private static function is_guarded_user_id( int $user_id ): bool {
@@ -2225,7 +2303,7 @@ final class Compath_Rehearsal_Demo_Guard {
 			return false;
 		}
 		$user = get_userdata( $user_id );
-		return $user instanceof WP_User && self::is_guarded_login( $user->user_login );
+		return self::is_guarded_login( self::user_login_string( $user ) );
 	}
 }
 

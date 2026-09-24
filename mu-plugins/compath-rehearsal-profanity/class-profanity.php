@@ -54,6 +54,10 @@ if ( ! class_exists( 'Choir_Rehearsal_Profanity', false ) ) :
 
 		private static ?bool $test_actor = null;
 
+		private static bool $resolving_actor = false;
+
+		private static bool $resolving_locale = false;
+
 		/**
 		 * @var array<string, string>
 		 */
@@ -208,6 +212,8 @@ if ( ! class_exists( 'Choir_Rehearsal_Profanity', false ) ) :
 			self::$hooks_registered     = false;
 			self::$force_for_non_admins = false;
 			self::$test_actor           = null;
+			self::$resolving_actor      = false;
+			self::$resolving_locale     = false;
 		}
 
 		/**
@@ -505,9 +511,31 @@ if ( ! class_exists( 'Choir_Rehearsal_Profanity', false ) ) :
 			if ( self::TEXT_DOMAIN !== $domain ) {
 				return $translation;
 			}
-			$locale = function_exists( 'determine_locale' ) ? (string) determine_locale() : 'en_US';
-			$custom = self::translate( $text, $locale );
+			$custom = self::translate( $text, self::locale_for_catalog() );
 			return $custom !== $text ? $custom : $translation;
+		}
+
+		/**
+		 * Avoid determine_locale() until set_current_user has run. On wp-admin that
+		 * function calls get_user_locale(), which calls wp_get_current_user().
+		 */
+		private static function locale_for_catalog(): string {
+			if ( self::$resolving_locale ) {
+				return 'en_US';
+			}
+			self::$resolving_locale = true;
+			$avoid_user             = self::$resolving_actor || ( function_exists( 'did_action' ) && ! did_action( 'set_current_user' ) );
+			if ( $avoid_user && function_exists( 'get_locale' ) ) {
+				$locale = (string) get_locale();
+			} elseif ( function_exists( 'determine_locale' ) ) {
+				$locale = (string) determine_locale();
+			} elseif ( function_exists( 'get_locale' ) ) {
+				$locale = (string) get_locale();
+			} else {
+				$locale = 'en_US';
+			}
+			self::$resolving_locale = false;
+			return '' !== $locale ? $locale : 'en_US';
 		}
 
 		/**
@@ -666,7 +694,19 @@ if ( ! class_exists( 'Choir_Rehearsal_Profanity', false ) ) :
 			if ( null !== self::$test_actor ) {
 				return self::$test_actor;
 			}
-			return function_exists( 'current_user_can' ) && current_user_can( 'manage_options' );
+			if ( self::$resolving_actor ) {
+				return false;
+			}
+			if ( function_exists( 'did_action' ) && ! did_action( 'set_current_user' ) ) {
+				return false;
+			}
+			if ( ! function_exists( 'current_user_can' ) ) {
+				return false;
+			}
+			self::$resolving_actor = true;
+			$is_admin              = current_user_can( 'manage_options' );
+			self::$resolving_actor = false;
+			return $is_admin;
 		}
 
 		private static function is_only_youtube_url( string $text ): bool {
