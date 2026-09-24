@@ -1,6 +1,6 @@
 # Compath Choir Rehearsal — rehearsal library for choirs
 
-**WordPress plugin · version 0.4.61** · [rehearsal.compath.ee](https://rehearsal.compath.ee) · [WordPress.org](https://wordpress.org/plugins/compath-choir-rehearsal/)
+**WordPress plugin · Lite 0.4.63 · Pro 0.5.0** · [rehearsal.compath.ee](https://rehearsal.compath.ee) · [WordPress.org](https://wordpress.org/plugins/compath-choir-rehearsal/)
 
 A private rehearsal library: songs, voice tracks, optional YouTube embeds, PDF scores, and mobile-friendly listening.
 
@@ -92,6 +92,22 @@ The plugin is licensed under GPL. Install Lite yourself for free from WordPress.
 ---
 
 ## Changelog
+
+Release notes stay in English. The public page is available in English, Estonian, and Russian (`?lang=en`, `?lang=et`, `?lang=ru`).
+
+### 0.5.0 — Pro
+- Activate the license under Choir Rehearsal → Pro License
+- From 0.5.0, WordPress installs Pro updates while the license is active
+- Pro older than 0.5.0 needs one manual replacement, then updates are automatic
+
+### 0.4.63
+- Song permalinks use ICU Any-Latin for Arabic, CJK, and other scripts when php-intl is available
+- If romanization is empty, the slug falls back to `song-{id}`
+- Lite and Pro
+
+### 0.4.62
+- Percent-encoded titles are decoded before transliteration, so Russian titles no longer become hex-dump slugs
+- Existing hex-dump song slugs are repaired on upgrade
 
 ### 0.4.61
 - Per-track Audio / YouTube source switch in the song editor
