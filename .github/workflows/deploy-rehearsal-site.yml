@@ -21,9 +21,25 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p deploy
+          # Allow-list of the web root. Add a file here to publish it.
+          # Never copy choir-rehearsal/docs/deploy/api/ — that folder is live on the server.
           cp choir-rehearsal/docs/product-page.html deploy/index.html
           cp choir-rehearsal/docs/deploy/.htaccess deploy/.htaccess
           cp choir-rehearsal/docs/deploy/health.txt deploy/health.txt
+          for name in \
+            favicon.ico \
+            favicon.svg \
+            apple-touch-icon.png \
+            favicon-192x192.png \
+            favicon-512x512.png \
+            site.webmanifest
+          do
+            cp "choir-rehearsal/docs/deploy/${name}" "deploy/${name}"
+          done
+          if find deploy -type d -name api | grep -q .; then
+            echo "Refusing to stage api/ for FTP" >&2
+            exit 1
+          fi
           ls -la deploy/
           echo "Shell deployed once — page content comes from product-data.json on GitHub"
 
@@ -37,7 +53,12 @@ jobs:
           port: 21
           local-dir: deploy/
           server-dir: ${{ secrets.REHEARSAL_FTP_REMOTE_DIR }}
+          # api/ holds the live relay, config.php, feedback-rate/, and logs.
+          # This job uploads only the static shell and must not replace that folder.
           dangerous-clean-slate: false
+          exclude: |
+            api/**
+            **/api/**
 
       - name: Fix remote permissions (Apache 403)
         env:
@@ -58,6 +79,12 @@ jobs:
           chmod 644 index.html
           chmod 644 .htaccess
           chmod 644 health.txt
+          chmod 644 favicon.ico
+          chmod 644 favicon.svg
+          chmod 644 apple-touch-icon.png
+          chmod 644 favicon-192x192.png
+          chmod 644 favicon-512x512.png
+          chmod 644 site.webmanifest
           bye
           EOF
 

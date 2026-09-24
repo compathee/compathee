@@ -3,9 +3,20 @@
 <head>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
-	<title>Choir Rehearsal — rehearsal library for choirs</title>
-	<meta name="description" content="WordPress plugin for choirs: songs, voice tracks, PDF scores, and mobile-friendly listening. Order, install, subscription, and updates." />
+	<title>Compath Choir Rehearsal — rehearsal library for choirs</title>
+	<meta name="description" content="Compath Choir Rehearsal for WordPress. Free Lite on WordPress.org, Pro at shop.compath.ee for €49 per year. Current Lite 0.4.63, Pro 0.5.0." />
+	<meta name="theme-color" content="#1f4fd8" />
 	<link rel="canonical" href="https://rehearsal.compath.ee/" />
+	<link rel="alternate" hreflang="en" href="https://rehearsal.compath.ee/?lang=en" />
+	<link rel="alternate" hreflang="et" href="https://rehearsal.compath.ee/?lang=et" />
+	<link rel="alternate" hreflang="ru" href="https://rehearsal.compath.ee/?lang=ru" />
+	<link rel="alternate" hreflang="x-default" href="https://rehearsal.compath.ee/?lang=en" />
+	<link rel="icon" href="favicon.ico" sizes="any" />
+	<link rel="icon" href="favicon.svg" type="image/svg+xml" />
+	<link rel="icon" href="favicon-192x192.png" type="image/png" sizes="192x192" />
+	<link rel="icon" href="favicon-512x512.png" type="image/png" sizes="512x512" />
+	<link rel="apple-touch-icon" href="apple-touch-icon.png" />
+	<link rel="manifest" href="site.webmanifest" />
 	<style>
 		:root {
 			--accent: #1f4fd8;
@@ -22,238 +33,387 @@
 		body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; line-height: 1.6; color: var(--text); background: var(--bg); }
 		a { color: var(--accent); }
 		a:hover { color: var(--accent-dark); }
-		.hero { background: linear-gradient(135deg, #1f4fd8 0%, #3b82f6 55%, #6366f1 100%); color: #fff; padding: 48px 20px 56px; }
+		.skip { position: absolute; left: 12px; top: -40px; background: #fff; color: var(--accent-dark); padding: 8px 12px; z-index: 40; }
+		.skip:focus { top: 8px; }
+		.langbar {
+			display: flex;
+			justify-content: flex-end;
+			gap: 8px;
+			padding: 8px 16px;
+			background: #fff;
+			border-bottom: 1px solid var(--border);
+			position: sticky;
+			top: 0;
+			z-index: 30;
+		}
+		.langbar a {
+			min-width: 44px;
+			min-height: 44px;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			padding: 0 12px;
+			border-radius: 999px;
+			border: 1px solid var(--border);
+			background: transparent;
+			color: var(--text);
+			font-weight: 700;
+			letter-spacing: 0.04em;
+			text-decoration: none;
+		}
+		.langbar a[aria-current="true"] { background: var(--accent); color: #fff; border-color: var(--accent); }
+		.langbar a:focus-visible, .pager button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+		.hero { background: linear-gradient(135deg, #1f4fd8 0%, #3b82f6 55%, #6366f1 100%); color: #fff; padding: 48px 20px 40px; }
 		.hero__inner, .page, .footer { max-width: var(--max); margin: 0 auto; }
 		.hero__badge { display: inline-block; padding: 4px 12px; border-radius: 999px; background: rgba(255,255,255,0.18); font-size: 0.85rem; margin-bottom: 12px; }
 		.hero h1 { margin: 0 0 12px; font-size: clamp(1.8rem, 4vw, 2.6rem); line-height: 1.15; }
 		.hero p { margin: 0; max-width: 640px; font-size: 1.05rem; opacity: 0.95; }
 		.hero__cta { margin-top: 24px; display: flex; flex-wrap: wrap; gap: 12px; }
-		.btn { display: inline-flex; align-items: center; justify-content: center; padding: 12px 20px; border-radius: 999px; font-weight: 600; text-decoration: none; border: 0; }
+		.hero__nav { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-top: 8px; }
+		.hero__nav a { color: #fff; font-weight: 600; text-decoration: none; min-height: 44px; display: inline-flex; align-items: center; }
+		.hero__nav a:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+		.btn { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 12px 20px; border-radius: 999px; font-weight: 600; text-decoration: none; border: 0; }
 		.btn--primary { background: #fff; color: var(--accent-dark); }
 		.btn--ghost { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.55); }
 		.page { padding: 0 20px 64px; }
 		.card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin-top: 24px; box-shadow: 0 8px 24px rgba(15,23,42,0.04); }
+		section[id], details[id] { scroll-margin-top: 72px; }
 		.card h2 { margin: 0 0 16px; font-size: 1.35rem; }
 		.card h3 { margin: 20px 0 8px; font-size: 1.05rem; }
-		.features {
-			display: grid;
-			grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-			gap: 16px;
-			margin: 20px 0 0;
-			padding: 0;
-			list-style: none;
-		}
-		.features li {
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			text-align: center;
-			gap: 10px;
-			padding: 28px 18px 22px;
-			border-radius: 12px;
-			background: #fff;
-			border: 1px solid var(--border);
-			box-shadow: 0 1px 2px rgba(0,0,0,0.04);
-			min-height: 180px;
-		}
-		.features__icon {
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			width: 72px;
-			height: 72px;
-			border-radius: 18px;
-			background: #eef4ff;
-			color: var(--accent);
-			flex-shrink: 0;
-		}
-		.features__icon svg {
-			width: 40px;
-			height: 40px;
-			display: block;
-		}
-		.features__title {
-			margin: 0;
-			font-size: 1.05rem;
-			font-weight: 700;
-			line-height: 1.25;
-			color: var(--text);
-		}
-		.features__text {
-			margin: 0;
-			font-size: 0.92rem;
-			line-height: 1.45;
-			color: var(--muted);
-		}
+		.features { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin: 20px 0 0; padding: 0; list-style: none; }
+		.features li { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px; padding: 28px 18px 22px; border-radius: 12px; background: #fff; border: 1px solid var(--border); min-height: 180px; }
+		.features__icon { display: flex; align-items: center; justify-content: center; width: 72px; height: 72px; border-radius: 18px; background: #eef4ff; color: var(--accent); }
+		.features__icon svg { width: 40px; height: 40px; display: block; }
+		.features__title { margin: 0; font-size: 1.05rem; font-weight: 700; line-height: 1.25; }
+		.features__text { margin: 0; font-size: 0.92rem; line-height: 1.45; color: var(--muted); }
 		.pricing { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
-		.plan {
-			display: flex;
-			flex-direction: column;
-			border: 1px solid var(--border);
-			border-radius: 12px;
-			padding: 20px;
-			background: #fafbfd;
-		}
+		.plan { display: flex; flex-direction: column; border: 1px solid var(--border); border-radius: 12px; padding: 20px; background: #fafbfd; }
 		.plan--featured { border-color: var(--accent); background: #f0f6ff; box-shadow: 0 0 0 1px rgba(31,79,216,0.15); }
 		.plan__name { font-weight: 700; font-size: 1.1rem; }
 		.plan__price { font-size: 1.6rem; font-weight: 800; margin: 8px 0; color: var(--accent-dark); }
 		.plan ul { margin: 12px 0 0; padding-left: 18px; color: var(--muted); flex: 1; }
-		.plan__cta {
-			display: inline-flex;
-			align-items: center;
-			justify-content: center;
-			margin-top: 18px;
-			padding: 12px 18px;
-			border-radius: 999px;
-			background: var(--accent);
-			color: #fff !important;
-			font-weight: 700;
-			text-decoration: none;
-			text-align: center;
-		}
+		.plan__cta { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; margin-top: 18px; padding: 12px 18px; border-radius: 999px; background: var(--accent); color: #fff !important; font-weight: 700; text-decoration: none; text-align: center; }
 		.plan__cta:hover { background: var(--accent-dark); color: #fff !important; }
-		.order-cta {
-			margin-top: 20px;
-			display: flex;
-			flex-wrap: wrap;
-			gap: 12px;
-			align-items: center;
-		}
-		.btn--accent {
-			background: var(--accent);
-			color: #fff !important;
-		}
+		.order-cta { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+		.demo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-top: 8px; }
+		.demo-account { border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; background: #fafbfd; }
+		.demo-account h3 { margin: 0 0 4px; }
+		.copy-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 10px 0; }
+		.copy-label { min-width: 7.5rem; font-size: 0.92rem; color: var(--muted); }
+		.copy-row code { font-size: 1rem; padding: 8px 10px; }
+		.copy-btn { min-height: 44px; min-width: 44px; padding: 8px 14px; border-radius: 999px; border: 1px solid var(--border); background: #fff; color: var(--accent-dark); font: inherit; font-weight: 700; cursor: pointer; }
+		.copy-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+		.btn--accent { background: var(--accent); color: #fff !important; }
 		.btn--accent:hover { background: var(--accent-dark); color: #fff !important; }
 		.steps { counter-reset: step; list-style: none; padding: 0; margin: 0; }
 		.steps li { position: relative; padding-left: 44px; margin-bottom: 16px; }
 		.steps li::before { counter-increment: step; content: counter(step); position: absolute; left: 0; top: 0; width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: #fff; font-weight: 700; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; }
-		.changelog details { border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; margin-bottom: 8px; background: #fafbfd; }
-		.changelog summary { cursor: pointer; font-weight: 600; }
-		.changelog ul { margin: 8px 0 0; padding-left: 20px; color: var(--muted); }
+		.changelog details, .faq details { border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; margin-bottom: 8px; background: #fafbfd; }
+		.changelog summary, .faq summary { cursor: pointer; font-weight: 600; min-height: 44px; display: flex; align-items: center; }
+		.changelog ul, .faq p { margin: 8px 0 0; }
+		.changelog ul { padding-left: 20px; color: var(--muted); }
+		.changelog-page[hidden] { display: none !important; }
+		.pager { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; align-items: center; }
+		.pager button { min-width: 44px; min-height: 44px; padding: 0 12px; border-radius: 10px; border: 1px solid var(--border); background: #fff; color: var(--text); font: inherit; font-weight: 600; cursor: pointer; }
+		.pager button[aria-current="page"] { background: var(--accent); color: #fff; border-color: var(--accent); }
+		.pager button:disabled { opacity: 0.4; cursor: default; }
 		.meta { color: var(--muted); font-size: 0.92rem; }
 		.footer { padding: 24px 20px 48px; color: var(--muted); font-size: 0.9rem; text-align: center; }
 		code { background: #eef2ff; padding: 2px 6px; border-radius: 4px; font-size: 0.92em; }
 		.loading { text-align: center; padding: 48px 20px; color: var(--muted); }
 		.error { background: #fff4f4; border: 1px solid #fecaca; color: #991b1b; padding: 16px; border-radius: 12px; margin: 24px auto; max-width: var(--max); }
+		.visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 		@media (max-width: 600px) { .card { padding: 18px; } }
 	</style>
 </head>
 <body>
-	<!-- shell: order-pro-cta -->
+	<!-- shell: i18n-changelog-pages -->
+	<a class="skip" href="#about">Skip to content</a>
+	<nav class="langbar" aria-label="Language">
+		<a href="?lang=en" data-lang="en" lang="en" hreflang="en" aria-label="English" aria-current="true">ENG</a>
+		<a href="?lang=et" data-lang="et" lang="et" hreflang="et" aria-label="Eesti">EST</a>
+		<a href="?lang=ru" data-lang="ru" lang="ru" hreflang="ru" aria-label="Русский">RUS</a>
+	</nav>
 	<div id="app">
-		<p class="loading">Loading latest content from GitHub…</p>
+		<p class="loading">Loading latest content…</p>
 	</div>
+	<noscript>
+		<style>.loading{display:none}</style>
+		<header class="hero"><div class="hero__inner">
+			<span class="hero__badge">WordPress plugin · Lite 0.4.63 · Pro 0.5.0</span>
+			<h1>Compath Choir Rehearsal</h1>
+			<p>A private rehearsal library for choirs: songs, voice tracks, optional YouTube embeds, PDF scores, and easy listening on phone or desktop.</p>
+			<div class="hero__cta">
+				<a class="btn btn--primary" href="https://wordpress.org/plugins/compath-choir-rehearsal/">Get Lite on WordPress.org</a>
+				<a class="btn btn--primary" href="https://demo.rehearsal.compath.ee/rehearsal">Try the demo</a>
+				<a class="btn btn--ghost" href="https://shop.compath.ee/products/choir-rehearsal-pro/">Order Pro</a>
+			</div>
+		</div></header>
+		<main class="page">
+			<section class="card" id="demo">
+				<h2>Live demo</h2>
+				<p>Open the shared rehearsal library. Public songs are visible without an account. Sign in with a demo account for the full library.</p>
+				<p><a class="btn btn--accent" href="https://demo.rehearsal.compath.ee/rehearsal">Try the demo</a></p>
+				<div class="demo-grid">
+					<article class="demo-account"><h3>Singer</h3><p class="meta">For listening.</p><p>Username: <code>demosinger</code></p><p>Password: <code>DMo5ingERzz26</code></p></article>
+					<article class="demo-account"><h3>Voice Leader</h3><p class="meta">For managing songs.</p><p>Username: <code>demoleader</code></p><p>Password: <code>DMoLiidERzz26</code></p></article>
+				</div>
+				<p class="meta">This demo is shared. Everyone uses these same logins, so the library can change while you look at it.</p>
+			</section>
+			<section class="card" id="install">
+				<h2>Updates</h2>
+				<ul class="updates">
+					<li><strong>Lite:</strong> updates through WordPress.org like any directory plugin (Dashboard → Updates). GitHub Releases remain available as an alternative.</li>
+					<li><strong>Pro 0.5.0 and later:</strong> updates install automatically in WordPress (Dashboard → Updates or Plugins) while the license is active. You can enable auto-updates for the plugin.</li>
+					<li><strong>Pro older than 0.5.0:</strong> download 0.5.0 once from your shop.compath.ee account and replace the plugin, then activate the license under Choir Rehearsal → Pro License. After that, updates are automatic.</li>
+					<li>Installed version: Choir Rehearsal → Settings.</li>
+				</ul>
+			</section>
+			<section class="card changelog" id="changelog">
+				<h2>Changelog</h2>
+				<p class="meta">Release notes stay in English. Eight versions per page.</p>
+				<details id="changelog-0.5.0" open><summary>0.5.0 — Pro license and automatic updates</summary><ul><li>Pro add-on: activate the license under Choir Rehearsal → Pro License</li><li>From 0.5.0, WordPress installs Pro updates while the license is active</li><li>Pro older than 0.5.0 needs one manual replacement, then updates are automatic</li></ul></details>
+<details id="changelog-0.4.63"><summary>0.4.63 — Permalinks for every writing system</summary><ul><li>Song permalinks use ICU Any-Latin for Arabic, CJK, and other scripts when php-intl is available</li><li>If romanization is empty, the slug falls back to song-{id}</li><li>Applies to Lite and Pro</li></ul></details>
+<details id="changelog-0.4.62"><summary>0.4.62 — Fix Cyrillic song permalinks</summary><ul><li>Percent-encoded titles are decoded before transliteration, so Russian titles no longer become hex-dump slugs</li><li>Existing hex-dump song slugs are repaired on upgrade</li></ul></details>
+<details id="changelog-0.4.61"><summary>0.4.61 — Per-track YouTube source</summary><ul><li>Song editor: Audio / YouTube switch per voice track</li><li>YouTube tracks open the official embed on the song page (video stays visible)</li><li>Song list shows a YouTube icon next to PDF and public badges</li></ul></details>
+<details id="changelog-0.4.60"><summary>0.4.60 — Singer and Voice Leader roles</summary><ul><li>Activation creates WordPress roles Singer (listen) and Voice Leader (manage songs); names stay in English</li><li>Song admin for Voice Leader and Administrator; plugin Settings for Administrator only</li><li>Full private library requires Singer, Voice Leader, or Administrator</li></ul></details>
+<details id="changelog-0.4.59"><summary>0.4.59 — Public globe badge in song list</summary><ul><li>Logged-in song list shows a globe next to the PDF icon for public songs</li><li>Small gap between PDF and globe badges</li></ul></details>
+<details id="changelog-0.4.58"><summary>0.4.58 — HTTPS media URLs in admin</summary><ul><li>Force HTTPS for PDF and audio attachment URLs on SSL pages</li><li>Fixes mixed-content blank PDF/waveforms in wp-admin when siteurl is still http://</li></ul></details>
+<details id="changelog-0.4.57"><summary>0.4.57 — Stable /rehearsal/ library URL</summary><ul><li>Keep the songs library URL permanently at /rehearsal/ (never localize the page slug)</li></ul></details>
+			</section>
+		</main>
+	</noscript>
 	<script>
 	(function () {
 		'use strict';
 
-		/** Tries active release branch first, then main after merge */
+		var PAGE_SIZE = 8;
+		var STORAGE_KEY = 'choir-rehearsal-lang';
 		var CONFIG = {
 			repo: 'compathee/compathee',
 			branches: [
 				'cursor/rehearsal-copy-main-abc2',
-				'cursor/singer-voice-leader-roles-cdc7',
-				'cursor/lite-pro-hub-setup-abc2',
 				'main',
+				'cursor/lite-pro-hub-setup-abc2',
 				'cursor/choir-rehearsal-plugin-090e'
 			],
 			releasesUrl: 'https://api.github.com/repos/compathee/compathee/releases?per_page=100',
-			buyProUrl: 'https://shop.compath.ee/products/choir-rehearsal-pro/'
+			buyProUrl: 'https://shop.compath.ee/products/choir-rehearsal-pro/',
+			wordpressOrgUrl: 'https://wordpress.org/plugins/compath-choir-rehearsal/',
+			demoUrl: 'https://demo.rehearsal.compath.ee/rehearsal'
 		};
+		var DEMO_ACCOUNTS = [
+			{ role: 'Singer', user: 'demosinger', pass: 'DMo5ingERzz26', blurb: 'demoSingerText' },
+			{ role: 'Voice Leader', user: 'demoleader', pass: 'DMoLiidERzz26', blurb: 'demoLeaderText' }
+		];
+		var HTML_LANG = { en: 'en', et: 'et', ru: 'ru' };
+		var LOADING = { en: 'Loading latest content…', et: 'Laadin uut sisu…', ru: 'Загрузка…' };
+		var SKIP = { en: 'Skip to content', et: 'Sisu juurde', ru: 'К содержанию' };
+		var ON_PAGE = { en: 'On this page', et: 'Lehel', ru: 'На странице' };
+		var state = { lang: 'en', page: 1, data: null, pack: null, entries: [], lite: '0.4.63', pro: '0.5.0', downloadUrl: 'https://github.com/compathee/compathee/releases/latest' };
 
-		function rawUrl(branch, path) {
-			// jsDelivr tracks branch tips more reliably than raw.githubusercontent.com CDN
-			return 'https://cdn.jsdelivr.net/gh/' + CONFIG.repo + '@' + branch + '/' + path;
+		function normalizeLang(value) {
+			var v = String(value || '').toLowerCase().replace('_', '-');
+			if (v === 'et' || v === 'est' || v.indexOf('et-') === 0) return 'et';
+			if (v === 'ru' || v === 'rus' || v.indexOf('ru-') === 0) return 'ru';
+			if (v === 'en' || v === 'eng' || v.indexOf('en-') === 0) return 'en';
+			return '';
 		}
 
-		function fetchJsonFromRepo(path) {
-			var attempt = function (index) {
-				if (index >= CONFIG.branches.length) {
-					return Promise.reject(new Error('Could not load ' + path + ' from GitHub'));
-				}
-				var branch = CONFIG.branches[index];
-				return fetch(rawUrl(branch, path), { cache: 'no-store' }).then(function (response) {
-					if (!response.ok) {
-						return attempt(index + 1);
-					}
-					return response.json();
-				});
-			};
-			return attempt(0);
+		function storedLang() {
+			try { return normalizeLang(localStorage.getItem(STORAGE_KEY)); }
+			catch (e) { return ''; }
+		}
+
+		function detectLang() {
+			var fromQuery = normalizeLang(new URLSearchParams(location.search).get('lang'));
+			if (fromQuery) return fromQuery;
+			var stored = storedLang();
+			if (stored) return stored;
+			var list = navigator.languages || [navigator.language || 'en'];
+			for (var i = 0; i < list.length; i++) {
+				var code = normalizeLang(list[i]);
+				if (code) return code;
+			}
+			return 'en';
 		}
 
 		function esc(text) {
-			return String(text)
+			return String(text == null ? '' : text)
 				.replace(/&/g, '&amp;')
 				.replace(/</g, '&lt;')
 				.replace(/>/g, '&gt;')
 				.replace(/"/g, '&quot;');
 		}
 
-		function renderSteps(items) {
-			return '<ol class="steps">' + items.map(function (item) {
-				var html = esc(item)
-					.replace(/order@compath\.ee/g, '<a href="mailto:order@compath.ee">order@compath.ee</a>')
-					.replace(/https:\/\/shop\.compath\.ee\/products\/choir-rehearsal-pro\//g, '<a href="https://shop.compath.ee/products/choir-rehearsal-pro/" target="_blank" rel="noopener noreferrer">https://shop.compath.ee/products/choir-rehearsal-pro/</a>');
-				return '<li>' + html + '</li>';
-			}).join('') + '</ol>';
+		function linkify(text) {
+			return esc(text)
+				.replace(/https:\/\/shop\.compath\.ee\/products\/choir-rehearsal-pro\//g, '<a href="https://shop.compath.ee/products/choir-rehearsal-pro/" target="_blank" rel="noopener noreferrer">https://shop.compath.ee/products/choir-rehearsal-pro/</a>')
+				.replace(/order@compath\.ee/g, '<a href="mailto:order@compath.ee">order@compath.ee</a>')
+				.replace(/WordPress\.org/g, '<a href="' + CONFIG.wordpressOrgUrl + '" target="_blank" rel="noopener noreferrer">WordPress.org</a>');
 		}
 
-		function renderChangelog(entries) {
-			return entries.map(function (entry) {
-				var open = entry.open ? ' open' : '';
-				var items = (entry.items || []).map(function (i) { return '<li>' + esc(i) + '</li>'; }).join('');
-				return '<details' + open + '><summary>' + esc(entry.version) + ' — ' + esc(entry.summary) + '</summary><ul>' + items + '</ul></details>';
-			}).join('');
+		function englishChrome() {
+			return {
+				metaDescription: 'Compath Choir Rehearsal for WordPress. Free Lite on WordPress.org, Pro at shop.compath.ee for €49 per year.',
+				documentTitle: 'Compath Choir Rehearsal — rehearsal library for choirs',
+				badge: 'WordPress plugin · Lite {lite} · Pro {pro}',
+				getLite: 'Get Lite on WordPress.org',
+				downloadZip: 'Download zip',
+				orderPro: 'Order Pro',
+				tryDemo: 'Try the demo',
+				demoTitle: 'Live demo',
+				demoIntro: 'Open the shared rehearsal library. Public songs are visible without an account. Sign in with a demo account for the full library.',
+				demoShared: 'This demo is shared. Everyone uses these same logins, so the library can change while you look at it.',
+				demoSingerText: 'For listening.',
+				demoLeaderText: 'For managing songs.',
+				demoUser: 'Username',
+				demoPassword: 'Password',
+				demoCopy: 'Copy',
+				demoCopied: 'Copied',
+				overviewTitle: 'Overview',
+				requirementsLabel: 'Requirements',
+				ownerLabel: 'Owner and developer',
+				firstCustomerLabel: 'First customer',
+				orderTitle: 'Order and subscription',
+				orderIntro: 'Lite is free in the WordPress.org plugin directory (GPL). Pro is a separate add-on from shop.compath.ee — keep Lite installed and activate Pro beside it.',
+				orderCta: 'Order Pro — €49 / year',
+				orderCtaMeta: 'Opens shop.compath.ee checkout',
+				howToOrder: 'How to order',
+				discountNote: 'Discounts are available for non-profit choirs and educational projects — ask when you order.',
+				installTitle: 'Installation',
+				selfService: 'Self-service',
+				updatesTitle: 'Updates',
+				rolesTitle: 'User roles',
+				faqTitle: 'Questions',
+				changelogTitle: 'Changelog',
+				changelogMeta: 'Release notes stay in English. Eight versions per page.',
+				updates: [
+					{ label: 'Lite', text: 'updates through WordPress.org like any directory plugin (Dashboard → Updates). GitHub Releases remain available as an alternative.' },
+					{ label: 'Pro 0.5.0 and later', text: 'updates install automatically in WordPress (Dashboard → Updates or Plugins) while the license is active. You can enable auto-updates for the plugin.' },
+					{ label: 'Pro older than 0.5.0', text: 'download 0.5.0 once from your shop.compath.ee account and replace the plugin, then activate the license under Choir Rehearsal → Pro License. After that, updates are automatic.' },
+					{ label: '', text: 'Installed version: Choir Rehearsal → Settings.' }
+				],
+				roles: [
+					{ name: 'Singer', text: 'browse songs, listen, and view the PDF. The role name stays in English.' },
+					{ name: 'Voice Leader', text: 'add and edit songs, upload audio or link YouTube, and record with Pro.' },
+					{ name: 'Administrator', text: 'full access, including plugin Settings.' },
+					{ name: 'Guest', text: 'can open songs marked public, without an account.' }
+				],
+				faq: [
+					{ q: 'How do Pro updates work?', a: 'From Pro 0.5.0, WordPress installs updates automatically (Dashboard → Updates or Plugins) while the license is active. A Pro install older than 0.5.0 must be replaced once from your shop account, then the license is activated under Choir Rehearsal → Pro License.' },
+					{ q: 'Do I still need Lite?', a: 'Yes. Keep Compath Choir Rehearsal (Lite) installed and activate Pro beside it. Do not replace Lite.' },
+					{ q: 'What do the roles mean?', a: 'Singer listens. Voice Leader manages songs. Administrator also opens Settings. Guest sees public songs only. These role names stay in English in every language.' },
+					{ q: 'What does Pro cost?', a: '€49 per year for one choir website, from shop.compath.ee.' }
+				],
+				ui: { prev: 'Previous', next: 'Next', pagination: 'Changelog pages', page: 'Page {n}' },
+				licenseLine: 'Licensed under GPL-2.0-or-later'
+			};
 		}
 
-		function renderPricing(plans) {
-			return plans.map(function (plan) {
-				var cls = plan.featured ? 'plan plan--featured' : 'plan';
-				var items = (plan.items || []).map(function (i) { return '<li>' + esc(i) + '</li>'; }).join('');
-				var cta = '';
-				if (plan.featured || plan.ctaUrl || /pro/i.test(plan.name || '')) {
-					var url = plan.ctaUrl || CONFIG.buyProUrl;
-					var label = plan.ctaLabel || 'Order Pro';
-					cta = '<a class="plan__cta" href="' + esc(url) + '" target="_blank" rel="noopener noreferrer">' + esc(label) + '</a>';
-				}
-				return '<div class="' + cls + '"><div class="plan__name">' + esc(plan.name) + '</div><div class="plan__price">' + esc(plan.price) + '</div><ul>' + items + '</ul>' + cta + '</div>';
-			}).join('');
+		function resolvePack(data, lang) {
+			var locales = data.locales || {};
+			var en = locales.en || null;
+			var selected = locales[lang] || null;
+			if (!en && !selected) {
+				var chrome = englishChrome();
+				chrome.title = data.title;
+				chrome.tagline = data.tagline;
+				chrome.overview = data.overview;
+				chrome.requirements = data.requirements;
+				chrome.featureCards = data.featureCards || data.features || [];
+				chrome.pricing = data.pricing || [];
+				chrome.orderSteps = data.orderSteps || [];
+				chrome.installSteps = data.installSteps || [];
+				return chrome;
+			}
+			var base = en || selected;
+			var pack = selected || base;
+			var merged = {};
+			var key;
+			for (key in base) if (Object.prototype.hasOwnProperty.call(base, key)) merged[key] = base[key];
+			if (pack !== base) {
+				for (key in pack) if (Object.prototype.hasOwnProperty.call(pack, key)) merged[key] = pack[key];
+			}
+			if (!merged.licenseLine) merged.licenseLine = (englishChrome()).licenseLine;
+			return merged;
 		}
 
-		function findLatestRelease(releases) {
-			var best = null;
-			var bestVersion = '';
-			releases.forEach(function (release) {
-				if (!release || release.draft || release.prerelease) return;
-				var tag = String(release.tag_name || '');
-				// Skip Pro; accept Lite tags choir-rehearsal-v* and compath-choir-rehearsal-v*.
-				if (tag.indexOf('choir-rehearsal-pro-v') === 0) return;
-				var version = '';
-				if (tag.indexOf('compath-choir-rehearsal-v') === 0) {
-					version = tag.slice('compath-choir-rehearsal-v'.length);
-				} else if (tag.indexOf('choir-rehearsal-v') === 0) {
-					version = tag.slice('choir-rehearsal-v'.length);
-				} else {
-					return;
-				}
-				if (!best || compareVersions(version, bestVersion) > 0) {
-					best = release;
-					bestVersion = version;
-				}
+		function isLocal() {
+			var host = location.hostname;
+			return host === 'localhost' || host === '127.0.0.1' || host === '';
+		}
+
+		function rawUrl(branch, path) {
+			return 'https://cdn.jsdelivr.net/gh/' + CONFIG.repo + '@' + branch + '/' + path;
+		}
+
+		function fetchJson(url) {
+			return fetch(url, { cache: 'no-store' }).then(function (response) {
+				if (!response.ok) throw new Error('HTTP ' + response.status);
+				return response.json();
 			});
-			return best;
+		}
+
+		function fetchFirst(urls) {
+			function attempt(index) {
+				if (index >= urls.length) return Promise.reject(new Error(urls[0] || 'missing'));
+				return fetchJson(urls[index]).catch(function () { return attempt(index + 1); });
+			}
+			return attempt(0);
+		}
+
+		function fetchJsonFromRepo(path) {
+			var remote = CONFIG.branches.map(function (branch) { return rawUrl(branch, path); });
+			if (!isLocal()) return fetchFirst(remote);
+			var local = path.indexOf('update.json') !== -1
+				? ['update.json', '../update.json']
+				: ['product-data.json'];
+			return fetchFirst(local.concat(remote));
+		}
+
+		function withTimeout(promise, ms, fallback) {
+			return new Promise(function (resolve) {
+				var settled = false;
+				var timer = setTimeout(function () {
+					if (!settled) { settled = true; resolve(fallback); }
+				}, ms);
+				promise.then(function (value) {
+					if (!settled) { settled = true; clearTimeout(timer); resolve(value); }
+				}, function () {
+					if (!settled) { settled = true; clearTimeout(timer); resolve(fallback); }
+				});
+			});
 		}
 
 		function compareVersions(a, b) {
-			var pa = a.split('.').map(Number);
-			var pb = b.split('.').map(Number);
+			var pa = String(a || '0').split('.').map(function (n) { return parseInt(n, 10) || 0; });
+			var pb = String(b || '0').split('.').map(function (n) { return parseInt(n, 10) || 0; });
 			for (var i = 0; i < Math.max(pa.length, pb.length); i++) {
 				var na = pa[i] || 0;
 				var nb = pb[i] || 0;
 				if (na !== nb) return na > nb ? 1 : -1;
 			}
 			return 0;
+		}
+
+		function findLatestRelease(releases) {
+			var best = null;
+			var bestVersion = '';
+			(releases || []).forEach(function (release) {
+				if (!release || release.draft || release.prerelease) return;
+				var tag = String(release.tag_name || '');
+				if (tag.indexOf('choir-rehearsal-pro-v') === 0) return;
+				var version = '';
+				if (tag.indexOf('compath-choir-rehearsal-v') === 0) version = tag.slice('compath-choir-rehearsal-v'.length);
+				else if (tag.indexOf('choir-rehearsal-v') === 0) version = tag.slice('choir-rehearsal-v'.length);
+				else return;
+				if (!best || compareVersions(version, bestVersion) > 0) {
+					best = release;
+					bestVersion = version;
+				}
+			});
+			return { release: best, version: bestVersion };
 		}
 
 		function getDownloadUrl(release) {
@@ -273,12 +433,11 @@
 				pdf: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h5"/></svg>',
 				voices: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>',
 				player: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M10 8l6 4-6 4V8z" fill="currentColor" stroke="none"/></svg>',
+				youtube: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="6" width="20" height="12" rx="3"/><path d="M10 9l6 3-6 3V9z" fill="currentColor" stroke="none"/></svg>',
 				lock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>',
 				users: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
 				lite: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>',
-				pro: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="12 2 15 8.5 22 9.3 17 14.1 18.2 21 12 17.8 5.8 21 7 14.1 2 9.3 9 8.5 12 2"/></svg>',
-				mic: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><line x1="12" y1="17" x2="12" y2="22"/><line x1="8" y1="22" x2="16" y2="22"/></svg>',
-				search: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>'
+				pro: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="12 2 15 8.5 22 9.3 17 14.1 18.2 21 12 17.8 5.8 21 7 14.1 2 9.3 9 8.5 12 2"/></svg>'
 			};
 			return icons[name] || icons.library;
 		}
@@ -288,110 +447,432 @@
 				if (typeof f === 'string') {
 					return '<li><span class="features__icon">' + featureIcon('library') + '</span><h3 class="features__title">' + esc(f) + '</h3></li>';
 				}
-				var title = f.title || f.name || '';
-				var text = f.text || f.description || '';
-				var icon = f.icon || 'library';
-				return '<li>' +
-					'<span class="features__icon" aria-hidden="true">' + featureIcon(icon) + '</span>' +
-					'<h3 class="features__title">' + esc(title) + '</h3>' +
-					(text ? '<p class="features__text">' + esc(text) + '</p>' : '') +
-				'</li>';
+				return '<li><span class="features__icon" aria-hidden="true">' + featureIcon(f.icon || 'library') + '</span><h3 class="features__title">' + esc(f.title || '') + '</h3>' + (f.text ? '<p class="features__text">' + esc(f.text) + '</p>' : '') + '</li>';
 			}).join('') + '</ul>';
 		}
 
-		function renderPage(data, version, downloadUrl) {
-			var email = data.orderEmail || 'order@compath.ee';
-			var customer = data.firstCustomer || { name: 'Cappella Veneta', url: 'https://veneta.ee' };
+		function renderSteps(items) {
+			return '<ol class="steps">' + (items || []).map(function (item) {
+				return '<li>' + linkify(item) + '</li>';
+			}).join('') + '</ol>';
+		}
 
-			document.title = data.title + ' — rehearsal library for choirs';
-			document.getElementById('app').innerHTML =
-				'<header class="hero"><div class="hero__inner">' +
-					'<span class="hero__badge">WordPress plugin · version ' + esc(version) + ' · rehearsal.compath.ee</span>' +
-					'<h1>' + esc(data.title) + '</h1>' +
-					'<p>' + esc(data.tagline) + '</p>' +
-					'<div class="hero__cta">' +
-						'<a class="btn btn--primary" href="' + esc(downloadUrl) + '">Download Lite</a>' +
-						'<a class="btn btn--ghost" href="' + esc(CONFIG.buyProUrl) + '" target="_blank" rel="noopener noreferrer">Order Pro</a>' +
-						'<a class="btn btn--ghost" href="#order">Order &amp; subscribe</a>' +
-					'</div>' +
-				'</div></header>' +
-				'<main class="page">' +
-					'<section class="card" id="about"><h2>Overview</h2>' +
-						'<p>' + esc(data.overview) + '</p>' +
-						renderFeatures(data.featureCards || data.features || []) +
-						'<p class="meta">Requirements: ' + esc(data.requirements) + '. Owner and developer: <strong>' + esc(data.owner) + '</strong>. First customer — <a href="' + esc(customer.url) + '">' + esc(customer.name) + '</a>.</p>' +
-					'</section>' +
-					'<section class="card" id="order"><h2>Order &amp; subscription</h2>' +
-						'<p>Lite is free (GPL). Pro is a separate WordPress add-on — keep Lite installed and activate Pro beside it.</p>' +
-						'<div class="pricing">' + renderPricing(data.pricing || []) + '</div>' +
-						'<div class="order-cta">' +
-							'<a class="btn btn--accent" href="' + esc(CONFIG.buyProUrl) + '" target="_blank" rel="noopener noreferrer">Order Pro — €49 / year</a>' +
-							'<span class="meta">Opens shop.compath.ee checkout</span>' +
-						'</div>' +
-						'<h3>How to order</h3>' + renderSteps(data.orderSteps || []) +
-						'<p class="meta">Discounts available for non-profit choirs and educational projects — ask when ordering.</p>' +
-					'</section>' +
-					'<section class="card" id="install"><h2>Installation</h2>' +
-						'<h3>Self-service</h3>' + renderSteps(data.installSteps || []) +
-						'<h3>Updates</h3><ul>' +
-							'<li><strong>Lite:</strong> Choir Rehearsal → Settings → Check for updates now (GitHub Releases).</li>' +
-							'<li><strong>Pro 0.5.0 and later:</strong> updates install automatically in WordPress (Dashboard → Updates or Plugins) while the license is active. You can enable auto-updates for the plugin.</li>' +
-							'<li><strong>Pro older than 0.5.0:</strong> download 0.5.0 once from your shop.compath.ee account and replace the plugin, then activate the license under Choir Rehearsal → Pro License. After that, updates are automatic.</li>' +
-							'<li>Installed version: <strong>Choir Rehearsal → Settings</strong>.</li>' +
-						'</ul>' +
-						'<h3>User roles</h3><ul>' +
-							'<li><strong>Subscriber (Singer)</strong> — browse songs, listen, view PDF.</li>' +
-							'<li><strong>Editor / Administrator</strong> — add and edit songs, upload or record (Pro) voice tracks.</li>' +
-						'</ul></section>' +
-					'<section class="card changelog" id="changelog"><h2>Changelog</h2>' +
-						'<p class="meta">Loaded from GitHub · content updates automatically after push</p>' +
-						renderChangelog(data.changelog || []) +
-					'</section>' +
-				'</main>' +
-				'<footer class="footer">' +
-					'<p>Choir Rehearsal · <a href="https://rehearsal.compath.ee">rehearsal.compath.ee</a> · <a href="https://compath.ee">compath.ee</a> · <a href="https://github.com/compathee/compathee">GitHub</a> · <a href="mailto:' + esc(email) + '">' + esc(email) + '</a></p>' +
-					'<p>© Compath OÜ, Tallinn, Estonia</p>' +
-					'<p>Licensed under GPL-2.0-or-later</p>' +
-				'</footer>';
+		function renderPricing(plans) {
+			return (plans || []).map(function (plan) {
+				var cls = plan.featured ? 'plan plan--featured' : 'plan';
+				var items = (plan.items || []).map(function (item) { return '<li>' + esc(item) + '</li>'; }).join('');
+				var cta = '';
+				if (plan.featured || plan.ctaUrl || /pro/i.test(plan.name || '')) {
+					var url = plan.ctaUrl || CONFIG.buyProUrl;
+					var label = plan.ctaLabel || state.pack.orderPro || 'Order Pro';
+					cta = '<a class="plan__cta" href="' + esc(url) + '" target="_blank" rel="noopener noreferrer">' + esc(label) + '</a>';
+				}
+				return '<div class="' + cls + '"><div class="plan__name">' + esc(plan.name) + '</div><div class="plan__price">' + esc(plan.price) + '</div><ul>' + items + '</ul>' + cta + '</div>';
+			}).join('');
+		}
+
+		function renderUpdates(items) {
+			return '<ul class="updates">' + (items || []).map(function (item) {
+				if (!item.label) return '<li>' + linkify(item.text) + '</li>';
+				return '<li><strong>' + esc(item.label) + ':</strong> ' + linkify(item.text) + '</li>';
+			}).join('') + '</ul>';
+		}
+
+		function renderRoles(items) {
+			return '<ul>' + (items || []).map(function (role) {
+				return '<li><strong>' + esc(role.name) + '</strong> — ' + esc(role.text) + '</li>';
+			}).join('') + '</ul>';
+		}
+
+		function textOf(pack, key) {
+			if (pack && pack[key]) return pack[key];
+			var fallback = englishChrome();
+			return fallback[key] || '';
+		}
+
+		function copyRow(label, value, pack) {
+			var copy = textOf(pack, 'demoCopy');
+			return '<div class="copy-row"><span class="copy-label">' + esc(label) + '</span><code>' + esc(value) + '</code><button type="button" class="copy-btn" data-copy="' + esc(value) + '" data-label="' + esc(copy) + '" aria-label="' + esc(copy + ' ' + label) + '">' + esc(copy) + '</button></div>';
+		}
+
+		function renderDemo(pack) {
+			var accounts = DEMO_ACCOUNTS.map(function (account) {
+				return '<article class="demo-account"><h3>' + esc(account.role) + '</h3><p class="meta">' + esc(textOf(pack, account.blurb)) + '</p>' +
+					copyRow(textOf(pack, 'demoUser'), account.user, pack) +
+					copyRow(textOf(pack, 'demoPassword'), account.pass, pack) +
+				'</article>';
+			}).join('');
+			return '<section class="card" id="demo"><h2>' + esc(textOf(pack, 'demoTitle')) + '</h2>' +
+				'<p>' + esc(textOf(pack, 'demoIntro')) + '</p>' +
+				'<p><a class="btn btn--accent" href="' + esc(CONFIG.demoUrl) + '" target="_blank" rel="noopener noreferrer">' + esc(textOf(pack, 'tryDemo')) + '</a></p>' +
+				'<div class="demo-grid">' + accounts + '</div>' +
+				'<p class="meta">' + esc(textOf(pack, 'demoShared')) + '</p>' +
+				'<p id="copy-status" class="visually-hidden" aria-live="polite"></p></section>';
+		}
+
+		function renderFaq(items) {
+			return '<div class="faq">' + (items || []).map(function (item) {
+				return '<details><summary>' + esc(item.q) + '</summary><p>' + linkify(item.a) + '</p></details>';
+			}).join('') + '</div>';
+		}
+
+		function pageCount() {
+			return Math.max(1, Math.ceil((state.entries || []).length / PAGE_SIZE));
+		}
+
+		function pageFromLocation(entries) {
+			var count = Math.max(1, Math.ceil((entries || []).length / PAGE_SIZE));
+			var page = parseInt(new URLSearchParams(location.search).get('page') || '1', 10);
+			var hash = location.hash || '';
+			var pageMatch = hash.match(/^#changelog-page-(\d+)$/);
+			if (pageMatch) page = parseInt(pageMatch[1], 10);
+			else if (/^#changelog-.+/.test(hash)) {
+				var version = decodeURIComponent(hash.slice('#changelog-'.length));
+				for (var i = 0; i < entries.length; i++) {
+					if (String(entries[i].version) === version) {
+						page = Math.floor(i / PAGE_SIZE) + 1;
+						break;
+					}
+				}
+			}
+			if (!page || page < 1) page = 1;
+			if (page > count) page = count;
+			return page;
+		}
+
+		function hashForPage(hash, page) {
+			if (/^#changelog-page-\d+$/.test(hash)) return page > 1 ? '#changelog-page-' + page : '#changelog';
+			if (/^#changelog-.+/.test(hash)) {
+				var version = decodeURIComponent(hash.slice('#changelog-'.length));
+				var idx = -1;
+				for (var i = 0; i < state.entries.length; i++) {
+					if (String(state.entries[i].version) === version) { idx = i; break; }
+				}
+				if (idx >= 0 && Math.floor(idx / PAGE_SIZE) + 1 !== page) {
+					return page > 1 ? '#changelog-page-' + page : '#changelog';
+				}
+			}
+			return hash;
+		}
+
+		function updateSwitcher() {
+			document.documentElement.lang = HTML_LANG[state.lang] || 'en';
+			var params = new URLSearchParams(location.search);
+			var links = document.querySelectorAll('.langbar a[data-lang]');
+			for (var i = 0; i < links.length; i++) {
+				var link = links[i];
+				var code = link.getAttribute('data-lang');
+				if (code === state.lang) link.setAttribute('aria-current', 'true');
+				else link.removeAttribute('aria-current');
+				var next = new URLSearchParams(params.toString());
+				next.set('lang', code);
+				link.setAttribute('href', location.pathname + '?' + next.toString() + (location.hash || ''));
+			}
+			var skip = document.querySelector('.skip');
+			if (skip) skip.textContent = SKIP[state.lang] || SKIP.en;
+		}
+
+		function syncUrl() {
+			var params = new URLSearchParams(location.search);
+			params.set('lang', state.lang);
+			if (state.data) {
+				if (state.page > 1) params.set('page', String(state.page));
+				else params.delete('page');
+			}
+			var hash = state.data ? hashForPage(location.hash || '', state.page) : (location.hash || '');
+			var url = location.pathname + '?' + params.toString() + hash;
+			if (url !== location.pathname + location.search + location.hash) {
+				history.replaceState({ lang: state.lang, page: state.page }, '', url);
+			}
+			try { localStorage.setItem(STORAGE_KEY, state.lang); } catch (e) {}
+			updateSwitcher();
+		}
+
+		function renderChangelog(entries, page) {
+			var count = Math.max(1, Math.ceil(entries.length / PAGE_SIZE));
+			var html = '';
+			for (var n = 1; n <= count; n++) {
+				var slice = entries.slice((n - 1) * PAGE_SIZE, n * PAGE_SIZE);
+				var hidden = n === page ? '' : ' hidden';
+				var body = slice.map(function (entry) {
+					var open = entry.open ? ' open' : '';
+					var items = (entry.items || []).map(function (item) { return '<li>' + esc(item) + '</li>'; }).join('');
+					return '<details id="changelog-' + esc(entry.version) + '"' + open + '><summary>' + esc(entry.version) + ' — ' + esc(entry.summary) + '</summary><ul>' + items + '</ul></details>';
+				}).join('');
+				html += '<div class="changelog-page" data-page="' + n + '" id="changelog-page-' + n + '"' + hidden + '>' + body + '</div>';
+			}
+			return html;
+		}
+
+		function renderPager(page) {
+			var ui = state.pack.ui || englishChrome().ui;
+			var count = pageCount();
+			var buttons = '<button type="button" data-pager="prev"' + (page <= 1 ? ' disabled' : '') + '>' + esc(ui.prev) + '</button>';
+			for (var n = 1; n <= count; n++) {
+				var current = n === page ? ' aria-current="page"' : '';
+				buttons += '<button type="button" data-pager="' + n + '" aria-label="' + esc(ui.page.replace('{n}', String(n))) + '"' + current + '>' + n + '</button>';
+			}
+			buttons += '<button type="button" data-pager="next"' + (page >= count ? ' disabled' : '') + '>' + esc(ui.next) + '</button>';
+			return '<nav class="pager" aria-label="' + esc(ui.pagination) + '">' + buttons + '</nav><p id="changelog-status" class="visually-hidden" aria-live="polite">' + esc(ui.page.replace('{n}', String(page))) + '</p>';
+		}
+
+		function buildHtml() {
+			var pack = state.pack;
+			var data = state.data;
+			var customer = data.firstCustomer || { name: 'Cappella Veneta', url: 'https://veneta.ee' };
+			var email = data.orderEmail || 'order@compath.ee';
+			var badge = String(pack.badge || 'WordPress plugin · Lite {lite} · Pro {pro}')
+				.replace('{lite}', state.lite)
+				.replace('{pro}', state.pro);
+			return '<header class="hero"><div class="hero__inner">' +
+				'<span class="hero__badge">' + esc(badge) + '</span>' +
+				'<h1>' + esc(pack.title || data.title) + '</h1>' +
+				'<p>' + esc(pack.tagline || data.tagline) + '</p>' +
+				'<div class="hero__cta">' +
+					'<a class="btn btn--primary" href="' + esc(CONFIG.wordpressOrgUrl) + '">' + esc(pack.getLite) + '</a>' +
+					'<a class="btn btn--primary" href="' + esc(CONFIG.demoUrl) + '" target="_blank" rel="noopener noreferrer">' + esc(textOf(pack, 'tryDemo')) + '</a>' +
+					'<a class="btn btn--ghost" href="' + esc(state.downloadUrl) + '">' + esc(pack.downloadZip) + '</a>' +
+					'<a class="btn btn--ghost" href="' + esc(CONFIG.buyProUrl) + '" target="_blank" rel="noopener noreferrer">' + esc(pack.orderPro) + '</a>' +
+				'</div>' +
+				'<nav class="hero__nav" aria-label="' + esc(ON_PAGE[state.lang] || ON_PAGE.en) + '">' +
+					'<a href="#about">' + esc(pack.overviewTitle) + '</a>' +
+					'<a href="#demo">' + esc(textOf(pack, 'demoTitle')) + '</a>' +
+					'<a href="#order">' + esc(pack.orderTitle) + '</a>' +
+					'<a href="#install">' + esc(pack.installTitle) + '</a>' +
+					'<a href="#faq">' + esc(pack.faqTitle) + '</a>' +
+					'<a href="#changelog">' + esc(pack.changelogTitle) + '</a>' +
+				'</nav>' +
+			'</div></header>' +
+			'<main class="page">' +
+				'<section class="card" id="about"><h2>' + esc(pack.overviewTitle) + '</h2>' +
+					'<p>' + linkify(pack.overview || '') + '</p>' +
+					renderFeatures(pack.featureCards || data.featureCards || data.features || []) +
+					'<p class="meta">' + esc(pack.requirementsLabel) + ': ' + esc(pack.requirements || data.requirements) + '. ' + esc(pack.ownerLabel) + ': <strong>' + esc(data.owner) + '</strong>. ' + esc(pack.firstCustomerLabel) + ' — <a href="' + esc(customer.url) + '">' + esc(customer.name) + '</a>.</p>' +
+				'</section>' +
+				renderDemo(pack) +
+				'<section class="card" id="order"><h2>' + esc(pack.orderTitle) + '</h2>' +
+					'<p>' + linkify(pack.orderIntro || '') + '</p>' +
+					'<div class="pricing">' + renderPricing(pack.pricing || []) + '</div>' +
+					'<div class="order-cta"><a class="btn btn--accent" href="' + esc(CONFIG.buyProUrl) + '" target="_blank" rel="noopener noreferrer">' + esc(pack.orderCta) + '</a><span class="meta">' + esc(pack.orderCtaMeta) + '</span></div>' +
+					'<h3>' + esc(pack.howToOrder) + '</h3>' + renderSteps(pack.orderSteps || []) +
+					'<p class="meta">' + esc(pack.discountNote) + '</p>' +
+				'</section>' +
+				'<section class="card" id="install"><h2>' + esc(pack.installTitle) + '</h2>' +
+					'<h3>' + esc(pack.selfService) + '</h3>' + renderSteps(pack.installSteps || []) +
+					'<h3>' + esc(pack.updatesTitle) + '</h3>' + renderUpdates(pack.updates) +
+					'<h3>' + esc(pack.rolesTitle) + '</h3>' + renderRoles(pack.roles) +
+				'</section>' +
+				'<section class="card" id="faq"><h2>' + esc(pack.faqTitle) + '</h2>' + renderFaq(pack.faq) + '</section>' +
+				'<section class="card changelog" id="changelog"><h2>' + esc(pack.changelogTitle) + '</h2>' +
+					'<p class="meta">' + esc(pack.changelogMeta) + '</p>' +
+					renderChangelog(state.entries, state.page) +
+					renderPager(state.page) +
+				'</section>' +
+			'</main>' +
+			'<footer class="footer"><p>Choir Rehearsal · <a href="https://rehearsal.compath.ee">rehearsal.compath.ee</a> · <a href="https://compath.ee">compath.ee</a> · <a href="https://github.com/compathee/compathee">GitHub</a> · <a href="mailto:' + esc(email) + '">' + esc(email) + '</a></p>' +
+				'<p>© Compath OÜ, Tallinn, Estonia</p><p>' + esc(pack.licenseLine || 'Licensed under GPL-2.0-or-later') + '</p></footer>';
+		}
+
+		function revealHash() {
+			var hash = location.hash || '';
+			if (!hash) {
+				if (state.page > 1) {
+					var section = document.getElementById('changelog');
+					if (section) section.scrollIntoView();
+				}
+				return;
+			}
+			if (/^#changelog-page-\d+$/.test(hash)) {
+				var changelog = document.getElementById('changelog');
+				if (changelog) changelog.scrollIntoView();
+				return;
+			}
+			if (/^#changelog-.+/.test(hash)) {
+				var version = decodeURIComponent(hash.slice('#changelog-'.length));
+				var entry = document.getElementById('changelog-' + version);
+				if (entry) {
+					if (entry.tagName === 'DETAILS') entry.open = true;
+					entry.scrollIntoView();
+				}
+				return;
+			}
+			var target = document.getElementById(decodeURIComponent(hash.slice(1)));
+			if (target) target.scrollIntoView();
+		}
+
+		function showPage(page, opts) {
+			opts = opts || {};
+			var count = pageCount();
+			if (page < 1) page = 1;
+			if (page > count) page = count;
+			state.page = page;
+			var pages = document.querySelectorAll('#app .changelog-page');
+			for (var i = 0; i < pages.length; i++) {
+				var n = parseInt(pages[i].getAttribute('data-page'), 10);
+				if (n === page) pages[i].removeAttribute('hidden');
+				else pages[i].setAttribute('hidden', '');
+			}
+			var buttons = document.querySelectorAll('#app .pager [data-pager]');
+			for (var b = 0; b < buttons.length; b++) {
+				var button = buttons[b];
+				var kind = button.getAttribute('data-pager');
+				if (kind === 'prev') button.disabled = page <= 1;
+				else if (kind === 'next') button.disabled = page >= count;
+				else if (parseInt(kind, 10) === page) button.setAttribute('aria-current', 'page');
+				else button.removeAttribute('aria-current');
+			}
+			var status = document.getElementById('changelog-status');
+			var template = (state.pack.ui && state.pack.ui.page) || 'Page {n}';
+			if (status) status.textContent = template.replace('{n}', String(page));
+			syncUrl();
+			if (opts.scroll) {
+				var section = document.getElementById('changelog');
+				if (section) section.scrollIntoView();
+			}
+			if (opts.focus) {
+				var current = document.querySelector('#app .pager [aria-current="page"]');
+				if (current) current.focus();
+			}
+		}
+
+		function render(opts) {
+			opts = opts || {};
+			var y = window.scrollY;
+			state.pack = resolvePack(state.data, state.lang);
+			state.entries = state.data.changelog || [];
+			state.page = pageFromLocation(state.entries);
+			if (state.pack.documentTitle) document.title = state.pack.documentTitle;
+			var meta = document.querySelector('meta[name="description"]');
+			if (meta && state.pack.metaDescription) meta.setAttribute('content', state.pack.metaDescription);
+			document.getElementById('app').innerHTML = buildHtml();
+			document.getElementById('app').setAttribute('data-ready', '1');
+			updateSwitcher();
+			syncUrl();
+			if (opts.keepScroll) window.scrollTo(0, y);
+			else if (opts.reveal) revealHash();
 		}
 
 		function showError(message) {
 			document.getElementById('app').innerHTML =
 				'<div class="error"><strong>Could not load content from GitHub.</strong><p>' + esc(message) + '</p>' +
-				'<p>Try <a href="https://github.com/compathee/compathee/releases/latest">GitHub Releases</a> or email <a href="mailto:order@compath.ee">order@compath.ee</a>.</p></div>';
+				'<p>Try <a href="' + esc(CONFIG.wordpressOrgUrl) + '">WordPress.org</a> or email <a href="mailto:order@compath.ee">order@compath.ee</a>.</p></div>';
+			document.getElementById('app').setAttribute('data-ready', 'error');
 		}
+
+		state.lang = detectLang();
+		updateSwitcher();
+		syncUrl();
+		var loading = document.querySelector('#app .loading');
+		if (loading) loading.textContent = LOADING[state.lang] || LOADING.en;
+
+		document.querySelector('.langbar').addEventListener('click', function (event) {
+			var link = event.target.closest ? event.target.closest('a[data-lang]') : null;
+			if (!link) return;
+			event.preventDefault();
+			var lang = link.getAttribute('data-lang');
+			if (!lang || lang === state.lang) return;
+			state.lang = lang;
+			updateSwitcher();
+			if (state.data) render({ keepScroll: true });
+			else syncUrl();
+		});
+
+		function copyText(value) {
+			if (navigator.clipboard && navigator.clipboard.writeText) {
+				return navigator.clipboard.writeText(value).catch(function () { return fallbackCopy(value); });
+			}
+			return fallbackCopy(value);
+		}
+
+		function fallbackCopy(value) {
+			return new Promise(function (resolve, reject) {
+				var area = document.createElement('textarea');
+				area.value = value;
+				area.setAttribute('readonly', '');
+				area.style.position = 'fixed';
+				area.style.left = '-9999px';
+				document.body.appendChild(area);
+				area.select();
+				try {
+					if (!document.execCommand('copy')) throw new Error('copy failed');
+					resolve();
+				} catch (err) {
+					reject(err);
+				} finally {
+					document.body.removeChild(area);
+				}
+			});
+		}
+
+		document.getElementById('app').addEventListener('click', function (event) {
+			var copyButton = event.target.closest ? event.target.closest('[data-copy]') : null;
+			if (copyButton) {
+				var value = copyButton.getAttribute('data-copy') || '';
+				var label = copyButton.getAttribute('data-label') || copyButton.textContent;
+				var copied = textOf(state.pack || {}, 'demoCopied');
+				copyText(value).then(function () {
+					copyButton.textContent = copied;
+					var status = document.getElementById('copy-status');
+					if (status) status.textContent = copied;
+					window.setTimeout(function () {
+						if (copyButton.textContent === copied) copyButton.textContent = label;
+					}, 2000);
+				}).catch(function () {});
+				return;
+			}
+			var button = event.target.closest ? event.target.closest('[data-pager]') : null;
+			if (!button || button.disabled) return;
+			var kind = button.getAttribute('data-pager');
+			var next = state.page;
+			if (kind === 'prev') next -= 1;
+			else if (kind === 'next') next += 1;
+			else next = parseInt(kind, 10);
+			showPage(next, { scroll: true });
+		});
+
+		document.getElementById('app').addEventListener('keydown', function (event) {
+			if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+			if (!event.target.closest || !event.target.closest('.pager')) return;
+			event.preventDefault();
+			showPage(state.page + (event.key === 'ArrowRight' ? 1 : -1), { focus: true });
+		});
+
+		window.addEventListener('hashchange', function () {
+			if (!state.data) return;
+			var page = pageFromLocation(state.entries);
+			if (page !== state.page) showPage(page, { scroll: false });
+			revealHash();
+		});
+
+		window.addEventListener('popstate', function () {
+			state.lang = detectLang();
+			updateSwitcher();
+			if (state.data) render({ reveal: true });
+		});
 
 		Promise.all([
 			fetchJsonFromRepo('choir-rehearsal/docs/product-data.json'),
 			fetchJsonFromRepo('choir-rehearsal/update.json').catch(function () { return {}; }),
-			fetch(CONFIG.releasesUrl, { cache: 'no-store' }).then(function (r) {
-				return r.ok ? r.json() : [];
-			}).catch(function () { return []; })
+			withTimeout(fetch(CONFIG.releasesUrl, { cache: 'no-store' }).then(function (response) {
+				return response.ok ? response.json() : [];
+			}), 4000, [])
 		]).then(function (results) {
-			var data = results[0];
-			var updateMeta = results[1];
-			var releases = results[2];
-			var latestRelease = findLatestRelease(releases);
-			var versionFromRelease = '';
-			if (latestRelease && latestRelease.tag_name) {
-				versionFromRelease = String(latestRelease.tag_name)
-					.replace(/^compath-choir-rehearsal-v/, '')
-					.replace(/^choir-rehearsal-v/, '');
+			state.data = results[0];
+			var updateMeta = results[1] || {};
+			var found = findLatestRelease(results[2]);
+			var releaseVersion = found.version || '';
+			var jsonVersion = updateMeta.version ? String(updateMeta.version) : '';
+			state.lite = state.data.liteVersion || '0.4.63';
+			if (releaseVersion && compareVersions(releaseVersion, state.lite) > 0) state.lite = releaseVersion;
+			if (jsonVersion && compareVersions(jsonVersion, state.lite) > 0) state.lite = jsonVersion;
+			state.pro = state.data.proVersion || '0.5.0';
+			state.downloadUrl = getDownloadUrl(found.release);
+			if (updateMeta.download_url && (!releaseVersion || compareVersions(jsonVersion, releaseVersion) > 0)) {
+				state.downloadUrl = updateMeta.download_url;
 			}
-			var versionFromJson = (updateMeta && updateMeta.version) ? String(updateMeta.version) : '';
-			var version = versionFromRelease || versionFromJson || '0.4.6';
-			if (versionFromRelease && versionFromJson && compareVersions(versionFromRelease, versionFromJson) >= 0) {
-				version = versionFromRelease;
-			} else if (versionFromJson) {
-				version = versionFromJson;
-			}
-			var downloadUrl = getDownloadUrl(latestRelease);
-			if (updateMeta && updateMeta.download_url && (!latestRelease || compareVersions(versionFromJson, versionFromRelease || '0') > 0)) {
-				downloadUrl = updateMeta.download_url;
-			}
-			renderPage(data, version, downloadUrl);
+			render({ reveal: true });
 		}).catch(function (err) {
-			showError(err.message || String(err));
+			showError(err && err.message ? err.message : String(err));
 		});
 	})();
 	</script>
