@@ -14,7 +14,7 @@
 | `update.json` | Текущая версия и ссылка на zip |
 | GitHub Releases API | Резервная ссылка «Download» |
 
-**После релиза плагина** достаточно обновить JSON в репозитории на ветке, которую читает сайт (`cursor/youtube-embed-button-c2eb`, после merge — `main`) — **перезагрузка FTP не нужна**.
+**После релиза плагина** достаточно обновить JSON в репозитории на ветке, которую читает сайт (`cursor/rehearsal-copy-main-abc2`, затем `main`) — **перезагрузка FTP не нужна**.
 
 Оболочка `product-page.html` на FTP должна указывать актуальные ветки в `CONFIG.branches`. Если ветка сменилась — обновите HTML и задеплойте оболочку (workflow ниже).
 
@@ -24,7 +24,7 @@
 2. **`update.json`** — версия для WordPress-updater
 3. **`readme.txt`** — changelog для WordPress.org / плагина
 
-Сайт сначала читает ветку `cursor/youtube-embed-button-c2eb`, затем `cursor/rehearsal-copy-main-abc2` / `main`. Версия в hero берётся из **GitHub Releases** (`compath-choir-rehearsal-v*`).
+Сайт сначала читает ветку `cursor/rehearsal-copy-main-abc2`, затем `main`. В шапке отдельно показаны Lite (релиз / `update.json`) и Pro (`proVersion` в JSON). Страница доступна на английском, эстонском и русском (`?lang=en|et|ru`).
 
 ### Однократный деплой оболочки
 
@@ -53,6 +53,7 @@ FTP нужен только когда меняется сам `product-page.htm
 | [product-data.json](product-data.json) | **Контент страницы** — редактировать при каждом релизе |
 | [product-page.md](product-page.md) | Markdown-копия (справочно) |
 | [deploy/.htaccess](deploy/.htaccess) | Apache: index + права |
+| [deploy/favicon.ico](deploy/favicon.ico) и соседние PNG/SVG | Значок вкладки. В корень FTP рядом с `index.html`. `api/` не выкладывать. |
 
 ## FTP secrets (один раз)
 

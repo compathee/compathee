@@ -9,3 +9,9 @@ Options -Indexes +FollowSymLinks
 	Order allow,deny
 	Allow from all
 </IfModule>
+
+<IfModule mod_mime.c>
+	AddType image/svg+xml .svg
+	AddType application/manifest+json .webmanifest
+	AddType image/x-icon .ico
+</IfModule>
