@@ -27,6 +27,6 @@ The public site lists three services, then Choir Rehearsal as the company’s ow
 2. Plugin and AI agent development
 3. Consulting on launching on Amazon
 
-Translation and video are not offered. The address `support@compath.ee` is the form recipient in `api/config.example.php`. It is not published as a `mailto:` link.
+Translation and video are not offered. `support@compath.ee` is a visible `mailto:` link in the header, the footer, and the contact page. The same address is the form recipient in `api/config.example.php`.
 
-Edit copy in the JSON files and run the build again. The build checks JSON-LD, hreflang, redirects and that the public files do not contain a harvestable mailbox.
+Edit copy in the JSON files and run the build again. The build checks JSON-LD, hreflang, redirects, the published support address, and the chat-widget comment before `</body>`.

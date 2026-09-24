@@ -93,6 +93,28 @@ a:hover { text-decoration: none; }
   backdrop-filter: blur(8px);
 }
 
+.topbar {
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+}
+
+.topbar__row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 4px 18px;
+  min-height: 44px;
+}
+
+.topbar a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+
 .header__bar {
   display: flex;
   align-items: center;

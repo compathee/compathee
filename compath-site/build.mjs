@@ -26,9 +26,15 @@ const product = {
   shop: "https://shop.compath.ee/products/choir-rehearsal-pro/",
 };
 const mapUrl = "https://www.openstreetmap.org/search?query=Ahtri%2012%2C%2010151%20Tallinn";
+const supportEmail = "support@compath.ee";
+const chatSlot = "<!-- AI chat widget: insert script here -->";
 const pageIds = ["home", "services", "it", "plugins", "amazon", "choir", "contact", "privacy", "thanks", "formError"];
 const sitemapIds = ["home", "services", "it", "plugins", "amazon", "choir", "contact", "privacy"];
 const noindexIds = new Set(["thanks", "formError"]);
+
+function mailLink() {
+  return `<a href="mailto:${supportEmail}">${supportEmail}</a>`;
+}
 
 function esc(value) {
   return String(value).replace(/[&<>"]/g, (char) => ({
@@ -97,6 +103,19 @@ function organization() {
     image: `${origin}/assets/og-en.webp`,
     logo: `${origin}/assets/logo.png`,
     telephone: "+37255520482",
+    contactPoint: {
+      "@type": "ContactPoint",
+      contactType: "customer support",
+      email: supportEmail,
+      telephone: "+37255520482",
+      availableLanguage: ["et", "en", "ru"],
+      hoursAvailable: {
+        "@type": "OpeningHoursSpecification",
+        dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+        opens: "09:00",
+        closes: "17:00",
+      },
+    },
     vatID: "EE101244231",
     identifier: {
       "@type": "PropertyValue",
@@ -251,6 +270,12 @@ ${ld(graph)}
 <a class="skip" href="#main">${esc(lang.ui.skip)}</a>
 <div class="accent"></div>
 <header class="site-header">${basePath ? `\n  <p class="preview-badge">${esc(lang.ui.previewBadge)}</p>` : ""}
+  <div class="topbar">
+    <div class="wrap topbar__row">
+      <a href="tel:+37255520482">+372 55520482</a>
+      ${mailLink()}
+    </div>
+  </div>
   <div class="wrap header__bar">
     <a class="brand" href="${pub(urlFor(lang, "home"))}"><img class="brand__logo" src="${pub("/assets/logo.png")}" alt="Compath" width="${logoMeta.width}" height="${logoMeta.height}" /></a>
     <nav class="nav" aria-label="${esc(lang.ui.navLabel)}">
@@ -272,6 +297,7 @@ ${main}
 ${footer(lang)}
 <script type="application/json" id="lang-map">${JSON.stringify(alternates)}</script>
 <script src="${pub("/assets/site.js")}" defer></script>
+${chatSlot}
 </body>
 </html>
 `;
@@ -308,6 +334,7 @@ function footer(lang) {
     </nav>
     <div>
       <p><span class="meta">${esc(lang.ui.phoneLabel)}</span><br /><a href="tel:+37255520482">+372 55520482</a></p>
+      <p><span class="meta">${esc(lang.ui.emailLabel)}</span><br />${mailLink()}</p>
       <p><span class="meta">${esc(lang.ui.hoursLabel)}</span><br />${esc(lang.ui.hours)}</p>
       <p><span class="meta">${esc(lang.ui.regLabel)}</span><br />11502963<br />${esc(lang.ui.vatLabel)} EE101244231</p>
     </div>
@@ -508,12 +535,12 @@ function contactPage(lang) {
     <dl class="facts">
       <div><dt>${esc(lang.ui.addressLabel)}</dt><dd>Compath OÜ<br />Ahtri 12<br />Tallinn 10151<br />Estonia</dd></div>
       <div><dt>${esc(lang.ui.phoneLabel)}</dt><dd><a href="tel:+37255520482">+372 55520482</a></dd></div>
+      <div><dt>${esc(lang.ui.emailLabel)}</dt><dd>${mailLink()}</dd></div>
       <div><dt>${esc(lang.ui.hoursLabel)}</dt><dd>${esc(lang.ui.hours)}</dd></div>
       <div><dt>${esc(lang.ui.regLabel)}</dt><dd>11502963</dd></div>
       <div><dt>${esc(lang.ui.vatLabel)}</dt><dd>EE101244231</dd></div>
     </dl>
     <p><a href="${mapUrl}" rel="noopener noreferrer">${esc(lang.ui.map)}</a></p>
-    <p id="mail-slot" data-u="support" data-h="compath.ee"></p>
     </div>
     ${basePath ? `<div class="preview-note" role="note"><p>${esc(lang.ui.previewForm)}</p></div>` : `<form id="contact-form" class="form" method="post" action="/api/contact.php" data-sending="${esc(form.sending)}" data-success="${esc(form.success)}" data-invalid="${esc(form.invalid)}" data-error="${esc(form.error)}">
       <p class="meta">${esc(lang.ui.required)} ${esc(lang.ui.privacyNote)} <a href="${pub(urlFor(lang, "privacy"))}">${esc(lang.ui.privacy)}</a></p>
@@ -653,6 +680,9 @@ function llms() {
     `- English: ${abs(urlFor(byCode.en, "contact"))}`,
     `- Estonian: ${abs(urlFor(byCode.et, "contact"))}`,
     `- Russian: ${abs(urlFor(byCode.ru, "contact"))}`,
+    `- Email: ${supportEmail}`,
+    "- Phone: +372 55520482",
+    "- Hours: Mo-Fr 09:00-17:00",
     "- Map: " + mapUrl,
     "",
   );
@@ -714,6 +744,13 @@ function notFound() {
 <li><a href="${pub("/ru/")}">Русский</a></li>
 </ul>
 </div></main>
+<footer class="site-footer">
+  <div class="wrap">
+    <p><a href="tel:+37255520482">+372 55520482</a></p>
+    <p>${mailLink()}</p>
+  </div>
+</footer>
+${chatSlot}
 </body>
 </html>
 `;

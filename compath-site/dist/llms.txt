@@ -49,4 +49,7 @@ Choir Rehearsal is Compath’s own WordPress plugin: a private rehearsal library
 - English: https://compath.ee/contact/
 - Estonian: https://compath.ee/et/kontakt/
 - Russian: https://compath.ee/ru/kontakty/
+- Email: support@compath.ee
+- Phone: +372 55520482
+- Hours: Mo-Fr 09:00-17:00
 - Map: https://www.openstreetmap.org/search?query=Ahtri%2012%2C%2010151%20Tallinn

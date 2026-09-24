@@ -42,7 +42,7 @@ export function validate(dist, options = {}) {
     return problems;
   }
   const files = walk(dist).filter((file) => file.endsWith(".html") || file.endsWith(".txt") || file.endsWith(".xml") || file.endsWith(".css") || file.endsWith(".js"));
-  const banned = ["mailto:", "support@compath.ee", "sisterz", "tõlketeenus"];
+  const banned = ["sisterz", "tõlketeenus", "mail-slot"];
   for (const file of files) {
     const text = fs.readFileSync(file, "utf8");
     for (const word of banned) {
@@ -92,6 +92,24 @@ export function validate(dist, options = {}) {
     const logoSize = html.match(/class="brand__logo"[^>]*width="(\d+)" height="(\d+)"/);
     if (!logoSize || logoSize[1] === "0" || logoSize[2] === "0") problems.push(`${rel} logo width and height`);
     if (html.includes("brand__name") || html.includes("mark.svg")) problems.push(`${rel} still uses the old mark`);
+    if (!html.includes('class="topbar"') || !/class="topbar"[\s\S]*?href="mailto:support@compath\.ee"/.test(html)) {
+      problems.push(`${rel} header missing support mailto`);
+    }
+    if (!/class="site-footer"[\s\S]*?href="mailto:support@compath\.ee">support@compath\.ee<\/a>/.test(html)) {
+      problems.push(`${rel} footer missing support mailto`);
+    }
+    if (!html.includes("<!-- AI chat widget: insert script here -->\n</body>")) {
+      problems.push(`${rel} missing chat widget placeholder`);
+    }
+    if (/position\s*:\s*fixed/i.test(html) || /bottom:\s*0/.test(html)) {
+      problems.push(`${rel} has a fixed or bottom-pinned element`);
+    }
+    if (rel === path.join("contact", "index.html") || rel === path.join("et", "kontakt", "index.html") || rel === path.join("ru", "kontakty", "index.html")) {
+      const facts = html.match(/<dl class="facts">([\s\S]*?)<\/dl>/);
+      if (!facts || !facts[1].includes('href="mailto:support@compath.ee"') || !facts[1].includes('href="tel:+37255520482"')) {
+        problems.push(`${rel} contact facts missing email next to the phone`);
+      }
+    }
     const blocks = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)];
     if (!blocks.length) problems.push(`${rel} missing JSON-LD`);
     for (const block of blocks) {
@@ -108,6 +126,20 @@ export function validate(dist, options = {}) {
       }
       if (preview && block[1].includes(base)) problems.push(`${rel} JSON-LD mentions the preview path`);
       const types = data["@graph"].flatMap((node) => [].concat(node["@type"] || []));
+      const business = data["@graph"].find((node) => [].concat(node["@type"] || []).includes("LocalBusiness"));
+      if (business) {
+        const point = business.contactPoint || {};
+        const hours = point.hoursAvailable || {};
+        const languages = [].concat(point.availableLanguage || []);
+        const days = [].concat(hours.dayOfWeek || []);
+        const week = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+        if (point["@type"] !== "ContactPoint" || point.contactType !== "customer support" || point.email !== "support@compath.ee" || point.telephone !== "+37255520482") {
+          problems.push(`${rel} ContactPoint`);
+        }
+        if (["et", "en", "ru"].some((code) => !languages.includes(code)) || hours.opens !== "09:00" || hours.closes !== "17:00" || week.some((day) => !days.includes(day))) {
+          problems.push(`${rel} ContactPoint hours or languages`);
+        }
+      }
       if (rel === "index.html" || rel === path.join("et", "index.html") || rel === path.join("ru", "index.html")) {
         if (!types.includes("LocalBusiness") || !types.includes("SoftwareApplication") || !types.includes("Service")) {
           problems.push(`${rel} home schema missing LocalBusiness, Service or SoftwareApplication`);
@@ -117,7 +149,6 @@ export function validate(dist, options = {}) {
           if (!business || business[key] == null) problems.push(`${rel} LocalBusiness missing ${key}`);
         }
         if (business && business.openingHours !== "Mo-Fr 09:00-17:00") problems.push(`${rel} openingHours`);
-        if (JSON.stringify(business).includes("support@")) problems.push(`${rel} schema has email`);
         const services = data["@graph"].filter((node) => node["@type"] === "Service");
         if (services.length !== 3) problems.push(`${rel} expected 3 Service nodes, found ${services.length}`);
       }
@@ -221,6 +252,17 @@ export function validate(dist, options = {}) {
   if (!homeHtml.includes('href="/favicon-192.png"') && !homeHtml.includes('href="/preview-2026/favicon-192.png"')) {
     problems.push("home favicon links");
   }
+  const css = fs.readFileSync(path.join(dist, "assets", "site.css"), "utf8");
+  if (/position\s*:\s*fixed/i.test(css)) problems.push("site.css uses position fixed");
+  const script = fs.readFileSync(path.join(dist, "assets", "site.js"), "utf8");
+  if (script.includes("mail-slot") || script.includes("support@")) problems.push("site.js still hides or rebuilds the mailbox");
+  const missing = fs.readFileSync(path.join(dist, "404.html"), "utf8");
+  if (!/class="site-footer"[\s\S]*?href="mailto:support@compath\.ee">support@compath\.ee<\/a>/.test(missing)) {
+    problems.push("404 footer missing support mailto");
+  }
+  if (!missing.includes("<!-- AI chat widget: insert script here -->\n</body>")) {
+    problems.push("404 missing chat widget placeholder");
+  }
 
   if (preview) {
     for (const name of ["robots.txt", "sitemap.xml", "llms.txt"]) {
@@ -248,9 +290,9 @@ export function validate(dist, options = {}) {
     if (!service.includes('href="/preview-2026/contact/"')) problems.push("preview inline link");
     const manifest = fs.readFileSync(path.join(dist, "site.webmanifest"), "utf8");
     if (!manifest.includes("/preview-2026/favicon-192.png") || !manifest.includes("192x192")) problems.push("preview manifest");
-    const missing = fs.readFileSync(path.join(dist, "404.html"), "utf8");
-    if (!missing.includes('<meta name="robots" content="noindex, nofollow" />')) problems.push("preview 404 robots");
-    if (!missing.includes('href="/preview-2026/et/"')) problems.push("preview 404 links");
+    const previewMissing = fs.readFileSync(path.join(dist, "404.html"), "utf8");
+    if (!previewMissing.includes('<meta name="robots" content="noindex, nofollow" />')) problems.push("preview 404 robots");
+    if (!previewMissing.includes('href="/preview-2026/et/"')) problems.push("preview 404 links");
   } else {
     const robots = fs.readFileSync(path.join(dist, "robots.txt"), "utf8");
     for (const bot of ["Googlebot", "Bingbot", "GPTBot", "OAI-SearchBot", "ClaudeBot", "PerplexityBot", "Google-Extended"]) {
@@ -258,7 +300,8 @@ export function validate(dist, options = {}) {
     }
     const sitemap = fs.readFileSync(path.join(dist, "sitemap.xml"), "utf8");
     if (!sitemap.includes('hreflang="x-default"') || !sitemap.includes(`${origin}/et/`)) problems.push("sitemap hreflang");
-    if (!fs.readFileSync(path.join(dist, "llms.txt"), "utf8").includes("Choir Rehearsal")) problems.push("llms.txt");
+    const llms = fs.readFileSync(path.join(dist, "llms.txt"), "utf8");
+    if (!llms.includes("Choir Rehearsal") || !llms.includes("support@compath.ee") || !llms.includes("Mo-Fr 09:00-17:00")) problems.push("llms.txt");
     const contact = fs.readFileSync(path.join(dist, "contact", "index.html"), "utf8");
     if (!contact.includes('action="/api/contact.php"')) problems.push("production contact form");
   }

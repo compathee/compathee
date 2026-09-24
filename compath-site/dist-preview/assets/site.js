@@ -43,13 +43,6 @@
     }
   }
 
-  var mail = document.getElementById("mail-slot");
-  if (mail) {
-    var user = mail.getAttribute("data-u") || "";
-    var host = mail.getAttribute("data-h") || "";
-    if (user && host) mail.textContent = user + "@" + host;
-  }
-
   var form = document.getElementById("contact-form");
   if (!form || !window.fetch) return;
   var status = document.getElementById("form-status");
