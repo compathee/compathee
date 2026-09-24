@@ -1,9 +1,9 @@
 <?php
 /**
- * In-plugin feedback that opens a GitHub issue.
+ * In-plugin feedback posted to the Compath relay.
  *
- * The personal access token is read only on the server. It is never printed
- * on the rehearsal page or passed to front-end scripts.
+ * The relay creates the Jira task and sends the confirmation email.
+ * This plugin stores no Jira token and no SMTP password.
  */
 
 declare(strict_types=1);
@@ -14,11 +14,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 final class Choir_Rehearsal_Feedback {
 
-	public const OPTION_TOKEN = 'choir_rehearsal_feedback_github_token';
+	public const ENDPOINT = 'https://rehearsal.compath.ee/api/feedback.php';
 
-	public const OPTION_REPO = 'choir_rehearsal_feedback_github_repo';
-
-	public const DEFAULT_REPO = 'compathee/compathee';
+	public const ENDPOINT_FILTER = 'choir_rehearsal_feedback_endpoint';
 
 	public const RATE_LIMIT = 5;
 
@@ -28,28 +26,16 @@ final class Choir_Rehearsal_Feedback {
 		add_action( 'rest_api_init', array( self::class, 'register_routes' ) );
 	}
 
-	public static function register_settings(): void {
-		register_setting(
-			'choir_rehearsal_settings',
-			self::OPTION_REPO,
-			array(
-				'type'              => 'string',
-				'sanitize_callback' => array( self::class, 'sanitize_repo' ),
-				'show_in_rest'      => false,
-				'default'           => self::DEFAULT_REPO,
-			)
-		);
+	public static function endpoint(): string {
+		$url = self::ENDPOINT;
+		if ( function_exists( 'apply_filters' ) ) {
+			$filtered = apply_filters( self::ENDPOINT_FILTER, $url );
+			if ( is_string( $filtered ) && self::is_https_url( $filtered ) ) {
+				return $filtered;
+			}
+		}
 
-		register_setting(
-			'choir_rehearsal_settings',
-			self::OPTION_TOKEN,
-			array(
-				'type'              => 'string',
-				'sanitize_callback' => array( self::class, 'sanitize_token' ),
-				'show_in_rest'      => false,
-				'default'           => '',
-			)
-		);
+		return $url;
 	}
 
 	public static function register_routes(): void {
@@ -76,10 +62,20 @@ final class Choir_Rehearsal_Feedback {
 						'required'          => false,
 						'sanitize_callback' => static fn( $value ): string => sanitize_textarea_field( is_scalar( $value ) ? (string) $value : '' ),
 					),
+					'name'        => array(
+						'type'              => 'string',
+						'required'          => false,
+						'sanitize_callback' => static fn( $value ): string => sanitize_text_field( is_scalar( $value ) ? (string) $value : '' ),
+					),
 					'email'       => array(
 						'type'              => 'string',
 						'required'          => false,
 						'sanitize_callback' => static fn( $value ): string => sanitize_email( is_scalar( $value ) ? (string) $value : '' ),
+					),
+					'company'     => array(
+						'type'              => 'string',
+						'required'          => false,
+						'sanitize_callback' => static fn( $value ): string => sanitize_text_field( is_scalar( $value ) ? (string) $value : '' ),
 					),
 				),
 			)
@@ -119,17 +115,19 @@ final class Choir_Rehearsal_Feedback {
 				'type'        => (string) $request->get_param( 'type' ),
 				'title'       => (string) $request->get_param( 'title' ),
 				'description' => (string) $request->get_param( 'description' ),
+				'name'        => (string) $request->get_param( 'name' ),
 				'email'       => $email,
+				'company'     => (string) $request->get_param( 'company' ),
 			),
 			array(
-				'token'          => (string) get_option( self::OPTION_TOKEN, '' ),
-				'repo'           => (string) get_option( self::OPTION_REPO, self::DEFAULT_REPO ),
 				'role'           => self::current_role(),
 				'plugin_version' => defined( 'CHOIR_REHEARSAL_VERSION' ) ? (string) CHOIR_REHEARSAL_VERSION : '',
+				'pro_version'    => defined( 'CHOIR_REHEARSAL_PRO_VERSION' ) ? (string) CHOIR_REHEARSAL_PRO_VERSION : '',
 				'wp_version'     => (string) get_bloginfo( 'version' ),
 				'php_version'    => PHP_VERSION,
 				'site_url'       => (string) home_url( '/' ),
 				'locale'         => self::sender_locale(),
+				'endpoint'       => self::endpoint(),
 				'now'            => time(),
 				'rate_keys'      => self::rate_keys(),
 			),
@@ -153,8 +151,7 @@ final class Choir_Rehearsal_Feedback {
 		return new WP_REST_Response(
 			array(
 				'message' => $result['message'],
-				'number'  => $result['number'],
-				'url'     => $result['url'],
+				'case'    => $result['case'],
 			),
 			201
 		);
@@ -178,7 +175,6 @@ final class Choir_Rehearsal_Feedback {
 				'i18n'    => array(
 					'sending'      => __( 'Sending…', 'compath-choir-rehearsal' ),
 					'send'         => __( 'Send', 'compath-choir-rehearsal' ),
-					'viewIssue'    => __( 'View issue', 'compath-choir-rehearsal' ),
 					'genericError' => __( 'Could not send feedback. Please try again later.', 'compath-choir-rehearsal' ),
 				),
 			)
@@ -187,12 +183,16 @@ final class Choir_Rehearsal_Feedback {
 
 	public static function render_panel(): void {
 		$email = '';
+		$name  = '';
 		if ( is_user_logged_in() ) {
 			$user = wp_get_current_user();
 			if ( $user instanceof WP_User ) {
 				$email = sanitize_email( (string) $user->user_email );
 				if ( ! is_email( $email ) ) {
 					$email = '';
+				}
+				if ( isset( $user->display_name ) && is_string( $user->display_name ) ) {
+					$name = sanitize_text_field( $user->display_name );
 				}
 			}
 		}
@@ -201,6 +201,10 @@ final class Choir_Rehearsal_Feedback {
 			<summary class="choir-feedback__toggle"><?php esc_html_e( 'Send feedback', 'compath-choir-rehearsal' ); ?></summary>
 			<form id="choir-feedback-form" class="choir-feedback__form" method="post" action="<?php echo esc_url( rest_url( 'choir-rehearsal/v1/feedback' ) ); ?>">
 				<?php wp_nonce_field( 'wp_rest' ); ?>
+				<p class="choir-feedback__hp" style="position:absolute;left:-9999px;height:0;overflow:hidden;" aria-hidden="true">
+					<label for="choir-feedback-company">Company</label>
+					<input type="text" id="choir-feedback-company" name="company" tabindex="-1" autocomplete="off" value="" />
+				</p>
 				<p class="choir-feedback__intro"><?php esc_html_e( 'Wish, bug, or other note about Choir Rehearsal.', 'compath-choir-rehearsal' ); ?></p>
 				<p class="choir-feedback__field">
 					<label for="choir-feedback-type"><?php esc_html_e( 'Type', 'compath-choir-rehearsal' ); ?></label>
@@ -219,9 +223,14 @@ final class Choir_Rehearsal_Feedback {
 					<textarea id="choir-feedback-description" name="description" required maxlength="4000" rows="5" placeholder="<?php esc_attr_e( 'What happened, or what you wish for', 'compath-choir-rehearsal' ); ?>"></textarea>
 				</p>
 				<p class="choir-feedback__field">
-					<label for="choir-feedback-email"><?php esc_html_e( 'Contact email (optional)', 'compath-choir-rehearsal' ); ?></label>
-					<input type="email" id="choir-feedback-email" name="email" maxlength="200" autocomplete="email" value="<?php echo esc_attr( $email ); ?>" />
+					<label for="choir-feedback-name"><?php esc_html_e( 'Name (optional)', 'compath-choir-rehearsal' ); ?></label>
+					<input type="text" id="choir-feedback-name" name="name" maxlength="120" autocomplete="name" value="<?php echo esc_attr( $name ); ?>" />
 				</p>
+				<p class="choir-feedback__field">
+					<label for="choir-feedback-email"><?php esc_html_e( 'Email', 'compath-choir-rehearsal' ); ?></label>
+					<input type="email" id="choir-feedback-email" name="email" required maxlength="200" autocomplete="email" value="<?php echo esc_attr( $email ); ?>" />
+				</p>
+				<p class="choir-feedback__privacy"><?php esc_html_e( 'Your email is used only to answer this request.', 'compath-choir-rehearsal' ); ?></p>
 				<p class="choir-feedback__status" role="status" aria-live="polite" hidden></p>
 				<p class="choir-feedback__submit">
 					<button type="submit" class="choir-feedback__button"><?php esc_html_e( 'Send', 'compath-choir-rehearsal' ); ?></button>
@@ -229,119 +238,6 @@ final class Choir_Rehearsal_Feedback {
 			</form>
 		</details>
 		<?php
-	}
-
-	public static function render_settings_rows(): void {
-		$repo    = (string) get_option( self::OPTION_REPO, self::DEFAULT_REPO );
-		$parsed  = self::parse_repo( $repo );
-		$repo    = null === $parsed ? self::DEFAULT_REPO : $parsed['owner'] . '/' . $parsed['repo'];
-		$has_token = self::is_token_shape( (string) get_option( self::OPTION_TOKEN, '' ) );
-		?>
-		<tr>
-			<th scope="row"><?php esc_html_e( 'Feedback', 'compath-choir-rehearsal' ); ?></th>
-			<td>
-				<p class="description" style="margin-top:0;">
-					<?php echo esc_html( Choir_Rehearsal_Roles::describe_feedback_audience() ); ?>
-				</p>
-				<p>
-					<label for="<?php echo esc_attr( self::OPTION_REPO ); ?>"><?php esc_html_e( 'GitHub repository for feedback', 'compath-choir-rehearsal' ); ?></label><br />
-					<input type="text" class="regular-text" name="<?php echo esc_attr( self::OPTION_REPO ); ?>" id="<?php echo esc_attr( self::OPTION_REPO ); ?>" value="<?php echo esc_attr( $repo ); ?>" />
-				</p>
-				<p class="description"><?php esc_html_e( 'Issues are created in this repository. Use owner/name, for example compathee/compathee.', 'compath-choir-rehearsal' ); ?></p>
-				<p>
-					<label for="<?php echo esc_attr( self::OPTION_TOKEN ); ?>"><?php esc_html_e( 'GitHub token', 'compath-choir-rehearsal' ); ?></label><br />
-					<input type="password" class="regular-text" name="<?php echo esc_attr( self::OPTION_TOKEN ); ?>" id="<?php echo esc_attr( self::OPTION_TOKEN ); ?>" value="" autocomplete="off" spellcheck="false" />
-				</p>
-				<?php if ( $has_token ) : ?>
-					<p class="description"><?php esc_html_e( 'A token is saved.', 'compath-choir-rehearsal' ); ?></p>
-					<p>
-						<label>
-							<input type="checkbox" name="choir_rehearsal_feedback_clear_token" value="1" />
-							<?php esc_html_e( 'Remove saved token', 'compath-choir-rehearsal' ); ?>
-						</label>
-					</p>
-				<?php endif; ?>
-				<p class="description">
-					<?php esc_html_e( 'Create a fine-grained personal access token at GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens. Grant only this repository Issues: Read and write. Paste the token here. It stays on the server and is not shown on the rehearsal page. Leave blank to keep the saved token.', 'compath-choir-rehearsal' ); ?>
-				</p>
-			</td>
-		</tr>
-		<?php
-	}
-
-	/**
-	 * @param mixed $value Posted repository.
-	 */
-	public static function sanitize_repo( $value ): string {
-		return self::sanitize_repo_value( is_string( $value ) ? $value : '' );
-	}
-
-	/**
-	 * @param mixed $value Posted token. Empty keeps the saved token.
-	 */
-	public static function sanitize_token( $value ): string {
-		$existing = (string) get_option( self::OPTION_TOKEN, '' );
-		$posted   = is_string( $value ) ? $value : '';
-		// options.php verifies the settings nonce before sanitizing registered options.
-		$clear_raw = '';
-		if ( isset( $_POST['choir_rehearsal_feedback_clear_token'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
-			$clear_raw = sanitize_text_field( wp_unslash( (string) $_POST['choir_rehearsal_feedback_clear_token'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
-		}
-		$posted_trim = trim( $posted );
-		if ( '' !== $posted_trim && ! self::is_token_shape( $posted_trim ) ) {
-			add_settings_error(
-				self::OPTION_TOKEN,
-				'choir_feedback_token_invalid',
-				__( 'That GitHub token does not look valid. The saved token was left unchanged.', 'compath-choir-rehearsal' )
-			);
-		}
-
-		return self::resolve_token( $posted, $existing, '1' === $clear_raw );
-	}
-
-	public static function sanitize_repo_value( string $value ): string {
-		$parsed = self::parse_repo( $value );
-		if ( null === $parsed ) {
-			return self::DEFAULT_REPO;
-		}
-
-		return $parsed['owner'] . '/' . $parsed['repo'];
-	}
-
-	/**
-	 * @return array{owner: string, repo: string}|null
-	 */
-	public static function parse_repo( string $value ): ?array {
-		$value = trim( $value );
-		if ( 1 !== preg_match( '/\A([A-Za-z0-9_.-]+)\/([A-Za-z0-9_.-]+)\z/', $value, $matches ) ) {
-			return null;
-		}
-
-		return array(
-			'owner' => $matches[1],
-			'repo'  => $matches[2],
-		);
-	}
-
-	public static function resolve_token( string $posted, string $existing, bool $clear ): string {
-		$posted = trim( $posted );
-		if ( '' !== $posted ) {
-			return self::is_token_shape( $posted ) ? $posted : $existing;
-		}
-		if ( $clear ) {
-			return '';
-		}
-
-		return $existing;
-	}
-
-	public static function is_token_shape( string $token ): bool {
-		$length = strlen( $token );
-		if ( $length < 20 || $length > 255 ) {
-			return false;
-		}
-
-		return 1 === preg_match( '/\A[A-Za-z0-9_]+\z/', $token );
 	}
 
 	public static function to_plain_text( string $value ): string {
@@ -373,33 +269,7 @@ final class Choir_Rehearsal_Feedback {
 	}
 
 	/**
-	 * @return list<string>
-	 */
-	public static function labels_for_type( string $type, bool $pro = false ): array {
-		$labels = array( 'feedback' );
-		if ( 'bug' === $type ) {
-			$labels[] = 'bug';
-		} elseif ( 'wish' === $type ) {
-			$labels[] = 'enhancement';
-		}
-		if ( $pro ) {
-			$labels[] = 'pro';
-		}
-
-		return $labels;
-	}
-
-	public static function issue_title( string $title, bool $pro = false ): string {
-		$title = self::to_plain_text( $title );
-		$title = preg_replace( '/\s+/u', ' ', $title ) ?? $title;
-		$title = self::limit_chars( trim( $title ), 120 );
-		$prefix = $pro ? '[Choir Rehearsal][Pro] ' : '[Choir Rehearsal] ';
-
-		return $prefix . $title;
-	}
-
-	/**
-	 * Local SureCart record used for the GitHub issue. No remote call by itself.
+	 * Local SureCart record used for the support request. No remote call by itself.
 	 *
 	 * @param array<string, mixed> $options sc_* values from the Pro license option.
 	 * @return array{pro: bool, status: string, license_id: string, activation_id: string, customer_id: string, purchase_id: string, order_id: string, license_key: string}
@@ -492,7 +362,37 @@ final class Choir_Rehearsal_Feedback {
 	}
 
 	/**
-	 * English lines for developers. Role and license names are not translated.
+	 * Ids sent to the relay. The full license key is never included.
+	 *
+	 * @param array<string, mixed> $license
+	 * @return array<string, string>
+	 */
+	public static function license_payload( array $license ): array {
+		$license = self::normalize_license( $license );
+		$payload = array(
+			'status'        => $license['status'],
+			'license_id'    => $license['license_id'],
+			'purchase_id'   => $license['purchase_id'],
+			'order_id'      => $license['order_id'],
+			'customer_id'   => $license['customer_id'],
+			'activation_id' => $license['activation_id'],
+		);
+		$public = false;
+		foreach ( array( 'license_id', 'purchase_id', 'order_id', 'customer_id', 'activation_id' ) as $key ) {
+			if ( '' !== $payload[ $key ] ) {
+				$public = true;
+				break;
+			}
+		}
+		if ( ! $public && '' !== $license['license_key'] && 'Lite' !== $license['status'] ) {
+			$payload['license_key_masked'] = self::mask_license_key( $license['license_key'] );
+		}
+
+		return $payload;
+	}
+
+	/**
+	 * English lines for the support request. Role and license names are not translated.
 	 *
 	 * @param array{pro: bool, status: string, license_id: string, activation_id: string, customer_id: string, purchase_id: string, order_id: string, license_key: string} $license
 	 * @return list<string>
@@ -561,7 +461,7 @@ final class Choir_Rehearsal_Feedback {
 	}
 
 	/**
-	 * @param array{type: string, email: string, role: string, plugin_version: string, wp_version: string, php_version: string, site_url: string, description: string, locale?: string, license?: array<string, mixed>} $fields
+	 * @param array{type: string, email: string, role: string, plugin_version: string, wp_version: string, php_version: string, site_url: string, description: string, locale?: string, name?: string, license?: array<string, mixed>} $fields
 	 */
 	public static function issue_body( array $fields ): string {
 		$type_labels = array(
@@ -569,15 +469,17 @@ final class Choir_Rehearsal_Feedback {
 			'wish'  => 'Wish',
 			'other' => 'Other',
 		);
-		$type = $type_labels[ $fields['type'] ] ?? 'Other';
-		$role = '' !== $fields['role'] ? $fields['role'] : Choir_Rehearsal_Roles::LABEL_GUEST;
+		$type  = $type_labels[ $fields['type'] ] ?? 'Other';
+		$role  = '' !== $fields['role'] ? $fields['role'] : Choir_Rehearsal_Roles::LABEL_GUEST;
 		$email = '' !== $fields['email'] ? $fields['email'] : '(not provided)';
+		$name  = isset( $fields['name'] ) ? self::to_plain_text( (string) $fields['name'] ) : '';
 		$license = isset( $fields['license'] ) && is_array( $fields['license'] )
 			? self::normalize_license( $fields['license'] )
 			: self::license_snapshot( false, array() );
 
 		$lines = array(
 			'Type: ' . $type,
+			'Name: ' . ( '' !== $name ? $name : '(not provided)' ),
 			'Contact: ' . $email,
 			'Role: ' . $role,
 			'Plugin version: ' . $fields['plugin_version'],
@@ -647,41 +549,50 @@ final class Choir_Rehearsal_Feedback {
 		return 1 === preg_match( '/\A[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}\z/', $email );
 	}
 
-	public static function safe_issue_url( string $url, string $owner, string $repo ): string {
-		$url = trim( $url );
-		if ( 1 !== preg_match( '#\Ahttps://github\.com/([A-Za-z0-9_.-]+)/([A-Za-z0-9_.-]+)/issues/(\d+)/?\z#', $url, $matches ) ) {
-			return '';
-		}
-		if ( $matches[1] !== $owner || $matches[2] !== $repo ) {
-			return '';
-		}
-
-		return 'https://github.com/' . $owner . '/' . $repo . '/issues/' . $matches[3];
-	}
-
-	public static function success_message( int $number ): string {
-		if ( $number > 0 ) {
-			return sprintf(
-				/* translators: %d: GitHub issue number */
-				__( 'Thank you. Feedback sent as issue #%d.', 'compath-choir-rehearsal' ),
-				$number
-			);
-		}
-
-		return __( 'Thank you. Feedback sent.', 'compath-choir-rehearsal' );
+	public static function is_case( string $case ): bool {
+		return 1 === preg_match( '/\A[A-Z][A-Z0-9]{1,10}-\d{1,8}\z/', $case );
 	}
 
 	/**
-	 * @param array<string, mixed>        $input
-	 * @param array<string, mixed>        $context
-	 * @param callable                    $load_bucket function( string $key ): array
-	 * @param callable                    $save_bucket function( string $key, array $stamps ): void
-	 * @return array{ok: bool, status: int, message: string, number: int, url: string, code: string}
+	 * Email is required for guests and for logged-in users. The confirmation
+	 * message is sent to this address. Logged-in users see their profile email
+	 * filled in and can change it.
+	 *
+	 * @param string $case  Case number such as DBT-57.
+	 * @param string $email Address that receives the confirmation.
+	 */
+	public static function success_message( string $case, string $email ): string {
+		return sprintf(
+			/* translators: 1: case number such as DBT-57, 2: email address */
+			__( 'Request received, case number %1$s. A confirmation has been sent to %2$s.', 'compath-choir-rehearsal' ),
+			$case,
+			$email
+		);
+	}
+
+	/**
+	 * @param array<string, mixed> $input
+	 * @param array<string, mixed> $context
+	 * @param callable             $load_bucket function( string $key ): array
+	 * @param callable             $save_bucket function( string $key, array $stamps ): void
+	 * @return array{ok: bool, status: int, message: string, case: string, code: string}
 	 */
 	public static function submit_feedback( array $input, array $context, callable $load_bucket, callable $save_bucket, ?callable $transport = null ): array {
+		$company = self::to_plain_text( isset( $input['company'] ) && is_scalar( $input['company'] ) ? (string) $input['company'] : '' );
+		if ( '' !== $company ) {
+			return self::result(
+				false,
+				400,
+				__( 'Please enter a type, title, and description.', 'compath-choir-rehearsal' ),
+				'',
+				'invalid'
+			);
+		}
+
 		$type        = self::normalize_type( isset( $input['type'] ) && is_scalar( $input['type'] ) ? (string) $input['type'] : '' );
 		$title       = self::to_plain_text( isset( $input['title'] ) && is_scalar( $input['title'] ) ? (string) $input['title'] : '' );
 		$description = self::to_plain_text( isset( $input['description'] ) && is_scalar( $input['description'] ) ? (string) $input['description'] : '' );
+		$name        = self::to_plain_text( isset( $input['name'] ) && is_scalar( $input['name'] ) ? (string) $input['name'] : '' );
 		$email       = self::to_plain_text( isset( $input['email'] ) && is_scalar( $input['email'] ) ? (string) $input['email'] : '' );
 		if ( ! self::looks_like_email( $email ) ) {
 			$email = '';
@@ -692,41 +603,23 @@ final class Choir_Rehearsal_Feedback {
 				false,
 				400,
 				__( 'Please enter a type, title, and description.', 'compath-choir-rehearsal' ),
-				0,
 				'',
 				'invalid'
+			);
+		}
+		if ( '' === $email ) {
+			return self::result(
+				false,
+				400,
+				__( 'Please enter a valid email address.', 'compath-choir-rehearsal' ),
+				'',
+				'email'
 			);
 		}
 
 		$title       = self::limit_chars( preg_replace( '/\s+/u', ' ', $title ) ?? $title, 120 );
 		$description = self::limit_chars( $description, 4000 );
-		$token       = isset( $context['token'] ) && is_string( $context['token'] ) ? $context['token'] : '';
-		if ( ! self::is_token_shape( $token ) ) {
-			return self::result(
-				false,
-				503,
-				__( 'Feedback is not configured.', 'compath-choir-rehearsal' ),
-				0,
-				'',
-				'not_configured'
-			);
-		}
-
-		$repo_raw = isset( $context['repo'] ) && is_string( $context['repo'] ) ? $context['repo'] : '';
-		$repo     = self::parse_repo( $repo_raw );
-		if ( null === $repo ) {
-			$repo = self::parse_repo( self::DEFAULT_REPO );
-		}
-		if ( null === $repo ) {
-			return self::result(
-				false,
-				500,
-				__( 'Could not send feedback. Please try again later.', 'compath-choir-rehearsal' ),
-				0,
-				'',
-				'repo'
-			);
-		}
+		$name        = self::limit_chars( preg_replace( '/\s+/u', ' ', $name ) ?? $name, 120 );
 
 		$now    = isset( $context['now'] ) ? (int) $context['now'] : time();
 		$limit  = isset( $context['rate_limit'] ) ? (int) $context['rate_limit'] : self::RATE_LIMIT;
@@ -745,7 +638,7 @@ final class Choir_Rehearsal_Feedback {
 
 		$buckets = array();
 		foreach ( $keys as $key ) {
-			$stored         = $load_bucket( $key );
+			$stored          = $load_bucket( $key );
 			$buckets[ $key ] = self::filter_recent( is_array( $stored ) ? $stored : array(), $now, $window );
 		}
 		if ( self::is_over_limit( $buckets, max( 1, $limit ) ) ) {
@@ -753,7 +646,6 @@ final class Choir_Rehearsal_Feedback {
 				false,
 				429,
 				__( 'Please wait before sending more feedback.', 'compath-choir-rehearsal' ),
-				0,
 				'',
 				'rate_limited'
 			);
@@ -773,277 +665,77 @@ final class Choir_Rehearsal_Feedback {
 				? $context['license']
 				: self::current_license()
 		);
+		$locale = self::locale_from_context( $context );
+		$endpoint = isset( $context['endpoint'] ) && is_string( $context['endpoint'] ) && self::is_https_url( $context['endpoint'] )
+			? $context['endpoint']
+			: self::endpoint();
 
-		$body = self::issue_body(
-			array(
-				'type'           => $type,
-				'email'          => $email,
-				'role'           => $role,
-				'plugin_version' => self::to_plain_text( isset( $context['plugin_version'] ) && is_scalar( $context['plugin_version'] ) ? (string) $context['plugin_version'] : '' ),
-				'wp_version'     => self::to_plain_text( isset( $context['wp_version'] ) && is_scalar( $context['wp_version'] ) ? (string) $context['wp_version'] : '' ),
-				'php_version'    => self::to_plain_text( isset( $context['php_version'] ) && is_scalar( $context['php_version'] ) ? (string) $context['php_version'] : PHP_VERSION ),
-				'site_url'       => self::to_plain_text( isset( $context['site_url'] ) && is_scalar( $context['site_url'] ) ? (string) $context['site_url'] : '' ),
-				'locale'         => self::locale_from_context( $context ),
-				'description'    => $description,
-				'license'        => $license,
-			)
-		);
-
-		$created = self::create_issue(
-			$repo['owner'],
-			$repo['repo'],
-			self::issue_title( $title, ! empty( $license['pro'] ) ),
-			$body,
-			self::labels_for_type( $type, ! empty( $license['pro'] ) ),
-			$token,
-			$transport
-		);
-
-		if ( ! $created['ok'] ) {
-			return self::result( false, 502, $created['message'], 0, '', 'github' );
-		}
-
-		return self::result( true, 201, self::success_message( $created['number'] ), $created['number'], $created['url'], 'sent' );
-	}
-
-	/**
-	 * @param list<string> $labels
-	 * @return array{ok: bool, number: int, url: string, message: string}
-	 */
-	public static function create_issue( string $owner, string $repo, string $title, string $body, array $labels, string $token, ?callable $transport = null ): array {
-		$fail = static function ( string $message ): array {
-			return array(
-				'ok'      => false,
-				'number'  => 0,
-				'url'     => '',
-				'message' => $message,
-			);
-		};
-
-		if ( ! self::is_token_shape( $token ) || null === self::parse_repo( $owner . '/' . $repo ) ) {
-			return $fail( __( 'Feedback is not configured.', 'compath-choir-rehearsal' ) );
-		}
-
-		$transport ??= array( self::class, 'github_request' );
-		$labels      = array_values(
-			array_filter(
-				$labels,
-				static fn( $label ): bool => is_string( $label ) && '' !== $label
-			)
-		);
-
-		$issue_url = 'https://api.github.com/repos/' . rawurlencode( $owner ) . '/' . rawurlencode( $repo ) . '/issues';
-		$with_labels = self::normalize_transport_result(
-			$transport(
-				'POST',
-				$issue_url,
-				self::issue_payload( $title, $body, $labels ),
-				$token
-			)
-		);
-
-		if ( self::is_created_issue( $with_labels ) ) {
-			return self::created_issue_result( $with_labels, $owner, $repo );
-		}
-
-		if ( self::is_auth_or_missing_repo( $with_labels ) || ! self::is_label_problem( $with_labels ) ) {
-			return $fail( self::failure_message( $with_labels ) );
-		}
-
-		$labels_ready = true;
-		$label_url    = 'https://api.github.com/repos/' . rawurlencode( $owner ) . '/' . rawurlencode( $repo ) . '/labels';
-		foreach ( $labels as $label ) {
-			$created_label = self::normalize_transport_result(
-				$transport(
-					'POST',
-					$label_url,
-					array(
-						'name'        => $label,
-						'color'       => self::label_color( $label ),
-						'description' => 'Choir Rehearsal feedback',
-					),
-					$token
-				)
-			);
-			if ( ! self::label_write_ok( $created_label ) ) {
-				$labels_ready = false;
-				break;
-			}
-		}
-
-		if ( $labels_ready && array() !== $labels ) {
-			$retry = self::normalize_transport_result(
-				$transport(
-					'POST',
-					$issue_url,
-					self::issue_payload( $title, $body, $labels ),
-					$token
-				)
-			);
-			if ( self::is_created_issue( $retry ) ) {
-				return self::created_issue_result( $retry, $owner, $repo );
-			}
-		}
-
-		$plain = self::normalize_transport_result(
-			$transport(
-				'POST',
-				$issue_url,
-				self::issue_payload( $title, $body, array() ),
-				$token
-			)
-		);
-		if ( self::is_created_issue( $plain ) ) {
-			return self::created_issue_result( $plain, $owner, $repo );
-		}
-
-		return $fail( self::failure_message( $plain ) );
-	}
-
-	/**
-	 * @param list<string> $labels
-	 * @return array{title: string, body: string, labels?: list<string>}
-	 */
-	private static function issue_payload( string $title, string $body, array $labels ): array {
 		$payload = array(
-			'title' => $title,
-			'body'  => $body,
+			'type'           => $type,
+			'title'          => $title,
+			'message'        => $description,
+			'name'           => $name,
+			'email'          => $email,
+			'locale'         => $locale,
+			'site_url'       => self::to_plain_text( isset( $context['site_url'] ) && is_scalar( $context['site_url'] ) ? (string) $context['site_url'] : '' ),
+			'role'           => $role,
+			'edition'        => ! empty( $license['pro'] ) ? 'Pro' : 'Lite',
+			'plugin_version' => self::to_plain_text( isset( $context['plugin_version'] ) && is_scalar( $context['plugin_version'] ) ? (string) $context['plugin_version'] : '' ),
+			'pro_version'    => self::to_plain_text( isset( $context['pro_version'] ) && is_scalar( $context['pro_version'] ) ? (string) $context['pro_version'] : '' ),
+			'wp_version'     => self::to_plain_text( isset( $context['wp_version'] ) && is_scalar( $context['wp_version'] ) ? (string) $context['wp_version'] : '' ),
+			'php_version'    => self::to_plain_text( isset( $context['php_version'] ) && is_scalar( $context['php_version'] ) ? (string) $context['php_version'] : PHP_VERSION ),
+			'pro'            => ! empty( $license['pro'] ),
+			'license'        => self::license_payload( $license ),
+			'company'        => '',
 		);
-		if ( array() !== $labels ) {
-			$payload['labels'] = $labels;
+
+		$transport ??= array( self::class, 'relay_request' );
+		$response = self::normalize_transport_result( $transport( $endpoint, $payload ) );
+		$case = isset( $response['data']['case'] ) && is_string( $response['data']['case'] ) ? $response['data']['case'] : '';
+		$accepted = ! empty( $response['data']['ok'] ) && self::is_case( $case ) && in_array( $response['code'], array( 200, 201 ), true );
+		if ( ! $accepted ) {
+			return self::result(
+				false,
+				502,
+				__( 'Could not send feedback. Please try again later.', 'compath-choir-rehearsal' ),
+				'',
+				'relay'
+			);
 		}
 
-		return $payload;
+		return self::result( true, 201, self::success_message( $case, $email ), $case, 'sent' );
 	}
 
-	/**
-	 * @param array{code: int, message: string, data: array<string, mixed>} $response
-	 */
-	private static function is_created_issue( array $response ): bool {
-		if ( ! in_array( $response['code'], array( 200, 201 ), true ) ) {
+	public static function is_https_url( string $url ): bool {
+		$url = trim( $url );
+		if ( 1 !== preg_match( '#\Ahttps://[^\s]+\z#', $url ) ) {
 			return false;
 		}
 
-		return self::positive_int( $response['data']['number'] ?? 0 ) > 0;
-	}
-
-	/**
-	 * @param array{code: int, message: string, data: array<string, mixed>} $response
-	 * @return array{ok: bool, number: int, url: string, message: string}
-	 */
-	private static function created_issue_result( array $response, string $owner, string $repo ): array {
-		$number = self::positive_int( $response['data']['number'] ?? 0 );
-		$url    = '';
-		if ( isset( $response['data']['html_url'] ) && is_string( $response['data']['html_url'] ) ) {
-			$url = self::safe_issue_url( $response['data']['html_url'], $owner, $repo );
-		}
-
-		return array(
-			'ok'      => true,
-			'number'  => $number,
-			'url'     => $url,
-			'message' => self::success_message( $number ),
-		);
-	}
-
-	/**
-	 * @param array{code: int, message: string, data: array<string, mixed>} $response
-	 */
-	private static function is_label_problem( array $response ): bool {
-		return 422 === $response['code'] && false !== stripos( $response['message'], 'label' );
-	}
-
-	/**
-	 * @param array{code: int, message: string, data: array<string, mixed>} $response
-	 */
-	private static function is_auth_or_missing_repo( array $response ): bool {
-		return in_array( $response['code'], array( 401, 403, 404 ), true );
-	}
-
-	/**
-	 * @param array{code: int, message: string, data: array<string, mixed>} $response
-	 */
-	private static function label_write_ok( array $response ): bool {
-		if ( in_array( $response['code'], array( 200, 201 ), true ) ) {
-			return true;
-		}
-
-		return 422 === $response['code'] && false !== stripos( $response['message'], 'already_exists' );
-	}
-
-	private static function label_color( string $name ): string {
-		return match ( $name ) {
-			'bug' => 'd73a4a',
-			'enhancement' => 'a2eeef',
-			'pro' => '6f42c1',
-			default => '1f4fd8',
-		};
-	}
-
-	/**
-	 * @param array{code: int, message: string, data: array<string, mixed>} $response
-	 */
-	private static function failure_message( array $response ): string {
-		if ( in_array( $response['code'], array( 401, 403 ), true ) ) {
-			return Choir_Rehearsal_Roles::ask_administrator_github_token();
-		}
-		if ( 404 === $response['code'] ) {
-			return Choir_Rehearsal_Roles::ask_administrator_github_repository();
-		}
-
-		return __( 'Could not send feedback. Please try again later.', 'compath-choir-rehearsal' );
-	}
-
-	/**
-	 * @param mixed $result
-	 * @return array{code: int, message: string, data: array<string, mixed>}
-	 */
-	private static function normalize_transport_result( $result ): array {
-		if ( ! is_array( $result ) ) {
-			return array(
-				'code'    => 0,
-				'message' => '',
-				'data'    => array(),
-			);
-		}
-
-		$data = array();
-		if ( isset( $result['data'] ) && is_array( $result['data'] ) ) {
-			$data = $result['data'];
-		}
-
-		return array(
-			'code'    => isset( $result['code'] ) ? (int) $result['code'] : 0,
-			'message' => isset( $result['message'] ) && is_string( $result['message'] ) ? $result['message'] : '',
-			'data'    => $data,
-		);
+		return false !== filter_var( $url, FILTER_VALIDATE_URL );
 	}
 
 	/**
 	 * @param array<string, mixed> $payload
-	 * @return array{code: int, message: string, data: array<string, mixed>}
+	 * @return array{code: int, data: array<string, mixed>}
 	 */
-	private static function github_request( string $method, string $url, array $payload, string $token ): array {
+	private static function relay_request( string $url, array $payload ): array {
 		$encoded = wp_json_encode( $payload );
 		if ( ! is_string( $encoded ) ) {
 			return array(
-				'code'    => 0,
-				'message' => '',
-				'data'    => array(),
+				'code' => 0,
+				'data' => array(),
 			);
 		}
 
-		$response = wp_remote_request(
+		$response = wp_remote_post(
 			$url,
 			array(
-				'method'  => $method,
-				'timeout' => 15,
+				'timeout' => 20,
 				'headers' => array(
-					'Authorization'        => 'Bearer ' . $token,
-					'Accept'               => 'application/vnd.github+json',
-					'Content-Type'         => 'application/json',
-					'User-Agent'           => 'Choir-Rehearsal/' . ( defined( 'CHOIR_REHEARSAL_VERSION' ) ? CHOIR_REHEARSAL_VERSION : 'dev' ),
-					'X-GitHub-Api-Version' => '2022-11-28',
+					'Accept'       => 'application/json',
+					'Content-Type' => 'application/json',
+					'User-Agent'   => 'Choir-Rehearsal/' . ( defined( 'CHOIR_REHEARSAL_VERSION' ) ? CHOIR_REHEARSAL_VERSION : 'dev' ),
 				),
 				'body'    => $encoded,
 			)
@@ -1051,9 +743,8 @@ final class Choir_Rehearsal_Feedback {
 
 		if ( is_wp_error( $response ) ) {
 			return array(
-				'code'    => 0,
-				'message' => '',
-				'data'    => array(),
+				'code' => 0,
+				'data' => array(),
 			);
 		}
 
@@ -1063,31 +754,32 @@ final class Choir_Rehearsal_Feedback {
 			$data = array();
 		}
 
-		$message = '';
-		if ( isset( $data['message'] ) && is_string( $data['message'] ) ) {
-			$message = $data['message'];
+		return array(
+			'code' => (int) wp_remote_retrieve_response_code( $response ),
+			'data' => $data,
+		);
+	}
+
+	/**
+	 * @param mixed $result
+	 * @return array{code: int, data: array<string, mixed>}
+	 */
+	private static function normalize_transport_result( $result ): array {
+		if ( ! is_array( $result ) ) {
+			return array(
+				'code' => 0,
+				'data' => array(),
+			);
 		}
-		if ( isset( $data['errors'] ) && is_array( $data['errors'] ) ) {
-			foreach ( $data['errors'] as $error ) {
-				if ( ! is_array( $error ) ) {
-					continue;
-				}
-				if ( isset( $error['message'] ) && is_string( $error['message'] ) ) {
-					$message .= ' ' . $error['message'];
-				}
-				if ( isset( $error['code'] ) && is_string( $error['code'] ) ) {
-					$message .= ' ' . $error['code'];
-				}
-				if ( isset( $error['field'] ) && is_string( $error['field'] ) ) {
-					$message .= ' ' . $error['field'];
-				}
-			}
+
+		$data = array();
+		if ( isset( $result['data'] ) && is_array( $result['data'] ) ) {
+			$data = $result['data'];
 		}
 
 		return array(
-			'code'    => (int) wp_remote_retrieve_response_code( $response ),
-			'message' => $message,
-			'data'    => $data,
+			'code' => isset( $result['code'] ) ? (int) $result['code'] : 0,
+			'data' => $data,
 		);
 	}
 
@@ -1142,27 +834,15 @@ final class Choir_Rehearsal_Feedback {
 		return substr( $value, 0, $max );
 	}
 
-	private static function positive_int( mixed $value ): int {
-		if ( is_int( $value ) ) {
-			return $value > 0 ? $value : 0;
-		}
-		if ( is_string( $value ) && ctype_digit( $value ) ) {
-			return (int) $value;
-		}
-
-		return 0;
-	}
-
 	/**
-	 * @return array{ok: bool, status: int, message: string, number: int, url: string, code: string}
+	 * @return array{ok: bool, status: int, message: string, case: string, code: string}
 	 */
-	private static function result( bool $ok, int $status, string $message, int $number, string $url, string $code ): array {
+	private static function result( bool $ok, int $status, string $message, string $case, string $code ): array {
 		return array(
 			'ok'      => $ok,
 			'status'  => $status,
 			'message' => $message,
-			'number'  => $number,
-			'url'     => $url,
+			'case'    => $case,
 			'code'    => $code,
 		);
 	}

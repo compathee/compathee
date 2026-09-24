@@ -103,7 +103,7 @@ final class Choir_Rehearsal_Roles {
 	public static function describe_feedback_audience(): string {
 		return sprintf(
 			/* translators: 1: Singer, 2: Voice Leader, 3: Administrator, 4: Guest. Substituted role names stay English. */
-			__( '%1$s, %2$s, %3$s, and %4$s can send a wish or bug from the song list. The site creates a GitHub issue. Lite and Pro both include this.', 'compath-choir-rehearsal' ),
+			__( '%1$s, %2$s, %3$s, and %4$s can send a wish or bug from the song list. Lite and Pro both include this.', 'compath-choir-rehearsal' ),
 			self::LABEL_SINGER,
 			self::LABEL_VOICE_LEADER,
 			self::LABEL_ADMINISTRATOR,
@@ -128,22 +128,6 @@ final class Choir_Rehearsal_Roles {
 			self::LABEL_ADMINISTRATOR,
 			self::LABEL_SINGER,
 			self::LABEL_VOICE_LEADER
-		);
-	}
-
-	public static function ask_administrator_github_token(): string {
-		return sprintf(
-			/* translators: %s: Administrator role name. The role name stays English. */
-			__( 'Could not send feedback. Please ask someone with the %s role to check the GitHub token.', 'compath-choir-rehearsal' ),
-			self::LABEL_ADMINISTRATOR
-		);
-	}
-
-	public static function ask_administrator_github_repository(): string {
-		return sprintf(
-			/* translators: %s: Administrator role name. The role name stays English. */
-			__( 'Could not send feedback. Please ask someone with the %s role to check the GitHub repository.', 'compath-choir-rehearsal' ),
-			self::LABEL_ADMINISTRATOR
 		);
 	}
 

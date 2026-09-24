@@ -93,7 +93,7 @@ function render_form(): string {
 }
 
 /**
- * @return array{ok: bool, status: int, message: string, number: int, url: string, code: string}
+ * @return array{ok: bool, status: int, message: string, case: string, code: string}
  */
 function submit_with(array $input, array $context): array {
 	return Choir_Rehearsal_Feedback::submit_feedback(
@@ -105,11 +105,10 @@ function submit_with(array $input, array $context): array {
 		},
 		static function (): array {
 			return array(
-				'code' => 201,
-				'message' => 'Created',
+				'code' => 200,
 				'data' => array(
-					'number' => 12,
-					'html_url' => 'https://github.com/compathee/compathee/issues/12',
+					'ok' => true,
+					'case' => 'DBT-57',
 				),
 			);
 		}
@@ -120,16 +119,15 @@ $base_input = array(
 	'type' => 'bug',
 	'title' => 'Player stops',
 	'description' => 'The sticky player stops after one track.',
-	'email' => '',
+	'email' => 'singer@example.com',
 );
 $base_context = array(
-	'token' => 'github_pat_TESTTOKENVALUE123456',
-	'repo' => 'compathee/compathee',
 	'role' => 'Singer',
 	'plugin_version' => '0.4.61',
 	'wp_version' => '6.8',
 	'php_version' => '8.3.6',
 	'site_url' => 'https://choir.example/',
+	'endpoint' => 'https://rehearsal.compath.ee/api/feedback.php',
 	'now' => 1_000_000,
 	'rate_keys' => array('u1'),
 );
@@ -143,9 +141,11 @@ foreach (array(
 		'title' => 'Pealkiri',
 		'summary' => 'Lühike kokkuvõte',
 		'wish_for' => 'Mis juhtus või mida soovid',
-		'not_configured' => 'Tagasiside ei ole seadistatud.',
+		'email' => 'E-post',
+		'privacy' => 'Teie e-posti kasutame ainult sellele päringule vastamiseks.',
+		'need_email' => 'Palun sisesta kehtiv e-posti aadress.',
 		'wait' => 'Oota enne järgmise tagasiside saatmist.',
-		'sent' => 'Aitäh. Tagasiside on saadetud teemana #12.',
+		'sent' => 'Päring vastu võetud, juhtumi number DBT-57. Kinnitus on saadetud aadressile singer@example.com.',
 	),
 	'ru_RU' => array(
 		'button' => 'Отправить отзыв',
@@ -155,32 +155,35 @@ foreach (array(
 		'title' => 'Заголовок',
 		'summary' => 'Краткое описание',
 		'wish_for' => 'Что случилось или какое у вас пожелание',
-		'not_configured' => 'Форма отзывов не настроена.',
+		'email' => 'Эл. почта',
+		'privacy' => 'Электронная почта используется только для ответа на этот запрос.',
+		'need_email' => 'Введите действительный адрес электронной почты.',
 		'wait' => 'Подождите перед отправкой следующего отзыва.',
-		'sent' => 'Спасибо. Отзыв отправлен как задача #12.',
+		'sent' => 'Запрос получен, номер обращения DBT-57. Подтверждение отправлено на singer@example.com.',
 	),
 ) as $locale => $expect) {
 	load_catalog($locale);
 	$html = render_form();
 	check("$locale button", str_contains($html, $expect['button']) && !str_contains($html, '>Send feedback<'));
 	check("$locale type options", str_contains($html, $expect['bug']) && str_contains($html, $expect['wish']) && str_contains($html, $expect['other']));
-	check("$locale labels", str_contains($html, $expect['title']));
+	check("$locale labels", str_contains($html, $expect['title']) && str_contains($html, $expect['email']));
 	check("$locale placeholders", str_contains($html, $expect['summary']) && str_contains($html, $expect['wish_for']));
+	check("$locale privacy", str_contains($html, $expect['privacy']));
 	check("$locale keeps product name", str_contains($html, 'Choir Rehearsal'));
 
-	$missing = submit_with($base_input, array_merge($base_context, array('token' => '')));
-	check("$locale not configured", $missing['message'] === $expect['not_configured'] && 'not_configured' === $missing['code']);
+	$missing = submit_with(array_merge($base_input, array('email' => '')), $base_context);
+	check("$locale email required", $missing['message'] === $expect['need_email'] && 'email' === $missing['code']);
 
 	$limited = submit_with($base_input, array_merge($base_context, array('buckets' => array(999_000, 999_100, 999_200, 999_300, 999_400))));
 	check("$locale rate limit", $limited['message'] === $expect['wait'] && 'rate_limited' === $limited['code']);
 
 	$sent = submit_with($base_input, $base_context);
-	check("$locale issue created", $sent['message'] === $expect['sent'] && 12 === $sent['number']);
+	check("$locale case received", $sent['message'] === $expect['sent'] && 'DBT-57' === $sent['case']);
 
 	$body = Choir_Rehearsal_Feedback::issue_body(array(
 		'type' => 'bug',
-		'email' => '',
-		'role' => 'guest',
+		'email' => 'singer@example.com',
+		'role' => 'Guest',
 		'plugin_version' => '0.4.61',
 		'wp_version' => '6.8',
 		'php_version' => '8.3.6',
@@ -188,7 +191,7 @@ foreach (array(
 		'locale' => $locale,
 		'description' => 'The player stops.',
 	));
-	check("$locale github body stays English", str_contains($body, 'Type: Bug') && str_contains($body, 'Role: guest') && str_contains($body, 'Message:') && str_contains($body, 'Locale: ' . $locale));
+	check("$locale request text stays English", str_contains($body, 'Type: Bug') && str_contains($body, 'Role: Guest') && str_contains($body, 'Message:') && str_contains($body, 'Locale: ' . $locale));
 }
 
 foreach (array('et', 'et_EE', 'ru_RU') as $locale) {

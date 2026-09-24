@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Compath Choir Rehearsal 0.4.53\n"
 "Report-Msgid-Bugs-To: https://rehearsal.compath.ee\n"
-"POT-Creation-Date: 2026-09-24 08:40+0000\n"
-"PO-Revision-Date: 2026-09-24 08:30+0000\n"
+"POT-Creation-Date: 2026-09-24 10:55+0000\n"
+"PO-Revision-Date: 2026-09-24 10:55+0000\n"
 "Last-Translator: Choir Rehearsal\n"
 "Language-Team: Estonian\n"
 "Language: et\n"
@@ -12,6 +12,96 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Domain: compath-choir-rehearsal\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Backing track"
+msgstr "Saaterada"
+
+msgid "Bass 1"
+msgstr "Bass 1"
+
+msgid "Bass 2"
+msgstr "Bass 2"
+
+msgid "Baritone 1"
+msgstr "Bariton 1"
+
+msgid "Baritone 2"
+msgstr "Bariton 2"
+
+msgid "Tenor 1"
+msgstr "Tenor 1"
+
+msgid "Tenor 2"
+msgstr "Tenor 2"
+
+msgid "Alto 1"
+msgstr "Alt 1"
+
+msgid "Alto 2"
+msgstr "Alt 2"
+
+msgid "Soprano 1"
+msgstr "Sopran 1"
+
+msgid "Soprano 2"
+msgstr "Sopran 2"
+
+msgid "Other"
+msgstr "Muu"
+
+msgid "Voice Types"
+msgstr "Häälerühmad"
+
+msgid "Voice Type"
+msgstr "Häälerühm"
+
+msgid "Sorry, you are not allowed to update plugins."
+msgstr "Sul ei ole õigust pluginaid uuendada."
+
+#, php-format
+msgid ""
+"Update available: Compath Choir Rehearsal %s. Use Update now below or on the "
+"Plugins screen."
+msgstr ""
+"Uuendus saadaval: Compath Choir Rehearsal %s. Kasuta allpool või Plugins-"
+"ekraanil nuppu Update now."
+
+msgid ""
+"An update is available for Compath Choir Rehearsal. Use Update now on the "
+"Plugins screen."
+msgstr ""
+"Compath Choir Rehearsal’ile on uuendus saadaval. Kasuta Plugins-ekraanil "
+"nuppu Update now."
+
+#, php-format
+msgid ""
+"Your installed version is %1$s, but the update server only reported %2$s "
+"(likely stale metadata). Open Plugins and use Update now if shown, upload "
+"the latest zip, or set Update JSON URL to the latest GitHub release update."
+"json."
+msgstr ""
+"Paigaldatud versioon on %1$s, aga uuendusserver teatas ainult %2$s "
+"(tõenäoliselt vananenud metaandmed). Ava Plugins ja kasuta Update now, kui "
+"see on nähtav, laadi uusim zip või sea Update JSON URL uusima GitHub "
+"release’i update.json peale."
+
+msgid "Open Plugins"
+msgstr "Ava pluginad"
+
+#, php-format
+msgid "Compath Choir Rehearsal is up to date (version %s)."
+msgstr "Compath Choir Rehearsal on ajakohane (versioon %s)."
+
+msgid "Compath Choir Rehearsal is up to date."
+msgstr "Compath Choir Rehearsal on ajakohane."
+
+msgid ""
+"Could not reach the update server. Check your connection or try again later. "
+"If this keeps happening, verify GitHub Releases are reachable from this site."
+msgstr ""
+"Uuendusserveriga ei saanud ühendust. Kontrolli ühendust või proovi hiljem "
+"uuesti. Kui see kordub, veendu, et GitHub Releases on sellelt saidilt "
+"kättesaadav."
 
 msgid "List choir songs"
 msgstr "Kuva koori laulud"
@@ -25,11 +115,38 @@ msgstr "Laulu üksikasjad"
 msgid "Returns one song with all voice tracks and audio URLs."
 msgstr "Tagastab ühe laulu kõigi hääleradade ja audio URL-idega."
 
-msgid "Security check failed. Please try again."
-msgstr "Turvakontroll ebaõnnestus. Proovi uuesti."
+msgid "Microphone recording is available in Choir Rehearsal Pro."
+msgstr "Mikrofoniga salvestus on saadaval Choir Rehearsal Pro-s."
 
-msgid "Please enter your username and password."
-msgstr "Sisesta kasutajanimi ja parool."
+msgid "Security check failed. Reload the page and try again."
+msgstr "Turvakontroll ebaõnnestus. Laadi leht uuesti ja proovi uuesti."
+
+msgid "You are not allowed to upload recordings for this song."
+msgstr "Sul ei ole õigust selle laulu jaoks salvestusi üles laadida."
+
+msgid "No recording was uploaded."
+msgstr "Salvestust ei laaditud üles."
+
+msgid "Recording upload was blocked by the server."
+msgstr "Server blokeeris salvestuse üleslaadimise."
+
+msgid "Song"
+msgstr "Laul"
+
+msgid "Could not save the recording in the Media Library."
+msgstr "Salvestust ei õnnestunud meediateeki salvestada."
+
+msgid "Recording is too large for the server upload limit."
+msgstr "Salvestus ületab serveri üleslaadimise limiidi."
+
+msgid "Recording was only partially uploaded."
+msgstr "Salvestus laaditi üles ainult osaliselt."
+
+msgid "No recording file was received."
+msgstr "Salvestusfaili ei saadud."
+
+msgid "Recording upload failed."
+msgstr "Salvestuse üleslaadimine ebaõnnestus."
 
 msgid "Settings"
 msgstr "Seaded"
@@ -52,7 +169,6 @@ msgstr "Tooteleht: tellimine, paigaldus, hinnad, muudatused"
 msgid "Edition"
 msgstr "Väljaanne"
 
-#. translators: %d: maximum track count
 #, php-format
 msgid ""
 "Lite: up to %d voice tracks per song; no microphone recording, song search, "
@@ -77,27 +193,22 @@ msgstr "Plugina versioon"
 msgid "Updates are delivered through WordPress.org."
 msgstr "Uuendused tulevad WordPress.org kaudu."
 
-#. translators: %s: GitHub releases link
 #, php-format
 msgid "Updates are published at %s"
 msgstr "Uuendused avaldatakse aadressil %s"
 
-#. translators: 1: datetime, 2: version
 #, php-format
 msgid "Last check: %1$s — update available (%2$s)."
 msgstr "Viimane kontroll: %1$s — uuendus saadaval (%2$s)."
 
-#. translators: %s: datetime
 #, php-format
 msgid "Last check: %s — up to date."
 msgstr "Viimane kontroll: %s — ajakohane."
 
-#. translators: %s: datetime
 #, php-format
 msgid "Last check: %s — could not reach the update server."
 msgstr "Viimane kontroll: %s — uuendusserveriga ei saanud ühendust."
 
-#. translators: %s: datetime
 #, php-format
 msgid "Last check: %s"
 msgstr "Viimane kontroll: %s"
@@ -174,7 +285,6 @@ msgstr "Võtab ühendust GitHub Releases’iga ja näitab tulemust sellel lehel.
 msgid "Refresh permalinks"
 msgstr "Värskenda püsiviiteid"
 
-#. translators: %s: library page URL
 #, php-format
 msgid "Song list URL: %s"
 msgstr "Laulude loendi URL: %s"
@@ -376,7 +486,6 @@ msgstr "Üleslaadimine ebaõnnestus. Proovi uuesti."
 msgid "Save the song first, then you can record voice tracks."
 msgstr "Salvesta laul esmalt, seejärel saad hääleradasid salvestada."
 
-#. translators: %d: maximum track count
 #, php-format
 msgid ""
 "Lite edition allows up to %d voice tracks per song. Upgrade to Pro for "
@@ -417,7 +526,6 @@ msgstr ""
 "Hääleosad näevad välja nagu avalikul lehel. Kasuta paremal ikoone "
 "üleslaadimiseks, salvestamiseks või esitamiseks."
 
-#. translators: 1: max tracks, 2: upgrade link HTML
 #, php-format
 msgid ""
 "Add one voice part per row (up to %1$d in Lite). Upload audio with the icon "
@@ -438,53 +546,21 @@ msgstr "Hääl"
 msgid "Track source"
 msgstr "Raja allikas"
 
-#. translators: 1: song title, 2: voice label
 #, php-format
 msgid "%1$s — %2$s"
 msgstr "%1$s — %2$s"
 
+msgid "Rehearsal Library"
+msgstr "Proovide raamatukogu"
+
 msgid "Sorry, you are not allowed to manage options."
 msgstr "Sul ei ole õigust seadeid hallata."
 
-msgid "Could not create the demo audio file in the Media Library."
-msgstr "Demo audiofaili ei õnnestunud meediateeki luua."
+msgid "Song not found."
+msgstr "Laulu ei leitud."
 
-#. translators: 1: first song number, 2: last song number, 3: song count, 4: track count
-#, php-format
-msgid "Loaded demo songs %1$d–%2$d (%3$d songs, %4$d tracks)."
-msgstr "Laaditud demolaulud %1$d–%2$d (%3$d laulu, %4$d rada)."
-
-#. translators: 1: songs deleted, 2: tracks deleted, 3: media deleted
-#, php-format
-msgid "Deleted %1$d songs, %2$d tracks, and %3$d media files."
-msgstr "Kustutatud %1$d laulu, %2$d rada ja %3$d meediafaili."
-
-msgid "Demo library"
-msgstr "Demo raamatukogu"
-
-#. translators: 1: songs created per click, 2: songs shown per library page
-#, php-format
-msgid ""
-"Load %1$d sample songs (4 voice tracks each) so the public library shows "
-"pagination (%2$d songs per page), or wipe the whole rehearsal library."
-msgstr ""
-"Laadi %1$d näidislaulu (igaüks 4 häälerajaga), et avalik raamatukogu näitaks "
-"lehekülgi (%2$d laulu lehel), või tühjenda kogu proovide raamatukogu."
-
-msgid "Load demo songs"
-msgstr "Laadi demolaulud"
-
-msgid "All songs will be deleted from the library. Do you agree?"
-msgstr "Kõik laulud kustutatakse raamatukogust. Kas oled nõus?"
-
-msgid "Delete all songs"
-msgstr "Kustuta kõik laulud"
-
-msgid "Yes"
-msgstr "Jah"
-
-msgid "No"
-msgstr "Ei"
+msgid "You must sign in to view this song."
+msgstr "Selle laulu vaatamiseks pead sisse logima."
 
 msgid "Pro"
 msgstr "Pro"
@@ -492,121 +568,51 @@ msgstr "Pro"
 msgid "Lite"
 msgstr "Lite"
 
-msgid "Security check failed. Reload the page and try again."
-msgstr "Turvakontroll ebaõnnestus. Laadi leht uuesti ja proovi uuesti."
+msgid "Security check failed. Please try again."
+msgstr "Turvakontroll ebaõnnestus. Proovi uuesti."
 
-msgid "Sending…"
-msgstr "Saadan…"
+msgid "Please enter your username and password."
+msgstr "Sisesta kasutajanimi ja parool."
 
-msgid "Send"
-msgstr "Saada"
+msgid "Songs"
+msgstr "Laulud"
 
-msgid "View issue"
-msgstr "Vaata teemat"
+msgid "Add Song"
+msgstr "Lisa laul"
 
-msgid "Could not send feedback. Please try again later."
-msgstr "Tagasisidet ei õnnestunud saata. Proovi hiljem uuesti."
+msgid "Add New Song"
+msgstr "Lisa uus laul"
 
-msgid "Send feedback"
-msgstr "Saada tagasiside"
+msgid "Edit Song"
+msgstr "Muuda laulu"
 
-msgid "Wish, bug, or other note about Choir Rehearsal."
-msgstr "Soov, viga või muu märkus Choir Rehearsal’i kohta."
+msgid "New Song"
+msgstr "Uus laul"
 
-msgid "Type"
-msgstr "Tüüp"
+msgid "View Song"
+msgstr "Vaata laulu"
 
-msgid "Bug"
-msgstr "Viga"
+msgid "Search Songs"
+msgstr "Otsi laule"
 
-msgid "Wish"
-msgstr "Soov"
+msgid "No songs found."
+msgstr "Laule ei leitud."
 
-msgid "Other"
-msgstr "Muu"
+msgid "No songs found in Trash."
+msgstr "Prügis laule ei leitud."
 
-msgid "Title"
-msgstr "Pealkiri"
-
-msgid "Short summary"
-msgstr "Lühike kokkuvõte"
-
-msgid "Description"
-msgstr "Kirjeldus"
-
-msgid "What happened, or what you wish for"
-msgstr "Mis juhtus või mida soovid"
-
-msgid "Contact email (optional)"
-msgstr "Kontaktmeil (valikuline)"
-
-msgid "Feedback"
-msgstr "Tagasiside"
-
-msgid "GitHub repository for feedback"
-msgstr "GitHubi hoidla tagasiside jaoks"
-
-msgid ""
-"Issues are created in this repository. Use owner/name, for example compathee/"
-"compathee."
-msgstr ""
-"Teemad luuakse selles hoidlas. Kasuta vormi omanik/nimi, näiteks compathee/"
-"compathee."
-
-msgid "GitHub token"
-msgstr "GitHubi tunnus"
-
-msgid "A token is saved."
-msgstr "Tunnus on salvestatud."
-
-msgid "Remove saved token"
-msgstr "Eemalda salvestatud tunnus"
-
-msgid ""
-"Create a fine-grained personal access token at GitHub → Settings → Developer "
-"settings → Personal access tokens → Fine-grained tokens. Grant only this "
-"repository Issues: Read and write. Paste the token here. It stays on the "
-"server and is not shown on the rehearsal page. Leave blank to keep the saved "
-"token."
-msgstr ""
-"Loo peeneteraline isiklik juurdepääsutunnus: GitHub → Settings → Developer "
-"settings → Personal access tokens → Fine-grained tokens. Anna ainult sellele "
-"hoidlale õigus Issues: Read and write. Kleebi tunnus siia. See jääb "
-"serverisse ega ilmu proovilehele. Tühjaks jätmine säilitab salvestatud "
-"tunnuse."
-
-msgid ""
-"That GitHub token does not look valid. The saved token was left unchanged."
-msgstr "See GitHubi tunnus ei tundu kehtiv. Salvestatud tunnus jäi muutmata."
-
-#. translators: %d: GitHub issue number
-#, php-format
-msgid "Thank you. Feedback sent as issue #%d."
-msgstr "Aitäh. Tagasiside on saadetud teemana #%d."
-
-msgid "Thank you. Feedback sent."
-msgstr "Aitäh. Tagasiside on saadetud."
-
-msgid "Please enter a type, title, and description."
-msgstr "Sisesta tüüp, pealkiri ja kirjeldus."
-
-msgid "Feedback is not configured."
-msgstr "Tagasiside ei ole seadistatud."
-
-msgid "Please wait before sending more feedback."
-msgstr "Oota enne järgmise tagasiside saatmist."
+msgid "Choir Rehearsal"
+msgstr "Choir Rehearsal"
 
 msgid "Edit"
 msgstr "Muuda"
 
-#. translators: %d: number of tracks
 #, php-format
 msgid "%d track"
 msgid_plural "%d tracks"
 msgstr[0] "%d rada"
 msgstr[1] "%d rada"
 
-#. translators: %d: number of tracks
 #, php-format
 msgid "%d tracks"
 msgstr "%d rada"
@@ -641,9 +647,6 @@ msgid ""
 msgstr ""
 "Ülal olevad avalikud laulud on kõigile avatud. Logi WordPressi kontoga "
 "sisse, et avada täielik proovide raamatukogu."
-
-msgid "Rehearsal Library"
-msgstr "Proovide raamatukogu"
 
 msgid ""
 "Sign in with your WordPress account to access songs, sheet music, and voice "
@@ -715,7 +718,6 @@ msgstr "Otsingule vastavaid laule ei ole."
 msgid "Song list pages"
 msgstr "Laulude loendi lehed"
 
-#. translators: 1: first song number on page, 2: last song number on page, 3: total songs
 #, php-format
 msgid "Showing %1$d–%2$d of %3$d songs"
 msgstr "Kuvan %1$d–%2$d / %3$d laulu"
@@ -753,10 +755,145 @@ msgstr "BPM"
 msgid "Tempo"
 msgstr "Tempo"
 
-#. translators: 1: folder from zip, 2: installed folder
+msgid "Could not create the demo audio file in the Media Library."
+msgstr "Demo audiofaili ei õnnestunud meediateeki luua."
+
+#, php-format
+msgid "Loaded demo songs %1$d–%2$d (%3$d songs, %4$d tracks)."
+msgstr "Laaditud demolaulud %1$d–%2$d (%3$d laulu, %4$d rada)."
+
+#, php-format
+msgid "Deleted %1$d songs, %2$d tracks, and %3$d media files."
+msgstr "Kustutatud %1$d laulu, %2$d rada ja %3$d meediafaili."
+
+msgid "Demo library"
+msgstr "Demo raamatukogu"
+
+#, php-format
+msgid ""
+"Load %1$d sample songs (4 voice tracks each) so the public library shows "
+"pagination (%2$d songs per page), or wipe the whole rehearsal library."
+msgstr ""
+"Laadi %1$d näidislaulu (igaüks 4 häälerajaga), et avalik raamatukogu näitaks "
+"lehekülgi (%2$d laulu lehel), või tühjenda kogu proovide raamatukogu."
+
+msgid "Load demo songs"
+msgstr "Laadi demolaulud"
+
+msgid "All songs will be deleted from the library. Do you agree?"
+msgstr "Kõik laulud kustutatakse raamatukogust. Kas oled nõus?"
+
+msgid "Delete all songs"
+msgstr "Kustuta kõik laulud"
+
+msgid "Yes"
+msgstr "Jah"
+
+msgid "No"
+msgstr "Ei"
+
 #, php-format
 msgid "Could not map update folder %1$s to installed folder %2$s."
 msgstr "Uuenduskausta %1$s ei õnnestunud siduda paigaldatud kaustaga %2$s."
+
+#, php-format
+msgid ""
+"Activation adds WordPress roles %1$s (listen) and %2$s (manage songs). "
+"Assign them under Users. Settings stay limited to %3$s. Public songs remain "
+"open to %4$s."
+msgstr ""
+"Aktiveerimine lisab WordPressi rollid %1$s (kuulamine) ja %2$s (lugude "
+"haldamine). Määra need menüüs Kasutajad. Seaded jäävad ainult rollile %3$s. "
+"Avalikud lood jäävad avatuks rollile %4$s."
+
+#, php-format
+msgid "Role names %1$s, %2$s, %3$s, and %4$s are kept in English on purpose."
+msgstr "Rollinimed %1$s, %2$s, %3$s ja %4$s jäävad teadlikult ingliskeelseks."
+
+#, php-format
+msgid ""
+"%1$s, %2$s, %3$s, and %4$s can send a wish or bug from the song list. Lite "
+"and Pro both include this."
+msgstr ""
+"%1$s, %2$s, %3$s ja %4$s saavad laulude loendist saata soovi või veateate. "
+"See on olemas nii Lites kui Pros."
+
+#, php-format
+msgid ""
+"Public songs above are open to everyone. Ask someone with the %1$s role to "
+"assign you the %2$s or %3$s role for the full rehearsal library."
+msgstr ""
+"Ülal olevad avalikud lood on kõigile avatud. Palu kasutajal rolliga %1$s "
+"määrata sulle roll %2$s või %3$s, et avada täielik prooviraamatukogu."
+
+#, php-format
+msgid ""
+"Ask someone with the %1$s role to assign you the %2$s or %3$s role to open "
+"private rehearsal songs."
+msgstr ""
+"Palu kasutajal rolliga %1$s määrata sulle roll %2$s või %3$s, et avada "
+"privaatsed prooviloosid."
+
+msgid "Sending…"
+msgstr "Saadan…"
+
+msgid "Send"
+msgstr "Saada"
+
+msgid "Could not send feedback. Please try again later."
+msgstr "Tagasisidet ei õnnestunud saata. Proovi hiljem uuesti."
+
+msgid "Send feedback"
+msgstr "Saada tagasiside"
+
+msgid "Wish, bug, or other note about Choir Rehearsal."
+msgstr "Soov, viga või muu märkus Choir Rehearsal’i kohta."
+
+msgid "Type"
+msgstr "Tüüp"
+
+msgid "Bug"
+msgstr "Viga"
+
+msgid "Wish"
+msgstr "Soov"
+
+msgid "Title"
+msgstr "Pealkiri"
+
+msgid "Short summary"
+msgstr "Lühike kokkuvõte"
+
+msgid "Description"
+msgstr "Kirjeldus"
+
+msgid "What happened, or what you wish for"
+msgstr "Mis juhtus või mida soovid"
+
+msgid "Name (optional)"
+msgstr "Nimi (valikuline)"
+
+msgid "Email"
+msgstr "E-post"
+
+msgid "Your email is used only to answer this request."
+msgstr "Teie e-posti kasutame ainult sellele päringule vastamiseks."
+
+#, php-format
+msgid ""
+"Request received, case number %1$s. A confirmation has been sent to %2$s."
+msgstr ""
+"Päring vastu võetud, juhtumi number %1$s. Kinnitus on saadetud aadressile "
+"%2$s."
+
+msgid "Please enter a type, title, and description."
+msgstr "Sisesta tüüp, pealkiri ja kirjeldus."
+
+msgid "Please enter a valid email address."
+msgstr "Palun sisesta kehtiv e-posti aadress."
+
+msgid "Please wait before sending more feedback."
+msgstr "Oota enne järgmise tagasiside saatmist."
 
 msgid ""
 "Compath Choir Rehearsal is loaded from more than one folder. Open the "
@@ -938,235 +1075,85 @@ msgstr "Selle tee kustutamisest keeldutakse."
 msgid "Could not read plugin folder."
 msgstr "Plugina kausta ei õnnestunud lugeda."
 
-#. translators: %s: file path
 #, php-format
 msgid "Could not delete %s"
 msgstr "%s kustutamine ebaõnnestus"
 
-#. translators: %s: directory path
 #, php-format
 msgid "Could not remove %s — delete via FTP."
 msgstr "%s eemaldamine ebaõnnestus — kustuta FTP kaudu."
 
-msgid "Songs"
-msgstr "Laulud"
-
-msgid "Song"
-msgstr "Laul"
-
-msgid "Add Song"
-msgstr "Lisa laul"
-
-msgid "Add New Song"
-msgstr "Lisa uus laul"
-
-msgid "Edit Song"
-msgstr "Muuda laulu"
-
-msgid "New Song"
-msgstr "Uus laul"
-
-msgid "View Song"
-msgstr "Vaata laulu"
-
-msgid "Search Songs"
-msgstr "Otsi laule"
-
-msgid "No songs found."
-msgstr "Laule ei leitud."
-
-msgid "No songs found in Trash."
-msgstr "Prügis laule ei leitud."
-
-msgid "Choir Rehearsal"
-msgstr "Choir Rehearsal"
-
-msgid "Microphone recording is available in Choir Rehearsal Pro."
-msgstr "Mikrofoniga salvestus on saadaval Choir Rehearsal Pro-s."
-
-msgid "You are not allowed to upload recordings for this song."
-msgstr "Sul ei ole õigust selle laulu jaoks salvestusi üles laadida."
-
-msgid "No recording was uploaded."
-msgstr "Salvestust ei laaditud üles."
-
-msgid "Recording upload was blocked by the server."
-msgstr "Server blokeeris salvestuse üleslaadimise."
-
-msgid "Could not save the recording in the Media Library."
-msgstr "Salvestust ei õnnestunud meediateeki salvestada."
-
-msgid "Recording is too large for the server upload limit."
-msgstr "Salvestus ületab serveri üleslaadimise limiidi."
-
-msgid "Recording was only partially uploaded."
-msgstr "Salvestus laaditi üles ainult osaliselt."
-
-msgid "No recording file was received."
-msgstr "Salvestusfaili ei saadud."
-
-msgid "Recording upload failed."
-msgstr "Salvestuse üleslaadimine ebaõnnestus."
-
-msgid "Song not found."
-msgstr "Laulu ei leitud."
-
-msgid "You must sign in to view this song."
-msgstr "Selle laulu vaatamiseks pead sisse logima."
-
-#. translators: 1: Singer, 2: Voice Leader, 3: Administrator, 4: Guest. Substituted role names stay English.
-#, php-format
-msgid ""
-"Activation adds WordPress roles %1$s (listen) and %2$s (manage songs). "
-"Assign them under Users. Settings stay limited to %3$s. Public songs remain "
-"open to %4$s."
-msgstr ""
-"Aktiveerimine lisab WordPressi rollid %1$s (kuulamine) ja %2$s (lugude "
-"haldamine). Määra need menüüs Kasutajad. Seaded jäävad ainult rollile %3$s. "
-"Avalikud lood jäävad avatuks rollile %4$s."
-
-#. translators: 1: Singer, 2: Voice Leader, 3: Administrator, 4: Guest. Substituted role names stay English.
-#, php-format
-msgid "Role names %1$s, %2$s, %3$s, and %4$s are kept in English on purpose."
-msgstr "Rollinimed %1$s, %2$s, %3$s ja %4$s jäävad teadlikult ingliskeelseks."
-
-#. translators: 1: Singer, 2: Voice Leader, 3: Administrator, 4: Guest. Substituted role names stay English.
-#, php-format
-msgid ""
-"%1$s, %2$s, %3$s, and %4$s can send a wish or bug from the song list. The "
-"site creates a GitHub issue. Lite and Pro both include this."
-msgstr ""
-"%1$s, %2$s, %3$s ja %4$s saavad laulude loendist saata soovi või veateate. "
-"Sait loob GitHubi teema. See on olemas nii Lites kui Pros."
-
-#. translators: 1: Administrator, 2: Singer, 3: Voice Leader. Substituted role names stay English.
-#, php-format
-msgid ""
-"Public songs above are open to everyone. Ask someone with the %1$s role to "
-"assign you the %2$s or %3$s role for the full rehearsal library."
-msgstr ""
-"Ülal olevad avalikud lood on kõigile avatud. Palu kasutajal rolliga %1$s "
-"määrata sulle roll %2$s või %3$s, et avada täielik prooviraamatukogu."
-
-#. translators: 1: Administrator, 2: Singer, 3: Voice Leader. Substituted role names stay English.
-#, php-format
-msgid ""
-"Ask someone with the %1$s role to assign you the %2$s or %3$s role to open "
-"private rehearsal songs."
-msgstr ""
-"Palu kasutajal rolliga %1$s määrata sulle roll %2$s või %3$s, et avada "
-"privaatsed prooviloosid."
-
-#. translators: %s: Administrator role name. The role name stays English.
-#, php-format
-msgid ""
-"Could not send feedback. Please ask someone with the %s role to check the "
-"GitHub token."
-msgstr ""
-"Tagasisidet ei õnnestunud saata. Palu kasutajal rolliga %s kontrollida "
-"GitHubi tunnust."
-
-#. translators: %s: Administrator role name. The role name stays English.
-#, php-format
-msgid ""
-"Could not send feedback. Please ask someone with the %s role to check the "
-"GitHub repository."
-msgstr ""
-"Tagasisidet ei õnnestunud saata. Palu kasutajal rolliga %s kontrollida "
-"GitHubi hoidlat."
-
-msgid "Sorry, you are not allowed to update plugins."
-msgstr "Sul ei ole õigust pluginaid uuendada."
-
-#. translators: %s: new plugin version
-#, php-format
-msgid ""
-"Update available: Compath Choir Rehearsal %s. Use Update now below or on the "
-"Plugins screen."
-msgstr ""
-"Uuendus saadaval: Compath Choir Rehearsal %s. Kasuta allpool või Plugins-"
-"ekraanil nuppu Update now."
-
-msgid ""
-"An update is available for Compath Choir Rehearsal. Use Update now on the "
-"Plugins screen."
-msgstr ""
-"Compath Choir Rehearsal’ile on uuendus saadaval. Kasuta Plugins-ekraanil "
-"nuppu Update now."
-
-#. translators: 1: installed version, 2: version reported by update server
-#, php-format
-msgid ""
-"Your installed version is %1$s, but the update server only reported %2$s "
-"(likely stale metadata). Open Plugins and use Update now if shown, upload "
-"the latest zip, or set Update JSON URL to the latest GitHub release update."
-"json."
-msgstr ""
-"Paigaldatud versioon on %1$s, aga uuendusserver teatas ainult %2$s "
-"(tõenäoliselt vananenud metaandmed). Ava Plugins ja kasuta Update now, kui "
-"see on nähtav, laadi uusim zip või sea Update JSON URL uusima GitHub "
-"release’i update.json peale."
-
-msgid "Open Plugins"
-msgstr "Ava pluginad"
-
-#. translators: %s: installed plugin version
-#, php-format
-msgid "Compath Choir Rehearsal is up to date (version %s)."
-msgstr "Compath Choir Rehearsal on ajakohane (versioon %s)."
-
-msgid "Compath Choir Rehearsal is up to date."
-msgstr "Compath Choir Rehearsal on ajakohane."
-
-msgid ""
-"Could not reach the update server. Check your connection or try again later. "
-"If this keeps happening, verify GitHub Releases are reachable from this site."
-msgstr ""
-"Uuendusserveriga ei saanud ühendust. Kontrolli ühendust või proovi hiljem "
-"uuesti. Kui see kordub, veendu, et GitHub Releases on sellelt saidilt "
-"kättesaadav."
-
-msgid "Backing track"
-msgstr "Saaterada"
-
-msgid "Bass 1"
-msgstr "Bass 1"
-
-msgid "Bass 2"
-msgstr "Bass 2"
-
-msgid "Baritone 1"
-msgstr "Bariton 1"
-
-msgid "Baritone 2"
-msgstr "Bariton 2"
-
-msgid "Tenor 1"
-msgstr "Tenor 1"
-
-msgid "Tenor 2"
-msgstr "Tenor 2"
-
-msgid "Alto 1"
-msgstr "Alt 1"
-
-msgid "Alto 2"
-msgstr "Alt 2"
-
-msgid "Soprano 1"
-msgstr "Sopran 1"
-
-msgid "Soprano 2"
-msgstr "Sopran 2"
-
-msgid "Voice Types"
-msgstr "Häälerühmad"
-
-msgid "Voice Type"
-msgstr "Häälerühm"
-
 msgid "Standard"
 msgstr "Standard"
+
+#~ msgid "View issue"
+#~ msgstr "Vaata teemat"
+
+#~ msgid "Feedback"
+#~ msgstr "Tagasiside"
+
+#~ msgid "GitHub repository for feedback"
+#~ msgstr "GitHubi hoidla tagasiside jaoks"
+
+#~ msgid ""
+#~ "Issues are created in this repository. Use owner/name, for example "
+#~ "compathee/compathee."
+#~ msgstr ""
+#~ "Teemad luuakse selles hoidlas. Kasuta vormi omanik/nimi, näiteks "
+#~ "compathee/compathee."
+
+#~ msgid "GitHub token"
+#~ msgstr "GitHubi tunnus"
+
+#~ msgid "A token is saved."
+#~ msgstr "Tunnus on salvestatud."
+
+#~ msgid "Remove saved token"
+#~ msgstr "Eemalda salvestatud tunnus"
+
+#~ msgid ""
+#~ "Create a fine-grained personal access token at GitHub → Settings → "
+#~ "Developer settings → Personal access tokens → Fine-grained tokens. Grant "
+#~ "only this repository Issues: Read and write. Paste the token here. It "
+#~ "stays on the server and is not shown on the rehearsal page. Leave blank "
+#~ "to keep the saved token."
+#~ msgstr ""
+#~ "Loo peeneteraline isiklik juurdepääsutunnus: GitHub → Settings → "
+#~ "Developer settings → Personal access tokens → Fine-grained tokens. Anna "
+#~ "ainult sellele hoidlale õigus Issues: Read and write. Kleebi tunnus siia. "
+#~ "See jääb serverisse ega ilmu proovilehele. Tühjaks jätmine säilitab "
+#~ "salvestatud tunnuse."
+
+#~ msgid ""
+#~ "That GitHub token does not look valid. The saved token was left unchanged."
+#~ msgstr ""
+#~ "See GitHubi tunnus ei tundu kehtiv. Salvestatud tunnus jäi muutmata."
+
+#, php-format
+#~ msgid "Thank you. Feedback sent as issue #%d."
+#~ msgstr "Aitäh. Tagasiside on saadetud teemana #%d."
+
+#~ msgid "Thank you. Feedback sent."
+#~ msgstr "Aitäh. Tagasiside on saadetud."
+
+#~ msgid "Feedback is not configured."
+#~ msgstr "Tagasiside ei ole seadistatud."
+
+#, php-format
+#~ msgid ""
+#~ "Could not send feedback. Please ask someone with the %s role to check the "
+#~ "GitHub token."
+#~ msgstr ""
+#~ "Tagasisidet ei õnnestunud saata. Palu kasutajal rolliga %s kontrollida "
+#~ "GitHubi tunnust."
+
+#, php-format
+#~ msgid ""
+#~ "Could not send feedback. Please ask someone with the %s role to check the "
+#~ "GitHub repository."
+#~ msgstr ""
+#~ "Tagasisidet ei õnnestunud saata. Palu kasutajal rolliga %s kontrollida "
+#~ "GitHubi hoidlat."
 
 #~ msgid "choir-rehearsal"
 #~ msgstr "choir-rehearsal"

@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Compath Choir Rehearsal 0.4.53\n"
 "Report-Msgid-Bugs-To: https://rehearsal.compath.ee\n"
-"POT-Creation-Date: 2026-09-24 08:40+0000\n"
-"PO-Revision-Date: 2026-09-24 08:30+0000\n"
+"POT-Creation-Date: 2026-09-24 10:55+0000\n"
+"PO-Revision-Date: 2026-09-24 10:55+0000\n"
 "Last-Translator: Choir Rehearsal\n"
 "Language-Team: Russian\n"
 "Language: ru_RU\n"
@@ -13,6 +13,96 @@ msgstr ""
 "X-Domain: compath-choir-rehearsal\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+msgid "Backing track"
+msgstr "Фонограмма"
+
+msgid "Bass 1"
+msgstr "Бас 1"
+
+msgid "Bass 2"
+msgstr "Бас 2"
+
+msgid "Baritone 1"
+msgstr "Баритон 1"
+
+msgid "Baritone 2"
+msgstr "Баритон 2"
+
+msgid "Tenor 1"
+msgstr "Тенор 1"
+
+msgid "Tenor 2"
+msgstr "Тенор 2"
+
+msgid "Alto 1"
+msgstr "Альт 1"
+
+msgid "Alto 2"
+msgstr "Альт 2"
+
+msgid "Soprano 1"
+msgstr "Сопрано 1"
+
+msgid "Soprano 2"
+msgstr "Сопрано 2"
+
+msgid "Other"
+msgstr "Другое"
+
+msgid "Voice Types"
+msgstr "Типы голосов"
+
+msgid "Voice Type"
+msgstr "Тип голоса"
+
+msgid "Sorry, you are not allowed to update plugins."
+msgstr "У вас нет прав на обновление плагинов."
+
+#, php-format
+msgid ""
+"Update available: Compath Choir Rehearsal %s. Use Update now below or on the "
+"Plugins screen."
+msgstr ""
+"Доступно обновление: Compath Choir Rehearsal %s. Нажмите «Обновить сейчас» "
+"ниже или на экране «Плагины»."
+
+msgid ""
+"An update is available for Compath Choir Rehearsal. Use Update now on the "
+"Plugins screen."
+msgstr ""
+"Для Compath Choir Rehearsal доступно обновление. Нажмите «Обновить сейчас» "
+"на экране «Плагины»."
+
+#, php-format
+msgid ""
+"Your installed version is %1$s, but the update server only reported %2$s "
+"(likely stale metadata). Open Plugins and use Update now if shown, upload "
+"the latest zip, or set Update JSON URL to the latest GitHub release update."
+"json."
+msgstr ""
+"Установлена версия %1$s, а сервер обновлений сообщил только %2$s (вероятно "
+"устаревшие метаданные). Откройте «Плагины» и нажмите «Обновить сейчас», "
+"загрузите актуальный zip или укажите Update JSON URL на update.json "
+"последнего GitHub release."
+
+msgid "Open Plugins"
+msgstr "Открыть «Плагины»"
+
+#, php-format
+msgid "Compath Choir Rehearsal is up to date (version %s)."
+msgstr "Compath Choir Rehearsal актуален (версия %s)."
+
+msgid "Compath Choir Rehearsal is up to date."
+msgstr "Compath Choir Rehearsal актуален."
+
+msgid ""
+"Could not reach the update server. Check your connection or try again later. "
+"If this keeps happening, verify GitHub Releases are reachable from this site."
+msgstr ""
+"Не удалось связаться с сервером обновлений. Проверьте соединение или "
+"повторите позже. Если ошибка повторяется, убедитесь, что GitHub Releases "
+"доступны с этого сайта."
 
 msgid "List choir songs"
 msgstr "Список песен хора"
@@ -26,11 +116,39 @@ msgstr "Детали песни хора"
 msgid "Returns one song with all voice tracks and audio URLs."
 msgstr "Возвращает одну песню со всеми голосами и URL аудио."
 
-msgid "Security check failed. Please try again."
-msgstr "Проверка безопасности не пройдена. Попробуйте снова."
+msgid "Microphone recording is available in Choir Rehearsal Pro."
+msgstr "Запись с микрофона доступна в Choir Rehearsal Pro."
 
-msgid "Please enter your username and password."
-msgstr "Введите имя пользователя и пароль."
+msgid "Security check failed. Reload the page and try again."
+msgstr ""
+"Проверка безопасности не пройдена. Обновите страницу и попробуйте снова."
+
+msgid "You are not allowed to upload recordings for this song."
+msgstr "У вас нет прав загружать записи для этой песни."
+
+msgid "No recording was uploaded."
+msgstr "Запись не была загружена."
+
+msgid "Recording upload was blocked by the server."
+msgstr "Сервер заблокировал загрузку записи."
+
+msgid "Song"
+msgstr "Песня"
+
+msgid "Could not save the recording in the Media Library."
+msgstr "Не удалось сохранить запись в медиатеке."
+
+msgid "Recording is too large for the server upload limit."
+msgstr "Запись слишком большая для лимита загрузки сервера."
+
+msgid "Recording was only partially uploaded."
+msgstr "Запись загружена только частично."
+
+msgid "No recording file was received."
+msgstr "Файл записи не получен."
+
+msgid "Recording upload failed."
+msgstr "Не удалось загрузить запись."
 
 msgid "Settings"
 msgstr "Настройки"
@@ -53,7 +171,6 @@ msgstr "Страница продукта: заказ, установка, це�
 msgid "Edition"
 msgstr "Редакция"
 
-#. translators: %d: maximum track count
 #, php-format
 msgid ""
 "Lite: up to %d voice tracks per song; no microphone recording, song search, "
@@ -78,27 +195,22 @@ msgstr "Версия плагина"
 msgid "Updates are delivered through WordPress.org."
 msgstr "Обновления доставляются через WordPress.org."
 
-#. translators: %s: GitHub releases link
 #, php-format
 msgid "Updates are published at %s"
 msgstr "Обновления публикуются по адресу %s"
 
-#. translators: 1: datetime, 2: version
 #, php-format
 msgid "Last check: %1$s — update available (%2$s)."
 msgstr "Последняя проверка: %1$s — доступно обновление (%2$s)."
 
-#. translators: %s: datetime
 #, php-format
 msgid "Last check: %s — up to date."
 msgstr "Последняя проверка: %s — актуально."
 
-#. translators: %s: datetime
 #, php-format
 msgid "Last check: %s — could not reach the update server."
 msgstr "Последняя проверка: %s — сервер обновлений недоступен."
 
-#. translators: %s: datetime
 #, php-format
 msgid "Last check: %s"
 msgstr "Последняя проверка: %s"
@@ -176,7 +288,6 @@ msgstr "Обращается к GitHub Releases и показывает резу
 msgid "Refresh permalinks"
 msgstr "Обновить постоянные ссылки"
 
-#. translators: %s: library page URL
 #, php-format
 msgid "Song list URL: %s"
 msgstr "URL списка песен: %s"
@@ -376,7 +487,6 @@ msgstr "Загрузка не удалась. Попробуйте снова."
 msgid "Save the song first, then you can record voice tracks."
 msgstr "Сначала сохраните песню, затем можно записывать партии."
 
-#. translators: %d: maximum track count
 #, php-format
 msgid ""
 "Lite edition allows up to %d voice tracks per song. Upgrade to Pro for "
@@ -417,7 +527,6 @@ msgstr ""
 "Партии выглядят как на публичной странице. Иконки справа — загрузка, запись "
 "или воспроизведение."
 
-#. translators: 1: max tracks, 2: upgrade link HTML
 #, php-format
 msgid ""
 "Add one voice part per row (up to %1$d in Lite). Upload audio with the icon "
@@ -438,54 +547,21 @@ msgstr "Голос"
 msgid "Track source"
 msgstr "Источник трека"
 
-#. translators: 1: song title, 2: voice label
 #, php-format
 msgid "%1$s — %2$s"
 msgstr "%1$s — %2$s"
 
+msgid "Rehearsal Library"
+msgstr "Библиотека репетиций"
+
 msgid "Sorry, you are not allowed to manage options."
 msgstr "У вас нет прав на управление настройками."
 
-msgid "Could not create the demo audio file in the Media Library."
-msgstr "Не удалось создать демо-аудиофайл в медиатеке."
+msgid "Song not found."
+msgstr "Песня не найдена."
 
-#. translators: 1: first song number, 2: last song number, 3: song count, 4: track count
-#, php-format
-msgid "Loaded demo songs %1$d–%2$d (%3$d songs, %4$d tracks)."
-msgstr "Загружены демо-песни %1$d–%2$d (%3$d песен, %4$d дорожек)."
-
-#. translators: 1: songs deleted, 2: tracks deleted, 3: media deleted
-#, php-format
-msgid "Deleted %1$d songs, %2$d tracks, and %3$d media files."
-msgstr "Удалено %1$d песен, %2$d дорожек и %3$d медиафайлов."
-
-msgid "Demo library"
-msgstr "Демо-библиотека"
-
-#. translators: 1: songs created per click, 2: songs shown per library page
-#, php-format
-msgid ""
-"Load %1$d sample songs (4 voice tracks each) so the public library shows "
-"pagination (%2$d songs per page), or wipe the whole rehearsal library."
-msgstr ""
-"Загрузить %1$d примерных песен (по 4 дорожки), чтобы публичная библиотека "
-"показала постраничность (%2$d на странице), или очистить всю библиотеку "
-"репетиций."
-
-msgid "Load demo songs"
-msgstr "Загрузить демо-песни"
-
-msgid "All songs will be deleted from the library. Do you agree?"
-msgstr "Все песни будут удалены из библиотеки. Согласны?"
-
-msgid "Delete all songs"
-msgstr "Удалить все песни"
-
-msgid "Yes"
-msgstr "Да"
-
-msgid "No"
-msgstr "Нет"
+msgid "You must sign in to view this song."
+msgstr "Чтобы увидеть эту песню, нужно войти."
 
 msgid "Pro"
 msgstr "Pro"
@@ -493,116 +569,45 @@ msgstr "Pro"
 msgid "Lite"
 msgstr "Lite"
 
-msgid "Security check failed. Reload the page and try again."
-msgstr ""
-"Проверка безопасности не пройдена. Обновите страницу и попробуйте снова."
+msgid "Security check failed. Please try again."
+msgstr "Проверка безопасности не пройдена. Попробуйте снова."
 
-msgid "Sending…"
-msgstr "Отправка…"
+msgid "Please enter your username and password."
+msgstr "Введите имя пользователя и пароль."
 
-msgid "Send"
-msgstr "Отправить"
+msgid "Songs"
+msgstr "Песни"
 
-msgid "View issue"
-msgstr "Открыть задачу"
+msgid "Add Song"
+msgstr "Добавить песню"
 
-msgid "Could not send feedback. Please try again later."
-msgstr "Не удалось отправить отзыв. Попробуйте позже."
+msgid "Add New Song"
+msgstr "Добавить новую песню"
 
-msgid "Send feedback"
-msgstr "Отправить отзыв"
+msgid "Edit Song"
+msgstr "Редактировать песню"
 
-msgid "Wish, bug, or other note about Choir Rehearsal."
-msgstr "Пожелание, ошибка или другая заметка о Choir Rehearsal."
+msgid "New Song"
+msgstr "Новая песня"
 
-msgid "Type"
-msgstr "Тип"
+msgid "View Song"
+msgstr "Смотреть песню"
 
-msgid "Bug"
-msgstr "Ошибка"
+msgid "Search Songs"
+msgstr "Поиск песен"
 
-msgid "Wish"
-msgstr "Пожелание"
+msgid "No songs found."
+msgstr "Песни не найдены."
 
-msgid "Other"
-msgstr "Другое"
+msgid "No songs found in Trash."
+msgstr "В корзине песен нет."
 
-msgid "Title"
-msgstr "Заголовок"
-
-msgid "Short summary"
-msgstr "Краткое описание"
-
-msgid "Description"
-msgstr "Описание"
-
-msgid "What happened, or what you wish for"
-msgstr "Что случилось или какое у вас пожелание"
-
-msgid "Contact email (optional)"
-msgstr "Контактный email (необязательно)"
-
-msgid "Feedback"
-msgstr "Отзыв"
-
-msgid "GitHub repository for feedback"
-msgstr "Репозиторий GitHub для отзывов"
-
-msgid ""
-"Issues are created in this repository. Use owner/name, for example compathee/"
-"compathee."
-msgstr ""
-"Задачи создаются в этом репозитории. Укажите owner/name, например compathee/"
-"compathee."
-
-msgid "GitHub token"
-msgstr "Токен GitHub"
-
-msgid "A token is saved."
-msgstr "Токен сохранён."
-
-msgid "Remove saved token"
-msgstr "Удалить сохранённый токен"
-
-msgid ""
-"Create a fine-grained personal access token at GitHub → Settings → Developer "
-"settings → Personal access tokens → Fine-grained tokens. Grant only this "
-"repository Issues: Read and write. Paste the token here. It stays on the "
-"server and is not shown on the rehearsal page. Leave blank to keep the saved "
-"token."
-msgstr ""
-"Создайте fine-grained personal access token: GitHub → Settings → Developer "
-"settings → Personal access tokens → Fine-grained tokens. Выдайте только "
-"этому репозиторию право Issues: Read and write. Вставьте токен сюда. Он "
-"хранится на сервере и не показывается на странице репетиций. Пустое поле "
-"сохраняет текущий токен."
-
-msgid ""
-"That GitHub token does not look valid. The saved token was left unchanged."
-msgstr ""
-"Этот токен GitHub не похож на действительный. Сохранённый токен не изменён."
-
-#. translators: %d: GitHub issue number
-#, php-format
-msgid "Thank you. Feedback sent as issue #%d."
-msgstr "Спасибо. Отзыв отправлен как задача #%d."
-
-msgid "Thank you. Feedback sent."
-msgstr "Спасибо. Отзыв отправлен."
-
-msgid "Please enter a type, title, and description."
-msgstr "Укажите тип, заголовок и описание."
-
-msgid "Feedback is not configured."
-msgstr "Форма отзывов не настроена."
-
-msgid "Please wait before sending more feedback."
-msgstr "Подождите перед отправкой следующего отзыва."
+msgid "Choir Rehearsal"
+msgstr "Choir Rehearsal"
 
 msgid "Edit"
 msgstr "Изменить"
 
-#. translators: %d: number of tracks
 #, php-format
 msgid "%d track"
 msgid_plural "%d tracks"
@@ -610,7 +615,6 @@ msgstr[0] "%d трек"
 msgstr[1] "%d трека"
 msgstr[2] "%d треков"
 
-#. translators: %d: number of tracks
 #, php-format
 msgid "%d tracks"
 msgstr "%d треков"
@@ -645,9 +649,6 @@ msgid ""
 msgstr ""
 "Публичные песни выше открыты всем. Войдите через WordPress, чтобы открыть "
 "полную библиотеку репетиций."
-
-msgid "Rehearsal Library"
-msgstr "Библиотека репетиций"
 
 msgid ""
 "Sign in with your WordPress account to access songs, sheet music, and voice "
@@ -720,7 +721,6 @@ msgstr "Поиск не дал результатов."
 msgid "Song list pages"
 msgstr "Страницы списка песен"
 
-#. translators: 1: first song number on page, 2: last song number on page, 3: total songs
 #, php-format
 msgid "Showing %1$d–%2$d of %3$d songs"
 msgstr "Показано %1$d–%2$d из %3$d песен"
@@ -758,11 +758,146 @@ msgstr "BPM"
 msgid "Tempo"
 msgstr "Темп"
 
-#. translators: 1: folder from zip, 2: installed folder
+msgid "Could not create the demo audio file in the Media Library."
+msgstr "Не удалось создать демо-аудиофайл в медиатеке."
+
+#, php-format
+msgid "Loaded demo songs %1$d–%2$d (%3$d songs, %4$d tracks)."
+msgstr "Загружены демо-песни %1$d–%2$d (%3$d песен, %4$d дорожек)."
+
+#, php-format
+msgid "Deleted %1$d songs, %2$d tracks, and %3$d media files."
+msgstr "Удалено %1$d песен, %2$d дорожек и %3$d медиафайлов."
+
+msgid "Demo library"
+msgstr "Демо-библиотека"
+
+#, php-format
+msgid ""
+"Load %1$d sample songs (4 voice tracks each) so the public library shows "
+"pagination (%2$d songs per page), or wipe the whole rehearsal library."
+msgstr ""
+"Загрузить %1$d примерных песен (по 4 дорожки), чтобы публичная библиотека "
+"показала постраничность (%2$d на странице), или очистить всю библиотеку "
+"репетиций."
+
+msgid "Load demo songs"
+msgstr "Загрузить демо-песни"
+
+msgid "All songs will be deleted from the library. Do you agree?"
+msgstr "Все песни будут удалены из библиотеки. Согласны?"
+
+msgid "Delete all songs"
+msgstr "Удалить все песни"
+
+msgid "Yes"
+msgstr "Да"
+
+msgid "No"
+msgstr "Нет"
+
 #, php-format
 msgid "Could not map update folder %1$s to installed folder %2$s."
 msgstr ""
 "Не удалось сопоставить папку обновления %1$s с установленной папкой %2$s."
+
+#, php-format
+msgid ""
+"Activation adds WordPress roles %1$s (listen) and %2$s (manage songs). "
+"Assign them under Users. Settings stay limited to %3$s. Public songs remain "
+"open to %4$s."
+msgstr ""
+"При активации создаются роли WordPress %1$s (прослушивание) и %2$s "
+"(управление песнями). Назначьте их в разделе Пользователи. Настройки "
+"доступны только роли %3$s. Публичные песни остаются открытыми для роли %4$s."
+
+#, php-format
+msgid "Role names %1$s, %2$s, %3$s, and %4$s are kept in English on purpose."
+msgstr "Имена ролей %1$s, %2$s, %3$s и %4$s намеренно остаются на английском."
+
+#, php-format
+msgid ""
+"%1$s, %2$s, %3$s, and %4$s can send a wish or bug from the song list. Lite "
+"and Pro both include this."
+msgstr ""
+"%1$s, %2$s, %3$s и %4$s могут отправить пожелание или ошибку из списка "
+"песен. Это есть и в Lite, и в Pro."
+
+#, php-format
+msgid ""
+"Public songs above are open to everyone. Ask someone with the %1$s role to "
+"assign you the %2$s or %3$s role for the full rehearsal library."
+msgstr ""
+"Публичные песни выше открыты для всех. Попросите пользователя с ролью %1$s "
+"назначить вам роль %2$s или %3$s для полной библиотеки репетиций."
+
+#, php-format
+msgid ""
+"Ask someone with the %1$s role to assign you the %2$s or %3$s role to open "
+"private rehearsal songs."
+msgstr ""
+"Попросите пользователя с ролью %1$s назначить вам роль %2$s или %3$s, чтобы "
+"открывать закрытые репетиционные песни."
+
+msgid "Sending…"
+msgstr "Отправка…"
+
+msgid "Send"
+msgstr "Отправить"
+
+msgid "Could not send feedback. Please try again later."
+msgstr "Не удалось отправить отзыв. Попробуйте позже."
+
+msgid "Send feedback"
+msgstr "Отправить отзыв"
+
+msgid "Wish, bug, or other note about Choir Rehearsal."
+msgstr "Пожелание, ошибка или другая заметка о Choir Rehearsal."
+
+msgid "Type"
+msgstr "Тип"
+
+msgid "Bug"
+msgstr "Ошибка"
+
+msgid "Wish"
+msgstr "Пожелание"
+
+msgid "Title"
+msgstr "Заголовок"
+
+msgid "Short summary"
+msgstr "Краткое описание"
+
+msgid "Description"
+msgstr "Описание"
+
+msgid "What happened, or what you wish for"
+msgstr "Что случилось или какое у вас пожелание"
+
+msgid "Name (optional)"
+msgstr "Имя (необязательно)"
+
+msgid "Email"
+msgstr "Эл. почта"
+
+msgid "Your email is used only to answer this request."
+msgstr "Электронная почта используется только для ответа на этот запрос."
+
+#, php-format
+msgid ""
+"Request received, case number %1$s. A confirmation has been sent to %2$s."
+msgstr ""
+"Запрос получен, номер обращения %1$s. Подтверждение отправлено на %2$s."
+
+msgid "Please enter a type, title, and description."
+msgstr "Укажите тип, заголовок и описание."
+
+msgid "Please enter a valid email address."
+msgstr "Введите действительный адрес электронной почты."
+
+msgid "Please wait before sending more feedback."
+msgstr "Подождите перед отправкой следующего отзыва."
 
 msgid ""
 "Compath Choir Rehearsal is loaded from more than one folder. Open the "
@@ -943,235 +1078,86 @@ msgstr "Отказ удалять этот путь."
 msgid "Could not read plugin folder."
 msgstr "Не удалось прочитать папку плагина."
 
-#. translators: %s: file path
 #, php-format
 msgid "Could not delete %s"
 msgstr "Не удалось удалить %s"
 
-#. translators: %s: directory path
 #, php-format
 msgid "Could not remove %s — delete via FTP."
 msgstr "Не удалось удалить %s — удалите через FTP."
 
-msgid "Songs"
-msgstr "Песни"
-
-msgid "Song"
-msgstr "Песня"
-
-msgid "Add Song"
-msgstr "Добавить песню"
-
-msgid "Add New Song"
-msgstr "Добавить новую песню"
-
-msgid "Edit Song"
-msgstr "Редактировать песню"
-
-msgid "New Song"
-msgstr "Новая песня"
-
-msgid "View Song"
-msgstr "Смотреть песню"
-
-msgid "Search Songs"
-msgstr "Поиск песен"
-
-msgid "No songs found."
-msgstr "Песни не найдены."
-
-msgid "No songs found in Trash."
-msgstr "В корзине песен нет."
-
-msgid "Choir Rehearsal"
-msgstr "Choir Rehearsal"
-
-msgid "Microphone recording is available in Choir Rehearsal Pro."
-msgstr "Запись с микрофона доступна в Choir Rehearsal Pro."
-
-msgid "You are not allowed to upload recordings for this song."
-msgstr "У вас нет прав загружать записи для этой песни."
-
-msgid "No recording was uploaded."
-msgstr "Запись не была загружена."
-
-msgid "Recording upload was blocked by the server."
-msgstr "Сервер заблокировал загрузку записи."
-
-msgid "Could not save the recording in the Media Library."
-msgstr "Не удалось сохранить запись в медиатеке."
-
-msgid "Recording is too large for the server upload limit."
-msgstr "Запись слишком большая для лимита загрузки сервера."
-
-msgid "Recording was only partially uploaded."
-msgstr "Запись загружена только частично."
-
-msgid "No recording file was received."
-msgstr "Файл записи не получен."
-
-msgid "Recording upload failed."
-msgstr "Не удалось загрузить запись."
-
-msgid "Song not found."
-msgstr "Песня не найдена."
-
-msgid "You must sign in to view this song."
-msgstr "Чтобы увидеть эту песню, нужно войти."
-
-#. translators: 1: Singer, 2: Voice Leader, 3: Administrator, 4: Guest. Substituted role names stay English.
-#, php-format
-msgid ""
-"Activation adds WordPress roles %1$s (listen) and %2$s (manage songs). "
-"Assign them under Users. Settings stay limited to %3$s. Public songs remain "
-"open to %4$s."
-msgstr ""
-"При активации создаются роли WordPress %1$s (прослушивание) и %2$s "
-"(управление песнями). Назначьте их в разделе Пользователи. Настройки "
-"доступны только роли %3$s. Публичные песни остаются открытыми для роли %4$s."
-
-#. translators: 1: Singer, 2: Voice Leader, 3: Administrator, 4: Guest. Substituted role names stay English.
-#, php-format
-msgid "Role names %1$s, %2$s, %3$s, and %4$s are kept in English on purpose."
-msgstr "Имена ролей %1$s, %2$s, %3$s и %4$s намеренно остаются на английском."
-
-#. translators: 1: Singer, 2: Voice Leader, 3: Administrator, 4: Guest. Substituted role names stay English.
-#, php-format
-msgid ""
-"%1$s, %2$s, %3$s, and %4$s can send a wish or bug from the song list. The "
-"site creates a GitHub issue. Lite and Pro both include this."
-msgstr ""
-"%1$s, %2$s, %3$s и %4$s могут отправить пожелание или ошибку из списка "
-"песен. Сайт создаёт задачу на GitHub. Это есть и в Lite, и в Pro."
-
-#. translators: 1: Administrator, 2: Singer, 3: Voice Leader. Substituted role names stay English.
-#, php-format
-msgid ""
-"Public songs above are open to everyone. Ask someone with the %1$s role to "
-"assign you the %2$s or %3$s role for the full rehearsal library."
-msgstr ""
-"Публичные песни выше открыты для всех. Попросите пользователя с ролью %1$s "
-"назначить вам роль %2$s или %3$s для полной библиотеки репетиций."
-
-#. translators: 1: Administrator, 2: Singer, 3: Voice Leader. Substituted role names stay English.
-#, php-format
-msgid ""
-"Ask someone with the %1$s role to assign you the %2$s or %3$s role to open "
-"private rehearsal songs."
-msgstr ""
-"Попросите пользователя с ролью %1$s назначить вам роль %2$s или %3$s, чтобы "
-"открывать закрытые репетиционные песни."
-
-#. translators: %s: Administrator role name. The role name stays English.
-#, php-format
-msgid ""
-"Could not send feedback. Please ask someone with the %s role to check the "
-"GitHub token."
-msgstr ""
-"Не удалось отправить отзыв. Попросите пользователя с ролью %s проверить "
-"токен GitHub."
-
-#. translators: %s: Administrator role name. The role name stays English.
-#, php-format
-msgid ""
-"Could not send feedback. Please ask someone with the %s role to check the "
-"GitHub repository."
-msgstr ""
-"Не удалось отправить отзыв. Попросите пользователя с ролью %s проверить "
-"репозиторий GitHub."
-
-msgid "Sorry, you are not allowed to update plugins."
-msgstr "У вас нет прав на обновление плагинов."
-
-#. translators: %s: new plugin version
-#, php-format
-msgid ""
-"Update available: Compath Choir Rehearsal %s. Use Update now below or on the "
-"Plugins screen."
-msgstr ""
-"Доступно обновление: Compath Choir Rehearsal %s. Нажмите «Обновить сейчас» "
-"ниже или на экране «Плагины»."
-
-msgid ""
-"An update is available for Compath Choir Rehearsal. Use Update now on the "
-"Plugins screen."
-msgstr ""
-"Для Compath Choir Rehearsal доступно обновление. Нажмите «Обновить сейчас» "
-"на экране «Плагины»."
-
-#. translators: 1: installed version, 2: version reported by update server
-#, php-format
-msgid ""
-"Your installed version is %1$s, but the update server only reported %2$s "
-"(likely stale metadata). Open Plugins and use Update now if shown, upload "
-"the latest zip, or set Update JSON URL to the latest GitHub release update."
-"json."
-msgstr ""
-"Установлена версия %1$s, а сервер обновлений сообщил только %2$s (вероятно "
-"устаревшие метаданные). Откройте «Плагины» и нажмите «Обновить сейчас», "
-"загрузите актуальный zip или укажите Update JSON URL на update.json "
-"последнего GitHub release."
-
-msgid "Open Plugins"
-msgstr "Открыть «Плагины»"
-
-#. translators: %s: installed plugin version
-#, php-format
-msgid "Compath Choir Rehearsal is up to date (version %s)."
-msgstr "Compath Choir Rehearsal актуален (версия %s)."
-
-msgid "Compath Choir Rehearsal is up to date."
-msgstr "Compath Choir Rehearsal актуален."
-
-msgid ""
-"Could not reach the update server. Check your connection or try again later. "
-"If this keeps happening, verify GitHub Releases are reachable from this site."
-msgstr ""
-"Не удалось связаться с сервером обновлений. Проверьте соединение или "
-"повторите позже. Если ошибка повторяется, убедитесь, что GitHub Releases "
-"доступны с этого сайта."
-
-msgid "Backing track"
-msgstr "Фонограмма"
-
-msgid "Bass 1"
-msgstr "Бас 1"
-
-msgid "Bass 2"
-msgstr "Бас 2"
-
-msgid "Baritone 1"
-msgstr "Баритон 1"
-
-msgid "Baritone 2"
-msgstr "Баритон 2"
-
-msgid "Tenor 1"
-msgstr "Тенор 1"
-
-msgid "Tenor 2"
-msgstr "Тенор 2"
-
-msgid "Alto 1"
-msgstr "Альт 1"
-
-msgid "Alto 2"
-msgstr "Альт 2"
-
-msgid "Soprano 1"
-msgstr "Сопрано 1"
-
-msgid "Soprano 2"
-msgstr "Сопрано 2"
-
-msgid "Voice Types"
-msgstr "Типы голосов"
-
-msgid "Voice Type"
-msgstr "Тип голоса"
-
 msgid "Standard"
 msgstr "Стандарт"
+
+#~ msgid "View issue"
+#~ msgstr "Открыть задачу"
+
+#~ msgid "Feedback"
+#~ msgstr "Отзыв"
+
+#~ msgid "GitHub repository for feedback"
+#~ msgstr "Репозиторий GitHub для отзывов"
+
+#~ msgid ""
+#~ "Issues are created in this repository. Use owner/name, for example "
+#~ "compathee/compathee."
+#~ msgstr ""
+#~ "Задачи создаются в этом репозитории. Укажите owner/name, например "
+#~ "compathee/compathee."
+
+#~ msgid "GitHub token"
+#~ msgstr "Токен GitHub"
+
+#~ msgid "A token is saved."
+#~ msgstr "Токен сохранён."
+
+#~ msgid "Remove saved token"
+#~ msgstr "Удалить сохранённый токен"
+
+#~ msgid ""
+#~ "Create a fine-grained personal access token at GitHub → Settings → "
+#~ "Developer settings → Personal access tokens → Fine-grained tokens. Grant "
+#~ "only this repository Issues: Read and write. Paste the token here. It "
+#~ "stays on the server and is not shown on the rehearsal page. Leave blank "
+#~ "to keep the saved token."
+#~ msgstr ""
+#~ "Создайте fine-grained personal access token: GitHub → Settings → "
+#~ "Developer settings → Personal access tokens → Fine-grained tokens. "
+#~ "Выдайте только этому репозиторию право Issues: Read and write. Вставьте "
+#~ "токен сюда. Он хранится на сервере и не показывается на странице "
+#~ "репетиций. Пустое поле сохраняет текущий токен."
+
+#~ msgid ""
+#~ "That GitHub token does not look valid. The saved token was left unchanged."
+#~ msgstr ""
+#~ "Этот токен GitHub не похож на действительный. Сохранённый токен не "
+#~ "изменён."
+
+#, php-format
+#~ msgid "Thank you. Feedback sent as issue #%d."
+#~ msgstr "Спасибо. Отзыв отправлен как задача #%d."
+
+#~ msgid "Thank you. Feedback sent."
+#~ msgstr "Спасибо. Отзыв отправлен."
+
+#~ msgid "Feedback is not configured."
+#~ msgstr "Форма отзывов не настроена."
+
+#, php-format
+#~ msgid ""
+#~ "Could not send feedback. Please ask someone with the %s role to check the "
+#~ "GitHub token."
+#~ msgstr ""
+#~ "Не удалось отправить отзыв. Попросите пользователя с ролью %s проверить "
+#~ "токен GitHub."
+
+#, php-format
+#~ msgid ""
+#~ "Could not send feedback. Please ask someone with the %s role to check the "
+#~ "GitHub repository."
+#~ msgstr ""
+#~ "Не удалось отправить отзыв. Попросите пользователя с ролью %s проверить "
+#~ "репозиторий GitHub."
 
 #~ msgid "choir-rehearsal"
 #~ msgstr "choir-rehearsal"

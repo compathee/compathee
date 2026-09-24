@@ -117,8 +117,6 @@ foreach (array('et', 'ru_RU') as $locale) {
 		Choir_Rehearsal_Roles::describe_feedback_audience(),
 		Choir_Rehearsal_Roles::ask_administrator_to_assign_library(),
 		Choir_Rehearsal_Roles::ask_administrator_to_assign_song(),
-		Choir_Rehearsal_Roles::ask_administrator_github_token(),
-		Choir_Rehearsal_Roles::ask_administrator_github_repository(),
 	);
 	$blob = implode("\n", $rendered);
 	$has_names = true;
@@ -140,8 +138,8 @@ foreach (array('et', 'ru_RU') as $locale) {
 	$mo = dirname(__DIR__) . '/languages/compath-choir-rehearsal-' . $locale . '.mo';
 	$bytes = is_file($mo) ? (string) file_get_contents($mo) : '';
 	$needle = 'et' === $locale
-		? 'Palu kasutajal rolliga %s kontrollida GitHubi tunnust.'
-		: 'Попросите пользователя с ролью %s проверить токен GitHub.';
+		? 'Palu kasutajal rolliga %1$s määrata sulle roll %2$s või %3$s, et avada privaatsed prooviloosid.'
+		: 'Попросите пользователя с ролью %1$s назначить вам роль %2$s или %3$s, чтобы открывать закрытые репетиционные песни.';
 	check("$locale mo has untranslated role placeholder", str_contains($bytes, $needle));
 }
 

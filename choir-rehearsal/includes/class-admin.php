@@ -53,7 +53,6 @@ final class Choir_Rehearsal_Admin {
 		);
 
 		Choir_Rehearsal_Pages::register_settings();
-		Choir_Rehearsal_Feedback::register_settings();
 		if ( Choir_Rehearsal_Distribution::uses_github_updater() ) {
 			Choir_Rehearsal_Updater::register_settings();
 		}
@@ -218,7 +217,6 @@ final class Choir_Rehearsal_Admin {
 							<p class="description"><?php echo esc_html( Choir_Rehearsal_Roles::describe_role_names_policy() ); ?></p>
 						</td>
 					</tr>
-					<?php Choir_Rehearsal_Feedback::render_settings_rows(); ?>
 					<?php if ( Choir_Rehearsal_Distribution::uses_github_updater() ) : ?>
 					<tr>
 						<th scope="row"><?php esc_html_e( 'Update JSON URL', 'compath-choir-rehearsal' ); ?></th>
