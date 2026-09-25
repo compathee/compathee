@@ -1,0 +1,11 @@
+{
+  "private": true,
+  "scripts": {
+    "build": "node build.mjs",
+    "build:preview": "node build.mjs --preview",
+    "preview": "node preview.mjs",
+    "check": "node check.mjs",
+    "check:preview": "node check.mjs --preview",
+    "test:contact": "php api/contact-test.php"
+  }
+}

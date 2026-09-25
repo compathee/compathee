@@ -1,0 +1,88 @@
+name: Deploy compath.ee
+
+# Manual only until these secrets exist:
+# COMPATH_FTP_SERVER, COMPATH_FTP_USERNAME, COMPATH_FTP_PASSWORD, COMPATH_FTP_REMOTE_DIR
+# COMPATH_FTP_REMOTE_DIR is the web root, usually /public_html/
+# The action never deletes remote files. It does not upload api/ or .htaccess.
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy-site:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Build static site
+        run: node compath-site/build.mjs
+
+      - name: Assemble allow-list (no api, no htaccess, no config)
+        run: |
+          set -euo pipefail
+          mkdir -p deploy
+          rsync -a \
+            --exclude 'htaccess.snippet' \
+            --exclude 'api/' \
+            --exclude 'config.php' \
+            --exclude '*.log' \
+            compath-site/dist/ deploy/
+          test ! -e deploy/api
+          test ! -e deploy/.htaccess
+          test ! -e deploy/config.php
+          test -f deploy/index.html
+          test -f deploy/health.txt
+          find deploy -type f -print | sort
+
+      - name: Deploy to compath.ee (FTP/FTPS)
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.6
+        with:
+          server: ${{ secrets.COMPATH_FTP_SERVER }}
+          username: ${{ secrets.COMPATH_FTP_USERNAME }}
+          password: ${{ secrets.COMPATH_FTP_PASSWORD }}
+          protocol: ftps
+          port: 21
+          local-dir: deploy/
+          server-dir: ${{ secrets.COMPATH_FTP_REMOTE_DIR }}
+          dangerous-clean-slate: false
+
+      - name: Fix remote permissions (Apache 403)
+        env:
+          FTP_SERVER: ${{ secrets.COMPATH_FTP_SERVER }}
+          FTP_USER: ${{ secrets.COMPATH_FTP_USERNAME }}
+          FTP_PASS: ${{ secrets.COMPATH_FTP_PASSWORD }}
+          FTP_DIR: ${{ secrets.COMPATH_FTP_REMOTE_DIR }}
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y lftp
+          lftp -u "${FTP_USER}","${FTP_PASS}" "${FTP_SERVER}" <<EOF
+          set ssl:verify-certificate no
+          set ftp:ssl-force true
+          set ftp:ssl-protect-data true
+          cd ${FTP_DIR}
+          chmod 755 .
+          chmod 644 index.html .htaccess health.txt robots.txt sitemap.xml llms.txt favicon.svg favicon.ico favicon-192.png favicon-512.png apple-touch-icon.png site.webmanifest 404.html
+          chmod -R 755 assets et ru services contact privacy choir-rehearsal
+          bye
+          EOF
+
+      - name: Verify health.txt is reachable
+        run: |
+          set -euo pipefail
+          for URL in "https://compath.ee/health.txt" "http://compath.ee/health.txt"; do
+            echo "Checking ${URL}"
+            if curl -fsSL --max-time 30 "${URL}" | grep -q "deploy OK"; then
+              echo "OK: ${URL}"
+              exit 0
+            fi
+          done
+          echo "::warning::Site not reachable yet. Check COMPATH_FTP_REMOTE_DIR and the manual cutover in compath-site/DEPLOY.md."
+          exit 0

@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+api/config.php
+api/contact-rate/
+api/contact-rate-test/
+api/*.log
