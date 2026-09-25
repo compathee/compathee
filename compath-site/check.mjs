@@ -92,8 +92,27 @@ export function validate(dist, options = {}) {
     const logoSize = html.match(/class="brand__logo"[^>]*width="(\d+)" height="(\d+)"/);
     if (!logoSize || logoSize[1] === "0" || logoSize[2] === "0") problems.push(`${rel} logo width and height`);
     if (html.includes("brand__name") || html.includes("mark.svg")) problems.push(`${rel} still uses the old mark`);
-    if (!html.includes('class="topbar"') || !/class="topbar"[\s\S]*?href="mailto:support@compath\.ee"/.test(html)) {
-      problems.push(`${rel} header missing support mailto`);
+    if (html.includes('class="topbar"')) problems.push(`${rel} still has the header contact bar`);
+    if (!/<nav class="nav"[\s\S]*?href="https:\/\/shop\.compath\.ee\/"/.test(html)) {
+      problems.push(`${rel} missing shop link`);
+    }
+    const pageLang = html.match(/<html lang="(en|et|ru)"/);
+    const shopLabel = { en: ">Shop<", et: ">Pood<", ru: ">Магазин<" };
+    if (pageLang && !html.includes(shopLabel[pageLang[1]])) problems.push(`${rel} shop label`);
+    if (!html.includes('<label for="lang" class="visually-hidden">')) problems.push(`${rel} language label is visible`);
+    const main = html.match(/<main id="main">([\s\S]*?)<\/main>/);
+    const allowPlace = new Set([
+      path.join("contact", "index.html"),
+      path.join("privacy", "index.html"),
+      path.join("et", "kontakt", "index.html"),
+      path.join("et", "privaatsus", "index.html"),
+      path.join("ru", "kontakty", "index.html"),
+      path.join("ru", "konfidencialnost", "index.html"),
+    ]);
+    if (main && !allowPlace.has(rel)) {
+      for (const word of ["Tallinn", "Ahtri", "Таллин"]) {
+        if (main[1].includes(word)) problems.push(`${rel} body mentions ${word}`);
+      }
     }
     if (!/class="site-footer"[\s\S]*?href="mailto:support@compath\.ee">support@compath\.ee<\/a>/.test(html)) {
       problems.push(`${rel} footer missing support mailto`);
@@ -139,6 +158,7 @@ export function validate(dist, options = {}) {
         if (["et", "en", "ru"].some((code) => !languages.includes(code)) || hours.opens !== "09:00" || hours.closes !== "17:00" || week.some((day) => !days.includes(day))) {
           problems.push(`${rel} ContactPoint hours or languages`);
         }
+        if (JSON.stringify(data).includes("areaServed")) problems.push(`${rel} schema sells a city`);
       }
       if (rel === "index.html" || rel === path.join("et", "index.html") || rel === path.join("ru", "index.html")) {
         if (!types.includes("LocalBusiness") || !types.includes("SoftwareApplication") || !types.includes("Service")) {
@@ -207,11 +227,11 @@ export function validate(dist, options = {}) {
   const pairs = [
     ["#1c1c1c", "#ffffff"],
     ["#4a453f", "#ffffff"],
-    ["#ffffff", "#c04000"],
+    ["#1c1c1c", "#FE4F00"],
+    ["#1c1c1c", "#f26b00"],
     ["#ffffff", "#1c1c1c"],
     ["#f0ebe4", "#1c1c1c"],
     ["#173ea8", "#ffffff"],
-    ["#c04000", "#ffffff"],
   ];
   for (const [fg, bg] of pairs) {
     const ratio = contrast(fg, bg);
@@ -301,7 +321,8 @@ export function validate(dist, options = {}) {
     const sitemap = fs.readFileSync(path.join(dist, "sitemap.xml"), "utf8");
     if (!sitemap.includes('hreflang="x-default"') || !sitemap.includes(`${origin}/et/`)) problems.push("sitemap hreflang");
     const llms = fs.readFileSync(path.join(dist, "llms.txt"), "utf8");
-    if (!llms.includes("Choir Rehearsal") || !llms.includes("support@compath.ee") || !llms.includes("Mo-Fr 09:00-17:00")) problems.push("llms.txt");
+    if (!llms.includes("Choir Rehearsal") || !llms.includes("support@compath.ee") || !llms.includes("Mo-Fr 09:00-17:00") || !llms.includes("Ahtri 12, Tallinn 10151")) problems.push("llms.txt");
+    if (/company in Tallinn/i.test(llms)) problems.push("llms.txt sells Tallinn");
     const contact = fs.readFileSync(path.join(dist, "contact", "index.html"), "utf8");
     if (!contact.includes('action="/api/contact.php"')) problems.push("production contact form");
   }

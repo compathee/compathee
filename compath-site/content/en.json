@@ -13,6 +13,7 @@
     "home": "Home",
     "services": "Services",
     "contact": "Contact",
+    "shop": "Shop",
     "privacy": "Privacy",
     "hoursLabel": "Hours",
     "hours": "Mon–Fri 9–17",
@@ -28,7 +29,7 @@
     "privacyNote": "We use the form only to reply.",
     "previewBadge": "Preview",
     "previewForm": "This is a preview. The form is turned off, so this page does not send email. Call +372 55520482 on a weekday.",
-    "rights": "Compath OÜ, Tallinn."
+    "rights": "Compath OÜ."
   },
   "slugs": {
     "services": "services",
@@ -43,18 +44,18 @@
   },
   "pages": {
     "home": {
-      "title": "Compath OÜ — IT support in Tallinn",
-      "description": "Compath OÜ in Tallinn: IT support and maintenance for companies and homes, WordPress plugin development, AI agents and workflow automation, and consulting on launching on Amazon.",
-      "h1": "IT support and software in Tallinn",
-      "eyebrow": "Compath OÜ · Tallinn",
-      "lead": "We keep computers, networks and everyday web tools working, and we build WordPress plugins and AI agents for a process you can describe. The office is at Ahtri 12.",
+      "title": "Compath OÜ — IT support and software",
+      "description": "Compath OÜ: IT support and maintenance for companies and homes, WordPress plugin development, AI agents and workflow automation, and consulting on launching on Amazon. The work can be done remotely.",
+      "h1": "IT support and software",
+      "eyebrow": "Compath OÜ",
+      "lead": "We keep computers, networks and everyday web tools working, and we build WordPress plugins and AI agents for a process you can describe. The work can be done remotely.",
       "ctaServices": "See the services",
       "ctaContact": "Contact",
       "servicesTitle": "Services",
       "servicesLead": "Three kinds of work. Choir Rehearsal, our own WordPress plugin, is described after them.",
       "whyTitle": "Why Compath",
       "why": [
-        {"title": "A phone that is answered on weekdays", "text": "Ahtri 12, Tallinn. Monday to Friday, 9–17, on +372 55520482."},
+        {"title": "A phone that is answered on weekdays", "text": "Monday to Friday, 9–17, on +372 55520482. The work does not have to happen at our office."},
         {"title": "We publish our own plugin", "text": "Choir Rehearsal is listed on WordPress.org. Plugin work here is something we ship and maintain."},
         {"title": "The practical jobs can stay together", "text": "A network, a plugin or an n8n workflow, and a first Amazon launch can be handled by one company when they belong to the same job."}
       ],
@@ -63,7 +64,7 @@
     },
     "services": {
       "title": "Services | Compath OÜ",
-      "description": "IT support in Tallinn, WordPress plugin development and AI agents, and consulting on launching on Amazon. Compath OÜ, Ahtri 12.",
+      "description": "IT support and maintenance, WordPress plugin development and AI agents, and consulting on launching on Amazon.",
       "h1": "Services",
       "lead": "IT support and maintenance, development of plugins and AI agents, and consulting for sellers who are launching on Amazon."
     },
@@ -120,10 +121,10 @@
       "serviceType": "IT support and maintenance",
       "name": "IT support and maintenance",
       "summary": "Networks, computers and office equipment, domains, hosting, e-mail, websites, VoIP, and ongoing maintenance. For companies and homes.",
-      "title": "IT support in Tallinn | Compath OÜ",
-      "description": "IT support in Tallinn for companies and homes: networks, computers and office equipment, domains, hosting, e-mail, websites, VoIP and ongoing maintenance.",
+      "title": "IT support and maintenance | Compath OÜ",
+      "description": "IT support and maintenance for companies and homes: networks, computers and office equipment, domains, hosting, e-mail, websites, VoIP and ongoing maintenance. The work can be done remotely.",
       "h1": "IT support and maintenance",
-      "lead": "We plan, install and then keep the everyday IT in order. The work is for companies and for homes. The office is in Tallinn, at Ahtri 12.",
+      "lead": "We plan, install and then keep the everyday IT in order. The work is for companies and for homes, and it can be done remotely.",
       "blocks": [
         {"h2": "What we take on"},
         {"ul": [
@@ -144,8 +145,8 @@
       "serviceType": "WordPress plugin and AI agent development",
       "name": "Plugins and AI agents",
       "summary": "WordPress plugins for a workflow of your own, and AI agents with workflow automation such as n8n integrations.",
-      "title": "WordPress plugin development in Estonia | Compath OÜ",
-      "description": "WordPress plugin development in Estonia, plus AI agents and workflow automation such as n8n integrations. Compath OÜ also publishes Choir Rehearsal.",
+      "title": "WordPress plugin development | Compath OÜ",
+      "description": "WordPress plugin development, plus AI agents and workflow automation such as n8n integrations. Compath OÜ also publishes Choir Rehearsal.",
       "h1": "Plugin and AI agent development",
       "lead": "We write WordPress plugins and we set up AI agents for a business process, including n8n integrations.",
       "blocks": [

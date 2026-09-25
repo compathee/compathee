@@ -1,8 +1,8 @@
 # Compath OÜ
 
-> Compath OÜ in Tallinn: IT support and maintenance for companies and homes, WordPress plugin development, AI agents and workflow automation, and consulting on launching on Amazon.
+> Compath OÜ: IT support and maintenance for companies and homes, WordPress plugin development, AI agents and workflow automation, and consulting on launching on Amazon. The work can be done remotely.
 
-Compath OÜ is a company in Tallinn, Estonia (Ahtri 12, 10151). Registry code 11502963. VAT EE101244231. Phone +372 55520482. Hours Monday–Friday 09:00–17:00.
+Compath OÜ is an Estonian company. Registry code 11502963. VAT EE101244231. The work is remote. Phone +372 55520482. Hours Monday–Friday 09:00–17:00.
 
 The company has three services. It does not offer translation or video production.
 
@@ -10,22 +10,22 @@ The company has three services. It does not offer translation or video productio
 
 ### English
 
-- [Services](https://compath.ee/services/): IT support in Tallinn, WordPress plugin development and AI agents, and consulting on launching on Amazon. Compath OÜ, Ahtri 12.
-- [IT support and maintenance](https://compath.ee/services/it-support/): IT support in Tallinn for companies and homes: networks, computers and office equipment, domains, hosting, e-mail, websites, VoIP and ongoing maintenance.
-- [Plugin and AI agent development](https://compath.ee/services/plugins-and-ai/): WordPress plugin development in Estonia, plus AI agents and workflow automation such as n8n integrations. Compath OÜ also publishes Choir Rehearsal.
+- [Services](https://compath.ee/services/): IT support and maintenance, WordPress plugin development and AI agents, and consulting on launching on Amazon.
+- [IT support and maintenance](https://compath.ee/services/it-support/): IT support and maintenance for companies and homes: networks, computers and office equipment, domains, hosting, e-mail, websites, VoIP and ongoing maintenance. The work can be done remotely.
+- [Plugin and AI agent development](https://compath.ee/services/plugins-and-ai/): WordPress plugin development, plus AI agents and workflow automation such as n8n integrations. Compath OÜ also publishes Choir Rehearsal.
 - [Consulting on launching on Amazon](https://compath.ee/services/amazon-launch/): Consulting on launching on Amazon: account setup, listings, and advertising (PPC) basics. Compath OÜ advises. You remain the seller.
 
 ### Eesti
 
-- [Teenused](https://compath.ee/et/teenused/): IT tugi Tallinnas, WordPressi pluginate arendus ja tehisintellekti agendid ning nõustamine Amazoni käivitamisel. Compath OÜ, Ahtri 12.
-- [IT tugi ja hooldus](https://compath.ee/et/teenused/it-tugi/): IT tugi Tallinnas ettevõtetele ja kodudele: arvutivõrgud, arvutid ja kontoritehnika, domeenid, majutus, e-post, veebilehed, VoIP ja jooksev hooldus.
+- [Teenused](https://compath.ee/et/teenused/): IT tugi ja hooldus, WordPressi pluginate arendus ja tehisintellekti agendid ning nõustamine Amazoni käivitamisel.
+- [IT tugi ja hooldus](https://compath.ee/et/teenused/it-tugi/): IT tugi ja hooldus ettevõtetele ja kodudele: arvutivõrgud, arvutid ja kontoritehnika, domeenid, majutus, e-post, veebilehed, VoIP ja jooksev hooldus. Tööd saab teha kaugelt.
 - [Pluginate ja tehisintellekti agentide arendus](https://compath.ee/et/teenused/pluginad-ja-tehisintellekt/): WordPressi pluginate arendus ning tehisintellekti agendid ja töövoogude automatiseerimine, näiteks n8n. Compath OÜ avaldab ka pluginat Choir Rehearsal.
 - [Nõustamine Amazoni käivitamisel](https://compath.ee/et/teenused/amazon/): Nõustamine Amazoni käivitamisel: konto seadistus, kuulutused ja reklaami (PPC) põhitõed. Compath OÜ nõustab. Müüja olete teie.
 
 ### Русский
 
-- [Услуги](https://compath.ee/ru/uslugi/): IT поддержка в Таллине, разработка плагинов WordPress и ИИ-агентов, консультации по запуску на Amazon. Compath OÜ, Ahtri 12.
-- [ИТ-поддержка и сопровождение](https://compath.ee/ru/uslugi/it-podderzhka/): IT поддержка в Таллине для компаний и дома: сети, компьютеры и оргтехника, домены, хостинг, почта, сайты, VoIP и текущее сопровождение.
+- [Услуги](https://compath.ee/ru/uslugi/): ИТ-поддержка и сопровождение, разработка плагинов WordPress и ИИ-агентов, консультации по запуску на Amazon.
+- [ИТ-поддержка и сопровождение](https://compath.ee/ru/uslugi/it-podderzhka/): ИТ-поддержка и сопровождение для компаний и дома: сети, компьютеры и оргтехника, домены, хостинг, почта, сайты, VoIP и текущее сопровождение. Работу можно делать удалённо.
 - [Разработка плагинов и ИИ-агентов](https://compath.ee/ru/uslugi/plaginy-i-ii/): Разработка плагинов WordPress, ИИ-агенты и автоматизация процессов, например интеграции n8n. Compath OÜ также выпускает Choir Rehearsal.
 - [Консультации по запуску на Amazon](https://compath.ee/ru/uslugi/amazon/): Консультации по запуску на Amazon: настройка аккаунта, карточки товаров и основы рекламы (PPC). Compath OÜ консультирует. Продавец — вы.
 
@@ -51,5 +51,6 @@ Choir Rehearsal is Compath’s own WordPress plugin: a private rehearsal library
 - Russian: https://compath.ee/ru/kontakty/
 - Email: support@compath.ee
 - Phone: +372 55520482
+- Address: Ahtri 12, Tallinn 10151, Estonia
 - Hours: Mo-Fr 09:00-17:00
 - Map: https://www.openstreetmap.org/search?query=Ahtri%2012%2C%2010151%20Tallinn

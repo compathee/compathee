@@ -1,8 +1,7 @@
 :root {
   --orange: #f26b00;
   --amber: #f5b000;
-  --orange-deep: #c04000;
-  --orange-dark: #8c3000;
+  --orange-deep: #FE4F00;
   --blue: #1f4fd8;
   --blue-dark: #173ea8;
   --ink: #1c1c1c;
@@ -91,28 +90,6 @@ a:hover { text-decoration: none; }
   background: rgba(255, 255, 255, 0.96);
   border-bottom: 1px solid var(--line);
   backdrop-filter: blur(8px);
-}
-
-.topbar {
-  background: var(--paper);
-  border-bottom: 1px solid var(--line);
-}
-
-.topbar__row {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 4px 18px;
-  min-height: 44px;
-}
-
-.topbar a {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  font-weight: 600;
-  font-size: 0.92rem;
 }
 
 .header__bar {
@@ -219,8 +196,8 @@ h3 { margin: 0 0 8px; font-size: 1.2rem; }
   border: 2px solid transparent;
 }
 
-.btn--primary { background: var(--orange-deep); color: var(--white); }
-.btn--primary:hover { background: var(--orange-dark); color: var(--white); }
+.btn--primary { background: var(--orange-deep); color: var(--ink); }
+.btn--primary:hover { background: var(--orange); color: var(--ink); }
 .btn--ghost { background: var(--white); color: var(--blue-dark); border-color: var(--blue); }
 .btn--ghost:hover { background: var(--band); }
 
@@ -330,7 +307,7 @@ h3 { margin: 0 0 8px; font-size: 1.2rem; }
 
 .cta-band h2 { margin-bottom: 8px; }
 .cta-band p { margin: 0; max-width: 62ch; color: #e7ecf5; }
-.cta-band .btn--primary { background: var(--white); color: var(--orange-deep); }
+.cta-band .btn--primary { background: var(--orange-deep); color: var(--ink); }
 
 .site-footer {
   background: var(--navy);

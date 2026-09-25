@@ -142,7 +142,6 @@ function organization() {
       opens: "09:00",
       closes: "17:00",
     }],
-    areaServed: { "@type": "City", name: "Tallinn" },
     sameAs: [product.bare, "https://shop.compath.ee/", product.wporg],
   };
 }
@@ -200,7 +199,6 @@ function serviceNode(lang, service) {
     description: service.description,
     url: abs(urlFor(lang, service.id)),
     provider: { "@id": `${origin}/#organization` },
-    areaServed: { "@type": "City", name: "Tallinn" },
   };
 }
 
@@ -270,21 +268,16 @@ ${ld(graph)}
 <a class="skip" href="#main">${esc(lang.ui.skip)}</a>
 <div class="accent"></div>
 <header class="site-header">${basePath ? `\n  <p class="preview-badge">${esc(lang.ui.previewBadge)}</p>` : ""}
-  <div class="topbar">
-    <div class="wrap topbar__row">
-      <a href="tel:+37255520482">+372 55520482</a>
-      ${mailLink()}
-    </div>
-  </div>
   <div class="wrap header__bar">
     <a class="brand" href="${pub(urlFor(lang, "home"))}"><img class="brand__logo" src="${pub("/assets/logo.png")}" alt="Compath" width="${logoMeta.width}" height="${logoMeta.height}" /></a>
     <nav class="nav" aria-label="${esc(lang.ui.navLabel)}">
       ${navLink(lang, id, "home")}
       ${navLink(lang, id, "services")}
       ${navLink(lang, id, "contact")}
+      <a href="https://shop.compath.ee/" rel="noopener noreferrer">${esc(lang.ui.shop)}</a>
     </nav>
     <div class="lang">
-      <label for="lang">${esc(lang.ui.langLabel)}</label>
+      <label for="lang" class="visually-hidden">${esc(lang.ui.langLabel)}</label>
       <select id="lang">
         ${langs.map((item) => `<option value="${item.code}" lang="${item.htmlLang}"${item.code === lang.code ? " selected" : ""}>${item.label}</option>`).join("")}
       </select>
@@ -647,7 +640,7 @@ function llms() {
     "",
     `> ${en.pages.home.description}`,
     "",
-    "Compath OÜ is a company in Tallinn, Estonia (Ahtri 12, 10151). Registry code 11502963. VAT EE101244231. Phone +372 55520482. Hours Monday–Friday 09:00–17:00.",
+    "Compath OÜ is an Estonian company. Registry code 11502963. VAT EE101244231. The work is remote. Phone +372 55520482. Hours Monday–Friday 09:00–17:00.",
     "",
     "The company has three services. It does not offer translation or video production.",
     "",
@@ -682,6 +675,7 @@ function llms() {
     `- Russian: ${abs(urlFor(byCode.ru, "contact"))}`,
     `- Email: ${supportEmail}`,
     "- Phone: +372 55520482",
+    "- Address: Ahtri 12, Tallinn 10151, Estonia",
     "- Hours: Mo-Fr 09:00-17:00",
     "- Map: " + mapUrl,
     "",
