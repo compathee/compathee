@@ -97,6 +97,17 @@ export function validate(dist, options = {}) {
       problems.push(`${rel} missing shop link`);
     }
     const pageLang = html.match(/<html lang="(en|et|ru)"/);
+    if (pageLang) {
+      const ogUrl = `${origin}${preview ? base : ""}/assets/og-${pageLang[1]}.png`;
+      const og = html.match(/property="og:image" content="([^"]+)"/);
+      const twitter = html.match(/name="twitter:image" content="([^"]+)"/);
+      if (!og || og[1] !== ogUrl) problems.push(`${rel} og:image`);
+      if (!twitter || twitter[1] !== ogUrl) problems.push(`${rel} twitter:image`);
+      if (!html.includes('property="og:image:type" content="image/png"')) problems.push(`${rel} og:image:type`);
+      if (/og:image" content="[^"]+\.webp"|twitter:image" content="[^"]+\.webp"/.test(html)) {
+        problems.push(`${rel} share image is webp`);
+      }
+    }
     const shopLabel = { en: ">Shop<", et: ">Pood<", ru: ">Магазин<" };
     if (pageLang && !html.includes(shopLabel[pageLang[1]])) problems.push(`${rel} shop label`);
     if (!html.includes('<label for="lang" class="visually-hidden">')) problems.push(`${rel} language label is visible`);
@@ -159,6 +170,7 @@ export function validate(dist, options = {}) {
           problems.push(`${rel} ContactPoint hours or languages`);
         }
         if (JSON.stringify(data).includes("areaServed")) problems.push(`${rel} schema sells a city`);
+        if (business.image !== `${origin}/assets/og-en.png`) problems.push(`${rel} schema image`);
       }
       if (rel === "index.html" || rel === path.join("et", "index.html") || rel === path.join("ru", "index.html")) {
         if (!types.includes("LocalBusiness") || !types.includes("SoftwareApplication") || !types.includes("Service")) {
@@ -267,6 +279,15 @@ export function validate(dist, options = {}) {
   const ico = fs.readFileSync(path.join(dist, "favicon.ico"));
   if (ico.readUInt16LE(4) !== 3 || ico[6] !== 16 || ico[22] !== 32 || ico[38] !== 48) {
     problems.push("favicon.ico is not 16, 32 and 48");
+  }
+  for (const name of ["og-en.png", "og-et.png", "og-ru.png"]) {
+    const file = path.join(dist, "assets", name);
+    if (!fs.existsSync(file)) {
+      problems.push(`missing ${name}`);
+      continue;
+    }
+    const actual = pngSize(file);
+    if (actual[0] !== 1200 || actual[1] !== 630) problems.push(`${name} is ${actual.join("x")}`);
   }
   const homeHtml = fs.readFileSync(path.join(dist, "index.html"), "utf8");
   if (!homeHtml.includes('href="/favicon-192.png"') && !homeHtml.includes('href="/preview-2026/favicon-192.png"')) {

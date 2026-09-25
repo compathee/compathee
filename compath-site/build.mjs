@@ -100,7 +100,7 @@ function organization() {
     name: "Compath OÜ",
     legalName: "Compath OÜ",
     url: `${origin}/`,
-    image: `${origin}/assets/og-en.webp`,
+    image: `${origin}/assets/og-en.png`,
     logo: `${origin}/assets/logo.png`,
     telephone: "+37255520482",
     contactPoint: {
@@ -225,7 +225,7 @@ function layout(lang, id, main, graph) {
   const description = page.description;
   const canonical = abs(urlFor(lang, id));
   const alternates = Object.fromEntries(langs.map((item) => [item.code, pub(urlFor(item, id))]));
-  const og = `${origin}${pub(`/assets/og-${lang.code}.webp`)}`;
+  const og = `${origin}${pub(`/assets/og-${lang.code}.png`)}`;
   const robots = basePath ? "noindex, nofollow" : (noindexIds.has(id) ? "noindex, follow" : "index, follow");
   return `<!DOCTYPE html>
 <html lang="${lang.htmlLang}" data-lang="${lang.code}"${basePath ? ` data-base="${basePath}"` : ""}>
@@ -246,7 +246,7 @@ ${langs.filter((item) => item.code !== lang.code).map((item) => `<meta property=
 <meta property="og:description" content="${esc(description)}" />
 <meta property="og:url" content="${canonical}" />
 <meta property="og:image" content="${og}" />
-<meta property="og:image:type" content="image/webp" />
+<meta property="og:image:type" content="image/png" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
 <meta property="og:image:alt" content="${esc(title)}" />
