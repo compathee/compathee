@@ -320,11 +320,25 @@ final class Choir_Rehearsal_Feedback {
 		}
 
 		if ( class_exists( 'Choir_Rehearsal_Pro_Licensing', false ) ) {
-			Choir_Rehearsal_Pro_Licensing::refresh_cached_details();
-			return self::license_snapshot(
-				Choir_Rehearsal_Pro_Licensing::is_licensed(),
-				Choir_Rehearsal_Pro_Licensing::stored_options()
-			);
+			// Pro 0.5.1+ caches public license ids. Pro 0.5.0 only has is_licensed().
+			if ( method_exists( 'Choir_Rehearsal_Pro_Licensing', 'refresh_cached_details' ) ) {
+				Choir_Rehearsal_Pro_Licensing::refresh_cached_details();
+			}
+
+			$licensed = method_exists( 'Choir_Rehearsal_Pro_Licensing', 'is_licensed' )
+				? Choir_Rehearsal_Pro_Licensing::is_licensed()
+				: false;
+
+			if ( method_exists( 'Choir_Rehearsal_Pro_Licensing', 'stored_options' ) ) {
+				$options = Choir_Rehearsal_Pro_Licensing::stored_options();
+			} else {
+				$options = get_option( 'compathchoirrehearsalpro_license_options', array() );
+			}
+			if ( ! is_array( $options ) ) {
+				$options = array();
+			}
+
+			return self::license_snapshot( $licensed, $options );
 		}
 
 		return self::license_snapshot( false, array() );
