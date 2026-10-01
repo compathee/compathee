@@ -4,7 +4,7 @@ Tags: choir, audio, rehearsal, voice parts, music
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 0.4.64
+Stable tag: 0.4.65
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -61,13 +61,17 @@ Yes. Use the shortcode `[choir_rehearsal]`.
 
 = How do singers send feedback? =
 
-Anyone who can open the song list (Administrator, Voice Leader, Singer, or a guest) sees **Send feedback** under the list. Email is required for guests and for signed-in users (the profile address is filled in). After a successful send, the page shows the case number and Compath emails a confirmation to that address. No GitHub token is required.
+Anyone who can open the song list (Administrator, Voice Leader, Singer, or a guest) sees **Send feedback** under the list. Administrators and Voice Leaders also open the same form from **Choir Rehearsal → Send feedback** in wp-admin. Email is required for guests and for signed-in users (the profile address is filled in). After a successful send, the page shows the case number and Compath emails a confirmation to that address. No GitHub token is required.
 
 = Can I use YouTube instead of an audio file? =
 
 Yes. In the song editor, set a voice track’s source to **YouTube** and paste a youtube.com or youtu.be URL. On the song page a button opens the official YouTube embed (video stays visible). This is for listening/reference only — the plugin does not download or convert YouTube audio.
 
 == Changelog ==
+
+= 0.4.65 =
+
+* Choir Rehearsal → Send feedback: the same feedback form on its own admin page
 
 = 0.4.64 =
 

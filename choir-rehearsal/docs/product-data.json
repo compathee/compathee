@@ -126,13 +126,21 @@
   ],
   "changelog": [
     {
+      "version": "0.4.65",
+      "summary": "Feedback form in the Choir Rehearsal admin menu",
+      "items": [
+        "Choir Rehearsal → Send feedback opens the same form that posts to rehearsal.compath.ee"
+      ],
+      "open": true
+    },
+    {
       "version": "0.4.64",
       "summary": "License-gated Pro features and song-list feedback",
       "items": [
         "GitHub build: Pro features stay off until a SureCart license is activated under Choir Rehearsal → Pro License",
         "Song list: Send feedback for bugs and wishes. The page shows the case number and a confirmation is emailed to the address on the form"
       ],
-      "open": true
+      "open": false
     },
     {
       "version": "0.4.63",
