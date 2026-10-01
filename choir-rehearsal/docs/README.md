@@ -53,6 +53,8 @@ FTP нужен только когда меняется сам `product-page.htm
 | [product-data.json](product-data.json) | **Контент страницы** — редактировать при каждом релизе |
 | [product-page.md](product-page.md) | Markdown-копия (справочно) |
 | [deploy/.htaccess](deploy/.htaccess) | Apache: index + права |
+| [deploy/api/feedback.php](deploy/api/feedback.php) | Приём отзывов плагина → Jira + письмо. URL: `https://rehearsal.compath.ee/api/feedback.php` |
+| [deploy/api/README.md](deploy/api/README.md) | Куда класть скрипт и файл секретов (не в git) |
 
 ## FTP secrets (один раз)
 
@@ -68,3 +70,15 @@ FTP нужен только когда меняется сам `product-page.htm
 См. предыдущий чеклист: document root, `index.html`, права 644/755.
 
 Проверка: https://rehearsal.compath.ee/health.txt
+
+## Отзывы (Jira)
+
+Плагин на сайтах хоров отправляет JSON на `https://rehearsal.compath.ee/api/feedback.php`. Секреты Jira и SMTP **не** входят в плагин. Workflow оболочки сайта **не** заливает каталог `api/` (там живые `config.php`, `feedback-rate/` и логи).
+
+Файл на хостинге: `/domains/rehearsal.compath.ee/public_html/api/feedback.php`
+
+Конфиг рядом со скриптом, закрыт `.htaccess`: `/domains/rehearsal.compath.ee/public_html/api/config.php`
+
+Счётчик лимита: `/domains/rehearsal.compath.ee/public_html/api/feedback-rate/`
+
+Образец: [deploy/api/config.example.php](deploy/api/config.example.php). Ключ проекта — `WP` (задачи вида `WP-12`). Почта Jira в образце — `compath@compath.ee`. Заполнить только `jira_token` и `smtp_pass` (токен в git не класть). Подробности в [deploy/api/README.md](deploy/api/README.md).

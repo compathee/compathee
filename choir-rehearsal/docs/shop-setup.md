@@ -77,6 +77,15 @@ Customer site: install Choir Rehearsal (Lite) + Choir Rehearsal Pro
 api.compath.ee → ERPLY paid invoice (automatic)
 ```
 
+## 6b. Pro zip with licensing (0.5.0+)
+
+1. Paste SureCart **Public token** (`pt_…`) into `choir-rehearsal-pro/includes/surecart-config.php`.
+2. Run `./scripts/build-pro-zip.sh` → `dist/choir-rehearsal-pro.zip`.
+3. Product → Secure Storage → upload zip → **Enable license creation** → set **Current Release** → Save.
+4. Customers activate under **Choir Rehearsal → Pro License**.
+
+See `choir-rehearsal-pro/docs/surecart-licensing.md`.
+
 ## 7. What customers install
 
 | Package | Contents |
@@ -95,7 +104,7 @@ See [lite-pro-updates.md](lite-pro-updates.md) for the full Lite → Pro process
 | Stripe API keys | SureCart settings (not in git) |
 | Stripe webhook secret | `api.compath.ee/config/config.php` |
 | ERPLY API token | `api.compath.ee/config/config.php` |
-| SureCart public token | Choir Rehearsal Pro plugin (when SDK added) |
+| SureCart public token | Choir Rehearsal Pro `includes/surecart-config.php` (or `CHOIR_REHEARSAL_PRO_PUBLIC_TOKEN`) |
 
 ## 9. Test order (before going live)
 

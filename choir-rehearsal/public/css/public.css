@@ -1503,3 +1503,143 @@ body.choir-metronome-open:not(.choir-sticky-player-open) .choir-metronome-sheet 
 	}
 }
 
+.choir-feedback {
+	margin-top: 28px;
+	padding-top: 20px;
+	border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.choir-feedback__toggle {
+	display: inline-flex;
+	align-items: center;
+	width: fit-content;
+	padding: 8px 14px;
+	border-radius: 999px;
+	border: 1px solid rgba(0, 0, 0, 0.12);
+	background: #fff;
+	color: #344054;
+	font-size: 0.9rem;
+	font-weight: 600;
+	cursor: pointer;
+	list-style: none;
+}
+
+.choir-feedback__toggle::-webkit-details-marker {
+	display: none;
+}
+
+.choir-feedback__toggle::marker {
+	content: "";
+}
+
+.choir-feedback__toggle:hover,
+.choir-feedback__toggle:focus-visible {
+	background: #f2f4f7;
+	color: #101828;
+	outline: 2px solid #1f4fd8;
+	outline-offset: 1px;
+}
+
+.choir-feedback__form {
+	box-sizing: border-box;
+	margin-top: 16px;
+	max-width: 560px;
+	padding: 24px;
+	border: 1px solid rgba(0, 0, 0, 0.08);
+	border-radius: 16px;
+	background: #fff;
+	box-shadow: 0 12px 40px rgba(16, 24, 40, 0.08);
+}
+
+.choir-feedback__intro {
+	margin: 0 0 16px;
+	color: #475467;
+	line-height: 1.5;
+}
+
+.choir-feedback__field {
+	margin: 0 0 16px;
+}
+
+.choir-feedback__field label {
+	display: block;
+	margin-bottom: 6px;
+	font-weight: 600;
+}
+
+.choir-feedback__field input,
+.choir-feedback__field select,
+.choir-feedback__field textarea {
+	box-sizing: border-box;
+	width: 100%;
+	padding: 10px 12px;
+	border: 1px solid rgba(0, 0, 0, 0.12);
+	border-radius: 10px;
+	font: inherit;
+	background: #fff;
+	color: inherit;
+}
+
+.choir-feedback__field textarea {
+	min-height: 120px;
+	resize: vertical;
+}
+
+.choir-feedback__field input:focus,
+.choir-feedback__field select:focus,
+.choir-feedback__field textarea:focus {
+	outline: 2px solid #1f4fd8;
+	outline-offset: 1px;
+}
+
+.choir-feedback__submit {
+	margin: 0;
+}
+
+.choir-feedback__button {
+	border: 0;
+	border-radius: 999px;
+	background: #1f4fd8;
+	color: #fff;
+	padding: 12px 18px;
+	font: inherit;
+	font-weight: 600;
+	cursor: pointer;
+}
+
+.choir-feedback__button:hover,
+.choir-feedback__button:focus-visible {
+	background: #173ea8;
+	outline: none;
+}
+
+.choir-feedback__button:disabled {
+	opacity: 0.7;
+	cursor: progress;
+}
+
+.choir-feedback__status {
+	margin: 0 0 16px;
+	padding: 12px 14px;
+	border-radius: 10px;
+}
+
+.choir-feedback__status[hidden] {
+	display: none;
+}
+
+.choir-feedback__status--error {
+	background: #fef3f2;
+	color: #b42318;
+}
+
+.choir-feedback__status--success {
+	background: #ecfdf3;
+	color: #027a48;
+}
+
+.choir-feedback__status a {
+	color: inherit;
+	font-weight: 700;
+}
+

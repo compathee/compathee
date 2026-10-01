@@ -4,7 +4,7 @@ Tags: choir, audio, rehearsal, voice parts, music
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 0.4.63
+Stable tag: 0.4.66
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -20,13 +20,16 @@ Choir Rehearsal helps choir members learn new pieces by voice part.
 * Official YouTube embed on the song page (video stays visible; no download)
 * Attach a PDF score per song with page-by-page viewer
 * Frontend song list at `/rehearsal/` with PDF, public, and YouTube badges
+* Send feedback from the song list (a confirmation email includes the case number)
 * Sticky HTML5 player at the bottom of the page
 * Optional login-only access with Singer and Voice Leader roles (English role names)
 * REST API and MCP abilities for automation
 
 == External services ==
 
-This plugin does not require external services to work. Song data, audio, and PDF scores stay on your WordPress site.
+The rehearsal library works without external services. Song data, audio, and PDF scores stay on your WordPress site.
+
+Optional **feedback** (under the song list): when someone sends feedback, the site server posts the request to `https://rehearsal.compath.ee/api/feedback.php` (Compath OÜ). The request includes the message, feedback type, name (optional), email address, WordPress role (or guest), the sender’s locale, plugin version, site home URL, WordPress version, PHP version, and non-secret Pro license identifiers when a license is active. The full license key is not sent. Compath registers a support case and emails a confirmation to the address on the form. No token is stored in the plugin. The email is used only to answer the request.
 
 Optional **YouTube tracks** (song editor): choose YouTube as a track source and paste a URL. The song page opens the official YouTube embed player (`youtube.com`). Playback uses YouTube’s embed; no download. Subject to [YouTube Terms of Service](https://www.youtube.com/static?template=terms). No YouTube API key is required for this embed.
 
@@ -56,11 +59,28 @@ WordPress roles created on plugin activation. Names stay in English. **Singer** 
 
 Yes. Use the shortcode `[choir_rehearsal]`.
 
+= How do singers send feedback? =
+
+Signed-in users see **Send feedback** under the song list. Logged-out visitors do not. Administrators and Voice Leaders also open the same form from **Choir Rehearsal → Send feedback** in wp-admin. Email is required. After a successful send, the page shows the case number and Compath emails a confirmation to that address. No GitHub token is required.
+
 = Can I use YouTube instead of an audio file? =
 
 Yes. In the song editor, set a voice track’s source to **YouTube** and paste a youtube.com or youtu.be URL. On the song page a button opens the official YouTube embed (video stays visible). This is for listening/reference only — the plugin does not download or convert YouTube audio.
 
 == Changelog ==
+
+= 0.4.66 =
+
+* Song list feedback form is hidden from logged-out visitors. Signed-in users still see it. Choir Rehearsal → Send feedback stays in wp-admin
+
+= 0.4.65 =
+
+* Choir Rehearsal → Send feedback: the same feedback form on its own admin page
+
+= 0.4.64 =
+
+* Song list: Send feedback for bugs and wishes. The page shows the case number and a confirmation is emailed to the address on the form
+* GitHub build: Pro features stay off until a SureCart license is activated under Choir Rehearsal → Pro License
 
 = 0.4.63 =
 
