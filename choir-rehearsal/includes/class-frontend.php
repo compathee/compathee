@@ -97,7 +97,7 @@ final class Choir_Rehearsal_Frontend {
 			);
 		}
 
-		if ( self::is_song_list_page() ) {
+		if ( self::is_song_list_page() && is_user_logged_in() ) {
 			Choir_Rehearsal_Feedback::enqueue_assets();
 		}
 
@@ -519,7 +519,9 @@ final class Choir_Rehearsal_Frontend {
 				</ul>
 				<?php self::render_song_pagination( $current_page, $total_pages, $total_songs ); ?>
 			<?php endif; ?>
-			<?php Choir_Rehearsal_Feedback::render_panel(); ?>
+			<?php if ( is_user_logged_in() ) : ?>
+				<?php Choir_Rehearsal_Feedback::render_panel(); ?>
+			<?php endif; ?>
 		</div>
 		<?php
 	}

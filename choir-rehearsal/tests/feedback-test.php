@@ -201,10 +201,19 @@ $js = (string) file_get_contents(dirname(__DIR__) . '/public/js/feedback.js');
 $uninstall = (string) file_get_contents(dirname(__DIR__) . '/uninstall.php');
 
 $panel_at = strpos($frontend, 'Choir_Rehearsal_Feedback::render_panel()');
-$panel_line = false !== $panel_at ? substr($frontend, $panel_at, 80) : '';
-$before_panel = false !== $panel_at ? substr($frontend, max(0, $panel_at - 40), 40) : '';
-check('panel under song list', str_contains($panel_line, 'render_panel()') && str_contains($before_panel, 'endif'));
-check('script not limited to pro search', str_contains($frontend, "if ( self::is_song_list_page() ) {\n\t\t\tChoir_Rehearsal_Feedback::enqueue_assets();"));
+$list_fn = strpos($frontend, 'function render_song_list');
+$after_list = strpos($frontend, 'function get_current_list_page');
+$before_panel = false !== $panel_at ? substr($frontend, max(0, $panel_at - 180), 180) : '';
+check(
+	'panel under song list for logged-in users',
+	false !== $panel_at
+		&& false !== $list_fn
+		&& false !== $after_list
+		&& $panel_at > $list_fn
+		&& $panel_at < $after_list
+		&& str_contains($before_panel, 'is_user_logged_in()')
+);
+check('song list script requires login', str_contains($frontend, "if ( self::is_song_list_page() && is_user_logged_in() ) {\n\t\t\tChoir_Rehearsal_Feedback::enqueue_assets();"));
 check('plugin boots feedback', str_contains($plugin, 'class-feedback.php') && str_contains($plugin, 'Choir_Rehearsal_Feedback::register()'));
 check('no feedback settings in admin', !str_contains($admin, 'Choir_Rehearsal_Feedback::register_settings()') && !str_contains($admin, 'Choir_Rehearsal_Feedback::render_settings_rows()'));
 check('updater repo stays gated', str_contains($admin, 'uses_github_updater()') && str_contains($admin, 'choir_rehearsal_github_repo'));
