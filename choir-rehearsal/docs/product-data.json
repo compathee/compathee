@@ -126,12 +126,21 @@
   ],
   "changelog": [
     {
+      "version": "0.4.66",
+      "summary": "Song list feedback is for signed-in users",
+      "items": [
+        "Logged-out visitors no longer see Send feedback under the song list",
+        "Signed-in users still see that form, and Choir Rehearsal → Send feedback stays in wp-admin"
+      ],
+      "open": true
+    },
+    {
       "version": "0.4.65",
       "summary": "Feedback form in the Choir Rehearsal admin menu",
       "items": [
         "Choir Rehearsal → Send feedback opens the same form that posts to rehearsal.compath.ee"
       ],
-      "open": true
+      "open": false
     },
     {
       "version": "0.4.64",
