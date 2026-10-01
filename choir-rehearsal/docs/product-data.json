@@ -126,13 +126,31 @@
   ],
   "changelog": [
     {
+      "version": "0.4.64",
+      "summary": "License-gated Pro features and song-list feedback",
+      "items": [
+        "GitHub build: Pro features stay off until a SureCart license is activated under Choir Rehearsal → Pro License",
+        "Song list: Send feedback for bugs and wishes. The page shows the case number and a confirmation is emailed to the address on the form"
+      ],
+      "open": true
+    },
+    {
+      "version": "0.4.63",
+      "summary": "Multilingual song permalinks",
+      "items": [
+        "Arabic and CJK titles transliterate with ICU Any-Latin when php-intl is available",
+        "Fallback permalink song-{id} when romanization is empty",
+        "Includes the 0.4.62 Cyrillic hex-dump repair"
+      ]
+    },
+    {
       "version": "0.4.62",
       "summary": "Fix Cyrillic song permalinks",
       "items": [
         "WordPress percent-encoded Russian titles no longer become hex-dump slugs (d0-9f-d0-b5…)",
         "Existing bad song slugs are repaired on upgrade"
       ],
-      "open": true
+      "open": false
     },
     {
       "version": "0.4.61",

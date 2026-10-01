@@ -4,7 +4,7 @@ Tags: choir, audio, rehearsal, voice parts, music
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 0.4.63
+Stable tag: 0.4.64
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -68,6 +68,11 @@ Anyone who can open the song list (Administrator, Voice Leader, Singer, or a gue
 Yes. In the song editor, set a voice track’s source to **YouTube** and paste a youtube.com or youtu.be URL. On the song page a button opens the official YouTube embed (video stays visible). This is for listening/reference only — the plugin does not download or convert YouTube audio.
 
 == Changelog ==
+
+= 0.4.64 =
+
+* Song list: Send feedback for bugs and wishes. The page shows the case number and a confirmation is emailed to the address on the form
+* GitHub build: Pro features stay off until a SureCart license is activated under Choir Rehearsal → Pro License
 
 = 0.4.63 =
 
