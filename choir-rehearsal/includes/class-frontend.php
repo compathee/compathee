@@ -97,6 +97,10 @@ final class Choir_Rehearsal_Frontend {
 			);
 		}
 
+		if ( self::is_song_list_page() ) {
+			Choir_Rehearsal_Feedback::enqueue_assets();
+		}
+
 		wp_enqueue_script(
 			'choir-rehearsal-waveform',
 			CHOIR_REHEARSAL_URL . 'public/js/waveform.js',
@@ -188,8 +192,9 @@ final class Choir_Rehearsal_Frontend {
 					'choir-rehearsal-youtube',
 					'choirRehearsalYoutube',
 					array(
-						'open'  => __( 'Watch video', 'compath-choir-rehearsal' ),
-						'close' => __( 'Hide video', 'compath-choir-rehearsal' ),
+						'open'        => __( 'Watch video', 'compath-choir-rehearsal' ),
+						'close'       => __( 'Hide video', 'compath-choir-rehearsal' ),
+						'playerTitle' => __( 'YouTube video player', 'compath-choir-rehearsal' ),
 					)
 				);
 			}
@@ -395,14 +400,7 @@ final class Choir_Rehearsal_Frontend {
 				<h2 class="choir-rehearsal-title"><?php esc_html_e( 'Full library requires a choir role', 'compath-choir-rehearsal' ); ?></h2>
 				<p class="choir-rehearsal-login__intro">
 					<?php
-					echo esc_html(
-						sprintf(
-							/* translators: 1: Singer role name (English), 2: Voice Leader role name (English) */
-							__( 'Public songs above are open to everyone. Ask an administrator to assign you the %1$s or %2$s role for the full rehearsal library.', 'compath-choir-rehearsal' ),
-							Choir_Rehearsal_Roles::LABEL_SINGER,
-							Choir_Rehearsal_Roles::LABEL_VOICE_LEADER
-						)
-					);
+					echo esc_html( Choir_Rehearsal_Roles::ask_administrator_to_assign_library() );
 					?>
 				</p>
 			</div>
@@ -420,14 +418,7 @@ final class Choir_Rehearsal_Frontend {
 				<h1 class="choir-rehearsal-title"><?php esc_html_e( 'This song is private', 'compath-choir-rehearsal' ); ?></h1>
 				<p class="choir-rehearsal-login__intro">
 					<?php
-					echo esc_html(
-						sprintf(
-							/* translators: 1: Singer role name (English), 2: Voice Leader role name (English) */
-							__( 'Ask an administrator to assign you the %1$s or %2$s role to open private rehearsal songs.', 'compath-choir-rehearsal' ),
-							Choir_Rehearsal_Roles::LABEL_SINGER,
-							Choir_Rehearsal_Roles::LABEL_VOICE_LEADER
-						)
-					);
+					echo esc_html( Choir_Rehearsal_Roles::ask_administrator_to_assign_song() );
 					?>
 				</p>
 			</div>
@@ -528,6 +519,7 @@ final class Choir_Rehearsal_Frontend {
 				</ul>
 				<?php self::render_song_pagination( $current_page, $total_pages, $total_songs ); ?>
 			<?php endif; ?>
+			<?php Choir_Rehearsal_Feedback::render_panel(); ?>
 		</div>
 		<?php
 	}

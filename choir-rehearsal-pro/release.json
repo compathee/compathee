@@ -1,0 +1,15 @@
+{
+  "name": "Compath Choir Rehearsal Pro",
+  "slug": "choir-rehearsal-pro",
+  "author": "<a href='https://compath.ee'>Compath OÜ</a>",
+  "author_profile": "https://compath.ee",
+  "version": "0.5.0",
+  "requires": "6.4",
+  "tested": "7.1",
+  "requires_php": "8.0",
+  "sections": {
+    "description": "Pro add-on for Compath Choir Rehearsal: unlimited voice tracks, microphone recording, song search, editor Play preview, PDF score badges, and song library backup. Requires Lite (Compath Choir Rehearsal) installed and a valid SureCart license.",
+    "changelog": "<h4>0.5.0</h4><ul><li>SureCart license activation (WordPress SDK)</li><li>Pro License settings under Choir Rehearsal</li><li>Feature unlock gated by active license</li><li>Automatic Pro updates via SureCart Current Release</li></ul><h4>0.4.49</h4><ul><li>Song library backup export/import</li></ul>",
+    "frequently asked questions": "<h4>Where do I enter the license key?</h4><p>In wp-admin go to Choir Rehearsal → Pro License. Paste the key from your shop.compath.ee customer dashboard and click Activate License.</p><h4>Do I still need Lite?</h4><p>Yes. Keep Compath Choir Rehearsal (Lite) installed and activate Pro beside it — do not replace Lite.</p>"
+  }
+}
