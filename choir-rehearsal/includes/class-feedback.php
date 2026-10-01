@@ -22,8 +22,48 @@ final class Choir_Rehearsal_Feedback {
 
 	public const RATE_WINDOW = 3600;
 
+	public const MENU_SLUG = 'choir-rehearsal-feedback';
+
 	public static function register(): void {
 		add_action( 'rest_api_init', array( self::class, 'register_routes' ) );
+		add_action( 'admin_menu', array( self::class, 'register_menu' ) );
+		add_action( 'admin_enqueue_scripts', array( self::class, 'enqueue_admin_assets' ) );
+	}
+
+	public static function register_menu(): void {
+		add_submenu_page(
+			'edit.php?post_type=' . Choir_Rehearsal_Post_Types::SONG,
+			__( 'Send feedback', 'compath-choir-rehearsal' ),
+			__( 'Send feedback', 'compath-choir-rehearsal' ),
+			'edit_choir_songs',
+			self::MENU_SLUG,
+			array( self::class, 'render_admin_page' )
+		);
+	}
+
+	public static function enqueue_admin_assets( string $hook ): void {
+		if ( 'choir_song_page_' . self::MENU_SLUG !== $hook ) {
+			return;
+		}
+
+		self::enqueue_assets();
+		wp_enqueue_style(
+			'choir-rehearsal-feedback-admin',
+			CHOIR_REHEARSAL_URL . 'public/css/public.css',
+			array(),
+			CHOIR_REHEARSAL_VERSION
+		);
+	}
+
+	public static function render_admin_page(): void {
+		if ( ! current_user_can( 'edit_choir_songs' ) && ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		echo '<div class="wrap">';
+		echo '<h1>' . esc_html__( 'Send feedback', 'compath-choir-rehearsal' ) . '</h1>';
+		self::render_panel( true );
+		echo '</div>';
 	}
 
 	public static function endpoint(): string {
@@ -181,7 +221,7 @@ final class Choir_Rehearsal_Feedback {
 		);
 	}
 
-	public static function render_panel(): void {
+	public static function render_panel( bool $expanded = false ): void {
 		$email = '';
 		$name  = '';
 		if ( is_user_logged_in() ) {
@@ -197,7 +237,7 @@ final class Choir_Rehearsal_Feedback {
 			}
 		}
 		?>
-		<details class="choir-feedback">
+		<details class="choir-feedback"<?php echo $expanded ? ' open' : ''; ?>>
 			<summary class="choir-feedback__toggle"><?php esc_html_e( 'Send feedback', 'compath-choir-rehearsal' ); ?></summary>
 			<form id="choir-feedback-form" class="choir-feedback__form" method="post" action="<?php echo esc_url( rest_url( 'choir-rehearsal/v1/feedback' ) ); ?>">
 				<?php wp_nonce_field( 'wp_rest' ); ?>
