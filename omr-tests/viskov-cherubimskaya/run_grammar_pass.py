@@ -2,9 +2,9 @@
 """
 Layer D+ grammar pass on Viskov Audiveris MusicXML.
 
-Walks every pitched note with active key signature, applies on-the-fly
-literacy rules (+ optional Redis-like memory), writes corrections JSON,
-markdown report, and a corrected .musicxml (not re-zipped .mxl).
+1) Harmonize key signatures across all barline-connected staves.
+2) Pitch rules: hard only for true enharmonic absurdities;
+   chromatic (e.g. A♭ in g minor) → review, pitch unchanged.
 
 LLM tokens = 0. CPU only.
 """
@@ -21,10 +21,10 @@ from dataclasses import asdict
 from pathlib import Path
 
 from tonal_rules_onthefly import (
-    MemoryDemo,
     Mode,
     PC,
     correct_hypothesis,
+    harmonize_system_key_signatures,
     key_alters,
 )
 
@@ -58,19 +58,13 @@ def pitch_class(step: str, alter: int) -> int:
 
 
 def detect_mode(fifths: int, pcs: Counter) -> Mode:
-    """Pick major vs relative minor by pitch-class histogram fit."""
-    major_tonic = (PC["C"] + 7 * fifths) % 12  # circle of fifths
-    # relative minor tonic = major tonic - 3 semitones
+    major_tonic = (PC["C"] + 7 * fifths) % 12
     minor_tonic = (major_tonic - 3) % 12
     major_scale = {(major_tonic + i) % 12 for i in (0, 2, 4, 5, 7, 9, 11)}
-    # natural minor; harmonic adds +1 on 7th later in rules
     minor_scale = {(minor_tonic + i) % 12 for i in (0, 2, 3, 5, 7, 8, 10)}
     total = sum(pcs.values()) or 1
-    maj = sum(pcs[p] for p in major_scale) / total
-    # boost tonic weight slightly
-    maj += 0.15 * (pcs[major_tonic] / total)
-    mn = sum(pcs[p] for p in minor_scale) / total
-    mn += 0.15 * (pcs[minor_tonic] / total)
+    maj = sum(pcs[p] for p in major_scale) / total + 0.15 * (pcs[major_tonic] / total)
+    mn = sum(pcs[p] for p in minor_scale) / total + 0.15 * (pcs[minor_tonic] / total)
     return "minor" if mn >= maj else "major"
 
 
@@ -88,20 +82,12 @@ def collect_global_pcs(root: ET.Element) -> Counter:
     return pcs
 
 
-def run_pass(
-    root: ET.Element,
-    *,
-    mode: Mode,
-    use_memory: bool = True,
-    apply: bool = True,
-) -> dict:
-    mem = MemoryDemo()
-    corrections: list[dict] = []
+def run_pitch_pass(root: ET.Element, *, mode: Mode) -> dict:
+    reviews: list[dict] = []
+    forced: list[dict] = []
     kept = 0
-    forced = 0
     by_rule: Counter = Counter()
-    by_severity: Counter = Counter()
-    # track active fifths per part
+    by_action: Counter = Counter()
     current_fifths: dict[str, int] = defaultdict(lambda: -2)
 
     for part in root.findall("part"):
@@ -125,22 +111,20 @@ def run_pass(
                 if not step:
                     continue
                 alter_el = p.find("alter")
-                alter_in = int(float(alter_el.text)) if alter_el is not None and alter_el.text else 0
-                octave = int(p.findtext("octave") or 4)
-
-                ctx = f"fifths={fifths}|mode={mode}|step={step}|part={pid}"
-                hint = mem.hint(ctx) if use_memory else None
-                c = correct_hypothesis(
-                    step, alter_in, fifths, mode, memory_hint=hint
+                alter_in = (
+                    int(float(alter_el.text))
+                    if alter_el is not None and alter_el.text
+                    else 0
                 )
+                octave = int(p.findtext("octave") or 4)
+                c = correct_hypothesis(step, alter_in, fifths, mode)
                 by_rule[c.rule.split(":")[0] if ":" in c.rule else c.rule] += 1
-                by_severity[c.severity] += 1
+                by_action[c.action] += 1
 
                 if c.action == "keep":
                     kept += 1
                     continue
 
-                forced += 1
                 rec = {
                     "part": pid,
                     "measure": mid,
@@ -149,31 +133,24 @@ def run_pass(
                     "octave": octave,
                     **asdict(c),
                 }
-                corrections.append(rec)
-
-                # Learn hard/soft force into memory for later notes
-                if use_memory and c.alter_out is not None:
-                    mem.learn(ctx, c.alter_out)
-
-                if apply and c.alter_out is not None and c.alter_out != alter_in:
-                    if alter_el is None:
-                        alter_el = ET.SubElement(p, "alter")
-                        # keep order: step, alter, octave — ElementTree appends at end; OK for trial
-                    alter_el.text = str(c.alter_out)
-                    if c.alter_out == 0 and alter_el is not None:
-                        # keep explicit 0 for naturals that cancelled key flats
-                        alter_el.text = "0"
+                if c.action == "force_alter":
+                    forced.append(rec)
+                    if c.alter_out is not None and c.alter_out != alter_in:
+                        if alter_el is None:
+                            alter_el = ET.SubElement(p, "alter")
+                        alter_el.text = str(c.alter_out)
+                else:
+                    # review — pitch unchanged
+                    reviews.append(rec)
 
     return {
         "mode": mode,
-        "pitched_checked": kept + forced,
+        "pitched_checked": kept + len(forced) + len(reviews),
         "kept": kept,
         "forced": forced,
-        "corrections": corrections,
+        "reviews": reviews,
         "by_rule": dict(by_rule),
-        "by_severity": dict(by_severity),
-        "memory_entries": len(mem),
-        "memory_hits_total": sum(int(v.get("hits", 0)) for v in mem.values()),
+        "by_action": dict(by_action),
     }
 
 
@@ -188,7 +165,6 @@ def main() -> None:
     t0 = time.perf_counter()
     root_src, xml_name = load_score(MXL)
     pcs = collect_global_pcs(root_src)
-    # Primary key from score: majority fifths
     fifths_hist: Counter = Counter()
     for ks in root_src.iter("key"):
         f = ks.findtext("fifths")
@@ -198,10 +174,14 @@ def main() -> None:
     mode = detect_mode(primary_fifths, pcs)
 
     root = deepcopy(root_src)
-    result = run_pass(root, mode=mode, use_memory=True, apply=True)
+
+    # --- Pass 1: system key signatures ---
+    key_fixes = harmonize_system_key_signatures(root)
+
+    # --- Pass 2: pitch literacy ---
+    pitch = run_pitch_pass(root, mode=mode)
     wall = time.perf_counter() - t0
 
-    # Write corrected MusicXML
     corrected_path = OUT_DIR / "A.Viskov-Cherubimskaya.grammar-corrected.musicxml"
     ET.ElementTree(root).write(
         corrected_path, encoding="utf-8", xml_declaration=True
@@ -213,99 +193,123 @@ def main() -> None:
         "llm_tokens_in": 0,
         "llm_tokens_out": 0,
         "llm_cost_eur": 0.0,
-        "engine": "tonal_rules_onthefly + MemoryDemo",
+        "engine": "system_key_harmonize + tonal_rules_onthefly v2",
     }
 
-    summary = {
+    full = {
         "source": str(MXL),
         "xml_entry": xml_name,
         "primary_fifths": primary_fifths,
-        "fifths_hist": dict(fifths_hist),
+        "fifths_hist_before": dict(fifths_hist),
         "mode_selected": mode,
         "key_alters": key_alters(primary_fifths),
         "resources": resources,
-        **{k: v for k, v in result.items() if k != "corrections"},
-        "corrections_sample": result["corrections"][:40],
-        "corrections_all_count": len(result["corrections"]),
+        "key_fixes": [asdict(f) for f in key_fixes],
+        "key_fixes_count": len(key_fixes),
+        "pitch": {
+            "pitched_checked": pitch["pitched_checked"],
+            "kept": pitch["kept"],
+            "forced_count": len(pitch["forced"]),
+            "review_count": len(pitch["reviews"]),
+            "by_rule": pitch["by_rule"],
+            "by_action": pitch["by_action"],
+            "forced": pitch["forced"],
+            "reviews": pitch["reviews"],
+        },
+        "policy_note": (
+            "A♭ in g minor is REVIEW only — never auto A♭→A♮. "
+            "Key signatures must match on all barline-connected staves."
+        ),
     }
 
     json_path = OUT_DIR / "grammar-pass-viskov.json"
-    full = {**summary, "corrections": result["corrections"]}
     json_path.write_text(json.dumps(full, ensure_ascii=False, indent=2), encoding="utf-8")
     (ART / "grammar-pass-viskov.json").write_text(
         json.dumps(full, ensure_ascii=False, indent=2), encoding="utf-8"
     )
 
-    # Markdown report
     lines = [
-        "# Grammar pass — Висков, Херувимская (Layer D+)",
+        "# Grammar pass v2 — Висков (исправление ошибок v1)",
         "",
-        f"Источник: `{MXL.name}` → правила `tonal_rules_onthefly.py` + in-process Redis memory.",
+        "## Что было не так в v1",
         "",
-        "| | |",
+        "1. **Знаки при ключе** не выравнивались по всем линейкам системы — Audiveris часто писал ключ только на P1; MuseScore рисовал «дыры» (как на вашем скрине).",
+        "2. **A♭→A♮** — ошибочное hard-правило («вне звукоряда ⇒ переписать»). Это отсебятина: A♭ в g-moll может быть хроматикой (II♭ / неаполитанский и т.п.). В v2 такие ноты только **review**, высота не меняется.",
+        "",
+        "## Политика v2",
+        "",
+        "| Правило | Действие |",
         "|---|---|",
-        f"| Primary fifths | **{primary_fifths}** (hist {dict(fifths_hist)}) |",
-        f"| Mode | **{mode}** (histogram fit) |",
-        f"| Pitched notes | {result['pitched_checked']} |",
-        f"| Kept | {result['kept']} |",
-        f"| Forced corrections | **{result['forced']}** |",
-        f"| Memory entries | {result['memory_entries']} (hits sum {result['memory_hits_total']}) |",
-        f"| Wall | {resources['wall_s']} s |",
-        f"| Peak RSS | {resources['peak_rss_mb']} MB |",
-        f"| LLM tokens | **0 / 0** (€0) |",
+        "| Знаки при ключе на одной линейке системы | **Те же fifths на всех** линейках, соединённых тактовыми чертами |",
+        "| B♯ при си♭ в ключе и т.п. | **hard** force |",
+        "| A♭ / прочая хроматика вне диатоники | **review**, pitch не трогаем |",
         "",
-        "## По правилам",
+        f"| | |",
+        f"|---|---|",
+        f"| Mode | **{mode}** (fifths={primary_fifths}) |",
+        f"| Key fixes | **{len(key_fixes)}** |",
+        f"| Pitch kept | {pitch['kept']} |",
+        f"| Pitch forced | **{len(pitch['forced'])}** |",
+        f"| Pitch review | {len(pitch['reviews'])} |",
+        f"| Wall | {resources['wall_s']} s |",
+        f"| LLM | **0** |",
+        "",
+        "## Key fixes (фрагмент)",
         "",
     ]
-    for rule, n in sorted(result["by_rule"].items(), key=lambda x: -x[1]):
-        lines.append(f"- `{rule}`: {n}")
-    lines += ["", "## Severity", ""]
-    for sev, n in result["by_severity"].items():
-        lines.append(f"- {sev}: {n}")
-
-    lines += ["", "## Примеры правок (до 25)", ""]
-    if not result["corrections"]:
-        lines.append("_Правок не потребовалось — все ноты уже в allowed set._")
+    if not key_fixes:
+        lines.append("_Нет правок ключа._")
     else:
-        lines.append("| Part | М. | In | Out | Severity | Rule |")
+        lines.append("| М. | Part | Was | → | Action | Rule |")
         lines.append("|---|---|---|---|---|---|")
-        for c in result["corrections"][:25]:
-            inn = f"{c['step']}{'♯'*c['alter_in'] if c['alter_in']>0 else '♭'*(-c['alter_in']) if c['alter_in']<0 else '♮'}"
-            outa = c["alter_out"]
-            out = f"{c['step']}{'♯'*outa if outa and outa>0 else '♭'*(-outa) if outa and outa<0 else '♮'}"
+        for f in key_fixes[:40]:
             lines.append(
-                f"| {c['part']} | {c['measure']} | {inn} | {out} | {c['severity']} | `{c['rule'][:60]}` |"
+                f"| {f.measure} | {f.part} | {f.fifths_in} | {f.fifths_out} | {f.action} | `{f.rule}` |"
+            )
+        if len(key_fixes) > 40:
+            lines.append(f"| … | | | | | +{len(key_fixes)-40} more |")
+
+    lines += ["", "## Pitch forced (только hard)", ""]
+    if not pitch["forced"]:
+        lines.append("_Нет hard-правок высоты (B♯ и т.п. не встретились)._")
+    else:
+        for c in pitch["forced"][:20]:
+            lines.append(f"- {c['part']} m{c['measure']}: {c['step']} alter {c['alter_in']}→{c['alter_out']} (`{c['rule']}`)")
+
+    lines += ["", "## Pitch review (хроматика, без переписывания)", ""]
+    if not pitch["reviews"]:
+        lines.append("_Нет._")
+    else:
+        lines.append("| Part | М. | Pitch | Rule |")
+        lines.append("|---|---|---|---|")
+        for c in pitch["reviews"][:30]:
+            a = c["alter_in"]
+            sym = "♯" * a if a > 0 else ("♭" * (-a) if a < 0 else "♮")
+            lines.append(
+                f"| {c['part']} | {c['measure']} | {c['step']}{sym} | `{c['rule'][:70]}` |"
             )
 
     lines += [
         "",
         "## Артефакты",
         "",
-        f"- Corrected MusicXML: `{corrected_path.name}`",
-        f"- Full JSON: `{json_path.name}`",
-        "",
-        "## Вывод",
+        f"- `{corrected_path.name}`",
+        f"- `{json_path.name}`",
         "",
     ]
-    if result["forced"]:
-        lines.append(
-            f"Grammar-pass изменил **{result['forced']}** гипотез Audiveris "
-            f"из {result['pitched_checked']} pitched (режим {mode}, fifths={primary_fifths}). "
-            "Память подсказала повторные контексты без LLM."
-        )
-    else:
-        lines.append(
-            "Явных hard/soft нарушений в alter-поле не найдено; "
-            "ключ и вводные тона уже согласованы с правилами."
-        )
-
     report = "\n".join(lines) + "\n"
     report_path = ROOT / "GRAMMAR-PASS-VISKOV-REPORT.md"
     report_path.write_text(report, encoding="utf-8")
     (ART / "GRAMMAR-PASS-VISKOV-REPORT.md").write_text(report, encoding="utf-8")
 
-    print(json.dumps(summary, ensure_ascii=False, indent=2))
-    print("---")
+    print(json.dumps({
+        "key_fixes": len(key_fixes),
+        "forced": len(pitch["forced"]),
+        "reviews": len(pitch["reviews"]),
+        "kept": pitch["kept"],
+        "resources": resources,
+        "policy_note": full["policy_note"],
+    }, ensure_ascii=False, indent=2))
     print(report)
 
 

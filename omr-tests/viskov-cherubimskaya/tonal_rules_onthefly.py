@@ -2,16 +2,22 @@
 """
 On-the-fly tonal grammar rules for Audiveris hypothesis correction.
 
-Rules fire per note given current key signature (fifths) + chosen mode.
-Results can be cached in Redis-like memory keyed by
-  (piece_fingerprint, staff, measure, shape_context) → preferred pitch/alter.
+Hard rules (must fix):
+  - Key signatures on braced/barline-connected staves must match.
+  - True enharmonic absurdities vs key (e.g. B♯ when key has B♭).
+
+Soft / review (do NOT auto-rewrite pitch):
+  - Chromatic tones outside the diatonic set (e.g. A♭ in g minor) —
+    flag for Voice Leader; never force A♭→A♮ as "grammar".
 
 No LLM tokens. CPU-only.
 """
 from __future__ import annotations
 
+from collections import Counter
 from dataclasses import dataclass, asdict
 from typing import Literal
+import xml.etree.ElementTree as ET
 
 
 Mode = Literal["major", "minor"]
@@ -35,83 +41,62 @@ def key_alters(fifths: int) -> dict[str, int]:
 
 def enharmonic_forbidden(step: str, alter: int, fifths: int) -> str | None:
     """
-    Hard literacy rules independent of mode.
+    Hard literacy only — true nonsense against the key letter.
 
-    Examples:
-    - Key has Bb (fifths=-2): B# is nonsense in that context (should be C or Bb).
-    - Key has F#: Fb is almost never correct (should be E or F#).
-    - Double accidentals against the key direction are suspicious.
+    Example: key has B♭ (fifths≤-1) → B♯ is forbidden.
+    Does NOT ban chromatic A♭ in g minor (that is review, not force).
     """
     ka = key_alters(fifths)
     key_alt = ka.get(step, 0)
 
     # Same letter cannot carry the opposite extreme of the key accidental
-    # e.g. key Bb → B# forbidden; key F# → Fb forbidden.
     if key_alt == -1 and alter >= 1:
         return f"forbidden_sharp_on_flatted_key_degree:{step}(key♭)≠{step}{'♯'*alter}"
     if key_alt == 1 and alter <= -1:
         return f"forbidden_flat_on_sharpened_key_degree:{step}(key♯)≠{step}{'♭'*(-alter)}"
 
-    # Double accidentals are rare in choral editions; flag always for review
     if abs(alter) >= 2:
         return f"double_accidental_rare:{step} alter={alter}"
 
-    # Enharmonic absurdities in common keys
     if fifths <= -1 and step == "B" and alter == 1:
         return "B♯_with_flat_key_use_C_or_B♭"
     if fifths >= 1 and step == "F" and alter == -1:
         return "F♭_with_sharp_key_use_E_or_F♯"
-    if fifths <= -2 and step == "E" and alter == 1:
-        return "E♯_unlikely_with_≥2_flats_prefer_F"
-    if fifths >= 2 and step == "C" and alter == -1:
-        return "C♭_unlikely_with_≥2_sharps_prefer_B"
 
     return None
 
 
-def allowed_alters(step: str, fifths: int, mode: Mode) -> set[int]:
-    """Alters permitted on-the-fly for this step under key+mode."""
+def diatonic_and_common_chromatic(step: str, fifths: int, mode: Mode) -> set[int]:
+    """Alters that are expected without review (diatonic + LT / melodic-6)."""
     ka = key_alters(fifths)
     key_alt = ka[step]
-    allowed = {key_alt, 0}  # diatonic + natural cancellation always possible
+    allowed = {key_alt, 0}  # diatonic + natural cancellation
 
-    # chromatic inflection toward raised leading tone in minor
     if mode == "minor":
-        # raised 7th: for g minor (2 flats), leading tone is F#
-        # F is flatted? No — in 2 flats F is natural in key. Raised → +1
-        # degree mapping via tonic of relative minor
-        # Simpler table by fifths for choral keys:
         leading = {
-            # fifths: (step, alter) of raised 7
-            0: ("G", 1),   # a minor → G#
-            -1: ("E", 1),  # d minor → C# wait: d minor LT is C#
-            -2: ("F", 1),  # g minor → F#
-            -3: ("B", 0),  # c minor → B natural (key has Bb)
-            -4: ("E", 0),  # f minor → E natural
-            1: ("D", 1),   # e minor → D#
-            2: ("A", 1),   # b minor → A#
+            0: ("G", 1),
+            -1: ("C", 1),
+            -2: ("F", 1),
+            -3: ("B", 0),
+            -4: ("E", 0),
+            1: ("D", 1),
+            2: ("A", 1),
         }
-        # fix -1: d minor leading = C#
-        leading[-1] = ("C", 1)
         if fifths in leading:
             ls, la = leading[fifths]
             if step == ls:
                 allowed.add(la)
-
-        # raised 6 (melodic minor ascending) — optional
         raised6 = {
-            -2: ("E", 0),  # g minor: E natural (key has Eb)
-            -1: ("B", 0),  # d minor: B natural
-            0: ("F", 1),   # a minor: F#
-            -3: ("A", 0),  # c minor: A natural
+            -2: ("E", 0),
+            -1: ("B", 0),
+            0: ("F", 1),
+            -3: ("A", 0),
         }
         if fifths in raised6:
             s6, a6 = raised6[fifths]
             if step == s6:
                 allowed.add(a6)
 
-    # In major, secondary dominants sometimes raise 4th / etc. — keep narrow:
-    # allow single chromatic neighbor ±1 from key alter only as soft (not hard allow)
     return allowed
 
 
@@ -120,7 +105,7 @@ class Correction:
     step: str
     alter_in: int
     alter_out: int | None
-    action: Literal["keep", "force_alter", "reject", "review"]
+    action: Literal["keep", "force_alter", "review", "reject"]
     rule: str
     severity: Literal["hard", "soft"]
 
@@ -134,59 +119,286 @@ def correct_hypothesis(
     memory_hint: int | None = None,
 ) -> Correction:
     """
-    Apply on-the-fly literacy + optional Redis memory hint.
-
-    memory_hint: previously learned preferred alter for this context, if any.
+    Hard: only enharmonic_forbidden → force to key alter.
+    Soft chromatic (e.g. A♭ in g minor): review, keep pitch unchanged.
+    Memory may prefer alter only when current alter is hard-illegal.
     """
     bad = enharmonic_forbidden(step, alter, fifths)
     if bad:
-        # Prefer key-consistent alter
         ka = key_alters(fifths)[step]
+        if memory_hint is not None and memory_hint != alter:
+            # memory still cannot keep a hard-illegal pitch
+            pass
         return Correction(step, alter, ka, "force_alter", bad, "hard")
 
-    allowed = allowed_alters(step, fifths, mode)
+    expected = diatonic_and_common_chromatic(step, fifths, mode)
+    if alter in expected:
+        return Correction(step, alter, alter, "keep", "in_expected_set", "soft")
 
-    # Valid under grammar → keep. Memory must NOT override legal diatonic/LT notes.
-    if alter in allowed:
-        return Correction(step, alter, alter, "keep", "in_allowed_set", "soft")
-
-    # Illegal alter: prefer Redis hint if it is legal, else snap to key/nearest allowed.
-    ka = key_alters(fifths)[step]
-    if memory_hint is not None and memory_hint in allowed:
-        return Correction(
-            step,
-            alter,
-            memory_hint,
-            "force_alter",
-            f"redis_memory_prefer_alter={memory_hint}",
-            "soft",
-        )
-    prefer = ka if ka in allowed else sorted(allowed, key=lambda a: abs(a - alter))[0]
+    # Chromatic / unexpected — DO NOT auto-rewrite (was wrong for A♭→A♮).
     return Correction(
         step,
         alter,
-        prefer,
-        "force_alter",
-        f"alter_{alter}_not_in_allowed_{sorted(allowed)}_→{prefer}",
-        "hard",
+        None,
+        "review",
+        f"chromatic_or_unexpected_alter={alter}_step={step}_fifths={fifths}_mode={mode}",
+        "soft",
     )
 
 
-# --- Redis memory schema (documentation + in-process demo store) ---
-#
-# Key patterns (compath Redis DB for OMR):
-#   omr:grammar:v1:rules                       → hash of static rule ids (versioned)
-#   omr:mem:v1:{tenant}:{fp}:{ctx}             → JSON {alter, step, hits, last_ts, source}
-#   omr:mem:v1:global:{fp}:{ctx}               → anonymized cross-tenant aggregates (optional)
-#
-# ctx = f"fifths={fifths}|mode={mode}|step={step}|shape={shape}|staff={staff}"
-# fp  = content hash of first page binary or MusicXML skeleton
-#
-# On each correction accepted by Voice Leader (or auto hard-rule):
-#   INCR hits; SET alter; EXPIRE adaptive (e.g. 180d)
-# On next Audiveris post-pass:
-#   GET memory_hint → feed correct_hypothesis(..., memory_hint=)
-# Memory never overrides hard enharmonic_forbidden.
+# ---------------------------------------------------------------------------
+# System key-signature consistency (barline-connected staves)
+# ---------------------------------------------------------------------------
+
+@dataclass
+class KeyFix:
+    measure: str
+    part: str
+    fifths_in: int | None
+    fifths_out: int
+    rule: str
+    action: Literal["insert", "replace", "ok"]
+
+
+def _ensure_key_element(attrs: ET.Element, fifths: int) -> None:
+    key = attrs.find("key")
+    if key is None:
+        # insert key near start of attributes
+        key = ET.Element("key")
+        # place before time/clef if possible
+        kids = list(attrs)
+        insert_at = 0
+        for i, ch in enumerate(kids):
+            if ch.tag in ("divisions", "key"):
+                insert_at = i + 1
+            elif ch.tag in ("time", "clef", "staves"):
+                insert_at = i
+                break
+            else:
+                insert_at = i + 1
+        attrs.insert(insert_at, key)
+    fifths_el = key.find("fifths")
+    if fifths_el is None:
+        fifths_el = ET.SubElement(key, "fifths")
+    fifths_el.text = str(fifths)
+    # drop mode if we don't know; leave if present
+    # remove empty leftover
+    for child in list(key):
+        if child.tag not in ("fifths", "mode") and (child.text is None or not str(child.text).strip()):
+            key.remove(child)
+
+
+def _measure_num(mid: str) -> int | None:
+    try:
+        return int(mid)
+    except (TypeError, ValueError):
+        return None
+
+
+def deepcopy_el(el: ET.Element) -> ET.Element:
+    return ET.fromstring(ET.tostring(el, encoding="unicode"))
+
+
+def _first_clef_xml(part: ET.Element) -> ET.Element | None:
+    for m in part.findall("measure"):
+        attrs = m.find("attributes")
+        if attrs is None:
+            continue
+        clef = attrs.find("clef")
+        if clef is not None:
+            return deepcopy_el(clef)
+    return None
+
+
+def _empty_measure(
+    number: str,
+    fifths: int,
+    *,
+    with_time: bool = False,
+    clef: ET.Element | None = None,
+) -> ET.Element:
+    """Rest measure so lagging parts align visually with the system."""
+    m = ET.Element("measure", number=number)
+    attrs = ET.SubElement(m, "attributes")
+    div = ET.SubElement(attrs, "divisions")
+    div.text = "1"
+    key = ET.SubElement(attrs, "key")
+    fif = ET.SubElement(key, "fifths")
+    fif.text = str(fifths)
+    if with_time:
+        time_el = ET.SubElement(attrs, "time")
+        beats = ET.SubElement(time_el, "beats")
+        beats.text = "4"
+        beat_type = ET.SubElement(time_el, "beat-type")
+        beat_type.text = "4"
+    if clef is not None:
+        attrs.append(clef)
+    note = ET.SubElement(m, "note")
+    rest = ET.SubElement(note, "rest")
+    rest.set("measure", "yes")
+    dur = ET.SubElement(note, "duration")
+    dur.text = "4"
+    typ = ET.SubElement(note, "type")
+    typ.text = "whole"
+    return m
+
+
+def align_parts_and_harmonize_keys(root: ET.Element) -> list[KeyFix]:
+    """
+    Rule: key signatures on barline-connected staves must match.
+
+    Audiveris often:
+      - omits early measures on lower parts (P2 starts at 2, P3/P4 at 4);
+      - writes key only on some parts;
+      - thrash-flips fifths (e.g. −2 → 0 → −2) on a subset of staves.
+
+    Fix:
+      1. Pad missing measure numbers on each part (whole rests) so systems align.
+      2. Per measure: if any staff has a key, ALL staves get the same fifths.
+         Spurious minority flips (not agreed by all active parts) → piece majority.
+    """
+    parts = list(root.findall("part"))
+    if not parts:
+        return []
+
+    all_explicit: list[int] = []
+    for part in parts:
+        for m in part.findall("measure"):
+            attrs = m.find("attributes")
+            if attrs is None:
+                continue
+            key = attrs.find("key")
+            if key is not None and key.findtext("fifths") is not None:
+                all_explicit.append(int(key.findtext("fifths")))
+    piece_majority = (
+        Counter(all_explicit).most_common(1)[0][0] if all_explicit else 0
+    )
+
+    # Global numeric measure range
+    all_nums: list[int] = []
+    for part in parts:
+        for m in part.findall("measure"):
+            n = _measure_num(m.get("number") or "")
+            if n is not None:
+                all_nums.append(n)
+    if not all_nums:
+        return []
+    lo, hi = min(all_nums), max(all_nums)
+
+    fixes: list[KeyFix] = []
+
+    # --- 1) Pad missing measures ---
+    for part in parts:
+        pid = part.get("id") or "?"
+        part_clef = _first_clef_xml(part)
+        existing = {
+            _measure_num(m.get("number") or ""): m
+            for m in part.findall("measure")
+            if _measure_num(m.get("number") or "") is not None
+        }
+        # insert missing in order at correct positions
+        for n in range(lo, hi + 1):
+            if n in existing:
+                continue
+            new_m = _empty_measure(
+                str(n),
+                piece_majority,
+                with_time=(n == lo),
+                clef=deepcopy_el(part_clef) if part_clef is not None else None,
+            )
+            # find insertion point: before first measure with number > n
+            inserted = False
+            for i, child in enumerate(list(part)):
+                if child.tag != "measure":
+                    continue
+                cn = _measure_num(child.get("number") or "")
+                if cn is not None and cn > n:
+                    part.insert(i, new_m)
+                    inserted = True
+                    break
+            if not inserted:
+                part.append(new_m)
+            existing[n] = new_m
+            fixes.append(
+                KeyFix(
+                    str(n),
+                    pid,
+                    None,
+                    piece_majority,
+                    "pad_missing_measure_for_system_align",
+                    "insert",
+                )
+            )
+
+    # Rebuild index
+    by_part: dict[str, dict[int, ET.Element]] = {}
+    for part in parts:
+        pid = part.get("id") or "?"
+        by_part[pid] = {}
+        for m in part.findall("measure"):
+            n = _measure_num(m.get("number") or "")
+            if n is not None:
+                by_part[pid][n] = m
+
+    # --- 2) Harmonize keys measure-by-measure ---
+    # Genuine modulation: EVERY active staff explicitly states the same new fifths.
+    # Otherwise (subset / conflict / thrash) → piece_majority on all staves.
+    for n in range(lo, hi + 1):
+        explicits: dict[str, int] = {}
+        active_pids = [pid for pid, mmap in by_part.items() if n in mmap]
+        for pid in active_pids:
+            m = by_part[pid][n]
+            attrs = m.find("attributes")
+            if attrs is None:
+                continue
+            key = attrs.find("key")
+            if key is not None and key.findtext("fifths") is not None:
+                explicits[pid] = int(key.findtext("fifths"))
+
+        if (
+            explicits
+            and len(explicits) == len(active_pids)
+            and len(set(explicits.values())) == 1
+        ):
+            target = next(iter(explicits.values()))
+            rule_base = "system_key_unanimous_modulation"
+        elif explicits or n == lo:
+            target = piece_majority
+            rule_base = "system_key_must_match_all_barline_staves"
+        else:
+            continue
+
+        for pid in active_pids:
+            m = by_part[pid][n]
+            attrs = m.find("attributes")
+            if attrs is None:
+                attrs = ET.Element("attributes")
+                m.insert(0, attrs)
+            prev = None
+            key = attrs.find("key")
+            if key is not None and key.findtext("fifths") is not None:
+                prev = int(key.findtext("fifths"))
+            if prev == target:
+                continue
+            _ensure_key_element(attrs, target)
+            action: Literal["insert", "replace"] = (
+                "replace" if prev is not None else "insert"
+            )
+            rule = rule_base
+            if prev is not None and prev != target:
+                rule = "reject_spurious_key_flip_not_on_all_staves"
+            fixes.append(KeyFix(str(n), pid, prev, target, rule, action))
+
+    # Deduplicate: keep last fix per (measure, part)
+    uniq: dict[tuple[str, str], KeyFix] = {}
+    for f in fixes:
+        uniq[(f.measure, f.part)] = f
+    return list(uniq.values())
+
+
+# Back-compat alias
+def harmonize_system_key_signatures(root: ET.Element) -> list[KeyFix]:
+    return align_parts_and_harmonize_keys(root)
 
 
 class MemoryDemo(dict):
@@ -204,28 +416,23 @@ class MemoryDemo(dict):
 
 
 def demo_viskov_rules() -> list[dict]:
-    """Examples matching user intent: 2 flats / g minor."""
+    """Examples: 2 flats / g minor — Ab is REVIEW not force."""
     fifths = -2
     mode: Mode = "minor"
-    mem = MemoryDemo()
     cases = [
-        ("B", 1, "B♯ при си♭ в ключе"),
-        ("B", -1, "B♭ по ключу — ок"),
-        ("B", 0, "B♮ — отмена, ок в миноре/как бекар"),
-        ("F", 1, "F♯ — вводный тон g-moll — ок"),
-        ("F", 0, "F♮ — диатоника; память не перебивает легальное"),
-        ("E", 1, "E♯ при 2♭ — hard forbid → E♭"),
-        ("A", 1, "A♯ вне грамматики; Redis hint A♮ если учили"),
-        ("A", -1, "A♭ вне g-moll → snap"),
+        ("B", 1, "B♯ при си♭ в ключе — hard forbid"),
+        ("B", -1, "B♭ по ключу — ok"),
+        ("B", 0, "B♮ — бекар ok"),
+        ("F", 1, "F♯ — вводный тон g-moll — ok"),
+        ("F", 0, "F♮ — диатоника — ok"),
+        ("E", 1, "E♯ при 2♭ — hard forbid"),
+        ("A", -1, "A♭ — хроматика: review, НЕ переписывать в A♮"),
+        ("A", 0, "A♮ — диатоника g-moll — ok"),
     ]
     out = []
-    # prior VL confirms: in this context wrong A# should become A natural
-    mem.learn("fifths=-2|mode=minor|step=A", 0)
-    mem.learn("fifths=-2|mode=minor|step=F", 1)
     for step, alter, title in cases:
-        ctx = f"fifths={fifths}|mode={mode}|step={step}"
-        c = correct_hypothesis(step, alter, fifths, mode, memory_hint=mem.hint(ctx))
-        out.append({"title": title, **asdict(c), "memory_hits": mem.get(ctx, {}).get("hits", 0)})
+        c = correct_hypothesis(step, alter, fifths, mode)
+        out.append({"title": title, **asdict(c)})
     return out
 
 

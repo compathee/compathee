@@ -1,0 +1,236 @@
+# OMR: staff preprocess → Audiveris → tonal / meter / written-grid
+
+**Date:** 2026-10-12  
+**Status:** Draft for review  
+**Related:** WP-19, WP-22 §3.18, WP-23, WP-25  
+**Product framing:** Grammar + staff repair are licensed capabilities of Compath OMR / Pro+AI — not a free public “harmony textbook API”.
+
+## 1. Goal
+
+Reliable choir-score OMR for Compath: PDF/scan → MusicXML that respects **notation** (staff geometry, key, meter, written durations), then optional playback tempo and later audio alignment.
+
+We do **not** replace Audiveris with a full custom OMR in v1. We own the stages where Audiveris is weak: missing staff lines, inconsistent key/meter across a system, spurious pitch “corrections”, and a written-event timing grid.
+
+## 2. Non-goals (v1)
+
+- Full custom OMR engine (notehead/rhythm CNN from scratch).
+- Free public JSON “harmony textbook” API.
+- Requiring wall-clock tempo before structural verification.
+- Auto-rewriting chromatic pitches (e.g. A♭→A♮) as “literacy”.
+
+## 3. Pipeline overview
+
+```text
+Phase A — BEFORE Audiveris (Compath preprocess)
+  A1. Deskew / binarize (working copy only; never mutate source)
+  A2. Staff-line reconstruction: always 5 lines per staff (template)
+  A3. Optional: enhance already-visible clef/key/meter glyphs (no invention)
+
+Phase B — Audiveris
+  B1. Run on the repaired working copy only
+  B2. Optional pass 2: only if pass 1 pitch/staff quality is poor after
+      burning consensus key/meter into the working copy
+
+Phase C — AFTER Audiveris (Compath symbolic brain)
+  C1. System graph (barline-connected staves)
+  C2. Key + meter state → memory (Redis)
+  C3. Written-event grid + per-voice duration vs meter (hard)
+  C4. Vertical alignment by written position (not sounding)
+  C5. Pitch literacy relative to current key_state
+  C6. Tempo for playback (score mark or manual); not required for C3–C5
+```
+
+**Hybrid roles:** Audiveris = eyes (glyphs on a cleaned page). Compath = brain (staff template, key/meter consensus, written grid, literacy, Redis).
+
+## 4. Phase A — Staff lines before Audiveris
+
+### 4.1 Rule
+
+- A staff is always a group of **exactly five** lines.
+- Groups form one staff; systems (e.g. S.A.T.B.) are several staves joined by barlines.
+- If scan quality hides some lines, **infer or draw them on the working copy** before note reading, by fitting a 5-line template to visible fragments.
+
+### 4.2 Method (v1)
+
+1. Detect line fragments (projections / Hough / or seed from a light detector).
+2. Estimate `staff_space` and staff skew/curve.
+3. Fit a **5-line template** (RANSAC / least squares) anchored to visible segments.
+4. Rasterize missing lines onto the **working copy** (debug overlay optional).
+5. Do not treat short ledger lines as staff lines.
+6. If a group cannot be fitted to 5 lines with confidence → `staff_lines_unreliable` dispute; do not trust pitches on that staff until resolved.
+
+### 4.3 Why before Audiveris
+
+Pitch height is defined relative to the five-line frame. Feeding Audiveris a copy with completed lines reduces wrong staff degrees before any MusicXML exists.
+
+## 5. Phase B — Audiveris on the repaired copy only
+
+- Input: working raster/PDF pages from Phase A (and optional burn-in from §6.3).
+- Source upload remains immutable.
+- Audiveris remains best-effort; confidence and disputes stay in the API response (WP-22).
+
+## 6. Key and meter (system-wide)
+
+### 6.1 Key change trigger (agreed)
+
+If **at least one** staff in a barline-connected system shows a key signature with **new** accidentals (or shows a key where others are blank):
+
+- Treat that as the key for **all** staves in the system.
+- Update `key_state` immediately and persist to Redis.
+- Subsequent written-pitch checks use this state.
+
+### 6.2 Conflict
+
+If two or more staves explicitly show **different** new keys in the same measure → do **not** guess:
+
+- Keep previous `key_state`.
+- Emit review dispute `key_conflict_across_system`.
+
+### 6.3 Meter
+
+Same pattern as key:
+
+- New time signature on one staff → apply to all barline-connected staves.
+- Conflicting explicit meters → review, keep previous `meter_state`.
+
+### 6.4 Optional Audiveris pass 2
+
+Only after consensus exists: burn agreed key/meter glyphs onto the working copy and re-run Audiveris if pass 1 geometry/pitch quality is still unacceptable. v1 may ship without pass 2.
+
+### 6.5 Do not invent key/meter before any reading
+
+Phase A may enhance visible glyphs; it must not paint 2♭ or 4/4 from imagination. Invention only after detection/consensus or explicit manual input.
+
+## 7. Written-event timing grid (not sounding)
+
+### 7.1 Terminology
+
+| Term | Meaning |
+|---|---|
+| **Written event** | A notated notehead or rest as drawn (including notes that continue a tie) |
+| **Sounding onset** | Acoustic/MIDI start (out of scope for structural v1 checks) |
+
+Ties and anacrusis affect **playback**, not whether a written duration counts in the bar.
+
+### 7.2 Two clocks
+
+| Clock | Use |
+|---|---|
+| **Symbolic** (measure + beat + fraction of whole) | Meter check, vertical notation grid, literacy |
+| **Wall-clock** (seconds via tempo) | Metronome, MIDI/MusicXML playback, later audio align |
+
+Structural verification must work with symbolic time alone.
+
+### 7.3 Meter hard rule
+
+For each voice (layer) in a measure:
+
+- Sum of **written** durations must equal the measure capacity implied by current `meter_state` (e.g. 4/4 → one whole).
+- Exceptions (explicit disputes if violated without flag): pickup/anacrusis capacity, incomplete final bar, tuplets, multi-measure rests.
+
+Example style (Viskov-like): per-voice duration lists such as S `(⅛+¼+⅛+⅛+⅛+¼)` must sum to the bar; we validate **sums**, not “same number of noteheads in every voice”.
+
+### 7.4 Steps in the chronology array
+
+- A new step appears when a **new written event** occurs on the symbolic timeline in at least one voice.
+- Other voices at that step may hold a previous written duration, show a rest, or be empty (not yet entered).
+- Vertical “chord” = written events whose symbolic positions coincide — **not** simultaneous sounding attacks.
+- Array is bidirectional (forward/back) for inspection and later audio mapping.
+
+### 7.5 Step record (logical)
+
+```text
+step {
+  measure,
+  onset_symbolic,       // e.g. measure 2 + 1/4
+  duration_to_next,
+  key_state,            // from memory at this point
+  meter_state,
+  voices: { S, A, T, B, ... } → { written pitch | rest | tie-continue, duration },
+  wall_time_sec?        // filled when tempo known
+}
+```
+
+Staff count is not always 4; track `n_staves` per system (Audiveris may disagree sheet-to-sheet).
+
+## 8. Pitch literacy (relative to key_state)
+
+### Hard (auto)
+
+- Against current `key_state` only: e.g. B♯ forbidden when key has B♭ on that letter.
+- Double accidentals → review/hard per policy table.
+
+### Soft / review (do **not** auto-rewrite)
+
+- Chromatic written pitches outside the diatonic set (e.g. A♭ under g minor) → **review** for Voice Leader.
+- **Forbidden:** treating “out of scale” as automatic A♭→A♮ (rejected as arbitrary).
+
+### Memory
+
+- Redis stores accepted `key_state` / `meter_state` history and VL-confirmed pitch fixes.
+- Memory never overrides hard enharmonic forbids.
+- Memory never overrides legal written chromatics without VL confirmation.
+
+## 9. Tempo (playback)
+
+- If a tempo mark exists (usually above the first system/measure) → map via tempo vocabulary → `tempo_bpm`, `tempo_source=score` at read time.
+- If absent → leave empty for **manual** input (`tempo_source=manual`).
+- Used for MIDI / MusicXML playback and later audio; **not** required to validate meter or written grid.
+
+## 10. Redis memory (sketch)
+
+| Key | Value |
+|---|---|
+| `omr:key:v1:{tenant}:{fp}:current` | `{fifths, mode?, measure, staff_ids[], source, ts}` |
+| `omr:key:v1:{tenant}:{fp}:hist:{measure}` | key change events |
+| `omr:meter:v1:{tenant}:{fp}:current` | `{beats, beat_type, measure, ...}` |
+| `omr:meter:v1:{tenant}:{fp}:hist:{measure}` | meter changes |
+| `omr:mem:v1:{tenant}:{fp}:{ctx}` | VL pitch preferences (soft) |
+| `omr:grammar:v1:rules` | rule-set version |
+
+`fp` = piece/page fingerprint. TTL / retention aligned with WP-22 Partner file policy where applicable.
+
+## 11. Product advantages (shop / Pro+AI / Partner)
+
+Carry in WP-23 / shop copy (see also `omr-tests/PRODUCT-ADVANTAGES-OMR.md`):
+
+1. OMR → MusicXML  
+2. Staff-line repair before recognition (5-line template)  
+3. Live tonal + meter state with system-wide key/meter propagation  
+4. Written-duration checks against meter  
+5. Literacy hard rules without arbitrary chromatic rewrites  
+6. Redis memory for smarter re-runs  
+7. Same SureCart licensing as Pro; Partner without mandatory WP  
+
+## 12. Implementation slices (for later plan)
+
+1. **A2 staff template** on Viskov pages → working PNGs → visual QA  
+2. Wire Audiveris input to working copy  
+3. C2 key/meter consensus + Redis schema  
+4. C3 written-duration validator + step array export (JSON)  
+5. C5 literacy hard/review (no A♭ auto-force)  
+6. C6 tempo field + manual override in result JSON  
+7. Optional B2 burn-in re-pass  
+
+## 13. Decisions log
+
+| Topic | Decision |
+|---|---|
+| Custom OMR vs Audiveris | Hybrid: preprocess + symbolic brain; Audiveris as glyph engine |
+| Staff lines | Always 5; template-complete **before** Audiveris on working copy |
+| Key change | ≥1 staff shows new key → all barline-connected staves; conflict → review |
+| Meter change | Same as key |
+| Attack vs written | Structural grid = **written** events; ties count as written duration |
+| Tempo | Optional for playback; manual if missing |
+| A♭ in g minor | Review only; never auto A♭→A♮ |
+| Public harmony API | Not a product |
+
+## 14. Open points (non-blocking)
+
+- Exact CV stack for A2 (OpenCV vs reuse Audiveris staff seeds for template only).  
+- Whether v1 ships optional Audiveris pass 2.  
+- Pickup detection heuristics beyond MusicXML `implicit` / incomplete backup.
+
+## 15. Approval
+
+Design captured from product discussion (2026-10-12). Please review this file; after approval, create an implementation plan via writing-plans (no coding until plan is agreed).
