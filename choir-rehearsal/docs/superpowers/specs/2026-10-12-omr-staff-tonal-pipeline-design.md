@@ -258,17 +258,14 @@ ctx = hash(
 ### 10.8 Loop diagram
 
 ```text
-┌─────────────┐   working copy    ┌──────────┐
-│ Phase A+B+C │ ───────────────► │ Result + │
-│ (+ hints)   │                  │ disputes │
-└──────▲──────┘                  └────┬─────� │
-│ (+ hints)   │                  │ disputes │
-└──────▲──────┘                  └────┬─────┘
-       │                              │ VL / Partner feedback
-       │                         ┌────▼─────┐
-       │   Redis skills/state    │ Learn    │
-       └─────────────────────────┤ gate     │
-                                 └──────────┘
+Phase A+B+C (+ hints)  -->  Result + disputes
+        ^                        |
+        |                        v
+        |              VL / Partner feedback
+        |                        |
+        |                   Learn gate
+        |              (confirm / edit / reject)
+        +------ Redis skills / state ------+
 ```
 
 ### 10.9 v1 vs later
