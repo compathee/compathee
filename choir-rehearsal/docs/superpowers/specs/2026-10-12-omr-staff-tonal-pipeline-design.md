@@ -305,7 +305,66 @@ Carry in WP-23 / shop copy (see also `omr-tests/PRODUCT-ADVANTAGES-OMR.md`):
 6. **Feedback learning** — each confirmed correction improves the next run (Redis skills)  
 7. Same SureCart licensing as Pro; Partner without mandatory WP  
 
-## 13. Implementation slices (for later plan)
+## 13. Dependencies: ready libraries vs custom code
+
+**Principle:** eyes and infra = off-the-shelf; brain (staff → key/meter → written grid → learn) = Compath code.  
+Rough split: ~30% ready engines, ~70% of product value in our modules around them.
+
+### 13.1 Ready (use, do not rewrite)
+
+| Layer | Library / engine | Role |
+|---|---|---|
+| PDF → raster | **Poppler** (`pdftoppm`) and/or **PyMuPDF** | Page images for Phase A |
+| Image preprocess | **OpenCV** + **NumPy** | Deskew, binarize, horizontal-line morphology, draw template lines |
+| Glyph OMR | **Audiveris** (CLI) | Noteheads, clefs, rhythm draft → MusicXML / `.mxl` |
+| MusicXML parse | **music21** and/or **lxml** | Measures, pitches, written durations |
+| Theory helpers | **music21**; optional **@tonaljs/tonal** (TS clients) | Scales/keys as helpers — **not** hard-rule authority |
+| Queue / skills store | **Redis** (`compath_redis`, WP-22) | Jobs, `key_state`, `meter_state`, skills |
+| API / billing shell | Existing **`compath_api`**, SureCart licensing | Partner/Pro jobs, quotas |
+| Playback check | **MuseScore** CLI (and/or MIDI export) | Tempo playback smoke tests — not notation validation |
+| Observability | Prometheus / Admin metrics (WP-22) | `hint_hit_rate`, disputesΔ on re-run |
+
+Optional references only (ideas, not product dependencies): academic staff-detect utilities, OpenCV morph-lines tutorials. Do **not** adopt a second full OMR stack alongside Audiveris in v1.
+
+### 13.2 Custom (write ourselves)
+
+| Module | Pipeline | Why custom |
+|---|---|---|
+| `staff_template` | A2 | Fit/complete **exactly 5** lines; ledger-safe; working-copy rasterize |
+| `working_copy` I/O | A→B | Immutable source; cleared copy fed to Audiveris |
+| `system_key_meter` | C2 | ≥1 staff new key/meter → all barline-linked; conflict → review |
+| `written_grid` | C3–C4 | Written-event steps; per-voice duration sum vs meter |
+| `literacy_rules` | C5 | Hard enharmonic forbids; chromatic → review only |
+| `feedback_skills` | §10 | Confirm/edit/reject gate; Redis skill apply on next run |
+| `omr_orchestrator` | A→B→C | Worker wiring, disputes payload, optional pass 2 |
+| Review UI + `POST /v1/omr/jobs/{id}/feedback` | WP-19 / Partner | Product surface for learning loop |
+
+### 13.3 Explicitly not built in v1
+
+- Full custom notehead/stem/beam CNN OMR  
+- Public free “harmony textbook” JSON API  
+- Homegrown Redis / SureCart / LLM gateway (use WP-22/23)  
+- Silent mutation of hard literacy rules by ML weights  
+
+### 13.4 Suggested v1 runtime stack
+
+```text
+Python worker: OpenCV, NumPy, lxml|music21, redis
+Java CLI:      Audiveris
+Infra:         Redis, compath_omr_worker, compath_api
+Custom pkgs:   staff_template, system_key_meter, written_grid,
+               literacy_rules, feedback_skills, omr_orchestrator
+```
+
+### 13.5 Build order (dependencies-aware)
+
+1. OpenCV staff template + working copy (unblocks better Audiveris input)  
+2. Audiveris wire-up on working copy  
+3. `system_key_meter` + `written_grid` + `literacy_rules` on MusicXML  
+4. Redis state + `feedback_skills` + feedback API  
+5. Optional Audiveris pass 2 (burn-in)  
+
+## 14. Implementation slices (for later plan)
 
 1. **A2 staff template** on Viskov pages → working PNGs → visual QA  
 2. Wire Audiveris input to working copy  
@@ -317,27 +376,29 @@ Carry in WP-23 / shop copy (see also `omr-tests/PRODUCT-ADVANTAGES-OMR.md`):
 8. Optional B2 burn-in re-pass  
 9. Optional global skill aggregates  
 
-## 14. Decisions log
+## 15. Decisions log
 
 | Topic | Decision |
 |---|---|
 | Custom OMR vs Audiveris | Hybrid: preprocess + symbolic brain; Audiveris as glyph engine |
 | Staff lines | Always 5; template-complete **before** Audiveris on working copy |
+| Staff CV stack | **OpenCV + NumPy** for A1/A2; Audiveris not used as staff authority |
 | Key change | ≥1 staff shows new key → all barline-connected staves; conflict → review |
 | Meter change | Same as key |
 | Attack vs written | Structural grid = **written** events; ties count as written duration |
 | Tempo | Optional for playback; manual if missing |
 | A♭ in g minor | Review only; never auto A♭→A♮ |
 | Feedback / learning | MUST: confirm→skill→next run; hard rules not silently mutated; tenant-first |
+| Dependencies | Ready: Audiveris, OpenCV, music21/lxml, Redis; custom: template/grid/literacy/learn |
 | Public harmony API | Not a product |
 
-## 15. Open points (non-blocking)
+## 16. Open points (non-blocking)
 
-- Exact CV stack for A2 (OpenCV vs reuse Audiveris staff seeds for template only).  
+- Whether A2 seeds line fragments from OpenCV only or also reads Audiveris `.omr` staff seeds after a failed first pass.  
 - Whether v1 ships optional Audiveris pass 2.  
 - Pickup detection heuristics beyond MusicXML `implicit` / incomplete backup.  
 - Thresholds N/K for promoting tenant skills to `global`.  
 
-## 16. Approval
+## 17. Approval
 
-Design captured from product discussion (2026-10-12), including feedback/learning MUST (§10). Please review this file; after approval, create an implementation plan via writing-plans (no coding until plan is agreed).
+Design captured from product discussion (2026-10-12), including feedback/learning MUST (§10) and dependencies (§13). Please review this file; after approval, create an implementation plan via writing-plans (no coding until plan is agreed).
