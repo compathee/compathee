@@ -1,0 +1,230 @@
+{
+  "source": "/workspace/omr-tests/viskov-cherubimskaya/out/A.Viskov-Cherubimskaya.mxl",
+  "xml_entry": "A.Viskov-Cherubimskaya.xml",
+  "primary_fifths": -2,
+  "fifths_hist_before": {
+    "-2": 11,
+    "0": 2
+  },
+  "mode_selected": "minor",
+  "key_alters": {
+    "C": 0,
+    "D": 0,
+    "E": -1,
+    "F": 0,
+    "G": 0,
+    "A": 0,
+    "B": -1
+  },
+  "resources": {
+    "wall_s": 0.0132,
+    "peak_rss_mb": 23.32,
+    "llm_tokens_in": 0,
+    "llm_tokens_out": 0,
+    "llm_cost_eur": 0.0,
+    "engine": "system_key_harmonize + tonal_rules_onthefly v2"
+  },
+  "key_fixes": [
+    {
+      "measure": "17",
+      "part": "P1",
+      "fifths_in": null,
+      "fifths_out": -2,
+      "rule": "pad_missing_measure_for_system_align",
+      "action": "insert"
+    },
+    {
+      "measure": "1",
+      "part": "P2",
+      "fifths_in": null,
+      "fifths_out": -2,
+      "rule": "pad_missing_measure_for_system_align",
+      "action": "insert"
+    },
+    {
+      "measure": "1",
+      "part": "P3",
+      "fifths_in": null,
+      "fifths_out": -2,
+      "rule": "pad_missing_measure_for_system_align",
+      "action": "insert"
+    },
+    {
+      "measure": "2",
+      "part": "P3",
+      "fifths_in": null,
+      "fifths_out": -2,
+      "rule": "pad_missing_measure_for_system_align",
+      "action": "insert"
+    },
+    {
+      "measure": "3",
+      "part": "P3",
+      "fifths_in": null,
+      "fifths_out": -2,
+      "rule": "pad_missing_measure_for_system_align",
+      "action": "insert"
+    },
+    {
+      "measure": "1",
+      "part": "P4",
+      "fifths_in": null,
+      "fifths_out": -2,
+      "rule": "pad_missing_measure_for_system_align",
+      "action": "insert"
+    },
+    {
+      "measure": "2",
+      "part": "P4",
+      "fifths_in": null,
+      "fifths_out": -2,
+      "rule": "pad_missing_measure_for_system_align",
+      "action": "insert"
+    },
+    {
+      "measure": "3",
+      "part": "P4",
+      "fifths_in": null,
+      "fifths_out": -2,
+      "rule": "pad_missing_measure_for_system_align",
+      "action": "insert"
+    },
+    {
+      "measure": "2",
+      "part": "P1",
+      "fifths_in": 0,
+      "fifths_out": -2,
+      "rule": "reject_spurious_key_flip_not_on_all_staves",
+      "action": "replace"
+    },
+    {
+      "measure": "2",
+      "part": "P2",
+      "fifths_in": 0,
+      "fifths_out": -2,
+      "rule": "reject_spurious_key_flip_not_on_all_staves",
+      "action": "replace"
+    },
+    {
+      "measure": "17",
+      "part": "P2",
+      "fifths_in": null,
+      "fifths_out": -2,
+      "rule": "system_key_must_match_all_barline_staves",
+      "action": "insert"
+    },
+    {
+      "measure": "17",
+      "part": "P3",
+      "fifths_in": null,
+      "fifths_out": -2,
+      "rule": "system_key_must_match_all_barline_staves",
+      "action": "insert"
+    },
+    {
+      "measure": "17",
+      "part": "P4",
+      "fifths_in": null,
+      "fifths_out": -2,
+      "rule": "system_key_must_match_all_barline_staves",
+      "action": "insert"
+    }
+  ],
+  "key_fixes_count": 13,
+  "pitch": {
+    "pitched_checked": 340,
+    "kept": 334,
+    "forced_count": 0,
+    "review_count": 6,
+    "by_rule": {
+      "in_expected_set": 334,
+      "chromatic_or_unexpected_alter=-1_step=A_fifths=-2_mode=minor": 6
+    },
+    "by_action": {
+      "keep": 334,
+      "review": 6
+    },
+    "forced": [],
+    "reviews": [
+      {
+        "part": "P2",
+        "measure": "12",
+        "fifths": -2,
+        "mode": "minor",
+        "octave": 4,
+        "step": "A",
+        "alter_in": -1,
+        "alter_out": null,
+        "action": "review",
+        "rule": "chromatic_or_unexpected_alter=-1_step=A_fifths=-2_mode=minor",
+        "severity": "soft"
+      },
+      {
+        "part": "P2",
+        "measure": "14",
+        "fifths": -2,
+        "mode": "minor",
+        "octave": 4,
+        "step": "A",
+        "alter_in": -1,
+        "alter_out": null,
+        "action": "review",
+        "rule": "chromatic_or_unexpected_alter=-1_step=A_fifths=-2_mode=minor",
+        "severity": "soft"
+      },
+      {
+        "part": "P4",
+        "measure": "13",
+        "fifths": -2,
+        "mode": "minor",
+        "octave": 3,
+        "step": "A",
+        "alter_in": -1,
+        "alter_out": null,
+        "action": "review",
+        "rule": "chromatic_or_unexpected_alter=-1_step=A_fifths=-2_mode=minor",
+        "severity": "soft"
+      },
+      {
+        "part": "P4",
+        "measure": "13",
+        "fifths": -2,
+        "mode": "minor",
+        "octave": 3,
+        "step": "A",
+        "alter_in": -1,
+        "alter_out": null,
+        "action": "review",
+        "rule": "chromatic_or_unexpected_alter=-1_step=A_fifths=-2_mode=minor",
+        "severity": "soft"
+      },
+      {
+        "part": "P4",
+        "measure": "14",
+        "fifths": -2,
+        "mode": "minor",
+        "octave": 3,
+        "step": "A",
+        "alter_in": -1,
+        "alter_out": null,
+        "action": "review",
+        "rule": "chromatic_or_unexpected_alter=-1_step=A_fifths=-2_mode=minor",
+        "severity": "soft"
+      },
+      {
+        "part": "P4",
+        "measure": "14",
+        "fifths": -2,
+        "mode": "minor",
+        "octave": 3,
+        "step": "A",
+        "alter_in": -1,
+        "alter_out": null,
+        "action": "review",
+        "rule": "chromatic_or_unexpected_alter=-1_step=A_fifths=-2_mode=minor",
+        "severity": "soft"
+      }
+    ]
+  },
+  "policy_note": "A♭ in g minor is REVIEW only — never auto A♭→A♮. Key signatures must match on all barline-connected staves."
+}
