@@ -1,0 +1,203 @@
+{
+  "source": "/workspace/omr-tests/viskov-cherubimskaya/out/A.Viskov-Cherubimskaya.mxl",
+  "xml_entry": "A.Viskov-Cherubimskaya.xml",
+  "primary_fifths": -2,
+  "fifths_hist": {
+    "-2": 11,
+    "0": 2
+  },
+  "mode_selected": "minor",
+  "key_alters": {
+    "C": 0,
+    "D": 0,
+    "E": -1,
+    "F": 0,
+    "G": 0,
+    "A": 0,
+    "B": -1
+  },
+  "resources": {
+    "wall_s": 0.0199,
+    "peak_rss_mb": 23.75,
+    "llm_tokens_in": 0,
+    "llm_tokens_out": 0,
+    "llm_cost_eur": 0.0,
+    "engine": "tonal_rules_onthefly + MemoryDemo"
+  },
+  "mode": "minor",
+  "pitched_checked": 340,
+  "kept": 334,
+  "forced": 6,
+  "by_rule": {
+    "in_allowed_set": 334,
+    "alter_-1_not_in_allowed_[0]_→0": 2,
+    "redis_memory_prefer_alter=0": 4
+  },
+  "by_severity": {
+    "soft": 338,
+    "hard": 2
+  },
+  "memory_entries": 2,
+  "memory_hits_total": 6,
+  "corrections_sample": [
+    {
+      "part": "P2",
+      "measure": "12",
+      "fifths": -2,
+      "mode": "minor",
+      "octave": 4,
+      "step": "A",
+      "alter_in": -1,
+      "alter_out": 0,
+      "action": "force_alter",
+      "rule": "alter_-1_not_in_allowed_[0]_→0",
+      "severity": "hard"
+    },
+    {
+      "part": "P2",
+      "measure": "14",
+      "fifths": -2,
+      "mode": "minor",
+      "octave": 4,
+      "step": "A",
+      "alter_in": -1,
+      "alter_out": 0,
+      "action": "force_alter",
+      "rule": "redis_memory_prefer_alter=0",
+      "severity": "soft"
+    },
+    {
+      "part": "P4",
+      "measure": "13",
+      "fifths": -2,
+      "mode": "minor",
+      "octave": 3,
+      "step": "A",
+      "alter_in": -1,
+      "alter_out": 0,
+      "action": "force_alter",
+      "rule": "alter_-1_not_in_allowed_[0]_→0",
+      "severity": "hard"
+    },
+    {
+      "part": "P4",
+      "measure": "13",
+      "fifths": -2,
+      "mode": "minor",
+      "octave": 3,
+      "step": "A",
+      "alter_in": -1,
+      "alter_out": 0,
+      "action": "force_alter",
+      "rule": "redis_memory_prefer_alter=0",
+      "severity": "soft"
+    },
+    {
+      "part": "P4",
+      "measure": "14",
+      "fifths": -2,
+      "mode": "minor",
+      "octave": 3,
+      "step": "A",
+      "alter_in": -1,
+      "alter_out": 0,
+      "action": "force_alter",
+      "rule": "redis_memory_prefer_alter=0",
+      "severity": "soft"
+    },
+    {
+      "part": "P4",
+      "measure": "14",
+      "fifths": -2,
+      "mode": "minor",
+      "octave": 3,
+      "step": "A",
+      "alter_in": -1,
+      "alter_out": 0,
+      "action": "force_alter",
+      "rule": "redis_memory_prefer_alter=0",
+      "severity": "soft"
+    }
+  ],
+  "corrections_all_count": 6,
+  "corrections": [
+    {
+      "part": "P2",
+      "measure": "12",
+      "fifths": -2,
+      "mode": "minor",
+      "octave": 4,
+      "step": "A",
+      "alter_in": -1,
+      "alter_out": 0,
+      "action": "force_alter",
+      "rule": "alter_-1_not_in_allowed_[0]_→0",
+      "severity": "hard"
+    },
+    {
+      "part": "P2",
+      "measure": "14",
+      "fifths": -2,
+      "mode": "minor",
+      "octave": 4,
+      "step": "A",
+      "alter_in": -1,
+      "alter_out": 0,
+      "action": "force_alter",
+      "rule": "redis_memory_prefer_alter=0",
+      "severity": "soft"
+    },
+    {
+      "part": "P4",
+      "measure": "13",
+      "fifths": -2,
+      "mode": "minor",
+      "octave": 3,
+      "step": "A",
+      "alter_in": -1,
+      "alter_out": 0,
+      "action": "force_alter",
+      "rule": "alter_-1_not_in_allowed_[0]_→0",
+      "severity": "hard"
+    },
+    {
+      "part": "P4",
+      "measure": "13",
+      "fifths": -2,
+      "mode": "minor",
+      "octave": 3,
+      "step": "A",
+      "alter_in": -1,
+      "alter_out": 0,
+      "action": "force_alter",
+      "rule": "redis_memory_prefer_alter=0",
+      "severity": "soft"
+    },
+    {
+      "part": "P4",
+      "measure": "14",
+      "fifths": -2,
+      "mode": "minor",
+      "octave": 3,
+      "step": "A",
+      "alter_in": -1,
+      "alter_out": 0,
+      "action": "force_alter",
+      "rule": "redis_memory_prefer_alter=0",
+      "severity": "soft"
+    },
+    {
+      "part": "P4",
+      "measure": "14",
+      "fifths": -2,
+      "mode": "minor",
+      "octave": 3,
+      "step": "A",
+      "alter_in": -1,
+      "alter_out": 0,
+      "action": "force_alter",
+      "rule": "redis_memory_prefer_alter=0",
+      "severity": "soft"
+    }
+  ]
+}
