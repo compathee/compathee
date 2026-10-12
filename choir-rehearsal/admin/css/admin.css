@@ -825,3 +825,57 @@ body.choir-pdf-fullscreen-open #wpadminbar {
 	}
 }
 
+.choir-score-rights-modal {
+	position: fixed;
+	inset: 0;
+	z-index: 100100;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 24px;
+}
+
+.choir-score-rights-modal[hidden] {
+	display: none !important;
+}
+
+.choir-score-rights-modal__backdrop {
+	position: absolute;
+	inset: 0;
+	background: rgba(15, 23, 42, 0.55);
+}
+
+.choir-score-rights-modal__dialog {
+	position: relative;
+	z-index: 1;
+	width: min(480px, 100%);
+	background: #fff;
+	border: 1px solid #d0d5dd;
+	border-radius: 8px;
+	box-shadow: 0 12px 40px rgba(15, 23, 42, 0.18);
+	padding: 20px 22px;
+}
+
+.choir-score-rights-modal__title {
+	margin: 0 0 10px;
+	font-size: 16px;
+	line-height: 1.35;
+}
+
+.choir-score-rights-modal__body {
+	margin: 0 0 18px;
+	color: #344054;
+	font-size: 14px;
+	line-height: 1.5;
+}
+
+.choir-score-rights-modal__actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 8px;
+}
+
+body.choir-score-rights-modal-open {
+	overflow: hidden;
+}
+

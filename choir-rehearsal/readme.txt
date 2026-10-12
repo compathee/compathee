@@ -4,7 +4,7 @@ Tags: choir, audio, rehearsal, voice parts, music
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 0.4.66
+Stable tag: 0.4.67
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -68,6 +68,11 @@ Signed-in users see **Send feedback** under the song list. Logged-out visitors d
 Yes. In the song editor, set a voice track’s source to **YouTube** and paste a youtube.com or youtu.be URL. On the song page a button opens the official YouTube embed (video stays visible). This is for listening/reference only — the plugin does not download or convert YouTube audio.
 
 == Changelog ==
+
+= 0.4.67 =
+
+* Before attaching a PDF score, require confirmation of copyright rights or public domain
+* Server rejects a new PDF without confirmation; stores confirmation audit meta
 
 = 0.4.66 =
 
