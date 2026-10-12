@@ -399,6 +399,16 @@ Custom pkgs:   staff_template, system_key_meter, written_grid,
 - Pickup detection heuristics beyond MusicXML `implicit` / incomplete backup.  
 - Thresholds N/K for promoting tenant skills to `global`.  
 
-## 17. Approval
+## 17. Copyright & rights (product pointer)
 
-Design captured from product discussion (2026-10-12), including feedback/learning MUST (§10) and dependencies (§13). Please review this file; after approval, create an implementation plan via writing-plans (no coding until plan is agreed).
+OMR, correction, and PDF→MusicXML→audio process **copyrighted musical works** (and often editions). Conversion does **not** grant rights.
+
+- Full product memo (warranty, ToS checklist, PD vs licensed, learning/privacy, audio vs notation):  
+  `2026-10-12-omr-copyright-rights-memo.md`
+- Aligns with WP-22: partner warrants upload rights; Compath is not a publisher; short retention; no public third-party score catalog.
+- Sell **technology** (Pro+AI / Partner API), not a repertoire license.
+- **Lawyer review (EE/EU) required** before public sale / ToS finalization. This design is not legal advice.
+
+## 18. Approval
+
+Design captured from product discussion (2026-10-12), including feedback/learning MUST (§10), dependencies (§13), and copyright pointer (§17). Please review this file and the rights memo; after approval, create an implementation plan via writing-plans (no coding until plan is agreed).
