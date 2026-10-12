@@ -170,6 +170,7 @@ Staff count is not always 4; track `n_staves` per system (Audiveris may disagree
 - Redis stores accepted `key_state` / `meter_state` history and VL-confirmed pitch fixes.
 - Memory never overrides hard enharmonic forbids.
 - Memory never overrides legal written chromatics without VL confirmation.
+- Full feedback / learning loop: **§10**.
 
 ## 9. Tempo (playback)
 
@@ -177,7 +178,110 @@ Staff count is not always 4; track `n_staves` per system (Audiveris may disagree
 - If absent → leave empty for **manual** input (`tempo_source=manual`).
 - Used for MIDI / MusicXML playback and later audio; **not** required to validate meter or written grid.
 
-## 10. Redis memory (sketch)
+## 10. Feedback loop & continual learning (MUST)
+
+After each recognition + human/system correction cycle the system **must** get better on the next run — without learning from garbage or leaking tenants.
+
+### 10.1 Principle
+
+```text
+recognize → propose → correct/confirm → learn → next run uses memory
+```
+
+Learning is **not** silent auto-mutation of hard literacy rules.  
+Hard rules stay code-versioned; soft skills grow from confirmed feedback.
+
+### 10.2 Sources of feedback (ranked)
+
+| Rank | Source | Trust | Learns into |
+|---|---|---|---|
+| 1 | Voice Leader / editor **confirm** or **edit** in review UI | High | tenant + piece memory; optional global aggregates |
+| 2 | Partner API callback / webhook with corrected MusicXML patch | High (if signed + authenticated) | tenant memory |
+| 3 | Automatic hard fixes (key hole-fill, B♯ forbid) accepted without undo | Medium | reinforce pattern hits |
+| 4 | Soft review left unresolved | None | no learn; may decay dispute weight only |
+| 5 | User **undo** / reject of an auto-fix | Negative | decrement / blacklist that hint |
+
+Only ranks 1–2 (and 3 if not undone within a short window) write durable skills.
+
+### 10.3 What we learn (skill types)
+
+1. **Staff geometry** — successful `staff_space`, skew, template offsets for similar page fingerprints (dpi/scan family).  
+2. **Key / meter transitions** — “at measure M this piece/system flips to fifths=X” after confirm.  
+3. **Written pitch preferences** — ctx → preferred alter/step when VL fixed Audiveris (never hard-illegal).  
+4. **Duration / grid** — recurring mis-read rhythms for a glyph context (soft hints to validator).  
+5. **Publisher / edition priors** (later) — anonymized global: “this engraving style puts key only on top staff”.  
+
+Each skill record: `{ctx, value, hits, confirms, rejects, confidence, last_ts, source, rule_version}`.
+
+### 10.4 Context key (`ctx`)
+
+Stable, privacy-safe features — not raw PDF bytes in the key:
+
+```text
+ctx = hash(
+  piece_fp | staff_i | measure_or_region |
+  key_fifths | meter | clef |
+  local_shape_hash |  // glyph neighborhood after staff normalize
+  step_name?         // for pitch skills
+)
+```
+
+`piece_fp` = content hash of page(s). Cross-piece learning uses **shape/edition** features only (no choir PII).
+
+### 10.5 Apply on next run (order)
+
+1. Load `key_state` / `meter_state` history for `piece_fp` if re-run.  
+2. Apply staff-template priors if scan family matches.  
+3. Run Phase A → B → C as usual.  
+4. Soft skills = **hints** when hypothesis is uncertain or in review set; never override hard rules or unanimous written evidence.  
+5. If hint applied → tag result `learned_hint=true` for UI transparency.
+
+### 10.6 Safety rails (critique baked in)
+
+| Risk | Mitigation |
+|---|---|
+| Learn wrong correction | Require explicit confirm; undo → negative feedback |
+| One bad edit poisons all | Per-tenant first; global only after N confirms from ≥K tenants |
+| Drift vs hard literacy | Hard rules code-only; skills cannot enable B♯ under B♭ key |
+| Catastrophic overwrite | Append-only hist + confidence; never delete on single reject |
+| Privacy / GDPR | Tenant isolation; global skills strip PII; retention = WP-22 |
+| Partner spoofing | HMAC webhooks; only activated licenses write feedback |
+| Infinite soft bias | Confidence cap; decay hits without recent confirms |
+
+### 10.7 Feedback API / UI (product)
+
+- Review UI (WP-19): per dispute Accept / Edit / Reject → `POST` internal feedback.  
+- Partner: `POST /v1/omr/jobs/{id}/feedback` with patch (MusicXML diff or JSON ops) + idempotency key.  
+- Server Admin: aggregates — learn rate, top ctx, reject rate (no raw scores).  
+- Metrics: `% disputes resolved`, `hint_hit_rate`, `re-run improvement` (disputesΔ on same `fp`).
+
+### 10.8 Loop diagram
+
+```text
+┌─────────────┐   working copy    ┌──────────┐
+│ Phase A+B+C │ ───────────────► │ Result + │
+│ (+ hints)   │                  │ disputes │
+└──────▲──────┘                  └────┬─────� │
+│ (+ hints)   │                  │ disputes │
+└──────▲──────┘                  └────┬─────┘
+       │                              │ VL / Partner feedback
+       │                         ┌────▼─────┐
+       │   Redis skills/state    │ Learn    │
+       └─────────────────────────┤ gate     │
+                                 └──────────┘
+```
+
+### 10.9 v1 vs later
+
+| v1 (MUST) | Later |
+|---|---|
+| Redis skills for key/meter/pitch ctx; confirm/reject API | Global anonymized edition priors |
+| Re-run same piece uses memory | Light online weight updates for staff template |
+| Metrics in Server Admin | Optional offline training job (still no LLM required) |
+
+LLM is **not** required for learning; optional later only for explaining disputes.
+
+## 11. Redis memory (sketch)
 
 | Key | Value |
 |---|---|
@@ -185,12 +289,14 @@ Staff count is not always 4; track `n_staves` per system (Audiveris may disagree
 | `omr:key:v1:{tenant}:{fp}:hist:{measure}` | key change events |
 | `omr:meter:v1:{tenant}:{fp}:current` | `{beats, beat_type, measure, ...}` |
 | `omr:meter:v1:{tenant}:{fp}:hist:{measure}` | meter changes |
-| `omr:mem:v1:{tenant}:{fp}:{ctx}` | VL pitch preferences (soft) |
+| `omr:skill:v1:{tenant}:{ctx}` | `{value, hits, confirms, rejects, confidence, last_ts, source}` |
+| `omr:skill:v1:global:{ctx}` | anonymized aggregate (optional, gated) |
+| `omr:feedback:v1:{tenant}:{job_id}` | audit of feedback events (append) |
 | `omr:grammar:v1:rules` | rule-set version |
 
 `fp` = piece/page fingerprint. TTL / retention aligned with WP-22 Partner file policy where applicable.
 
-## 11. Product advantages (shop / Pro+AI / Partner)
+## 12. Product advantages (shop / Pro+AI / Partner)
 
 Carry in WP-23 / shop copy (see also `omr-tests/PRODUCT-ADVANTAGES-OMR.md`):
 
@@ -199,10 +305,10 @@ Carry in WP-23 / shop copy (see also `omr-tests/PRODUCT-ADVANTAGES-OMR.md`):
 3. Live tonal + meter state with system-wide key/meter propagation  
 4. Written-duration checks against meter  
 5. Literacy hard rules without arbitrary chromatic rewrites  
-6. Redis memory for smarter re-runs  
+6. **Feedback learning** — each confirmed correction improves the next run (Redis skills)  
 7. Same SureCart licensing as Pro; Partner without mandatory WP  
 
-## 12. Implementation slices (for later plan)
+## 13. Implementation slices (for later plan)
 
 1. **A2 staff template** on Viskov pages → working PNGs → visual QA  
 2. Wire Audiveris input to working copy  
@@ -210,9 +316,11 @@ Carry in WP-23 / shop copy (see also `omr-tests/PRODUCT-ADVANTAGES-OMR.md`):
 4. C3 written-duration validator + step array export (JSON)  
 5. C5 literacy hard/review (no A♭ auto-force)  
 6. C6 tempo field + manual override in result JSON  
-7. Optional B2 burn-in re-pass  
+7. **Feedback API + skill apply/learn gate** (confirm/reject; re-run improvement metric)  
+8. Optional B2 burn-in re-pass  
+9. Optional global skill aggregates  
 
-## 13. Decisions log
+## 14. Decisions log
 
 | Topic | Decision |
 |---|---|
@@ -223,14 +331,16 @@ Carry in WP-23 / shop copy (see also `omr-tests/PRODUCT-ADVANTAGES-OMR.md`):
 | Attack vs written | Structural grid = **written** events; ties count as written duration |
 | Tempo | Optional for playback; manual if missing |
 | A♭ in g minor | Review only; never auto A♭→A♮ |
+| Feedback / learning | MUST: confirm→skill→next run; hard rules not silently mutated; tenant-first |
 | Public harmony API | Not a product |
 
-## 14. Open points (non-blocking)
+## 15. Open points (non-blocking)
 
 - Exact CV stack for A2 (OpenCV vs reuse Audiveris staff seeds for template only).  
 - Whether v1 ships optional Audiveris pass 2.  
-- Pickup detection heuristics beyond MusicXML `implicit` / incomplete backup.
+- Pickup detection heuristics beyond MusicXML `implicit` / incomplete backup.  
+- Thresholds N/K for promoting tenant skills to `global`.  
 
-## 15. Approval
+## 16. Approval
 
-Design captured from product discussion (2026-10-12). Please review this file; after approval, create an implementation plan via writing-plans (no coding until plan is agreed).
+Design captured from product discussion (2026-10-12), including feedback/learning MUST (§10). Please review this file; after approval, create an implementation plan via writing-plans (no coding until plan is agreed).
