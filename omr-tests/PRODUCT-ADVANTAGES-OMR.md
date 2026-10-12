@@ -2,8 +2,17 @@
 
 Копирайт для shop.compath.ee, Partner page, rehearsal.compath.ee (EN/ET — перевести при публикации). Источник: WP-22 §3.18.0, WP-23.
 
+## Позиционирование (hero / about)
+
+**Реставрация нотного наследия** — по аналогии с восстановлением старых фильмов и аудиозаписей.
+
+Сервис помогает бережно перевести в современный машиночитаемый вид (MusicXML) **уникальные нотные копии**: рукописи, архивные сканы, редкие экземпляры **без** готовой типографской/цифровой редакции — чтобы хор мог разучивать и сохранять репертуар, а не «ломать» чужой коммерческий PDF издателя.
+
+Оговорка для ToS/маркетинга: реставрация **не отменяет** авторское право; клиент подтверждает законное основание (PD, свои права, разрешение архива/правообладателя). Не позиционируем как обход лицензий на современные издания.
+
 ## Bullet list (RU)
 
+* **Реставрация уникальных нотных копий** — архивы, рукописи, экземпляры без типографской версии → читаемый MusicXML (как restore для плёнки/ленты).
 * **Распознавание нот (OMR)** — загрузка PDF/скана, на выходе MusicXML / `.mxl` для MuseScore и веб-плееров.
 * **Починка станов до распознавания** — всегда 5 линеек; недостающие достраиваются шаблоном на рабочей копии, затем Audiveris.
 * **Ключ и размер на всю систему** — новые знаки/размер хотя бы на одной линейке → на все, связанные тактовой чертой; конфликт → на проверку.
@@ -21,4 +30,4 @@
 
 ## Short EN blurb
 
-Compath turns choir score scans into MusicXML — then applies live music-literacy rules and learned corrections so pitches make sense in the key, not just as OCR guesses. Same SureCart licensing as Pro; Partner API for third-party apps.
+Compath restores unique choir scores — manuscripts and archive scans without a modern engraved edition — into MusicXML, the way film and audio archives restore fragile media. Live music-literacy rules and learned corrections keep pitches honest in the key. Same SureCart licensing as Pro; Partner API for third-party apps. Restoration is a technical service, not a repertoire license.
