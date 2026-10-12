@@ -337,6 +337,7 @@
 * Rate limiting на IP и на ключ; max размер файла и max страниц на job; антивирус/проверка типа файла.
 * Партнёр подтверждает права на загружаемые партитуры (ToS); Compath не становится издателем и не публикует чужие ноты.
 * ПДн: Partner API по возможности **без** ПДн участников хора; если в метаданных передают email/user id — те же GDPR-правила, что в 4.3/5.
+* **Авторское право / документы:** полный перечень и шаги — §3.18.9 и memo `2026-10-12-omr-copyright-rights-memo.md` (AutÕS / DSM / ToS).
 * Публичный API endpoint — за reverse proxy с TLS; **отдельная** поверхность от VPN-only Server Admin (3.14). Admin-портал в интернет не публикуется; Partner API — да (с WAF/rate limit).
 * Аудит: создание/отзыв ключей, превышение квот, массовые ошибки — в неизменяемый журнал; MCP/чат видят агрегаты, не сырые файлы партнёров без необходимости.
 
@@ -364,6 +365,43 @@
 * Оператор: просмотр usage/ошибок/статуса лицензии.
 * Мобильная версия: usage и алерты 80%/100% квоты; алерт при canceled/expired license.
 * MCP: чтение агрегатов; выпуск ключей и purge через MCP — **запрещены**.
+
+#### 3.18.9 Авторское право: документы и шаги (плагин + Partner / OMR)
+
+Канон: `choir-rehearsal/docs/superpowers/specs/2026-10-12-omr-copyright-rights-memo.md`  
+(в т.ч. выводы из AutÕS / VÕS / DSM 2019/790 — EE). **Не юрзаключение** — тексты утверждает юрист EE.
+
+**Принципы**
+
+* OMR, правка и PDF→MusicXML→аудио = обработка охраняемого произведения; конвертация **не** даёт прав на репертуар.
+* Compath продаёт **технологию** (Pro+AI / Partner API), не лицензию на ноты.
+* Клиент (хор / Partner) warranty: имеет права/разрешение на загрузку и запрошенные действия.
+* Compath не издатель; нет публичного каталога чужих партитур; короткий retention файлов.
+* Пиратские копии запрещены (ориентир AutÕS § 80¹) — AUP + takedown.
+* ПО плагина/API — режим компьютерных программ (изъятия DSM для части норм об авторских договорах на контент); контентные заказы у авторов — отдельные авторские договоры (teavitamiskohustus и др., где применимо).
+
+**Документы MUST перед продажей облака**
+
+| ID | Документ | Поверхность |
+| --- | --- | --- |
+| D1 | ToS Choir Rehearsal / Pro+AI | shop, rehearsal, плагин |
+| D2 | ToS Partner / OMR API | shop, developer |
+| D3 | Acceptable Use Policy | ссылка из D1/D2 |
+| D4 | Privacy Policy | сайт + плагин |
+| D5 | DPA (GDPR ст.28) | B2B по запросу / shop |
+| D6 | Copyright & Rights Holders Notice + email жалоб | отдельная страница |
+| D7 | EULA ПО (или раздел D1) | установка / Pro unlock |
+
+**Внутри:** D8 авторский договор (контент), D9 лицензия издателя, D10 IP assignment на код, D11 реестр обработки, D12 takedown runbook, D13 политика тестовых PDF (PD/licensed only).
+
+**UI / API MUST**
+
+* Плагин: checkbox warranty перед OMR upload; без него job не создаётся.
+* Partner: принятие D2 при activate; на `POST /v1/omr/jobs` — `rights_confirmed` (или эквивалент), иначе 403.
+* Отдельный scope/предупреждение для audio/MIDI export.
+* Ссылка на D6 в админке плагина и футере shop.
+
+**Шаги в плане (см. также §6):** 20i–20p ниже; детали чеклиста — memo §12.
 
 ## 4. Архитектура и хранение
 
@@ -489,6 +527,14 @@
 20f. \[S\] Developer-документация + SureCart sandbox/test license; пакеты докупки pages в SureCart (WP-23); страница продукта на shop.compath.ee.
 20g. \[C\] Job-типы v1.x: normalize/split MusicXML; audio/singing compare (движок WP-20) в том же биллинге.
 20h. \[C\] On-prem/private endpoint для издателей/школ.
+20i. \[M\] Правовые документы D1–D4, D6, D7 (ET/EN): ToS плагин/Pro+AI, ToS Partner, AUP, Privacy, Copyright Notice, EULA; ревью юристом EE (AutÕS/DSM). Канон — memo `2026-10-12-omr-copyright-rights-memo.md`.
+20j. \[M\] Страницы ToS/Privacy/Copyright на shop + rehearsal; согласие при SureCart checkout (Pro+AI и Partner раздельно); в описании продукта: «технология ≠ права на репертуар».
+20k. \[M\] Плагин: checkbox warranty перед OMR upload; ссылки на D1/D4/D6 в админке; без подтверждения — job не создаётся.
+20l. \[M\] Partner: принятие D2 при activate; `rights_confirmed` на create job (иначе 403); scope/предупреждение для audio export; takedown purge.
+20m. \[M\] Email `rights@…` + runbook notice-and-takedown (D12); запрет публичного каталога чужих партитур.
+20n. \[S\] D5 DPA; D8–D10 шаблоны (авторский договор / лицензия издателя / IP на код); D13 политика тестовых PDF.
+20o. \[S\] FAQ «купленные ноты в облако» на shop; предупреждение UI при экспорте аудио/MIDI.
+20p. \[M\] Go-live legal checklist: D1–D4+D6, U1/U2, takedown, retention, нет публичного score catalog (см. memo §12.F).
 
 **Агент и рекомендации**
 

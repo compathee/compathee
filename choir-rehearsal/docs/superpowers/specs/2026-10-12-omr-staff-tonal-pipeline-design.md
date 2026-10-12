@@ -403,8 +403,9 @@ Custom pkgs:   staff_template, system_key_meter, written_grid,
 
 OMR, correction, and PDF→MusicXML→audio process **copyrighted musical works** (and often editions). Conversion does **not** grant rights.
 
-- Full product memo (warranty, ToS checklist, PD vs licensed, learning/privacy, audio vs notation):  
+- Full product memo (AutÕS/DSM, documents D1–D13, UI steps, plan):  
   `2026-10-12-omr-copyright-rights-memo.md`
+- TZ: WP-22 **§3.18.9** + plan **20i–20p**; execution issue **WP-26**.
 - Aligns with WP-22: partner warrants upload rights; Compath is not a publisher; short retention; no public third-party score catalog.
 - Sell **technology** (Pro+AI / Partner API), not a repertoire license.
 - **Lawyer review (EE/EU) required** before public sale / ToS finalization. This design is not legal advice.
