@@ -13,6 +13,7 @@ require_once CHOIR_REHEARSAL_PATH . 'includes/class-distribution.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-edition.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-roles.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-post-types.php';
+require_once CHOIR_REHEARSAL_PATH . 'includes/class-score-rights.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-slugs.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-voice-types.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-pages.php';

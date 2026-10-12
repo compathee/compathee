@@ -23,6 +23,7 @@ final class Choir_Rehearsal_Admin {
 		add_action( 'save_post_' . Choir_Rehearsal_Post_Types::SONG, array( self::class, 'save_song' ), 10, 2 );
 		add_action( 'admin_enqueue_scripts', array( self::class, 'enqueue_assets' ) );
 		add_action( 'admin_footer', array( self::class, 'render_song_editor_player' ) );
+		add_action( 'admin_notices', array( self::class, 'maybe_score_rights_notice' ) );
 		add_action( 'admin_menu', array( self::class, 'register_settings_page' ) );
 		add_action( 'admin_init', array( self::class, 'register_settings' ) );
 		add_filter( 'plugin_action_links_' . plugin_basename( CHOIR_REHEARSAL_FILE ), array( self::class, 'plugin_action_links' ) );
@@ -39,6 +40,20 @@ final class Choir_Rehearsal_Admin {
 			'choir-rehearsal-settings',
 			array( self::class, 'render_settings_page' )
 		);
+	}
+
+	public static function maybe_score_rights_notice(): void {
+		$key = 'choir_rehearsal_score_rights_' . get_current_user_id();
+		if ( ! get_transient( $key ) ) {
+			return;
+		}
+		delete_transient( $key );
+		echo '<div class="notice notice-error is-dismissible"><p>';
+		esc_html_e(
+			'The PDF score was not saved. Confirm that you have the rights to use this work, or that it is in the public domain, before attaching a score.',
+			'compath-choir-rehearsal'
+		);
+		echo '</p></div>';
 	}
 
 	public static function register_settings(): void {
@@ -650,6 +665,10 @@ final class Choir_Rehearsal_Admin {
 				'usePdf'         => __( 'Use this PDF', 'compath-choir-rehearsal' ),
 				'noPdf'          => __( 'No PDF selected', 'compath-choir-rehearsal' ),
 				'removePdf'      => __( 'Remove PDF', 'compath-choir-rehearsal' ),
+				'rightsTitle'    => __( 'Confirm rights to this score', 'compath-choir-rehearsal' ),
+				'rightsBody'     => __( 'I confirm that I have the rights to use this musical work for rehearsal on this site, or that the work is in the public domain.', 'compath-choir-rehearsal' ),
+				'rightsConfirm'  => __( 'I confirm', 'compath-choir-rehearsal' ),
+				'rightsCancel'   => __( 'Cancel', 'compath-choir-rehearsal' ),
 				'sheetMusic'     => __( 'Sheet music', 'compath-choir-rehearsal' ),
 				'prevPage'       => __( 'Previous', 'compath-choir-rehearsal' ),
 				'nextPage'       => __( 'Next', 'compath-choir-rehearsal' ),
@@ -722,11 +741,27 @@ final class Choir_Rehearsal_Admin {
 			</p>
 			<input type="hidden" id="choir-score-pdf-id" name="choir_score_pdf_id" value="<?php echo esc_attr( (string) $pdf_id ); ?>" />
 			<input type="hidden" id="choir-score-pdf-url" value="<?php echo esc_url( $pdf_url ); ?>" />
+			<input type="hidden" id="choir-score-rights-confirmed" name="choir_score_rights_confirmed" value="0" />
 			<div class="choir-score-toolbar">
 				<span id="choir-score-pdf-name" class="choir-score-pdf-name"><?php echo esc_html( $filename ?: __( 'No PDF selected', 'compath-choir-rehearsal' ) ); ?></span>
 				<div class="choir-score-toolbar__actions">
 					<button type="button" class="button" id="choir-select-pdf"><?php esc_html_e( 'Upload / Select PDF', 'compath-choir-rehearsal' ); ?></button>
 					<button type="button" class="button-link-delete" id="choir-remove-pdf"><?php esc_html_e( 'Remove PDF', 'compath-choir-rehearsal' ); ?></button>
+				</div>
+			</div>
+			<div id="choir-score-rights-modal" class="choir-score-rights-modal" hidden>
+				<div class="choir-score-rights-modal__backdrop" data-choir-rights-dismiss="1"></div>
+				<div class="choir-score-rights-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="choir-score-rights-title">
+					<h3 id="choir-score-rights-title" class="choir-score-rights-modal__title">
+						<?php esc_html_e( 'Confirm rights to this score', 'compath-choir-rehearsal' ); ?>
+					</h3>
+					<p class="choir-score-rights-modal__body">
+						<?php esc_html_e( 'I confirm that I have the rights to use this musical work for rehearsal on this site, or that the work is in the public domain.', 'compath-choir-rehearsal' ); ?>
+					</p>
+					<div class="choir-score-rights-modal__actions">
+						<button type="button" class="button" id="choir-score-rights-cancel"><?php esc_html_e( 'Cancel', 'compath-choir-rehearsal' ); ?></button>
+						<button type="button" class="button button-primary" id="choir-score-rights-confirm"><?php esc_html_e( 'I confirm', 'compath-choir-rehearsal' ); ?></button>
+					</div>
 				</div>
 			</div>
 			<div
@@ -1021,14 +1056,31 @@ final class Choir_Rehearsal_Admin {
 		if ( isset( $_POST['choir_rehearsal_score_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['choir_rehearsal_score_nonce'] ) ), 'choir_rehearsal_save_score' ) ) {
 			// Only touch PDF meta when the metabox field is present in this request.
 			if ( isset( $_POST['choir_score_pdf_id'] ) ) {
-				$pdf_id = absint( wp_unslash( $_POST['choir_score_pdf_id'] ) );
+				$pdf_id         = absint( wp_unslash( $_POST['choir_score_pdf_id'] ) );
+				$existing_pdf   = Choir_Rehearsal_Post_Types::get_score_pdf_id( $post_id );
+				$rights_ok      = isset( $_POST['choir_score_rights_confirmed'] )
+					&& '1' === sanitize_text_field( wp_unslash( (string) $_POST['choir_score_rights_confirmed'] ) );
 				if ( $pdf_id > 0 ) {
 					if ( 'application/pdf' === get_post_mime_type( $pdf_id ) ) {
-						update_post_meta( $post_id, '_choir_score_pdf_id', $pdf_id );
+						if ( Choir_Rehearsal_Score_Rights::may_attach_pdf( $existing_pdf, $pdf_id, $rights_ok ) ) {
+							update_post_meta( $post_id, '_choir_score_pdf_id', $pdf_id );
+							if ( $pdf_id !== $existing_pdf ) {
+								update_post_meta( $post_id, '_choir_score_rights_confirmed_at', time() );
+								update_post_meta( $post_id, '_choir_score_rights_confirmed_by', get_current_user_id() );
+							}
+						} else {
+							set_transient(
+								'choir_rehearsal_score_rights_' . get_current_user_id(),
+								1,
+								60
+							);
+						}
 					}
 					// Invalid mime: keep any existing score rather than deleting it.
 				} else {
 					delete_post_meta( $post_id, '_choir_score_pdf_id' );
+					delete_post_meta( $post_id, '_choir_score_rights_confirmed_at' );
+					delete_post_meta( $post_id, '_choir_score_rights_confirmed_by' );
 				}
 			}
 		}

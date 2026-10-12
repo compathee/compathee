@@ -116,8 +116,20 @@ msgstr "Купить Pro"
 msgid "Cancel"
 msgstr "Отмена"
 
+msgid "Confirm rights to this score"
+msgstr "Подтвердите права на эту партитуру"
+
 msgid "Check for plugin updates"
 msgstr "Проверить обновления плагина"
+
+msgid "I confirm"
+msgstr "Подтверждаю"
+
+msgid "I confirm that I have the rights to use this musical work for rehearsal on this site, or that the work is in the public domain."
+msgstr "Подтверждаю, что у меня есть авторские права на использование этого произведения для репетиций на этом сайте, либо произведение является общественным достоянием."
+
+msgid "The PDF score was not saved. Confirm that you have the rights to use this work, or that it is in the public domain, before attaching a score."
+msgstr "PDF-партитура не сохранена. Перед прикреплением подтвердите, что у вас есть права на использование произведения, либо что оно является общественным достоянием."
 
 msgid "Choir Rehearsal"
 msgstr "Репетиции хора"

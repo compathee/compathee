@@ -20,7 +20,7 @@
 * **Нотная грамота на лету** — hard-запреты (напр. си♯ при си♭ в ключе); хроматика без отсебятины (A♭ не переписываем в A♮ автоматически).
 * **Обратная связь и обучение** — каждое подтверждённое исправление (UI / API) пишется в Redis-skills и улучшает следующий прогон; hard-правила грамоты кодом не ломаются.
 * **Темп** — из партитуры для MIDI/MusicXML playback или ручной ввод, если не указан.
-* **Файлы на сайте клиента (плагин)** — библиотека PDF/аудио живёт в WordPress клиента; Compath **не** хранит копии этих файлов на своих серверах → соблюдение авторских прав на репертуар — обязанность клиента; при загрузке в медиатеку плагин показывает **предупреждение**.
+* **Файлы на сайте клиента (плагин)** — библиотека PDF/аудио живёт в WordPress клиента; Compath **не** хранит копии этих файлов на своих серверах → соблюдение авторских прав на репертуар — обязанность клиента; перед загрузкой PDF-партитуры — **подтверждение** (права или public domain).
 * **Знакомый биллинг** — SureCart как у Pro; Partner API без обязательного WordPress.
 
 Канон: `choir-rehearsal/docs/superpowers/specs/2026-10-12-omr-staff-tonal-pipeline-design.md`.
@@ -29,7 +29,7 @@
 
 | Режим | Где файлы | Роль Compath |
 | --- | --- | --- |
-| **Lite / Pro (библиотека, плеер)** | Сайт клиента (WP media / плагин) | ПО на сайте клиента; **копий репертуара у Compath нет**; warning при upload |
+| **Lite / Pro (библиотека, плеер)** | Сайт клиента (WP media / плагин) | ПО на сайте клиента; **копий репертуара у Compath нет**; подтверждение прав / PD перед PDF |
 | **Pro+AI OMR / Partner API** | Временно на сервере Compath (короткий retention) | Технический процессор; нужен **явный warranty** (checkbox / `rights_confirmed`), не только warning |
 
 Не писать в маркетинге «мы никогда не храним файлы», если продаём облачный OMR — только: *базовая библиотека плагина остаётся на сайте клиента*.
@@ -40,4 +40,4 @@
 
 ## Short EN blurb
 
-Compath restores unique choir scores — manuscripts and archive scans without a modern engraved edition — into MusicXML, the way film and audio archives restore fragile media. Live music-literacy rules and learned corrections keep pitches honest in the key. The plugin library stays on the client’s WordPress site (upload warning only); cloud OMR requires an explicit rights warranty. Same SureCart licensing as Pro; Partner API for third-party apps. Restoration is a technical service, not a repertoire license.
+Compath restores unique choir scores — manuscripts and archive scans without a modern engraved edition — into MusicXML, the way film and audio archives restore fragile media. Live music-literacy rules and learned corrections keep pitches honest in the key. The plugin library stays on the client’s WordPress site (rights/PD confirmation before PDF attach); cloud OMR requires an explicit rights warranty. Same SureCart licensing as Pro; Partner API for third-party apps. Restoration is a technical service, not a repertoire license.

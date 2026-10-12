@@ -115,8 +115,20 @@ msgstr "Osta Pro"
 msgid "Cancel"
 msgstr "Tühista"
 
+msgid "Confirm rights to this score"
+msgstr "Kinnita selle partituuri õigused"
+
 msgid "Check for plugin updates"
 msgstr "Kontrolli plugina uuendusi"
+
+msgid "I confirm"
+msgstr "Kinnitan"
+
+msgid "I confirm that I have the rights to use this musical work for rehearsal on this site, or that the work is in the public domain."
+msgstr "Kinnitan, et mul on õigus kasutada seda muusikateost sellel saidil proovideks, või et teos on üldkasutatav (public domain)."
+
+msgid "The PDF score was not saved. Confirm that you have the rights to use this work, or that it is in the public domain, before attaching a score."
+msgstr "PDF-partituuri ei salvestatud. Enne partituuri lisamist kinnita, et sul on õigus teost kasutada või et see on üldkasutatav."
 
 msgid "Choir Rehearsal"
 msgstr "Koori proovid"
