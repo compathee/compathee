@@ -1,0 +1,72 @@
+[
+  {
+    "title": "B♯ при си♭ в ключе",
+    "step": "B",
+    "alter_in": 1,
+    "alter_out": -1,
+    "action": "force_alter",
+    "rule": "forbidden_sharp_on_flatted_key_degree:B(key♭)≠B♯",
+    "severity": "hard",
+    "memory_hits": 0
+  },
+  {
+    "title": "B♭ по ключу — ок",
+    "step": "B",
+    "alter_in": -1,
+    "alter_out": -1,
+    "action": "keep",
+    "rule": "in_allowed_set",
+    "severity": "soft",
+    "memory_hits": 0
+  },
+  {
+    "title": "B♮ — отмена, ок в миноре/как бекар",
+    "step": "B",
+    "alter_in": 0,
+    "alter_out": 0,
+    "action": "keep",
+    "rule": "in_allowed_set",
+    "severity": "soft",
+    "memory_hits": 0
+  },
+  {
+    "title": "F♯ — вводный тон g-moll — ок",
+    "step": "F",
+    "alter_in": 1,
+    "alter_out": 1,
+    "action": "keep",
+    "rule": "in_allowed_set",
+    "severity": "soft",
+    "memory_hits": 1
+  },
+  {
+    "title": "F♮ — диатоника g-moll — ок",
+    "step": "F",
+    "alter_in": 0,
+    "alter_out": 1,
+    "action": "force_alter",
+    "rule": "redis_memory_prefer_alter=1",
+    "severity": "soft",
+    "memory_hits": 1
+  },
+  {
+    "title": "E♯ при 2♭ — почти наверняка ошибка",
+    "step": "E",
+    "alter_in": 1,
+    "alter_out": -1,
+    "action": "force_alter",
+    "rule": "forbidden_sharp_on_flatted_key_degree:E(key♭)≠E♯",
+    "severity": "hard",
+    "memory_hits": 0
+  },
+  {
+    "title": "A♭ — вне g-moll / Bb — review/snap",
+    "step": "A",
+    "alter_in": -1,
+    "alter_out": 0,
+    "action": "force_alter",
+    "rule": "alter_-1_not_in_allowed_[0]_→0",
+    "severity": "hard",
+    "memory_hits": 0
+  }
+]
