@@ -73,6 +73,7 @@ Yes. In the song editor, set a voice track’s source to **YouTube** and paste a
 
 * Before attaching a PDF score, require confirmation of copyright rights or public domain
 * Server rejects a new PDF without confirmation; stores confirmation audit meta
+* Before making a song public (globe), warn about PDF copyright risk and require confirmation to publish
 
 = 0.4.66 =
 

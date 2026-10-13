@@ -1,12 +1,12 @@
 <?php
 /**
- * PDF score rights confirmation helpers (local library U0).
+ * Score / public-publish rights confirmation helpers (local library U0).
  */
 
 declare(strict_types=1);
 
 /**
- * Pure attach gate — safe to require outside WordPress bootstrap in unit tests.
+ * Pure attach/publish gates — safe to require outside WordPress bootstrap in unit tests.
  */
 final class Choir_Rehearsal_Score_Rights {
 
@@ -21,6 +21,23 @@ final class Choir_Rehearsal_Score_Rights {
 			return true;
 		}
 		if ( $new_pdf_id === $existing_pdf_id ) {
+			return true;
+		}
+
+		return $rights_confirmed;
+	}
+
+	/**
+	 * Whether a song may be saved as public (no-login access).
+	 *
+	 * Staying private/public or switching to private does not require confirmation.
+	 * Switching private → public requires rights_confirmed=true.
+	 */
+	public static function may_publish_public( bool $was_public, bool $want_public, bool $rights_confirmed ): bool {
+		if ( ! $want_public ) {
+			return true;
+		}
+		if ( $was_public ) {
 			return true;
 		}
 

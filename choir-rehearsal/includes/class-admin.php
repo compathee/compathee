@@ -43,17 +43,29 @@ final class Choir_Rehearsal_Admin {
 	}
 
 	public static function maybe_score_rights_notice(): void {
-		$key = 'choir_rehearsal_score_rights_' . get_current_user_id();
-		if ( ! get_transient( $key ) ) {
-			return;
+		$user_id = get_current_user_id();
+		$score_key  = 'choir_rehearsal_score_rights_' . $user_id;
+		$public_key = 'choir_rehearsal_public_rights_' . $user_id;
+
+		if ( get_transient( $score_key ) ) {
+			delete_transient( $score_key );
+			echo '<div class="notice notice-error is-dismissible"><p>';
+			esc_html_e(
+				'The PDF score was not saved. Confirm that you have the rights to use this work, or that it is in the public domain, before attaching a score.',
+				'compath-choir-rehearsal'
+			);
+			echo '</p></div>';
 		}
-		delete_transient( $key );
-		echo '<div class="notice notice-error is-dismissible"><p>';
-		esc_html_e(
-			'The PDF score was not saved. Confirm that you have the rights to use this work, or that it is in the public domain, before attaching a score.',
-			'compath-choir-rehearsal'
-		);
-		echo '</p></div>';
+
+		if ( get_transient( $public_key ) ) {
+			delete_transient( $public_key );
+			echo '<div class="notice notice-error is-dismissible"><p>';
+			esc_html_e(
+				'The song was not made public. Confirm that the score is in the public domain, or that you have the rights to publish it, before sharing without a password.',
+				'compath-choir-rehearsal'
+			);
+			echo '</p></div>';
+		}
 	}
 
 	public static function register_settings(): void {
@@ -441,6 +453,7 @@ final class Choir_Rehearsal_Admin {
 		<div class="choir-song-visibility">
 			<?php wp_nonce_field( 'choir_rehearsal_save_visibility', 'choir_rehearsal_visibility_nonce' ); ?>
 			<input type="hidden" name="choir_is_public" id="choir-is-public" value="<?php echo $is_public ? '1' : '0'; ?>" />
+			<input type="hidden" name="choir_public_rights_confirmed" id="choir-public-rights-confirmed" value="0" />
 			<button
 				type="button"
 				id="choir-toggle-public"
@@ -464,6 +477,21 @@ final class Choir_Rehearsal_Admin {
 				);
 				?>
 			</span>
+			<div id="choir-public-rights-modal" class="choir-score-rights-modal choir-public-rights-modal" hidden>
+				<div class="choir-score-rights-modal__backdrop" data-choir-public-rights-dismiss="1"></div>
+				<div class="choir-score-rights-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="choir-public-rights-title">
+					<h3 id="choir-public-rights-title" class="choir-score-rights-modal__title">
+						<?php esc_html_e( 'Confirm public access', 'compath-choir-rehearsal' ); ?>
+					</h3>
+					<p class="choir-score-rights-modal__body">
+						<?php esc_html_e( 'Warning: making this song public lets anyone view the PDF score and listen without signing in. Publishing copyrighted sheet music without permission may infringe copyright. I confirm that this score is in the public domain, or that I have the rights to publish it.', 'compath-choir-rehearsal' ); ?>
+					</p>
+					<div class="choir-score-rights-modal__actions">
+						<button type="button" class="button" id="choir-public-rights-cancel"><?php esc_html_e( 'Cancel', 'compath-choir-rehearsal' ); ?></button>
+						<button type="button" class="button button-primary" id="choir-public-rights-confirm"><?php esc_html_e( 'I confirm', 'compath-choir-rehearsal' ); ?></button>
+					</div>
+				</div>
+			</div>
 		</div>
 		<?php
 	}
@@ -684,6 +712,10 @@ final class Choir_Rehearsal_Admin {
 				'makePrivate'    => __( 'Make private', 'compath-choir-rehearsal' ),
 				'publicHint'     => __( 'Anyone can view and listen without signing in.', 'compath-choir-rehearsal' ),
 				'privateHint'    => __( 'Only signed-in users can access this song (when login is required).', 'compath-choir-rehearsal' ),
+				'publicRightsTitle'   => __( 'Confirm public access', 'compath-choir-rehearsal' ),
+				'publicRightsBody'    => __( 'Warning: making this song public lets anyone view the PDF score and listen without signing in. Publishing copyrighted sheet music without permission may infringe copyright. I confirm that this score is in the public domain, or that I have the rights to publish it.', 'compath-choir-rehearsal' ),
+				'publicRightsConfirm' => __( 'I confirm', 'compath-choir-rehearsal' ),
+				'publicRightsCancel'  => __( 'Cancel', 'compath-choir-rehearsal' ),
 		);
 
 		if ( Choir_Rehearsal_Edition::shows_commercial_upgrade() ) {
@@ -1040,8 +1072,23 @@ final class Choir_Rehearsal_Admin {
 		}
 
 		if ( isset( $_POST['choir_rehearsal_visibility_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['choir_rehearsal_visibility_nonce'] ) ), 'choir_rehearsal_save_visibility' ) ) {
-			$is_public = isset( $_POST['choir_is_public'] ) && '1' === sanitize_text_field( wp_unslash( (string) $_POST['choir_is_public'] ) );
-			Choir_Rehearsal_Post_Types::set_public( $post_id, $is_public );
+			$want_public = isset( $_POST['choir_is_public'] ) && '1' === sanitize_text_field( wp_unslash( (string) $_POST['choir_is_public'] ) );
+			$was_public  = Choir_Rehearsal_Post_Types::is_public( $post_id );
+			$rights_ok   = isset( $_POST['choir_public_rights_confirmed'] )
+				&& '1' === sanitize_text_field( wp_unslash( (string) $_POST['choir_public_rights_confirmed'] ) );
+			if ( Choir_Rehearsal_Score_Rights::may_publish_public( $was_public, $want_public, $rights_ok ) ) {
+				Choir_Rehearsal_Post_Types::set_public( $post_id, $want_public );
+				if ( $want_public && ! $was_public ) {
+					update_post_meta( $post_id, '_choir_public_rights_confirmed_at', time() );
+					update_post_meta( $post_id, '_choir_public_rights_confirmed_by', get_current_user_id() );
+				}
+				if ( ! $want_public ) {
+					delete_post_meta( $post_id, '_choir_public_rights_confirmed_at' );
+					delete_post_meta( $post_id, '_choir_public_rights_confirmed_by' );
+				}
+			} else {
+				set_transient( 'choir_rehearsal_public_rights_' . get_current_user_id(), 1, 60 );
+			}
 		}
 
 		if ( isset( $_POST['choir_rehearsal_score_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['choir_rehearsal_score_nonce'] ) ), 'choir_rehearsal_save_score' ) ) {

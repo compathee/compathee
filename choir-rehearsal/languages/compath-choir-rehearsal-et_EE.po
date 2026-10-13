@@ -462,6 +462,15 @@ msgstr "Kasuta salvestust"
 msgid "Cancel"
 msgstr "Tühista"
 
+msgid "Confirm public access"
+msgstr "Kinnita avalik juurdepääs"
+
+msgid "Warning: making this song public lets anyone view the PDF score and listen without signing in. Publishing copyrighted sheet music without permission may infringe copyright. I confirm that this score is in the public domain, or that I have the rights to publish it."
+msgstr "Hoiatus: avalik laul on kõigile nähtav ilma sisselogimiseta — sh PDF-partituur. Autoriõigusega kaitstud nootide avaldamine ilma loata võib rikkuda seadust. Kinnitan, et partituur on üldkasutatav või mul on õigus seda avaldada."
+
+msgid "The song was not made public. Confirm that the score is in the public domain, or that you have the rights to publish it, before sharing without a password."
+msgstr "Laulu ei tehtud avalikuks. Enne jagamist ilma paroolita kinnita, et partituur on üldkasutatav või et sul on õigus seda avaldada."
+
 msgid "Confirm rights to this score"
 msgstr "Kinnita selle partituuri õigused"
 

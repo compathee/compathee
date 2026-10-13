@@ -1200,9 +1200,54 @@
 			});
 		}
 
+		function closePublicRightsModal() {
+			const $modal = $('#choir-public-rights-modal');
+			if (!$modal.length) {
+				return;
+			}
+			$modal.attr('hidden', 'hidden');
+			$('body').removeClass('choir-score-rights-modal-open');
+		}
+
+		function openPublicRightsModal() {
+			const $modal = $('#choir-public-rights-modal');
+			if (!$modal.length) {
+				$('#choir-public-rights-confirmed').val('1');
+				syncPublicButton(true);
+				return;
+			}
+			$modal.removeAttr('hidden');
+			$('body').addClass('choir-score-rights-modal-open');
+			$('#choir-public-rights-confirm').trigger('focus');
+		}
+
 		$('#choir-toggle-public').on('click', function () {
-			const next = $('#choir-is-public').val() !== '1';
-			syncPublicButton(next);
+			const currentlyPublic = $('#choir-is-public').val() === '1';
+			if (currentlyPublic) {
+				$('#choir-public-rights-confirmed').val('0');
+				syncPublicButton(false);
+				return;
+			}
+			openPublicRightsModal();
+		});
+
+		$('#choir-public-rights-confirm').on('click', function () {
+			$('#choir-public-rights-confirmed').val('1');
+			closePublicRightsModal();
+			syncPublicButton(true);
+		});
+
+		$('#choir-public-rights-cancel, #choir-public-rights-modal [data-choir-public-rights-dismiss]').on(
+			'click',
+			function () {
+				closePublicRightsModal();
+			}
+		);
+
+		$(document).on('keydown', function (event) {
+			if (event.key === 'Escape' && !$('#choir-public-rights-modal').attr('hidden')) {
+				closePublicRightsModal();
+			}
 		});
 
 	});

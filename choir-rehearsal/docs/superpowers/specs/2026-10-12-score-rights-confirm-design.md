@@ -34,3 +34,29 @@ Before attaching a PDF score in the song editor, the client must **confirm** the
 * Body: `I confirm that I have the rights to use this musical work for rehearsal on this site, or that the work is in the public domain.`
 * Confirm button: `I confirm`
 * Cancel: `Cancel`
+
+---
+
+## Public access (globe)
+
+**Goal:** Before making a song **public** (no login), warn about PDF copyright risk and require confirmation that the score is public domain or the client has rights to publish it.
+
+### UX
+
+1. User clicks the globe (**Make public**).
+2. Modal shows copyright warning + **I confirm** / **Cancel**.
+3. Only **I confirm** sets the song public in the editor (still requires Save).
+4. **Make private** does not show the modal.
+
+### Server
+
+* Hidden field `choir_public_rights_confirmed` = `1` after confirm.
+* On save: private → public requires confirmation; otherwise keep private.
+* Store `_choir_public_rights_confirmed_at` / `_choir_public_rights_confirmed_by` when newly public.
+* Making private clears those meta keys.
+
+### Copy (EN)
+
+* Title: `Confirm public access`
+* Body: `Warning: making this song public lets anyone view the PDF score and listen without signing in. Publishing copyrighted sheet music without permission may infringe copyright. I confirm that this score is in the public domain, or that I have the rights to publish it.`
+* Confirm / Cancel: same as PDF gate

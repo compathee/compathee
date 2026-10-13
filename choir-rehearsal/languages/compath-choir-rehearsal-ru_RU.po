@@ -463,6 +463,15 @@ msgstr "Использовать запись"
 msgid "Cancel"
 msgstr "Отмена"
 
+msgid "Confirm public access"
+msgstr "Подтвердите публичный доступ"
+
+msgid "Warning: making this song public lets anyone view the PDF score and listen without signing in. Publishing copyrighted sheet music without permission may infringe copyright. I confirm that this score is in the public domain, or that I have the rights to publish it."
+msgstr "Внимание: публичная песня доступна всем без входа — включая PDF-партитуру. Публикация охраняемых авторским правом нот без разрешения может нарушать закон. Подтверждаю, что партитура является общественным достоянием либо у меня есть права её публиковать."
+
+msgid "The song was not made public. Confirm that the score is in the public domain, or that you have the rights to publish it, before sharing without a password."
+msgstr "Песня не сделана публичной. Перед открытием без пароля подтвердите, что партитура — общественное достояние, либо что у вас есть права её публиковать."
+
 msgid "Confirm rights to this score"
 msgstr "Подтвердите права на эту партитуру"
 
