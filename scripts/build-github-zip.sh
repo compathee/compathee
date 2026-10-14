@@ -14,6 +14,7 @@ STAGE="$(mktemp -d)"
 trap 'rm -rf "$STAGE"' EXIT
 
 mkdir -p "$OUT_DIR"
+OUT_DIR="$(cd "$OUT_DIR" && pwd)"
 mkdir -p "$STAGE/$FOLDER"
 cp -a "$SRC/." "$STAGE/$FOLDER/"
 

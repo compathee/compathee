@@ -11,6 +11,7 @@ STAGE="$(mktemp -d)"
 trap 'rm -rf "$STAGE"' EXIT
 
 mkdir -p "$OUT_DIR"
+OUT_DIR="$(cd "$OUT_DIR" && pwd)"
 mkdir -p "$STAGE/$SLUG"
 
 # Copy plugin tree, then remove paths that must not ship to wordpress.org.
