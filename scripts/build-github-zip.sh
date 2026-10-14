@@ -32,7 +32,7 @@ rm -f "$ZIP"
 ( cd "$STAGE" && zip -rq "$ZIP" "$FOLDER" -x '*.DS_Store' )
 
 echo "Built $ZIP (v${VERSION}, folder ${FOLDER}/)"
-unzip -l "$ZIP" | head -15
+unzip -l "$ZIP" | head -15 || true
 if ! unzip -l "$ZIP" | grep -q " ${FOLDER}/choir-rehearsal.php$"; then
   echo "ERROR: GitHub zip must contain ${FOLDER}/ at root" >&2
   exit 1
