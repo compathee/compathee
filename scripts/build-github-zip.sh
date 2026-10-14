@@ -32,6 +32,8 @@ rm -f "$ZIP"
 ( cd "$STAGE" && zip -rq "$ZIP" "$FOLDER" -x '*.DS_Store' )
 
 echo "Built $ZIP (v${VERSION}, folder ${FOLDER}/)"
+# grep -q closes unzip early; with pipefail that is SIGPIPE (141) even when the match exists.
+set +o pipefail
 unzip -l "$ZIP" | head -15 || true
 if ! unzip -l "$ZIP" | grep -q " ${FOLDER}/choir-rehearsal.php$"; then
   echo "ERROR: GitHub zip must contain ${FOLDER}/ at root" >&2

@@ -56,6 +56,8 @@ rm -f "$ZIP"
 ( cd "$STAGE" && zip -rq "$ZIP" "$SLUG" -x '*.DS_Store' )
 
 echo "Built $ZIP"
+# grep -q closes unzip early; with pipefail that is SIGPIPE (141) even when the match exists.
+set +o pipefail
 unzip -l "$ZIP" | grep -E 'distribution-wporg|pdf\.min\.js' | head -5 || true
 
 unzip -l "$ZIP" | grep -q 'distribution-wporg.php'
