@@ -1192,3 +1192,14 @@ msgstr "Standard"
 
 #~ msgid "YouTube reference"
 #~ msgstr "YouTube viide"
+msgid "Compath Choir Rehearsal stores rehearsal songs on this website."
+msgstr "Compath Choir Rehearsal salvestab proovilaulud sellel veebisaidil."
+
+msgid "When a user confirms they may attach a PDF score, the plugin stores that WordPress user ID and the confirmation time in the song post meta (_choir_score_rights_confirmed_by and _choir_score_rights_confirmed_at). When a user confirms they may make a song public, it stores the same kind of record (_choir_public_rights_confirmed_by and _choir_public_rights_confirmed_at). These records show who accepted the copyright confirmation and when. Compath does not verify that the person holds those rights."
+msgstr "Kui kasutaja kinnitab, et tohib lisada PDF-partituuri, salvestab plugin selle WordPressi kasutaja ID ja kinnituse aja laulu postituse metaväljadele (_choir_score_rights_confirmed_by ja _choir_score_rights_confirmed_at). Kui kasutaja kinnitab, et tohib laulu avalikuks teha, salvestatakse samasugune kirje (_choir_public_rights_confirmed_by ja _choir_public_rights_confirmed_at). Need kirjed näitavad, kes autoriõiguse kinnituse andis ja millal. Compath ei kontrolli, kas isikul need õigused on."
+
+msgid "Uploaded PDF scores and audio tracks are stored in the site media library and linked to the song."
+msgstr "Üles laaditud PDF-partituurid ja audiorajad salvestatakse saidi meediateeki ja seotakse lauluga."
+
+msgid "The optional feedback form sends the message, name, email address, and technical site information to rehearsal.compath.ee (Compath OÜ). Non-secret Pro license identifiers are included only when a separate Pro add-on license is active. The full license key is not sent."
+msgstr "Valikuline tagasisidevorm saadab sõnumi, nime, e-posti aadressi ja tehnilise teabe saidi kohta aadressile rehearsal.compath.ee (Compath OÜ). Mittesalajased Pro litsentsi identifikaatorid lisatakse ainult siis, kui eraldi Pro lisaplugina litsents on aktiivne. Täielikku litsentsivõtit ei saadeta."
