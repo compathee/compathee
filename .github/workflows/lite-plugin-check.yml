@@ -1,0 +1,42 @@
+name: Lite tests and Plugin Check
+
+on:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          coverage: none
+
+      - name: Run PHP contract tests
+        run: |
+          set -euo pipefail
+          for f in choir-rehearsal/tests/*-test.php; do
+            echo "== $f"
+            php "$f"
+          done
+
+      - name: Build distribution zips
+        run: |
+          set -euo pipefail
+          bash scripts/build-wporg-zip.sh dist
+          bash scripts/build-github-zip.sh dist
+
+      - name: Unpack WordPress.org build
+        run: |
+          set -euo pipefail
+          mkdir -p dist/wporg
+          unzip -q dist/compath-choir-rehearsal-wporg-*.zip -d dist/wporg
+
+      - name: Plugin Check
+        uses: wordpress/plugin-check-action@v1.1.7
+        with:
+          build-dir: dist/wporg/compath-choir-rehearsal
