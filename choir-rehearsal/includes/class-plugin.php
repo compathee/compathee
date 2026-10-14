@@ -13,6 +13,7 @@ require_once CHOIR_REHEARSAL_PATH . 'includes/class-distribution.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-edition.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-roles.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-post-types.php';
+require_once CHOIR_REHEARSAL_PATH . 'includes/class-score-rights.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-slugs.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-voice-types.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-pages.php';
@@ -48,6 +49,7 @@ final class Choir_Rehearsal_Plugin {
 		register_deactivation_hook( CHOIR_REHEARSAL_FILE, array( $this, 'deactivate' ) );
 
 		add_action( 'plugins_loaded', array( $this, 'load_textdomain' ) );
+		add_action( 'admin_init', array( $this, 'register_privacy_policy' ) );
 		add_action( 'init', array( $this, 'maybe_upgrade' ), 20 );
 		add_action( 'init', array( $this, 'init' ), 5 );
 		Choir_Rehearsal_Install_Replace::register();
@@ -58,6 +60,25 @@ final class Choir_Rehearsal_Plugin {
 
 	public function load_textdomain(): void {
 		// Translations load automatically (WP 4.6+ / Domain Path). Avoid load_plugin_textdomain() for Plugin Check.
+	}
+
+	/**
+	 * Suggested privacy policy copy for Settings → Privacy.
+	 */
+	public function register_privacy_policy(): void {
+		if ( ! function_exists( 'wp_add_privacy_policy_content' ) ) {
+			return;
+		}
+
+		$content  = '<p>' . esc_html__( 'Compath Choir Rehearsal stores rehearsal songs on this website.', 'compath-choir-rehearsal' ) . '</p>';
+		$content .= '<p>' . esc_html__( 'When a user confirms they may attach a PDF score, the plugin stores that WordPress user ID and the confirmation time in the song post meta (_choir_score_rights_confirmed_by and _choir_score_rights_confirmed_at). When a user confirms they may make a song public, it stores the same kind of record (_choir_public_rights_confirmed_by and _choir_public_rights_confirmed_at). These records show who accepted the copyright confirmation and when. Compath does not verify that the person holds those rights.', 'compath-choir-rehearsal' ) . '</p>';
+		$content .= '<p>' . esc_html__( 'Uploaded PDF scores and audio tracks are stored in the site media library and linked to the song.', 'compath-choir-rehearsal' ) . '</p>';
+		$content .= '<p>' . esc_html__( 'The optional feedback form sends the message, name, email address, and technical site information to rehearsal.compath.ee (Compath OÜ). Non-secret Pro license identifiers are included only when a separate Pro add-on license is active. The full license key is not sent.', 'compath-choir-rehearsal' ) . '</p>';
+
+		wp_add_privacy_policy_content(
+			'Compath Choir Rehearsal',
+			wp_kses_post( $content )
+		);
 	}
 
 	public function init(): void {

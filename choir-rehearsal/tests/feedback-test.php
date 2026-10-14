@@ -17,6 +17,18 @@ if (!function_exists('__')) {
 }
 
 require dirname(__DIR__) . '/includes/class-roles.php';
+if ( ! function_exists( 'wp_strip_all_tags' ) ) {
+	function wp_strip_all_tags( $text, $remove_breaks = false ) {
+		$text = preg_replace( '@<(script|style)[^>]*?>.*?</\\1>@si', '', (string) $text );
+		$text = strip_tags( (string) $text );
+		if ( $remove_breaks ) {
+			$text = preg_replace( '/[\r\n\t ]+/', ' ', $text );
+		}
+
+		return trim( (string) $text );
+	}
+}
+
 require dirname(__DIR__) . '/includes/class-feedback.php';
 
 $fail = 0;

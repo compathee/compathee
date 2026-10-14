@@ -282,17 +282,9 @@ final class Choir_Rehearsal_Feedback {
 
 	public static function to_plain_text( string $value ): string {
 		$value = preg_replace( '/<(script|style)\b[^>]*>.*?<\/\1>/is', '', $value ) ?? $value;
-		if ( function_exists( 'wp_strip_all_tags' ) ) {
-			$value = wp_strip_all_tags( $value );
-		} else {
-			$value = strip_tags( $value );
-		}
+		$value = wp_strip_all_tags( $value );
 		$value = html_entity_decode( $value, ENT_QUOTES | ENT_HTML5, 'UTF-8' );
-		if ( function_exists( 'wp_strip_all_tags' ) ) {
-			$value = wp_strip_all_tags( $value );
-		} else {
-			$value = strip_tags( $value );
-		}
+		$value = wp_strip_all_tags( $value );
 		$value = str_replace( array( '<', '>' ), '', $value );
 		$value = preg_replace( "/[\\x00-\\x08\\x0B\\x0C\\x0E-\\x1F]/", '', $value ) ?? $value;
 

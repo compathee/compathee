@@ -1,18 +1,20 @@
 === Compath Choir Rehearsal ===
 Contributors: compath
-Tags: choir, audio, rehearsal, voice parts, music
+Tags: choir, rehearsal, voice parts, practice tracks, sheet music
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 0.4.66
+Stable tag: 0.4.67
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Private rehearsal library for choirs: songs, voice tracks, optional YouTube embeds, sticky player.
+Choir rehearsal library for voice part rehearsal: songs, SATB practice tracks, and sheet music.
 
 == Description ==
 
-Choir Rehearsal helps choir members learn new pieces by voice part.
+Choir Rehearsal is a private choir rehearsal library for voice part rehearsal. Singers learn their line with SATB practice tracks and learning tracks, and can follow a PDF score on the song page.
+
+= Voice part rehearsal =
 
 * Create songs and attach unlimited voice tracks
 * Built-in voice list: backing track, bass, baritone, tenor, alto, soprano, other
@@ -25,17 +27,33 @@ Choir Rehearsal helps choir members learn new pieces by voice part.
 * Optional login-only access with Singer and Voice Leader roles (English role names)
 * REST API and MCP abilities for automation
 
+= Sheet music and PDF copyright =
+
+Upload only scores you have the rights to use, or that are in the public domain. The plugin asks for confirmation when you attach a PDF and again when you make a song public. It records the WordPress user who confirmed and the time of that confirmation. Compath does not verify those rights. An arrangement or a published edition can still be copyrighted even when the composition is in the public domain.
+
 == External services ==
 
 The rehearsal library works without external services. Song data, audio, and PDF scores stay on your WordPress site.
 
-Optional **feedback** (under the song list): when someone sends feedback, the site server posts the request to `https://rehearsal.compath.ee/api/feedback.php` (Compath OÜ). The request includes the message, feedback type, name (optional), email address, WordPress role (or guest), the sender’s locale, plugin version, site home URL, WordPress version, PHP version, and non-secret Pro license identifiers when a license is active. The full license key is not sent. Compath registers a support case and emails a confirmation to the address on the form. No token is stored in the plugin. The email is used only to answer the request.
+Optional **feedback** (under the song list): when someone sends feedback, the site server posts the request to `https://rehearsal.compath.ee/api/feedback.php` (Compath OÜ). The request includes the message, feedback type, name (optional), email address, WordPress role (or guest), the sender’s locale, plugin version, site home URL, WordPress version, and PHP version. Non-secret Pro license identifiers are included only when the separate Choir Rehearsal Pro add-on is installed and a license is active (license, purchase, order, customer, and activation IDs, or a masked key if those IDs are empty). The WordPress.org plugin alone does not send license identifiers. The full license key is not sent. Compath registers a support case and emails a confirmation to the address on the form. No token is stored in the plugin. The email is used only to answer the request.
 
 Optional **YouTube tracks** (song editor): choose YouTube as a track source and paste a URL. The song page opens the official YouTube embed player (`youtube.com`). Playback uses YouTube’s embed; no download. Subject to [YouTube Terms of Service](https://www.youtube.com/static?template=terms). No YouTube API key is required for this embed.
 
 Optional documentation link in Settings may open [rehearsal.compath.ee](https://rehearsal.compath.ee/) (Compath OÜ) for help and changelog. No site or user data is sent unless you open that page in your browser.
 
 PDF viewing uses **Mozilla PDF.js** bundled inside the plugin (Apache-2.0). No PDF.js CDN calls are made.
+
+== Privacy ==
+
+Choir Rehearsal stores rehearsal content on your WordPress site.
+
+When someone confirms a PDF score upload, the plugin saves that WordPress user ID and the confirmation time in the song post meta `_choir_score_rights_confirmed_by` and `_choir_score_rights_confirmed_at`. When someone confirms making a song public, it saves the same kind of record in `_choir_public_rights_confirmed_by` and `_choir_public_rights_confirmed_at`.
+
+Uploaded PDF scores and audio files are stored in the site media library.
+
+The optional feedback form sends the data described under External services to rehearsal.compath.ee (Compath OÜ).
+
+Under Settings → Privacy, WordPress can insert suggested policy text from this plugin for the confirmation records and uploaded files.
 
 == Installation ==
 
@@ -63,11 +81,31 @@ Yes. Use the shortcode `[choir_rehearsal]`.
 
 Signed-in users see **Send feedback** under the song list. Logged-out visitors do not. Administrators and Voice Leaders also open the same form from **Choir Rehearsal → Send feedback** in wp-admin. Email is required. After a successful send, the page shows the case number and Compath emails a confirmation to that address. No GitHub token is required.
 
+= Can I upload PDF sheet music? =
+
+Yes, when you have the rights to use that score, or the score is in the public domain. The plugin asks you to confirm this when you attach a PDF and when you make a song public. It records who confirmed and when. Compath does not verify those rights. Arrangements and editions can be copyrighted even if the composition is in the public domain.
+
 = Can I use YouTube instead of an audio file? =
 
 Yes. In the song editor, set a voice track’s source to **YouTube** and paste a youtube.com or youtu.be URL. On the song page a button opens the official YouTube embed (video stays visible). This is for listening/reference only — the plugin does not download or convert YouTube audio.
 
+== Upgrade Notice ==
+
+= 0.4.67 =
+
+Attaching a PDF or making a song public now requires confirmation that you have rights to the score or that it is public domain. The plugin records who confirmed and when.
+
 == Changelog ==
+
+= 0.4.67 =
+
+* Before attaching a PDF score, require confirmation of copyright rights or public domain
+* Server rejects a new PDF without confirmation; stores confirmation audit meta
+* Before making a song public (globe), warn about PDF copyright risk and require confirmation to publish
+* Plugin listing: sheet-music copyright, who confirmed and when, and a privacy note for confirmation records and media-library files
+* WordPress.org short description highlights voice part rehearsal
+* Suggested privacy policy text for score-rights confirmation and uploaded files
+* Refresh Estonian and Russian translations for the confirmation strings
 
 = 0.4.66 =
 

@@ -462,6 +462,28 @@ msgstr "Kasuta salvestust"
 msgid "Cancel"
 msgstr "Tühista"
 
+msgid "Confirm public access"
+msgstr "Kinnita avalik juurdepääs"
+
+msgid "Warning: making this song public lets anyone view the PDF score and listen without signing in. Publishing copyrighted sheet music without permission may infringe copyright. I confirm that this score is in the public domain, or that I have the rights to publish it."
+msgstr "Hoiatus: avalik laul on kõigile nähtav ilma sisselogimiseta — sh PDF-partituur. Autoriõigusega kaitstud nootide avaldamine ilma loata võib rikkuda seadust. Kinnitan, et partituur on üldkasutatav või mul on õigus seda avaldada."
+
+msgid "The song was not made public. Confirm that the score is in the public domain, or that you have the rights to publish it, before sharing without a password."
+msgstr "Laulu ei tehtud avalikuks. Enne jagamist ilma paroolita kinnita, et partituur on üldkasutatav või et sul on õigus seda avaldada."
+
+msgid "Confirm rights to this score"
+msgstr "Kinnita selle partituuri õigused"
+
+msgid "I confirm"
+msgstr "Kinnitan"
+
+msgid "I confirm that I have the rights to use this musical work for rehearsal on this site, or that the work is in the public domain."
+msgstr "Kinnitan, et mul on õigus kasutada seda muusikateost sellel saidil proovideks, või et teos on üldkasutatav (public domain)."
+
+msgid "The PDF score was not saved. Confirm that you have the rights to use this work, or that it is in the public domain, before attaching a score."
+msgstr "PDF-partituuri ei salvestatud. Enne partituuri lisamist kinnita, et sul on õigus teost kasutada või et see on üldkasutatav."
+
+
 msgid "Recording…"
 msgstr "Salvestamine…"
 
@@ -1170,3 +1192,14 @@ msgstr "Standard"
 
 #~ msgid "YouTube reference"
 #~ msgstr "YouTube viide"
+msgid "Compath Choir Rehearsal stores rehearsal songs on this website."
+msgstr "Compath Choir Rehearsal salvestab proovilaulud sellel veebisaidil."
+
+msgid "When a user confirms they may attach a PDF score, the plugin stores that WordPress user ID and the confirmation time in the song post meta (_choir_score_rights_confirmed_by and _choir_score_rights_confirmed_at). When a user confirms they may make a song public, it stores the same kind of record (_choir_public_rights_confirmed_by and _choir_public_rights_confirmed_at). These records show who accepted the copyright confirmation and when. Compath does not verify that the person holds those rights."
+msgstr "Kui kasutaja kinnitab, et tohib lisada PDF-partituuri, salvestab plugin selle WordPressi kasutaja ID ja kinnituse aja laulu postituse metaväljadele (_choir_score_rights_confirmed_by ja _choir_score_rights_confirmed_at). Kui kasutaja kinnitab, et tohib laulu avalikuks teha, salvestatakse samasugune kirje (_choir_public_rights_confirmed_by ja _choir_public_rights_confirmed_at). Need kirjed näitavad, kes autoriõiguse kinnituse andis ja millal. Compath ei kontrolli, kas isikul need õigused on."
+
+msgid "Uploaded PDF scores and audio tracks are stored in the site media library and linked to the song."
+msgstr "Üles laaditud PDF-partituurid ja audiorajad salvestatakse saidi meediateeki ja seotakse lauluga."
+
+msgid "The optional feedback form sends the message, name, email address, and technical site information to rehearsal.compath.ee (Compath OÜ). Non-secret Pro license identifiers are included only when a separate Pro add-on license is active. The full license key is not sent."
+msgstr "Valikuline tagasisidevorm saadab sõnumi, nime, e-posti aadressi ja tehnilise teabe saidi kohta aadressile rehearsal.compath.ee (Compath OÜ). Mittesalajased Pro litsentsi identifikaatorid lisatakse ainult siis, kui eraldi Pro lisaplugina litsents on aktiivne. Täielikku litsentsivõtit ei saadeta."
