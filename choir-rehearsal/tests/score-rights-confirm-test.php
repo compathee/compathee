@@ -28,6 +28,7 @@ $checks = array(
 	'metabox_has_confirm_copy'     => str_contains( $admin_php, 'I confirm that I have the rights to use this musical work' )
 		&& str_contains( $admin_php, 'public domain' ),
 	'save_uses_helper'             => str_contains( $admin_php, 'Choir_Rehearsal_Score_Rights::may_attach_pdf' ),
+	'save_checks_edit_cap'         => str_contains( $admin_php, "current_user_can( 'edit_post', \$post_id )" ),
 	'save_stores_audit_meta'       => str_contains( $admin_php, '_choir_score_rights_confirmed_at' )
 		&& str_contains( $admin_php, '_choir_score_rights_confirmed_by' ),
 	'css_modal'                    => str_contains( $admin_css, '.choir-score-rights-modal' ),
