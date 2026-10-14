@@ -1,8 +1,8 @@
 {
-  "name": "Choir Rehearsal",
+  "name": "Compath Choir Rehearsal",
   "slug": "choir-rehearsal",
   "version": "0.2.3",
-  "download_url": "https://github.com/compathee/compathee/releases/download/choir-rehearsal-v0.2.3/choir-rehearsal.zip",
+  "download_url": "https://github.com/compathee/compathee/releases/download/compath-choir-rehearsal-v0.4.39/compath-choir-rehearsal.zip",
   "homepage": "https://veneta.ee",
   "requires": "6.4",
   "tested": "6.9",

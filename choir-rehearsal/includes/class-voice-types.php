@@ -20,18 +20,18 @@ final class Choir_Rehearsal_Voice_Types {
 	 */
 	public static function defaults(): array {
 		return array(
-			'backing'     => __( 'Backing track', 'choir-rehearsal' ),
-			'bass-1'      => __( 'Bass 1', 'choir-rehearsal' ),
-			'bass-2'      => __( 'Bass 2', 'choir-rehearsal' ),
-			'baritone-1'  => __( 'Baritone 1', 'choir-rehearsal' ),
-			'baritone-2'  => __( 'Baritone 2', 'choir-rehearsal' ),
-			'tenor-1'     => __( 'Tenor 1', 'choir-rehearsal' ),
-			'tenor-2'     => __( 'Tenor 2', 'choir-rehearsal' ),
-			'alto-1'      => __( 'Alto 1', 'choir-rehearsal' ),
-			'alto-2'      => __( 'Alto 2', 'choir-rehearsal' ),
-			'soprano-1'   => __( 'Soprano 1', 'choir-rehearsal' ),
-			'soprano-2'   => __( 'Soprano 2', 'choir-rehearsal' ),
-			'other'       => __( 'Other', 'choir-rehearsal' ),
+			'backing'     => __( 'Backing track', 'compath-choir-rehearsal' ),
+			'bass-1'      => __( 'Bass 1', 'compath-choir-rehearsal' ),
+			'bass-2'      => __( 'Bass 2', 'compath-choir-rehearsal' ),
+			'baritone-1'  => __( 'Baritone 1', 'compath-choir-rehearsal' ),
+			'baritone-2'  => __( 'Baritone 2', 'compath-choir-rehearsal' ),
+			'tenor-1'     => __( 'Tenor 1', 'compath-choir-rehearsal' ),
+			'tenor-2'     => __( 'Tenor 2', 'compath-choir-rehearsal' ),
+			'alto-1'      => __( 'Alto 1', 'compath-choir-rehearsal' ),
+			'alto-2'      => __( 'Alto 2', 'compath-choir-rehearsal' ),
+			'soprano-1'   => __( 'Soprano 1', 'compath-choir-rehearsal' ),
+			'soprano-2'   => __( 'Soprano 2', 'compath-choir-rehearsal' ),
+			'other'       => __( 'Other', 'compath-choir-rehearsal' ),
 		);
 	}
 
@@ -45,8 +45,8 @@ final class Choir_Rehearsal_Voice_Types {
 			array( Choir_Rehearsal_Post_Types::TRACK ),
 			array(
 				'labels'            => array(
-					'name'          => __( 'Voice Types', 'choir-rehearsal' ),
-					'singular_name' => __( 'Voice Type', 'choir-rehearsal' ),
+					'name'          => __( 'Voice Types', 'compath-choir-rehearsal' ),
+					'singular_name' => __( 'Voice Type', 'compath-choir-rehearsal' ),
 				),
 				'public'            => false,
 				'show_ui'           => false,

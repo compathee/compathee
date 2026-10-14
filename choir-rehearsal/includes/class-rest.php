@@ -23,7 +23,7 @@ final class Choir_Rehearsal_REST {
 				array(
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => array( self::class, 'list_songs' ),
-					'permission_callback' => array( self::class, 'can_read' ),
+					'permission_callback' => array( self::class, 'can_list' ),
 				),
 			)
 		);
@@ -35,7 +35,7 @@ final class Choir_Rehearsal_REST {
 				array(
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => array( self::class, 'get_song' ),
-					'permission_callback' => array( self::class, 'can_read' ),
+					'permission_callback' => array( self::class, 'can_read_song' ),
 					'args'                => array(
 						'id' => array(
 							'validate_callback' => static fn( $value ) => is_numeric( $value ),
@@ -46,24 +46,28 @@ final class Choir_Rehearsal_REST {
 		);
 	}
 
-	public static function can_read(): bool {
-		if ( ! Choir_Rehearsal_Access::requires_login() ) {
-			return true;
-		}
+	public static function can_list(): bool {
+		return true;
+	}
 
-		return is_user_logged_in();
+	public static function can_read_song( WP_REST_Request $request ): bool {
+		return Choir_Rehearsal_Access::can_view_song( (int) $request['id'] );
 	}
 
 	public static function list_songs(): WP_REST_Response {
-		$songs = get_posts(
-			array(
-				'post_type'      => Choir_Rehearsal_Post_Types::SONG,
-				'posts_per_page' => -1,
-				'orderby'        => 'title',
-				'order'          => 'ASC',
-				'post_status'    => 'publish',
-			)
+		$args = array(
+			'post_type'      => Choir_Rehearsal_Post_Types::SONG,
+			'posts_per_page' => -1,
+			'orderby'        => 'title',
+			'order'          => 'ASC',
+			'post_status'    => 'publish',
 		);
+
+		if ( Choir_Rehearsal_Access::requires_login() && ! Choir_Rehearsal_Access::can_listen() ) {
+			$args['meta_query'] = Choir_Rehearsal_Post_Types::public_songs_meta_query();
+		}
+
+		$songs = get_posts( $args );
 
 		$data = array_map(
 			static fn( WP_Post $song ) => self::format_song_summary( $song ),
@@ -76,7 +80,11 @@ final class Choir_Rehearsal_REST {
 	public static function get_song( WP_REST_Request $request ): WP_REST_Response|WP_Error {
 		$song = get_post( (int) $request['id'] );
 		if ( ! $song instanceof WP_Post || Choir_Rehearsal_Post_Types::SONG !== $song->post_type ) {
-			return new WP_Error( 'not_found', __( 'Song not found.', 'choir-rehearsal' ), array( 'status' => 404 ) );
+			return new WP_Error( 'not_found', __( 'Song not found.', 'compath-choir-rehearsal' ), array( 'status' => 404 ) );
+		}
+
+		if ( ! Choir_Rehearsal_Access::can_view_song( (int) $song->ID ) ) {
+			return new WP_Error( 'forbidden', __( 'You must sign in to view this song.', 'compath-choir-rehearsal' ), array( 'status' => 401 ) );
 		}
 
 		return new WP_REST_Response( self::format_song_detail( $song ), 200 );
@@ -101,20 +109,26 @@ final class Choir_Rehearsal_REST {
 	private static function format_song_detail( WP_Post $song ): array {
 		$tracks = array();
 		foreach ( Choir_Rehearsal_Post_Types::get_tracks_for_song( (int) $song->ID ) as $track ) {
+			$track_id = (int) $track->ID;
+			$source   = Choir_Rehearsal_Post_Types::get_track_source( $track_id );
 			$tracks[] = array(
-				'id'         => (int) $track->ID,
-				'voice'      => (string) get_post_meta( $track->ID, '_choir_voice_slug', true ),
-				'voice_label'=> Choir_Rehearsal_Post_Types::get_voice_label( (int) $track->ID ),
-				'audio_url'  => Choir_Rehearsal_Post_Types::get_audio_url( (int) $track->ID ),
+				'id'         => $track_id,
+				'voice'      => (string) get_post_meta( $track_id, '_choir_voice_slug', true ),
+				'voice_label'=> Choir_Rehearsal_Post_Types::get_voice_label( $track_id ),
+				'source'     => $source,
+				'audio_url'  => 'audio' === $source ? Choir_Rehearsal_Post_Types::get_audio_url( $track_id ) : '',
+				'youtube_url'=> 'youtube' === $source ? Choir_Rehearsal_Post_Types::get_track_youtube_url( $track_id ) : '',
+				'youtube_embed_url' => 'youtube' === $source ? Choir_Rehearsal_Post_Types::get_track_youtube_embed_url( $track_id ) : '',
 			);
 		}
 
 		return array(
 			'id'       => (int) $song->ID,
 			'title'    => get_the_title( $song ),
-			'notes'    => apply_filters( 'the_content', $song->post_content ),
+			'notes'    => apply_filters( 'the_content', $song->post_content ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- core content filter.
 			'url'      => get_permalink( $song ),
 			'score_pdf_url' => Choir_Rehearsal_Post_Types::get_score_pdf_url( (int) $song->ID ),
+			'has_youtube'   => Choir_Rehearsal_Post_Types::song_has_youtube_track( (int) $song->ID ),
 			'tracks'   => $tracks,
 		);
 	}

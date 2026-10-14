@@ -1,0 +1,17 @@
+DirectoryIndex index.php
+
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^ index.php [L]
+
+RewriteRule ^(config|data|src)/ - [F,L]
+</IfModule>
+
+<IfModule mod_authz_core.c>
+	<DirectoryMatch "(^|/)(config|data|src)(/|$)">
+		Require all denied
+	</DirectoryMatch>
+</IfModule>

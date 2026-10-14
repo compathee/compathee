@@ -1,0 +1,1335 @@
+# Copyright (C) 2026 Compath OÜ
+# This file is distributed under the GPL-2.0-or-later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Compath Choir Rehearsal 0.4.61\n"
+"Report-Msgid-Bugs-To: https://rehearsal.compath.ee\n"
+"POT-Creation-Date: 2026-09-24 10:55+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Domain: compath-choir-rehearsal\n"
+
+#: includes/class-voice-types.php:23
+msgid "Backing track"
+msgstr ""
+
+#: includes/class-voice-types.php:24
+msgid "Bass 1"
+msgstr ""
+
+#: includes/class-voice-types.php:25
+msgid "Bass 2"
+msgstr ""
+
+#: includes/class-voice-types.php:26
+msgid "Baritone 1"
+msgstr ""
+
+#: includes/class-voice-types.php:27
+msgid "Baritone 2"
+msgstr ""
+
+#: includes/class-voice-types.php:28
+msgid "Tenor 1"
+msgstr ""
+
+#: includes/class-voice-types.php:29
+msgid "Tenor 2"
+msgstr ""
+
+#: includes/class-voice-types.php:30
+msgid "Alto 1"
+msgstr ""
+
+#: includes/class-voice-types.php:31
+msgid "Alto 2"
+msgstr ""
+
+#: includes/class-voice-types.php:32
+msgid "Soprano 1"
+msgstr ""
+
+#: includes/class-voice-types.php:33
+msgid "Soprano 2"
+msgstr ""
+
+#: includes/class-voice-types.php:34 includes/class-post-types.php:389
+#: includes/class-feedback.php:214
+msgid "Other"
+msgstr ""
+
+#: includes/class-voice-types.php:48
+msgid "Voice Types"
+msgstr ""
+
+#: includes/class-voice-types.php:49
+msgid "Voice Type"
+msgstr ""
+
+#: includes/class-updater.php:68
+msgid "Sorry, you are not allowed to update plugins."
+msgstr ""
+
+#: includes/class-updater.php:150
+#, php-format
+msgid ""
+"Update available: Compath Choir Rehearsal %s. Use Update now below or on the "
+"Plugins screen."
+msgstr ""
+
+#: includes/class-updater.php:153
+msgid ""
+"An update is available for Compath Choir Rehearsal. Use Update now on the "
+"Plugins screen."
+msgstr ""
+
+#: includes/class-updater.php:166
+#, php-format
+msgid ""
+"Your installed version is %1$s, but the update server only reported %2$s "
+"(likely stale metadata). Open Plugins and use Update now if shown, upload "
+"the latest zip, or set Update JSON URL to the latest GitHub release update."
+"json."
+msgstr ""
+
+#: includes/class-updater.php:170
+msgid "Open Plugins"
+msgstr ""
+
+#: includes/class-updater.php:179
+#, php-format
+msgid "Compath Choir Rehearsal is up to date (version %s)."
+msgstr ""
+
+#: includes/class-updater.php:182
+msgid "Compath Choir Rehearsal is up to date."
+msgstr ""
+
+#: includes/class-updater.php:189
+msgid ""
+"Could not reach the update server. Check your connection or try again later. "
+"If this keeps happening, verify GitHub Releases are reachable from this site."
+msgstr ""
+
+#: includes/class-abilities.php:26
+msgid "List choir songs"
+msgstr ""
+
+#: includes/class-abilities.php:27
+msgid "Returns published rehearsal songs with track counts."
+msgstr ""
+
+#: includes/class-abilities.php:45
+msgid "Get choir song details"
+msgstr ""
+
+#: includes/class-abilities.php:46
+msgid "Returns one song with all voice tracks and audio URLs."
+msgstr ""
+
+#: includes/class-recording.php:78
+msgid "Microphone recording is available in Choir Rehearsal Pro."
+msgstr ""
+
+#: includes/class-recording.php:85 includes/class-feedback.php:99
+msgid "Security check failed. Reload the page and try again."
+msgstr ""
+
+#: includes/class-recording.php:93
+msgid "You are not allowed to upload recordings for this song."
+msgstr ""
+
+#: includes/class-recording.php:100
+msgid "No recording was uploaded."
+msgstr ""
+
+#: includes/class-recording.php:123
+msgid "Recording upload was blocked by the server."
+msgstr ""
+
+#: includes/class-recording.php:134 includes/class-post-types.php:48
+msgid "Song"
+msgstr ""
+
+#: includes/class-recording.php:171
+msgid "Could not save the recording in the Media Library."
+msgstr ""
+
+#: includes/class-recording.php:231
+msgid "Recording is too large for the server upload limit."
+msgstr ""
+
+#: includes/class-recording.php:232
+msgid "Recording was only partially uploaded."
+msgstr ""
+
+#: includes/class-recording.php:233
+msgid "No recording file was received."
+msgstr ""
+
+#: includes/class-recording.php:234
+msgid "Recording upload failed."
+msgstr ""
+
+#: includes/class-admin.php:36 includes/class-admin.php:37
+#: includes/class-admin.php:293
+msgid "Settings"
+msgstr ""
+
+#: includes/class-admin.php:64
+msgid "Permalinks refreshed and rehearsal page verified."
+msgstr ""
+
+#: includes/class-admin.php:72
+msgid "Choir Rehearsal Settings"
+msgstr ""
+
+#: includes/class-admin.php:77
+msgid "Documentation"
+msgstr ""
+
+#: includes/class-admin.php:83
+msgid "Plugin documentation and changelog"
+msgstr ""
+
+#: includes/class-admin.php:84
+msgid "Product page: order, install, pricing, changelog"
+msgstr ""
+
+#: includes/class-admin.php:92
+msgid "Edition"
+msgstr ""
+
+#: includes/class-admin.php:101
+#, php-format
+msgid ""
+"Lite: up to %d voice tracks per song; no microphone recording, song search, "
+"or editor Play preview."
+msgstr ""
+
+#: includes/class-admin.php:109 includes/class-admin.php:247
+#: includes/class-admin.php:302 includes/class-admin.php:767
+#: includes/class-frontend.php:374
+msgid "Buy Pro"
+msgstr ""
+
+#: includes/class-admin.php:113
+msgid ""
+"Unlimited voice tracks, microphone recording, song search, and Play preview "
+"in the editor."
+msgstr ""
+
+#: includes/class-admin.php:119
+msgid "Plugin version"
+msgstr ""
+
+#: includes/class-admin.php:125
+msgid "Updates are delivered through WordPress.org."
+msgstr ""
+
+#: includes/class-admin.php:130
+#, php-format
+msgid "Updates are published at %s"
+msgstr ""
+
+#: includes/class-admin.php:146
+#, php-format
+msgid "Last check: %1$s — update available (%2$s)."
+msgstr ""
+
+#: includes/class-admin.php:153
+#, php-format
+msgid "Last check: %s — up to date."
+msgstr ""
+
+#: includes/class-admin.php:159
+#, php-format
+msgid "Last check: %s — could not reach the update server."
+msgstr ""
+
+#: includes/class-admin.php:165
+#, php-format
+msgid "Last check: %s"
+msgstr ""
+
+#: includes/class-admin.php:176
+msgid "Rehearsal page"
+msgstr ""
+
+#: includes/class-admin.php:187
+msgid "— Select —"
+msgstr ""
+
+#: includes/class-admin.php:194
+msgid ""
+"WordPress page that shows the song list. Must contain the [choir_rehearsal] "
+"shortcode. You can add this page to your site menu under Appearance → Menus."
+msgstr ""
+
+#: includes/class-admin.php:198
+msgid "Require login"
+msgstr ""
+
+#: includes/class-admin.php:202
+msgid "Only signed-in choir roles can open the full private library."
+msgstr ""
+
+#: includes/class-admin.php:210
+msgid "Choir roles"
+msgstr ""
+
+#: includes/class-admin.php:213
+msgid "browse and listen to the rehearsal library"
+msgstr ""
+
+#: includes/class-admin.php:214
+msgid "listen plus add/edit songs in the admin"
+msgstr ""
+
+#: includes/class-admin.php:215
+msgid "full access including plugin Settings"
+msgstr ""
+
+#: includes/class-admin.php:222
+msgid "Update JSON URL"
+msgstr ""
+
+#: includes/class-admin.php:225
+msgid ""
+"Optional override. If empty, the plugin checks GitHub Releases, then falls "
+"back to the latest release asset update.json."
+msgstr ""
+
+#: includes/class-admin.php:229
+msgid "GitHub repository"
+msgstr ""
+
+#: includes/class-admin.php:232
+msgid ""
+"Used when Update JSON URL is empty. Each Lite release should include compath-"
+"choir-rehearsal.zip and update.json assets."
+msgstr ""
+
+#: includes/class-admin.php:242
+msgid "Choir Rehearsal Pro"
+msgstr ""
+
+#: includes/class-admin.php:243
+msgid ""
+"Unlimited tracks, microphone recording, search by song title, and Play "
+"preview in the editor. Keep this Lite plugin installed — Pro is a separate "
+"add-on."
+msgstr ""
+
+#: includes/class-admin.php:255
+msgid "Check for plugin updates"
+msgstr ""
+
+#: includes/class-admin.php:257
+msgid "Contacts GitHub Releases and shows the result on this page."
+msgstr ""
+
+#: includes/class-admin.php:260
+msgid "Refresh permalinks"
+msgstr ""
+
+#: includes/class-admin.php:269
+#, php-format
+msgid "Song list URL: %s"
+msgstr ""
+
+#: includes/class-admin.php:276
+msgid "Edit rehearsal page"
+msgstr ""
+
+#: includes/class-admin.php:278
+msgid "Appearance → Menus"
+msgstr ""
+
+#: includes/class-admin.php:314 includes/class-post-types.php:82
+msgid "Tracks"
+msgstr ""
+
+#: includes/class-admin.php:315
+msgid "Score"
+msgstr ""
+
+#: includes/class-admin.php:316
+msgid "Visibility"
+msgstr ""
+
+#: includes/class-admin.php:336
+msgid "Public"
+msgstr ""
+
+#: includes/class-admin.php:337
+msgid "Private"
+msgstr ""
+
+#: includes/class-admin.php:391 includes/class-admin.php:404
+msgid "Back to song list"
+msgstr ""
+
+#: includes/class-admin.php:420
+msgid ""
+"Add the song title, upload a PDF score, then record or upload each voice "
+"part."
+msgstr ""
+
+#: includes/class-admin.php:422
+msgid ""
+"Add the song title, upload a PDF score, then upload each voice part (up to 4 "
+"tracks in Lite)."
+msgstr ""
+
+#: includes/class-admin.php:434 includes/class-admin.php:440
+#: includes/class-admin.php:665
+msgid "Make private"
+msgstr ""
+
+#: includes/class-admin.php:434 includes/class-admin.php:440
+#: includes/class-admin.php:664
+msgid "Make public"
+msgstr ""
+
+#: includes/class-admin.php:447 includes/class-admin.php:666
+msgid "Anyone can view and listen without signing in."
+msgstr ""
+
+#: includes/class-admin.php:448 includes/class-admin.php:667
+msgid "Only signed-in users can access this song (when login is required)."
+msgstr ""
+
+#: includes/class-admin.php:459
+msgid "Sheet Music (PDF)"
+msgstr ""
+
+#: includes/class-admin.php:468
+msgid "Voice Tracks"
+msgstr ""
+
+#: includes/class-admin.php:539 includes/class-admin.php:728
+#: includes/class-admin.php:729 includes/class-frontend.php:225
+#: includes/class-frontend.php:792 includes/class-frontend.php:793
+msgid "Expand PDF"
+msgstr ""
+
+#: includes/class-admin.php:540 includes/class-admin.php:732
+#: includes/class-admin.php:733 includes/class-admin.php:744
+#: includes/class-frontend.php:226 includes/class-frontend.php:796
+#: includes/class-frontend.php:797 includes/class-frontend.php:807
+msgid "Close full screen"
+msgstr ""
+
+#: includes/class-admin.php:564 includes/class-frontend.php:122
+msgid "Now playing"
+msgstr ""
+
+#: includes/class-admin.php:565 includes/class-admin.php:630
+#: includes/class-admin.php:894 includes/class-admin.php:895
+#: includes/class-frontend.php:123 includes/class-frontend.php:873
+#: includes/class-frontend.php:892
+msgid "Play"
+msgstr ""
+
+#: includes/class-admin.php:566 includes/class-frontend.php:124
+msgid "Pause"
+msgstr ""
+
+#: includes/class-admin.php:567 includes/class-frontend.php:125
+#: includes/class-frontend.php:911
+msgid "Close player"
+msgstr ""
+
+#: includes/class-admin.php:581 includes/class-admin.php:639
+#: includes/class-admin.php:928
+msgid "Preview video"
+msgstr ""
+
+#: includes/class-admin.php:582 includes/class-frontend.php:196
+msgid "Hide video"
+msgstr ""
+
+#: includes/class-admin.php:596 includes/class-admin.php:654
+#: includes/class-admin.php:953 includes/class-admin.php:954
+#: includes/class-frontend.php:139 includes/class-frontend.php:898
+#: includes/class-frontend.php:899
+msgid "Open piano"
+msgstr ""
+
+#: includes/class-admin.php:597 includes/class-frontend.php:140
+#: includes/class-frontend.php:920
+msgid "Close piano"
+msgstr ""
+
+#: includes/class-admin.php:611 includes/class-admin.php:655
+#: includes/class-admin.php:963 includes/class-admin.php:964
+#: includes/class-frontend.php:154
+msgid "Open metronome"
+msgstr ""
+
+#: includes/class-admin.php:612 includes/class-frontend.php:155
+#: includes/class-frontend.php:931
+msgid "Close metronome"
+msgstr ""
+
+#: includes/class-admin.php:613 includes/class-frontend.php:156
+#: includes/class-frontend.php:937
+msgid "Start"
+msgstr ""
+
+#: includes/class-admin.php:614 includes/class-admin.php:649
+#: includes/class-admin.php:971 includes/class-frontend.php:157
+msgid "Stop"
+msgstr ""
+
+#: includes/class-admin.php:628 includes/class-admin.php:882
+msgid "Upload"
+msgstr ""
+
+#: includes/class-admin.php:629 includes/class-admin.php:886
+msgid "Record"
+msgstr ""
+
+#: includes/class-admin.php:631
+msgid "Use this audio"
+msgstr ""
+
+#: includes/class-admin.php:632 includes/class-admin.php:938
+msgid "Remove"
+msgstr ""
+
+#: includes/class-admin.php:633 includes/class-post-types.php:83
+msgid "Track"
+msgstr ""
+
+#: includes/class-admin.php:634 includes/class-admin.php:870
+#: includes/class-admin.php:876
+msgid "No audio selected"
+msgstr ""
+
+#: includes/class-admin.php:635 includes/class-admin.php:857
+msgid "Audio"
+msgstr ""
+
+#: includes/class-admin.php:636 includes/class-admin.php:867
+#: includes/class-frontend.php:835
+msgid "YouTube"
+msgstr ""
+
+#: includes/class-admin.php:637 includes/class-admin.php:906
+msgid "YouTube URL"
+msgstr ""
+
+#: includes/class-admin.php:638 includes/class-admin.php:917
+msgid ""
+"Official YouTube player opens on the song page (video stays visible). Not "
+"for downloading audio."
+msgstr ""
+
+#: includes/class-admin.php:640
+msgid "Select PDF"
+msgstr ""
+
+#: includes/class-admin.php:641
+msgid "Use this PDF"
+msgstr ""
+
+#: includes/class-admin.php:642 includes/class-admin.php:717
+msgid "No PDF selected"
+msgstr ""
+
+#: includes/class-admin.php:643 includes/class-admin.php:720
+msgid "Remove PDF"
+msgstr ""
+
+#: includes/class-admin.php:644 includes/class-frontend.php:789
+#: includes/class-frontend.php:790
+msgid "Sheet music"
+msgstr ""
+
+#: includes/class-admin.php:645 includes/class-admin.php:741
+#: includes/class-frontend.php:713 includes/class-frontend.php:804
+msgid "Previous"
+msgstr ""
+
+#: includes/class-admin.php:646 includes/class-admin.php:743
+#: includes/class-frontend.php:714 includes/class-frontend.php:806
+msgid "Next"
+msgstr ""
+
+#: includes/class-admin.php:647
+msgid "Swipe left or right to change pages"
+msgstr ""
+
+#: includes/class-admin.php:648 includes/class-admin.php:949
+msgid "Start recording"
+msgstr ""
+
+#: includes/class-admin.php:650
+msgid "Pause recording"
+msgstr ""
+
+#: includes/class-admin.php:651
+msgid "Resume recording"
+msgstr ""
+
+#: includes/class-admin.php:652 includes/class-admin.php:972
+msgid "Use recording"
+msgstr ""
+
+#: includes/class-admin.php:653 includes/class-admin.php:973
+msgid "Cancel"
+msgstr ""
+
+#: includes/class-admin.php:656
+msgid "Recording…"
+msgstr ""
+
+#: includes/class-admin.php:657
+msgid "Paused"
+msgstr ""
+
+#: includes/class-admin.php:658 includes/class-admin.php:944
+msgid "Click start and sing your voice part."
+msgstr ""
+
+#: includes/class-admin.php:659
+msgid "Uploading…"
+msgstr ""
+
+#: includes/class-admin.php:660
+msgid "Microphone access was denied."
+msgstr ""
+
+#: includes/class-admin.php:661
+msgid "Microphone recording is not supported in this browser."
+msgstr ""
+
+#: includes/class-admin.php:662
+msgid "Upload failed. Please try again."
+msgstr ""
+
+#: includes/class-admin.php:663
+msgid "Save the song first, then you can record voice tracks."
+msgstr ""
+
+#: includes/class-admin.php:673
+#, php-format
+msgid ""
+"Lite edition allows up to %d voice tracks per song. Upgrade to Pro for "
+"unlimited tracks, microphone recording, and Play preview in the editor."
+msgstr ""
+
+#: includes/class-admin.php:712
+msgid ""
+"Upload a PDF score. It appears below like on the public song page — swipe "
+"left/right to change pages while you record."
+msgstr ""
+
+#: includes/class-admin.php:719
+msgid "Upload / Select PDF"
+msgstr ""
+
+#: includes/class-admin.php:736
+msgid "Swipe to change pages · pinch to zoom"
+msgstr ""
+
+#: includes/class-admin.php:738
+msgid "No PDF selected yet."
+msgstr ""
+
+#: includes/class-admin.php:741 includes/class-frontend.php:223
+#: includes/class-frontend.php:804
+msgid "Previous page"
+msgstr ""
+
+#: includes/class-admin.php:743 includes/class-frontend.php:224
+#: includes/class-frontend.php:806
+msgid "Next page"
+msgstr ""
+
+#: includes/class-admin.php:744 includes/class-frontend.php:807
+msgid "Close"
+msgstr ""
+
+#: includes/class-admin.php:760
+msgid ""
+"Voice parts look like the public song page. Use the icons on the right to "
+"upload, record, or play."
+msgstr ""
+
+#: includes/class-admin.php:765
+#, php-format
+msgid ""
+"Add one voice part per row (up to %1$d in Lite). Upload audio with the icon "
+"on the right. %2$s"
+msgstr ""
+
+#: includes/class-admin.php:771
+msgid "Add one voice part per row. Upload audio with the icon on the right."
+msgstr ""
+
+#: includes/class-admin.php:794
+msgid "Add track"
+msgstr ""
+
+#: includes/class-admin.php:843
+msgid "Voice"
+msgstr ""
+
+#: includes/class-admin.php:848
+msgid "Track source"
+msgstr ""
+
+#: includes/class-admin.php:1093
+#, php-format
+msgid "%1$s — %2$s"
+msgstr ""
+
+#: includes/class-pages.php:88 includes/class-frontend.php:301
+#: includes/class-frontend.php:470
+msgid "Rehearsal Library"
+msgstr ""
+
+#: includes/class-pages.php:295 includes/class-demo-data.php:157
+#: includes/class-demo-data.php:184
+msgid "Sorry, you are not allowed to manage options."
+msgstr ""
+
+#: includes/class-rest.php:83
+msgid "Song not found."
+msgstr ""
+
+#: includes/class-rest.php:87
+msgid "You must sign in to view this song."
+msgstr ""
+
+#: includes/class-edition.php:69
+msgid "Pro"
+msgstr ""
+
+#: includes/class-edition.php:70
+msgid "Lite"
+msgstr ""
+
+#: includes/class-access.php:165
+msgid "Security check failed. Please try again."
+msgstr ""
+
+#: includes/class-access.php:175
+msgid "Please enter your username and password."
+msgstr ""
+
+#: includes/class-post-types.php:47
+msgid "Songs"
+msgstr ""
+
+#: includes/class-post-types.php:49
+msgid "Add Song"
+msgstr ""
+
+#: includes/class-post-types.php:50
+msgid "Add New Song"
+msgstr ""
+
+#: includes/class-post-types.php:51
+msgid "Edit Song"
+msgstr ""
+
+#: includes/class-post-types.php:52
+msgid "New Song"
+msgstr ""
+
+#: includes/class-post-types.php:53
+msgid "View Song"
+msgstr ""
+
+#: includes/class-post-types.php:54
+msgid "Search Songs"
+msgstr ""
+
+#: includes/class-post-types.php:55
+msgid "No songs found."
+msgstr ""
+
+#: includes/class-post-types.php:56
+msgid "No songs found in Trash."
+msgstr ""
+
+#: includes/class-post-types.php:57
+msgid "Choir Rehearsal"
+msgstr ""
+
+#: includes/class-frontend.php:83 includes/class-frontend.php:653
+msgid "Edit"
+msgstr ""
+
+#: includes/class-frontend.php:85 includes/class-frontend.php:644
+#, php-format
+msgid "%d track"
+msgid_plural "%d tracks"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/class-frontend.php:87
+#, php-format
+msgid "%d tracks"
+msgstr ""
+
+#: includes/class-frontend.php:88 includes/class-frontend.php:665
+#: includes/class-frontend.php:666
+msgid "PDF score attached"
+msgstr ""
+
+#: includes/class-frontend.php:89 includes/class-frontend.php:679
+#: includes/class-frontend.php:680
+msgid "Public — available without login"
+msgstr ""
+
+#: includes/class-frontend.php:90 includes/class-frontend.php:693
+#: includes/class-frontend.php:694
+msgid "Has YouTube track"
+msgstr ""
+
+#: includes/class-frontend.php:178
+msgid "Link copied to clipboard"
+msgstr ""
+
+#: includes/class-frontend.php:179
+msgid "Could not copy the link. Please copy it from the address bar."
+msgstr ""
+
+#: includes/class-frontend.php:195 includes/class-frontend.php:842
+#: includes/class-frontend.php:844
+msgid "Watch video"
+msgstr ""
+
+#: includes/class-frontend.php:197
+msgid "YouTube video player"
+msgstr ""
+
+#: includes/class-frontend.php:296
+msgid "Sign in for the full library"
+msgstr ""
+
+#: includes/class-frontend.php:298
+msgid ""
+"Public songs above are open to everyone. Sign in with your WordPress account "
+"to access the full rehearsal library."
+msgstr ""
+
+#: includes/class-frontend.php:303
+msgid ""
+"Sign in with your WordPress account to access songs, sheet music, and voice "
+"tracks."
+msgstr ""
+
+#: includes/class-frontend.php:319
+msgid "Username or email"
+msgstr ""
+
+#: includes/class-frontend.php:324
+msgid "Password"
+msgstr ""
+
+#: includes/class-frontend.php:331
+msgid "Remember me"
+msgstr ""
+
+#: includes/class-frontend.php:336
+msgid "Sign in"
+msgstr ""
+
+#: includes/class-frontend.php:342
+msgid "Forgot your password?"
+msgstr ""
+
+#: includes/class-frontend.php:365
+msgid "Signed in as"
+msgstr ""
+
+#: includes/class-frontend.php:379
+msgid "Add song"
+msgstr ""
+
+#: includes/class-frontend.php:382
+msgid "Manage library"
+msgstr ""
+
+#: includes/class-frontend.php:386
+msgid "Sign out"
+msgstr ""
+
+#: includes/class-frontend.php:400
+msgid "Full library requires a choir role"
+msgstr ""
+
+#: includes/class-frontend.php:418
+msgid "This song is private"
+msgstr ""
+
+#: includes/class-frontend.php:469
+msgid "Public songs"
+msgstr ""
+
+#: includes/class-frontend.php:476
+msgid "Search songs"
+msgstr ""
+
+#: includes/class-frontend.php:481
+msgid "Search by title…"
+msgstr ""
+
+#: includes/class-frontend.php:492
+msgid ""
+"No public songs yet. Sign in below for the full library, or ask an editor to "
+"make a song public."
+msgstr ""
+
+#: includes/class-frontend.php:493
+msgid "No songs yet."
+msgstr ""
+
+#: includes/class-frontend.php:500
+msgid "Add the first song"
+msgstr ""
+
+#: includes/class-frontend.php:507
+msgid "These songs are open to listen and view without signing in."
+msgstr ""
+
+#: includes/class-frontend.php:512
+msgid "No songs match your search."
+msgstr ""
+
+#: includes/class-frontend.php:723
+msgid "Song list pages"
+msgstr ""
+
+#: includes/class-frontend.php:729
+#, php-format
+msgid "Showing %1$d–%2$d of %3$d songs"
+msgstr ""
+
+#: includes/class-frontend.php:750
+msgid "All songs"
+msgstr ""
+
+#: includes/class-frontend.php:759 includes/class-frontend.php:760
+msgid "Share"
+msgstr ""
+
+#: includes/class-frontend.php:779
+msgid "Edit song"
+msgstr ""
+
+#: includes/class-frontend.php:813 includes/class-frontend.php:814
+msgid "Voice tracks"
+msgstr ""
+
+#: includes/class-frontend.php:816
+msgid "No tracks uploaded yet."
+msgstr ""
+
+#: includes/class-frontend.php:906
+msgid "Seek"
+msgstr ""
+
+#: includes/class-frontend.php:919
+msgid "Piano"
+msgstr ""
+
+#: includes/class-frontend.php:925
+msgid "Two octave piano keyboard"
+msgstr ""
+
+#: includes/class-frontend.php:930
+msgid "Metronome"
+msgstr ""
+
+#: includes/class-frontend.php:940
+msgid "BPM"
+msgstr ""
+
+#: includes/class-frontend.php:941
+msgid "Tempo"
+msgstr ""
+
+#: includes/class-demo-data.php:220
+msgid "Could not create the demo audio file in the Media Library."
+msgstr ""
+
+#: includes/class-demo-data.php:470
+#, php-format
+msgid "Loaded demo songs %1$d–%2$d (%3$d songs, %4$d tracks)."
+msgstr ""
+
+#: includes/class-demo-data.php:488
+#, php-format
+msgid "Deleted %1$d songs, %2$d tracks, and %3$d media files."
+msgstr ""
+
+#: includes/class-demo-data.php:502
+msgid "Demo library"
+msgstr ""
+
+#: includes/class-demo-data.php:508
+#, php-format
+msgid ""
+"Load %1$d sample songs (4 voice tracks each) so the public library shows "
+"pagination (%2$d songs per page), or wipe the whole rehearsal library."
+msgstr ""
+
+#: includes/class-demo-data.php:517
+msgid "Load demo songs"
+msgstr ""
+
+#: includes/class-demo-data.php:519 includes/class-demo-data.php:528
+msgid "All songs will be deleted from the library. Do you agree?"
+msgstr ""
+
+#: includes/class-demo-data.php:520
+msgid "Delete all songs"
+msgstr ""
+
+#: includes/class-demo-data.php:530 includes/class-migration.php:472
+#: includes/class-migration.php:473
+msgid "Yes"
+msgstr ""
+
+#: includes/class-demo-data.php:531 includes/class-migration.php:473
+msgid "No"
+msgstr ""
+
+#: includes/class-install-replace.php:85
+#, php-format
+msgid "Could not map update folder %1$s to installed folder %2$s."
+msgstr ""
+
+#: includes/class-roles.php:84
+#, php-format
+msgid ""
+"Activation adds WordPress roles %1$s (listen) and %2$s (manage songs). "
+"Assign them under Users. Settings stay limited to %3$s. Public songs remain "
+"open to %4$s."
+msgstr ""
+
+#: includes/class-roles.php:95
+#, php-format
+msgid "Role names %1$s, %2$s, %3$s, and %4$s are kept in English on purpose."
+msgstr ""
+
+#: includes/class-roles.php:106
+#, php-format
+msgid ""
+"%1$s, %2$s, %3$s, and %4$s can send a wish or bug from the song list. Lite "
+"and Pro both include this."
+msgstr ""
+
+#: includes/class-roles.php:117
+#, php-format
+msgid ""
+"Public songs above are open to everyone. Ask someone with the %1$s role to "
+"assign you the %2$s or %3$s role for the full rehearsal library."
+msgstr ""
+
+#: includes/class-roles.php:127
+#, php-format
+msgid ""
+"Ask someone with the %1$s role to assign you the %2$s or %3$s role to open "
+"private rehearsal songs."
+msgstr ""
+
+#: includes/class-feedback.php:176
+msgid "Sending…"
+msgstr ""
+
+#: includes/class-feedback.php:177 includes/class-feedback.php:236
+msgid "Send"
+msgstr ""
+
+#: includes/class-feedback.php:178 includes/class-feedback.php:700
+msgid "Could not send feedback. Please try again later."
+msgstr ""
+
+#: includes/class-feedback.php:201
+msgid "Send feedback"
+msgstr ""
+
+#: includes/class-feedback.php:208
+msgid "Wish, bug, or other note about Choir Rehearsal."
+msgstr ""
+
+#: includes/class-feedback.php:210
+msgid "Type"
+msgstr ""
+
+#: includes/class-feedback.php:212
+msgid "Bug"
+msgstr ""
+
+#: includes/class-feedback.php:213
+msgid "Wish"
+msgstr ""
+
+#: includes/class-feedback.php:218
+msgid "Title"
+msgstr ""
+
+#: includes/class-feedback.php:219
+msgid "Short summary"
+msgstr ""
+
+#: includes/class-feedback.php:222
+msgid "Description"
+msgstr ""
+
+#: includes/class-feedback.php:223
+msgid "What happened, or what you wish for"
+msgstr ""
+
+#: includes/class-feedback.php:226
+msgid "Name (optional)"
+msgstr ""
+
+#: includes/class-feedback.php:230
+msgid "Email"
+msgstr ""
+
+#: includes/class-feedback.php:233
+msgid "Your email is used only to answer this request."
+msgstr ""
+
+#: includes/class-feedback.php:567
+#, php-format
+msgid ""
+"Request received, case number %1$s. A confirmation has been sent to %2$s."
+msgstr ""
+
+#: includes/class-feedback.php:586 includes/class-feedback.php:605
+msgid "Please enter a type, title, and description."
+msgstr ""
+
+#: includes/class-feedback.php:614
+msgid "Please enter a valid email address."
+msgstr ""
+
+#: includes/class-feedback.php:648
+msgid "Please wait before sending more feedback."
+msgstr ""
+
+#: includes/class-migration.php:57
+msgid ""
+"Compath Choir Rehearsal is loaded from more than one folder. Open the "
+"migration wizard to keep one copy and remove the extras. Songs stay in the "
+"database."
+msgstr ""
+
+#: includes/class-migration.php:60 includes/class-migration.php:138
+msgid "Open migration wizard"
+msgstr ""
+
+#: includes/class-migration.php:96 includes/class-migration.php:97
+msgid "Fix duplicate install"
+msgstr ""
+
+#: includes/class-migration.php:106 includes/class-migration.php:107
+msgid "Choir Rehearsal migration"
+msgstr ""
+
+#: includes/class-migration.php:135
+msgid ""
+"Multiple Compath Choir Rehearsal (Lite) folders were found. Use the "
+"migration wizard before relying on Pro or updates."
+msgstr ""
+
+#: includes/class-migration.php:233
+msgid "Missing or unreadable"
+msgstr ""
+
+#: includes/class-migration.php:353
+msgid ""
+"Choir Rehearsal: duplicate Lite entries were removed from active plugins. "
+"Reload this page if Pro or features still look inactive."
+msgstr ""
+
+#: includes/class-migration.php:406
+msgid "Sorry, you are not allowed to manage plugins."
+msgstr ""
+
+#: includes/class-migration.php:423
+msgid "Fix duplicate Choir Rehearsal install"
+msgstr ""
+
+#: includes/class-migration.php:431
+msgid ""
+"Migration finished. Only one Lite folder should remain. You can activate Pro "
+"now if needed."
+msgstr ""
+
+#: includes/class-migration.php:437
+msgid ""
+"active_plugins repaired. Reload this page (F5) so Lite and Pro load cleanly."
+msgstr ""
+
+#: includes/class-migration.php:442
+msgid ""
+"After 0.4.39 the package folder was renamed for WordPress.org. Uploading a "
+"newer zip beside an existing choir-rehearsal/ folder creates a second copy. "
+"This wizard keeps one folder and removes the extras. Song data in the "
+"database is not deleted."
+msgstr ""
+
+#: includes/class-migration.php:448
+msgid "Only one Lite install was found on disk. No cleanup needed."
+msgstr ""
+
+#: includes/class-migration.php:455
+msgid ""
+"Only one Lite folder exists on disk, but WordPress still lists more than one "
+"Lite plugin as active (or a missing path). This breaks Pro and updates. Use "
+"the repair button below, then reload wp-admin."
+msgstr ""
+
+#: includes/class-migration.php:459
+msgid "Step 1 — Installs found"
+msgstr ""
+
+#: includes/class-migration.php:461
+msgid "Folder"
+msgstr ""
+
+#: includes/class-migration.php:462
+msgid "Version"
+msgstr ""
+
+#: includes/class-migration.php:463
+msgid "Plugin name"
+msgstr ""
+
+#: includes/class-migration.php:464
+msgid "On disk"
+msgstr ""
+
+#: includes/class-migration.php:465
+msgid "Active"
+msgstr ""
+
+#: includes/class-migration.php:472
+msgid "Missing"
+msgstr ""
+
+#: includes/class-migration.php:479
+msgid "Lite rows in active_plugins"
+msgstr ""
+
+#: includes/class-migration.php:485
+msgid "file missing"
+msgstr ""
+
+#: includes/class-migration.php:492
+msgid "Repair active_plugins"
+msgstr ""
+
+#: includes/class-migration.php:493
+msgid ""
+"Keeps choir-rehearsal/ (or the only folder on disk), removes ghost or "
+"duplicate Lite entries. Does not delete songs."
+msgstr ""
+
+#: includes/class-migration.php:497
+msgid "Repair active plugins list"
+msgstr ""
+
+#: includes/class-migration.php:505
+msgid "Step 2 — Choose folder to keep"
+msgstr ""
+
+#: includes/class-migration.php:513
+msgid "recommended for existing sites"
+msgstr ""
+
+#: includes/class-migration.php:517
+msgid "Save choice"
+msgstr ""
+
+#: includes/class-migration.php:520
+msgid "Step 3 — Deactivate other copies"
+msgstr ""
+
+#: includes/class-migration.php:521
+msgid ""
+"Turns off every Lite copy except the one you chose. Does not delete files."
+msgstr ""
+
+#: includes/class-migration.php:525
+msgid "Deactivate other Lite plugins"
+msgstr ""
+
+#: includes/class-migration.php:528
+msgid "Step 4 — Delete other folders"
+msgstr ""
+
+#: includes/class-migration.php:529
+msgid ""
+"Deletes extra plugin folders from disk only. Does not run uninstall and does "
+"not delete songs."
+msgstr ""
+
+#: includes/class-migration.php:530
+msgid ""
+"Delete every Lite folder except the one you chose? Songs in the database "
+"will NOT be deleted."
+msgstr ""
+
+#: includes/class-migration.php:533
+msgid "Delete other folders"
+msgstr ""
+
+#: includes/class-migration.php:536
+msgid "Step 5 — Activate kept copy"
+msgstr ""
+
+#: includes/class-migration.php:540
+msgid "Activate kept Lite plugin"
+msgstr ""
+
+#: includes/class-migration.php:565
+msgid "Invalid keep folder."
+msgstr ""
+
+#: includes/class-migration.php:579 includes/class-migration.php:603
+msgid "Choose which folder to keep first."
+msgstr ""
+
+#: includes/class-migration.php:633
+msgid "Could not delete some folders (use FTP). "
+msgstr ""
+
+#: includes/class-migration.php:657
+msgid "Keep folder is missing. Re-upload Lite into choir-rehearsal/."
+msgstr ""
+
+#: includes/class-migration.php:690
+msgid "Refusing to delete that path."
+msgstr ""
+
+#: includes/class-migration.php:732
+msgid "Could not read plugin folder."
+msgstr ""
+
+#: includes/class-migration.php:748
+#, php-format
+msgid "Could not delete %s"
+msgstr ""
+
+#: includes/class-migration.php:755
+#, php-format
+msgid "Could not remove %s — delete via FTP."
+msgstr ""
+
+#: includes/edition-wporg.php:53
+msgid "Standard"
+msgstr ""

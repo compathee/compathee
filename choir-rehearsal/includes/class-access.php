@@ -40,8 +40,32 @@ final class Choir_Rehearsal_Access {
 		return false;
 	}
 
+	public static function can_view_song( int $song_id ): bool {
+		if ( ! self::requires_login() ) {
+			return true;
+		}
+
+		if ( Choir_Rehearsal_Post_Types::is_public( $song_id ) ) {
+			return true;
+		}
+
+		return self::can_listen();
+	}
+
+	/**
+	 * True when the current rehearsal request must show the login wall
+	 * (private song page for guests). Library pages show public songs instead.
+	 */
 	public static function should_show_login(): bool {
-		return self::requires_login() && self::is_rehearsal_request() && ! is_user_logged_in();
+		if ( ! self::requires_login() || ! self::is_rehearsal_request() || is_user_logged_in() ) {
+			return false;
+		}
+
+		if ( is_singular( Choir_Rehearsal_Post_Types::SONG ) ) {
+			return ! self::can_view_song( get_queried_object_id() );
+		}
+
+		return false;
 	}
 
 	public static function can_view(): bool {
@@ -49,11 +73,79 @@ final class Choir_Rehearsal_Access {
 			return true;
 		}
 
-		return is_user_logged_in();
+		return self::can_listen();
 	}
 
+	/**
+	 * Guests browsing the library while login is required.
+	 */
+	public static function is_guest_library_request(): bool {
+		return self::requires_login() && ! is_user_logged_in() && self::is_rehearsal_request() && ! is_singular( Choir_Rehearsal_Post_Types::SONG );
+	}
+
+	/**
+	 * Logged-in users without Singer / Voice Leader / Administrator listen rights.
+	 */
+	public static function is_restricted_library_request(): bool {
+		return self::requires_login()
+			&& is_user_logged_in()
+			&& ! self::can_listen()
+			&& self::is_rehearsal_request()
+			&& ! is_singular( Choir_Rehearsal_Post_Types::SONG );
+	}
+
+	/**
+	 * Browse and listen to the full private library.
+	 */
+	public static function can_listen(): bool {
+		return is_user_logged_in()
+			&& (
+				current_user_can( Choir_Rehearsal_Roles::CAP_LISTEN )
+				|| current_user_can( 'manage_options' )
+			);
+	}
+
+	/**
+	 * Edit songs in wp-admin (Voice Leader or Administrator).
+	 */
 	public static function can_manage(): bool {
-		return current_user_can( 'edit_posts' );
+		return is_user_logged_in()
+			&& (
+				current_user_can( Choir_Rehearsal_Roles::CAP_MANAGE )
+				|| current_user_can( 'edit_choir_songs' )
+				|| current_user_can( 'manage_options' )
+			);
+	}
+
+	/**
+	 * Plugin Settings screen — Administrator only.
+	 */
+	public static function can_manage_settings(): bool {
+		return current_user_can( 'manage_options' );
+	}
+
+	/**
+	 * English role badge for the frontend user bar (role names are not translated).
+	 */
+	public static function get_role_badge_label( ?WP_User $user = null ): string {
+		if ( ! $user instanceof WP_User ) {
+			$user = wp_get_current_user();
+		}
+		if ( ! $user instanceof WP_User || ! $user->exists() ) {
+			return '';
+		}
+
+		if ( user_can( $user, 'manage_options' ) ) {
+			return Choir_Rehearsal_Roles::LABEL_ADMINISTRATOR;
+		}
+		if ( user_can( $user, Choir_Rehearsal_Roles::CAP_MANAGE ) || user_can( $user, 'edit_choir_songs' ) ) {
+			return Choir_Rehearsal_Roles::LABEL_VOICE_LEADER;
+		}
+		if ( user_can( $user, Choir_Rehearsal_Roles::CAP_LISTEN ) ) {
+			return Choir_Rehearsal_Roles::LABEL_SINGER;
+		}
+
+		return '';
 	}
 
 	public static function get_login_error(): string {
@@ -65,21 +157,22 @@ final class Choir_Rehearsal_Access {
 			return;
 		}
 
-		if ( 'POST' !== ( $_SERVER['REQUEST_METHOD'] ?? '' ) || ! isset( $_POST['choir_rehearsal_login'] ) ) {
+		if ( 'POST' !== strtoupper( sanitize_text_field( wp_unslash( $_SERVER['REQUEST_METHOD'] ?? '' ) ) ) || ! isset( $_POST['choir_rehearsal_login'] ) ) {
 			return;
 		}
 
 		if ( ! isset( $_POST['choir_rehearsal_login_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['choir_rehearsal_login_nonce'] ) ), 'choir_rehearsal_login' ) ) {
-			self::$login_error = __( 'Security check failed. Please try again.', 'choir-rehearsal' );
+			self::$login_error = __( 'Security check failed. Please try again.', 'compath-choir-rehearsal' );
 			return;
 		}
 
 		$username = isset( $_POST['log'] ) ? sanitize_user( wp_unslash( (string) $_POST['log'] ) ) : '';
-		$password = isset( $_POST['pwd'] ) ? (string) wp_unslash( $_POST['pwd'] ) : '';
+		// Passwords must not be sanitized beyond unslash; wp_signon expects the raw password.
+		$password = isset( $_POST['pwd'] ) ? (string) wp_unslash( $_POST['pwd'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- password value.
 		$remember = ! empty( $_POST['rememberme'] );
 
 		if ( '' === $username || '' === $password ) {
-			self::$login_error = __( 'Please enter your username and password.', 'choir-rehearsal' );
+			self::$login_error = __( 'Please enter your username and password.', 'compath-choir-rehearsal' );
 			return;
 		}
 
@@ -131,7 +224,10 @@ final class Choir_Rehearsal_Access {
 	}
 
 	public static function get_requested_redirect_url(): string {
-		if ( isset( $_POST['redirect_to'] ) ) {
+		if (
+			isset( $_POST['redirect_to'], $_POST['choir_rehearsal_login_nonce'] )
+			&& wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['choir_rehearsal_login_nonce'] ) ), 'choir_rehearsal_login' )
+		) {
 			$redirect = esc_url_raw( wp_unslash( (string) $_POST['redirect_to'] ) );
 			if ( '' !== $redirect ) {
 				return $redirect;

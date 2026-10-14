@@ -11,7 +11,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 final class Choir_Rehearsal_Updater {
 
-	private const PLUGIN_SLUG = 'choir-rehearsal/choir-rehearsal.php';
+	private const LAST_CHECK_OPTION = 'choir_rehearsal_last_update_check';
+
+	/**
+	 * Installed plugin basename (folder may be choir-rehearsal or compath-choir-rehearsal).
+	 */
+	private static function plugin_basename_slug(): string {
+		return plugin_basename( CHOIR_REHEARSAL_FILE );
+	}
 
 	public static function register(): void {
 		if ( ! is_admin() ) {
@@ -21,6 +28,8 @@ final class Choir_Rehearsal_Updater {
 		add_filter( 'pre_set_site_transient_update_plugins', array( self::class, 'inject_update' ) );
 		add_filter( 'plugins_api', array( self::class, 'plugin_info' ), 10, 3 );
 		add_action( 'admin_post_choir_rehearsal_check_updates', array( self::class, 'handle_check_updates' ) );
+		add_action( 'admin_notices', array( self::class, 'render_check_notices' ) );
+		add_action( 'upgrader_process_complete', array( self::class, 'after_upgrade' ), 10, 2 );
 	}
 
 	public static function register_settings(): void {
@@ -43,16 +52,6 @@ final class Choir_Rehearsal_Updater {
 				'default'           => 'compathee/compathee',
 			)
 		);
-
-		register_setting(
-			'choir_rehearsal_settings',
-			'choir_rehearsal_license_key',
-			array(
-				'type'              => 'string',
-				'sanitize_callback' => 'sanitize_text_field',
-				'default'           => '',
-			)
-		);
 	}
 
 	public static function sanitize_github_repo( string $value ): string {
@@ -66,16 +65,138 @@ final class Choir_Rehearsal_Updater {
 
 	public static function handle_check_updates(): void {
 		if ( ! current_user_can( 'update_plugins' ) ) {
-			wp_die( esc_html__( 'Sorry, you are not allowed to update plugins.', 'choir-rehearsal' ) );
+			wp_die( esc_html__( 'Sorry, you are not allowed to update plugins.', 'compath-choir-rehearsal' ) );
 		}
 
 		check_admin_referer( 'choir_rehearsal_check_updates' );
 
-		delete_transient( 'choir_rehearsal_update_metadata' );
-		delete_site_transient( 'update_plugins' );
+		self::clear_update_caches();
 
-		wp_safe_redirect( admin_url( 'plugins.php?plugin_status=all&choir_rehearsal_checked=1' ) );
+		$remote    = self::fetch_remote_metadata();
+		$installed = self::get_installed_version();
+		$status    = 'failed';
+		$version   = '';
+
+		if ( is_array( $remote ) && isset( $remote['version'] ) ) {
+			$version = (string) $remote['version'];
+			if ( '' !== $installed && version_compare( $installed, $version, '<' ) ) {
+				$status = 'available';
+			} else {
+				$status = 'up_to_date';
+			}
+		}
+
+		update_option(
+			self::LAST_CHECK_OPTION,
+			array(
+				'time'           => time(),
+				'status'         => $status,
+				'remote_version' => $version,
+				'installed'      => $installed,
+			),
+			false
+		);
+
+		// Rebuild the update transient so Plugins shows a ready "Update now" when available.
+		if ( function_exists( 'wp_update_plugins' ) ) {
+			wp_update_plugins();
+		}
+
+		if ( 'available' === $status ) {
+			$redirect = add_query_arg(
+				array(
+					'choir_rehearsal_update_check'   => $status,
+					'choir_rehearsal_update_version' => $version,
+				),
+				admin_url( 'plugins.php' )
+			);
+		} else {
+			$redirect = add_query_arg(
+				array(
+					'post_type'                      => Choir_Rehearsal_Post_Types::SONG,
+					'page'                           => 'choir-rehearsal-settings',
+					'choir_rehearsal_update_check'   => $status,
+					'choir_rehearsal_update_version' => $version,
+				),
+				admin_url( 'edit.php' )
+			);
+		}
+
+		wp_safe_redirect( $redirect );
 		exit;
+	}
+
+	public static function render_check_notices(): void {
+		if ( ! current_user_can( 'update_plugins' ) ) {
+			return;
+		}
+
+		$status = isset( $_GET['choir_rehearsal_update_check'] )
+			? sanitize_key( (string) wp_unslash( $_GET['choir_rehearsal_update_check'] ) )
+			: '';
+
+		if ( '' === $status ) {
+			return;
+		}
+
+		$version = isset( $_GET['choir_rehearsal_update_version'] )
+			? sanitize_text_field( (string) wp_unslash( $_GET['choir_rehearsal_update_version'] ) )
+			: '';
+
+		if ( 'available' === $status ) {
+			$message = '' !== $version
+				? sprintf(
+					/* translators: %s: new plugin version */
+					__( 'Update available: Compath Choir Rehearsal %s. Use Update now below or on the Plugins screen.', 'compath-choir-rehearsal' ),
+					$version
+				)
+				: __( 'An update is available for Compath Choir Rehearsal. Use Update now on the Plugins screen.', 'compath-choir-rehearsal' );
+			echo '<div class="notice notice-success is-dismissible"><p>' . esc_html( $message ) . '</p></div>';
+			return;
+		}
+
+		if ( 'up_to_date' === $status ) {
+			$last      = self::get_last_check_result();
+			$installed = isset( $last['installed'] ) ? (string) $last['installed'] : '';
+
+			if ( '' !== $installed && '' !== $version && version_compare( $installed, $version, '>' ) ) {
+				echo '<div class="notice notice-warning is-dismissible"><p>';
+				printf(
+					/* translators: 1: installed version, 2: version reported by update server */
+					esc_html__( 'Your installed version is %1$s, but the update server only reported %2$s (likely stale metadata). Open Plugins and use Update now if shown, upload the latest zip, or set Update JSON URL to the latest GitHub release update.json.', 'compath-choir-rehearsal' ),
+					esc_html( $installed ),
+					esc_html( $version )
+				);
+				echo ' <a href="' . esc_url( admin_url( 'plugins.php' ) ) . '"><strong>' . esc_html__( 'Open Plugins', 'compath-choir-rehearsal' ) . '</strong></a>';
+				echo '</p></div>';
+				return;
+			}
+
+			$display = '' !== $installed ? $installed : $version;
+			$message = '' !== $display
+				? sprintf(
+					/* translators: %s: installed plugin version */
+					__( 'Compath Choir Rehearsal is up to date (version %s).', 'compath-choir-rehearsal' ),
+					$display
+				)
+				: __( 'Compath Choir Rehearsal is up to date.', 'compath-choir-rehearsal' );
+			echo '<div class="notice notice-success is-dismissible"><p>' . esc_html( $message ) . '</p></div>';
+			return;
+		}
+
+		if ( 'failed' === $status ) {
+			echo '<div class="notice notice-error is-dismissible"><p>' .
+				esc_html__( 'Could not reach the update server. Check your connection or try again later. If this keeps happening, verify GitHub Releases are reachable from this site.', 'compath-choir-rehearsal' ) .
+				'</p></div>';
+		}
+	}
+
+	/**
+	 * @return array{time?:int,status?:string,remote_version?:string,installed?:string}
+	 */
+	public static function get_last_check_result(): array {
+		$stored = get_option( self::LAST_CHECK_OPTION, array() );
+		return is_array( $stored ) ? $stored : array();
 	}
 
 	public static function get_check_updates_url(): string {
@@ -83,6 +204,74 @@ final class Choir_Rehearsal_Updater {
 			admin_url( 'admin-post.php?action=choir_rehearsal_check_updates' ),
 			'choir_rehearsal_check_updates'
 		);
+	}
+
+	/**
+	 * @param WP_Upgrader $upgrader
+	 * @param array<string, mixed> $options
+	 */
+	public static function after_upgrade( $upgrader, array $options ): void {
+		if ( ( $options['type'] ?? '' ) !== 'plugin' ) {
+			return;
+		}
+
+		$updated = array();
+		if ( ! empty( $options['plugins'] ) && is_array( $options['plugins'] ) ) {
+			$updated = $options['plugins'];
+		} elseif ( ! empty( $options['plugin'] ) && is_string( $options['plugin'] ) ) {
+			$updated = array( $options['plugin'] );
+		}
+
+		if ( ! in_array( self::plugin_basename_slug(), $updated, true ) ) {
+			return;
+		}
+
+		self::clear_update_caches();
+
+		$transient = get_site_transient( 'update_plugins' );
+		if ( is_object( $transient ) ) {
+			if ( isset( $transient->response[ self::plugin_basename_slug() ] ) ) {
+				unset( $transient->response[ self::plugin_basename_slug() ] );
+			}
+			$installed = self::get_installed_version();
+			if ( '' !== $installed ) {
+				$transient->no_update[ self::plugin_basename_slug() ] = (object) array(
+					'slug'        => 'choir-rehearsal',
+					'plugin'      => self::plugin_basename_slug(),
+					'new_version' => $installed,
+					'url'         => 'https://rehearsal.compath.ee',
+				);
+			}
+			set_site_transient( 'update_plugins', $transient );
+		}
+	}
+
+	private static function clear_update_caches(): void {
+		delete_transient( 'choir_rehearsal_update_metadata' );
+		delete_site_transient( 'update_plugins' );
+
+		if ( function_exists( 'wp_clean_plugins_cache' ) ) {
+			wp_clean_plugins_cache( true );
+		}
+	}
+
+	/**
+	 * Installed version from disk (not the in-memory constant — that stays old mid-upgrade).
+	 */
+	private static function get_installed_version(): string {
+		$plugin_file = WP_PLUGIN_DIR . '/' . self::plugin_basename_slug();
+		if ( ! is_readable( $plugin_file ) ) {
+			return defined( 'CHOIR_REHEARSAL_VERSION' ) ? (string) CHOIR_REHEARSAL_VERSION : '';
+		}
+
+		if ( ! function_exists( 'get_plugin_data' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+
+		$data = get_plugin_data( $plugin_file, false, false );
+		$version = isset( $data['Version'] ) ? (string) $data['Version'] : '';
+
+		return '' !== $version ? $version : ( defined( 'CHOIR_REHEARSAL_VERSION' ) ? (string) CHOIR_REHEARSAL_VERSION : '' );
 	}
 
 	/**
@@ -94,18 +283,38 @@ final class Choir_Rehearsal_Updater {
 			return $transient;
 		}
 
+		// WordPress briefly sets an empty transient; do not inject then or updates reappear after install.
+		if ( empty( $transient->checked ) || ! is_array( $transient->checked ) ) {
+			return $transient;
+		}
+
+		$current = isset( $transient->checked[ self::plugin_basename_slug() ] )
+			? (string) $transient->checked[ self::plugin_basename_slug() ]
+			: self::get_installed_version();
+
+		if ( '' === $current ) {
+			return $transient;
+		}
+
 		$remote = self::fetch_remote_metadata();
 		if ( null === $remote ) {
 			return $transient;
 		}
 
-		if ( version_compare( CHOIR_REHEARSAL_VERSION, $remote['version'], '>=' ) ) {
+		if ( version_compare( $current, $remote['version'], '>=' ) ) {
+			unset( $transient->response[ self::plugin_basename_slug() ] );
+			$transient->no_update[ self::plugin_basename_slug() ] = (object) array(
+				'slug'        => 'choir-rehearsal',
+				'plugin'      => self::plugin_basename_slug(),
+				'new_version' => $current,
+				'url'         => $remote['homepage'],
+			);
 			return $transient;
 		}
 
-		$transient->response[ self::PLUGIN_SLUG ] = (object) array(
+		$transient->response[ self::plugin_basename_slug() ] = (object) array(
 			'slug'         => 'choir-rehearsal',
-			'plugin'       => self::PLUGIN_SLUG,
+			'plugin'       => self::plugin_basename_slug(),
 			'new_version'  => $remote['version'],
 			'url'          => $remote['homepage'],
 			'package'      => $remote['download_url'],
@@ -159,22 +368,21 @@ final class Choir_Rehearsal_Updater {
 			return $cached;
 		}
 
+		$candidates = array();
+
 		$json_url = trim( (string) get_option( 'choir_rehearsal_update_json_url', '' ) );
-		$data     = null;
-
 		if ( '' !== $json_url ) {
-			$data = self::request_json( $json_url );
+			$candidates[] = self::normalize_metadata( self::request_json( $json_url ) );
 		}
 
-		if ( null === $data ) {
-			$data = self::fetch_from_github();
+		$candidates[] = self::fetch_from_github();
+		$candidates[] = self::fetch_github_latest_release();
+
+		foreach ( self::fallback_update_json_urls() as $fallback_url ) {
+			$candidates[] = self::normalize_metadata( self::request_json( $fallback_url ) );
 		}
 
-		if ( null === $data ) {
-			$data = self::request_json( self::default_update_json_url() );
-		}
-
-		$normalized = self::normalize_metadata( $data );
+		$normalized = self::pick_highest_version_metadata( $candidates );
 		if ( null === $normalized ) {
 			return null;
 		}
@@ -183,16 +391,56 @@ final class Choir_Rehearsal_Updater {
 		return $normalized;
 	}
 
-	private static function default_update_json_url(): string {
-		$repo = (string) get_option( 'choir_rehearsal_github_repo', 'compathee/compathee' );
-		if ( ! preg_match( '#^([A-Za-z0-9_.-]+)/([A-Za-z0-9_.-]+)$#', $repo, $matches ) ) {
-			return '';
+	/**
+	 * @param list<array<string, mixed>|null> $candidates
+	 * @return array<string, mixed>|null
+	 */
+	private static function pick_highest_version_metadata( array $candidates ): ?array {
+		$best      = null;
+		$best_ver  = '';
+
+		foreach ( $candidates as $item ) {
+			if ( ! is_array( $item ) || empty( $item['version'] ) ) {
+				continue;
+			}
+
+			$version = (string) $item['version'];
+			if ( null === $best || version_compare( $version, $best_ver, '>' ) ) {
+				$best     = $item;
+				$best_ver = $version;
+			}
 		}
 
-		return sprintf(
-			'https://raw.githubusercontent.com/%s/%s/main/choir-rehearsal/update.json',
-			$matches[1],
-			$matches[2]
+		return $best;
+	}
+
+	/**
+	 * Durable fallbacks when the GitHub Releases API is unavailable.
+	 * Prefer the latest release asset `update.json` (hosted with each Lite release).
+	 *
+	 * @return list<string>
+	 */
+	private static function fallback_update_json_urls(): array {
+		$repo = (string) get_option( 'choir_rehearsal_github_repo', 'compathee/compathee' );
+		if ( ! preg_match( '#^([A-Za-z0-9_.-]+)/([A-Za-z0-9_.-]+)$#', $repo, $matches ) ) {
+			return array();
+		}
+
+		$owner = $matches[1];
+		$name  = $matches[2];
+
+		return array(
+			sprintf(
+				'https://github.com/%s/%s/releases/latest/download/update.json',
+				$owner,
+				$name
+			),
+			// Legacy path (only works if update.json exists on main).
+			sprintf(
+				'https://raw.githubusercontent.com/%s/%s/main/choir-rehearsal/update.json',
+				$owner,
+				$name
+			),
 		);
 	}
 
@@ -200,6 +448,24 @@ final class Choir_Rehearsal_Updater {
 	 * @return array<string, mixed>|null
 	 */
 	private static function fetch_from_github(): ?array {
+		$repo = (string) get_option( 'choir_rehearsal_github_repo', 'compathee/compathee' );
+		if ( ! preg_match( '#^([A-Za-z0-9_.-]+)/([A-Za-z0-9_.-]+)$#', $repo, $matches ) ) {
+			return null;
+		}
+
+		$owner = $matches[1];
+		$name  = $matches[2];
+
+		// Prefer the full list: /releases/latest can point at an unrelated non-plugin release.
+		return self::fetch_latest_choir_release_from_list( $owner, $name );
+	}
+
+	/**
+	 * Single-release GitHub API fallback when the paginated list is blocked or rate-limited.
+	 *
+	 * @return array<string, mixed>|null
+	 */
+	private static function fetch_github_latest_release(): ?array {
 		$repo = (string) get_option( 'choir_rehearsal_github_repo', 'compathee/compathee' );
 		if ( ! preg_match( '#^([A-Za-z0-9_.-]+)/([A-Za-z0-9_.-]+)$#', $repo, $matches ) ) {
 			return null;
@@ -225,13 +491,22 @@ final class Choir_Rehearsal_Updater {
 		);
 
 		if ( is_wp_error( $response ) ) {
-			return self::fetch_latest_choir_release_from_list( $owner, $name );
+			return null;
 		}
 
 		$status = (int) wp_remote_retrieve_response_code( $response );
-		$body   = json_decode( wp_remote_retrieve_body( $response ), true );
-		if ( 200 !== $status || ! is_array( $body ) ) {
-			return self::fetch_latest_choir_release_from_list( $owner, $name );
+		if ( $status < 200 || $status >= 300 ) {
+			return null;
+		}
+
+		$body = json_decode( (string) wp_remote_retrieve_body( $response ), true );
+		if ( ! is_array( $body ) || ! empty( $body['draft'] ) || ! empty( $body['prerelease'] ) ) {
+			return null;
+		}
+
+		$tag = (string) ( $body['tag_name'] ?? '' );
+		if ( str_contains( $tag, '-pro-v' ) || 1 !== preg_match( '/^(?:compath-)?choir-rehearsal-v\d/', $tag ) ) {
+			return null;
 		}
 
 		return self::map_github_release( $body );
@@ -242,7 +517,7 @@ final class Choir_Rehearsal_Updater {
 	 */
 	private static function fetch_latest_choir_release_from_list( string $owner, string $name ): ?array {
 		$url = sprintf(
-			'https://api.github.com/repos/%s/%s/releases?per_page=20',
+			'https://api.github.com/repos/%s/%s/releases?per_page=100',
 			rawurlencode( $owner ),
 			rawurlencode( $name )
 		);
@@ -262,8 +537,13 @@ final class Choir_Rehearsal_Updater {
 			return null;
 		}
 
-		$releases = json_decode( wp_remote_retrieve_body( $response ), true );
-		if ( ! is_array( $releases ) ) {
+		$status = (int) wp_remote_retrieve_response_code( $response );
+		if ( $status < 200 || $status >= 300 ) {
+			return null;
+		}
+
+		$releases = json_decode( (string) wp_remote_retrieve_body( $response ), true );
+		if ( ! is_array( $releases ) || ! array_is_list( $releases ) ) {
 			return null;
 		}
 
@@ -276,8 +556,15 @@ final class Choir_Rehearsal_Updater {
 			}
 
 			$tag     = (string) ( $release['tag_name'] ?? '' );
+			// Lite only: (compath-)choir-rehearsal-vX.Y.Z (exclude *-pro-v…).
+			if ( str_contains( $tag, '-pro-v' ) ) {
+				continue;
+			}
+			if ( 1 !== preg_match( '/^(?:compath-)?choir-rehearsal-v\d/', $tag ) ) {
+				continue;
+			}
 			$version = self::parse_release_version( $tag );
-			if ( '' === $version || 0 !== strpos( $tag, 'choir-rehearsal-v' ) ) {
+			if ( '' === $version ) {
 				continue;
 			}
 
@@ -304,9 +591,13 @@ final class Choir_Rehearsal_Updater {
 				if ( ! is_array( $asset ) ) {
 					continue;
 				}
-				if ( ( $asset['name'] ?? '' ) === 'choir-rehearsal.zip' ) {
+				$asset_name = (string) ( $asset['name'] ?? '' );
+				if ( in_array( $asset_name, array( 'compath-choir-rehearsal.zip', 'choir-rehearsal.zip' ), true ) ) {
 					$download_url = (string) ( $asset['browser_download_url'] ?? '' );
-					break;
+					if ( 'compath-choir-rehearsal.zip' === $asset_name ) {
+						break;
+					}
+					// Keep scanning so branded zip wins over legacy name.
 				}
 			}
 		}
@@ -316,7 +607,7 @@ final class Choir_Rehearsal_Updater {
 		}
 
 		return array(
-			'name'         => 'Choir Rehearsal',
+			'name'         => 'Compath Choir Rehearsal',
 			'version'      => $version,
 			'download_url' => $download_url,
 			'homepage'     => 'https://rehearsal.compath.ee',
@@ -341,25 +632,25 @@ final class Choir_Rehearsal_Updater {
 			return null;
 		}
 
-		$license = trim( (string) get_option( 'choir_rehearsal_license_key', '' ) );
-
 		$args = array(
 			'timeout' => 15,
 			'headers' => array(
-				'Accept' => 'application/json',
+				'Accept'     => 'application/json',
+				'User-Agent' => 'Choir-Rehearsal-Updater',
 			),
 		);
-
-		if ( '' !== $license ) {
-			$args['headers']['Authorization'] = 'Bearer ' . $license;
-		}
 
 		$response = wp_remote_get( $url, $args );
 		if ( is_wp_error( $response ) ) {
 			return null;
 		}
 
-		$body = json_decode( wp_remote_retrieve_body( $response ), true );
+		$status = (int) wp_remote_retrieve_response_code( $response );
+		if ( $status < 200 || $status >= 300 ) {
+			return null;
+		}
+
+		$body = json_decode( (string) wp_remote_retrieve_body( $response ), true );
 		return is_array( $body ) ? $body : null;
 	}
 
@@ -390,7 +681,7 @@ final class Choir_Rehearsal_Updater {
 		$sections = isset( $data['sections'] ) && is_array( $data['sections'] ) ? $data['sections'] : array();
 
 		return array(
-			'name'         => (string) ( $data['name'] ?? 'Choir Rehearsal' ),
+			'name'         => (string) ( $data['name'] ?? 'Compath Choir Rehearsal' ),
 			'version'      => ltrim( $version, 'v' ),
 			'download_url' => $package,
 			'homepage'     => (string) ( $data['homepage'] ?? 'https://rehearsal.compath.ee' ),

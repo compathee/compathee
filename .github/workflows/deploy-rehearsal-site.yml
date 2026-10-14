@@ -2,7 +2,7 @@ name: Deploy rehearsal.compath.ee
 
 on:
   push:
-    branches: [main, cursor/fix-plugin-updater-1441, cursor/choir-rehearsal-plugin-090e, cursor/sync-rehearsal-site-a04b]
+    branches: [main, cursor/lite-pro-hub-setup-abc2, cursor/choir-rehearsal-plugin-090e, cursor/youtube-embed-button-c2eb, cursor/rehearsal-site-version-060-cdc7]
     paths:
       - 'choir-rehearsal/docs/product-page.html'
       - 'choir-rehearsal/docs/deploy/**'
@@ -37,7 +37,12 @@ jobs:
           port: 21
           local-dir: deploy/
           server-dir: ${{ secrets.REHEARSAL_FTP_REMOTE_DIR }}
+          # api/ holds the live relay, config.php, feedback-rate/, and logs.
+          # This job uploads only the static shell and must not replace that folder.
           dangerous-clean-slate: false
+          exclude: |
+            api/**
+            **/api/**
 
       - name: Fix remote permissions (Apache 403)
         env:
