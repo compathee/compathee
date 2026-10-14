@@ -1,0 +1,8 @@
+[
+  {"from": "Services(/.*)?", "to": "/services/"},
+  {"from": "Contacts(/.*)?", "to": "/contact/"},
+  {"from": "et/Services(/.*)?", "to": "/et/teenused/"},
+  {"from": "et/Contacts(/.*)?", "to": "/et/kontakt/"},
+  {"from": "ru/Services(/.*)?", "to": "/ru/uslugi/"},
+  {"from": "ru/Contacts(/.*)?", "to": "/ru/kontakty/"}
+]

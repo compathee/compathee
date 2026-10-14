@@ -1,0 +1,30 @@
+# Compath.ee static site rules.
+# MERGE this into the existing /public_html/.htaccess. Do not replace that
+# file blindly: keep every hosting PHP handler line already there
+# (AddHandler, AddType, suPHP_ConfigPath, php_flag, php_value, and any SSL
+# or auth block the host added).
+# If RewriteEngine On is already present, paste only the RewriteRule lines.
+
+DirectoryIndex index.html index.php
+Options -Indexes +FollowSymLinks
+
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteRule ^Services(/.*)?$ /services/ [R=301,L]
+RewriteRule ^Contacts(/.*)?$ /contact/ [R=301,L]
+RewriteRule ^et/Services(/.*)?$ /et/teenused/ [R=301,L]
+RewriteRule ^et/Contacts(/.*)?$ /et/kontakt/ [R=301,L]
+RewriteRule ^ru/Services(/.*)?$ /ru/uslugi/ [R=301,L]
+RewriteRule ^ru/Contacts(/.*)?$ /ru/kontakty/ [R=301,L]
+RewriteCond %{THE_REQUEST} \s/+(.*/)?index\.html[\s?] [NC]
+RewriteRule ^(.*/)?index\.html$ /$1 [R=301,L]
+</IfModule>
+
+<IfModule mod_headers.c>
+Header set X-Content-Type-Options "nosniff"
+Header set Referrer-Policy "strict-origin-when-cross-origin"
+Header set X-Frame-Options "SAMEORIGIN"
+Header set Content-Security-Policy "default-src 'self'; img-src 'self'; style-src 'self'; script-src 'self'; form-action 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'"
+</IfModule>
+
+ErrorDocument 404 /404.html

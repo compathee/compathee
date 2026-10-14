@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img">
+  <title>Compath</title>
+  <defs>
+    <radialGradient id="orb" gradientUnits="userSpaceOnUse" cx="8.58" cy="19.56" r="24.23">
+      <stop offset="0" stop-color="#FEFE00"/>
+      <stop offset="1" stop-color="#FE4F00"/>
+    </radialGradient>
+  </defs>
+  <circle cx="16" cy="16" r="16" fill="url(#orb)"/>
+</svg>
