@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       Compath Choir Rehearsal
  * Plugin URI:        https://rehearsal.compath.ee
- * Description:       Private rehearsal library for choirs: songs, voice parts, audio or YouTube embeds, PDF scores, and a sticky player.
+ * Description:       Choir rehearsal library for voice part rehearsal: songs, SATB practice tracks, and sheet music.
  * Version:           0.4.67
  * Requires at least: 6.4
  * Requires PHP:      8.0
