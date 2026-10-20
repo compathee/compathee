@@ -1,0 +1,4 @@
+{
+  "name": "compathee n8n workflows",
+  "install": "set -euo pipefail; for tool in jq curl git; do command -v \"$tool\" >/dev/null || { echo \"missing required tool: $tool\" >&2; exit 1; }; done; for f in workflows/*.json; do jq -e '.nodes and .connections and .name' \"$f\" >/dev/null; done; echo 'workflow JSON validated'"
+}
