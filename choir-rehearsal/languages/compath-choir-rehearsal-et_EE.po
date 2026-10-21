@@ -180,6 +180,15 @@ msgstr ""
 msgid "Buy Pro"
 msgstr "Osta Pro"
 
+msgid "My orders.."
+msgstr "Minu tellimused.."
+
+msgid "Deactivate the Pro license on this site? Pro features will be disabled and the activation slot freed."
+msgstr "Kas deaktiveerida Pro litsents sellel saidil? Pro funktsioonid lülitatakse välja ja aktiveerimiskoht vabastatakse."
+
+msgid "License deactivated"
+msgstr "Litsents deaktiveeritud"
+
 msgid ""
 "Unlimited voice tracks, microphone recording, song search, and Play preview "
 "in the editor."

@@ -207,6 +207,7 @@ class Settings {
 	 */
 	public function settings_output() {
 		$this->license_form_submit();
+		$this->restore_license_notice();
 
 		$this->print_css();
 
@@ -245,7 +246,16 @@ class Settings {
 						<input class="widefat" type="text" autocomplete="off" name="activation_id" id="activation_id" value="<?php echo esc_attr( $this->activation_id ); ?>" autofocus>
 					<?php endif; ?>
 
-					<?php submit_button( 'activate' === $action ? $this->client->__( 'Activate License' ) : $this->client->__( 'Deactivate License' ) ); ?>
+					<?php $this->render_license_submit( $action ); ?>
+					<?php
+					if ( class_exists( '\Choir_Rehearsal_Admin', false ) && method_exists( '\Choir_Rehearsal_Admin', 'render_my_orders_button' ) ) {
+						\Choir_Rehearsal_Admin::render_my_orders_button();
+					} else {
+						echo '<p><a class="button button-secondary" href="' . esc_url( 'https://shop.compath.ee/customer-dashboard/' ) . '" target="_blank" rel="noopener noreferrer">';
+						esc_html_e( 'My orders..', 'compath-choir-rehearsal' );
+						echo '</a></p>';
+					}
+					?>
 				</form>
 			</div>
 		</div>
@@ -331,6 +341,11 @@ class Settings {
 			return;
 		}
 
+		if ( ! current_user_can( 'manage_options' ) ) {
+			$this->add_error( 'forbidden', $this->client->__( "You don't have permission to manage licenses." ) );
+			return;
+		}
+
 		// Check nonce.
 		if ( ! isset( $_POST['_nonce'], $_POST['_action'] ) ) {
 			$this->add_error( 'missing_info', $this->client->__( 'Please add all information' ) );
@@ -361,18 +376,141 @@ class Settings {
 
 		// handle deactivation.
 		if ( 'deactivate' === $_POST['_action'] ) {
-			$deactivated = $this->client->license()->deactivate( sanitize_text_field( $_POST['activation_id'] ) );
+			$activation_id = isset( $_POST['activation_id'] ) ? sanitize_text_field( wp_unslash( (string) $_POST['activation_id'] ) ) : '';
+			$deactivated   = $this->client->license()->deactivate( $activation_id );
 			if ( is_wp_error( $deactivated ) ) {
-				$this->add_error( $deactivated->get_error_code(), $deactivated->get_error_message() );
+				$url = $this->complete_deactivation( $deactivated );
+				if ( '' !== $url ) {
+					$this->redirect( $url );
+					exit;
+				}
+				return;
 			}
 
-			if ( ! empty( $this->menu_args['deactivated_redirect'] ) ) {
-				$this->redirect( $this->menu_args['deactivated_redirect'] );
+			$notice = __( 'License deactivated', 'compath-choir-rehearsal' );
+			if ( class_exists( '\Choir_Rehearsal_Admin', false ) && method_exists( '\Choir_Rehearsal_Admin', 'license_deactivated_notice' ) ) {
+				$notice = \Choir_Rehearsal_Admin::license_deactivated_notice();
+			}
+			$url = $this->complete_deactivation( true, $notice );
+			if ( '' !== $url ) {
+				$this->redirect( $url );
 				exit;
 			}
-
-			return $this->add_success( 'deactivated', $this->client->__( 'This site was successfully deactivated.', 'surecart' ) );
+			return;
 		}
+	}
+
+	/**
+	 * Persist a deactivation result and return the redirect URL when one is configured.
+	 *
+	 * An error never falls through to the success notice. The JS redirect drops
+	 * add_settings_error, so the message is stored for the next request.
+	 *
+	 * @param mixed  $deactivated     True on success, WP_Error on failure.
+	 * @param string $success_message Notice used when deactivation succeeded.
+	 */
+	public function complete_deactivation( $deactivated, string $success_message = '' ): string {
+		if ( is_wp_error( $deactivated ) ) {
+			$message = $deactivated->get_error_message();
+			if ( ! empty( $this->menu_args['deactivated_redirect'] ) ) {
+				$this->store_license_notice( 'error', $message );
+				return $this->license_notice_redirect_url( (string) $this->menu_args['deactivated_redirect'], 'error' );
+			}
+			$this->add_error( $deactivated->get_error_code(), $message );
+			return '';
+		}
+
+		if ( '' === $success_message ) {
+			$success_message = $this->deactivated_notice_text();
+		}
+		if ( ! empty( $this->menu_args['deactivated_redirect'] ) ) {
+			$this->store_license_notice( 'success', $success_message );
+			return $this->license_notice_redirect_url( (string) $this->menu_args['deactivated_redirect'], 'deactivated' );
+		}
+
+		$this->add_success( 'deactivated', $success_message );
+		return '';
+	}
+
+	/**
+	 * Show the notice saved before the client-side redirect.
+	 */
+	public function restore_license_notice(): void {
+		if ( ! isset( $_GET['choir_license_notice'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			return;
+		}
+
+		$flag    = sanitize_key( wp_unslash( (string) $_GET['choir_license_notice'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$stored  = get_transient( $this->license_notice_key() );
+		delete_transient( $this->license_notice_key() );
+		$message = ( is_array( $stored ) && isset( $stored['message'] ) ) ? (string) $stored['message'] : '';
+
+		if ( 'error' === $flag ) {
+			if ( '' === $message ) {
+				$message = __( 'Unknown error occurred, Please try again.', 'compath-choir-rehearsal' );
+			}
+			$this->add_error( 'deactivation_failed', $message );
+			return;
+		}
+
+		if ( 'deactivated' === $flag ) {
+			if ( '' === $message ) {
+				$message = $this->deactivated_notice_text();
+			}
+			$this->add_success( 'deactivated', $message );
+		}
+	}
+
+	/**
+	 * @param string $type    error or success.
+	 * @param string $message Notice text.
+	 */
+	private function store_license_notice( string $type, string $message ): void {
+		set_transient(
+			$this->license_notice_key(),
+			array(
+				'type'    => $type,
+				'message' => $message,
+			),
+			60
+		);
+	}
+
+	private function license_notice_key(): string {
+		$user_id = function_exists( 'get_current_user_id' ) ? (int) get_current_user_id() : 0;
+		return 'choir_rehearsal_pro_license_notice_' . $user_id;
+	}
+
+	private function license_notice_redirect_url( string $url, string $type ): string {
+		$flag = ( 'error' === $type ) ? 'error' : 'deactivated';
+		return add_query_arg( 'choir_license_notice', $flag, $url );
+	}
+
+	private function deactivated_notice_text(): string {
+		if ( class_exists( '\Choir_Rehearsal_Admin', false ) && method_exists( '\Choir_Rehearsal_Admin', 'license_deactivated_notice' ) ) {
+			return \Choir_Rehearsal_Admin::license_deactivated_notice();
+		}
+		return __( 'License deactivated', 'compath-choir-rehearsal' );
+	}
+
+	private function deactivate_confirm_text(): string {
+		if ( class_exists( '\Choir_Rehearsal_Admin', false ) && method_exists( '\Choir_Rehearsal_Admin', 'deactivate_license_confirm_text' ) ) {
+			return \Choir_Rehearsal_Admin::deactivate_license_confirm_text();
+		}
+		return __( 'Deactivate the Pro license on this site? Pro features will be disabled and the activation slot freed.', 'compath-choir-rehearsal' );
+	}
+
+	/**
+	 * @param string $action activate or deactivate.
+	 */
+	private function render_license_submit( string $action ): void {
+		if ( 'deactivate' !== $action ) {
+			submit_button( $this->client->__( 'Activate License' ) );
+			return;
+		}
+
+		$confirm = wp_json_encode( $this->deactivate_confirm_text() );
+		echo '<p class="submit"><input type="submit" name="submit" id="submit" class="button button-primary" value="' . esc_attr( $this->client->__( 'Deactivate License' ) ) . '" onclick="return confirm(' . esc_attr( (string) $confirm ) . ');" /></p>';
 	}
 
 	/**

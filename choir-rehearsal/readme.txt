@@ -4,7 +4,7 @@ Tags: choir, rehearsal, voice parts, practice tracks, sheet music
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 0.4.67
+Stable tag: 0.4.68
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -91,11 +91,20 @@ Yes. In the song editor, set a voice track’s source to **YouTube** and paste a
 
 == Upgrade Notice ==
 
+= 0.4.68 =
+
+Choir Rehearsal → Pro License includes a My orders.. button that opens the shop customer dashboard. Estonian and Russian catalogs include the Pro deactivation prompt.
+
 = 0.4.67 =
 
 Attaching a PDF or making a song public now requires confirmation that you have rights to the score or that it is public domain. The plugin records who confirmed and when.
 
 == Changelog ==
+
+= 0.4.68 =
+
+* Pro License: My orders.. opens the shop customer dashboard in a new tab
+* Estonian and Russian translations for that button and for Pro license deactivation
 
 = 0.4.67 =
 
