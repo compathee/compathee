@@ -179,6 +179,16 @@ msgstr "Osta Pro"
 msgid "Unlimited voice tracks, microphone recording, song search, Play preview in the editor, and song notes."
 msgstr "Piiramatu arv hääleradasid, mikrofonisalvestus, lauluotsing, Play-eelvaade redaktoris ja laulumärkmed."
 
+msgid "My orders.."
+msgstr "Minu tellimused.."
+
+msgid "Deactivate the Pro license on this site? Pro features will be disabled and the activation slot freed."
+msgstr "Kas deaktiveerida Pro litsents sellel saidil? Pro funktsioonid lülitatakse välja ja aktiveerimiskoht vabastatakse."
+
+msgid "License deactivated"
+msgstr "Litsents deaktiveeritud"
+
+
 msgid "Plugin version"
 msgstr "Plugina versioon"
 

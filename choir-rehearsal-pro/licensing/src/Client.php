@@ -305,10 +305,11 @@ class Client {
 			return $response;
 		}
 
-		$response_code = wp_remote_retrieve_response_code( $response );
+		$response_code = (int) wp_remote_retrieve_response_code( $response );
 		$response_body = json_decode( wp_remote_retrieve_body( $response ) );
 
-		if ( ! in_array( $response_code, array( 200, 201 ), true ) ) {
+		// DELETE often returns 204 No Content. Any 2xx is success, including an empty body.
+		if ( $response_code < 200 || $response_code >= 300 ) {
 			if ( 404 === $response_code ) {
 				return new \WP_Error( 'not_found', $this->__( 'Not found' ) );
 			}

@@ -312,6 +312,23 @@ final class Choir_Rehearsal_Admin {
 	}
 
 	/**
+	 * Shop customer dashboard link for the Pro License screen.
+	 */
+	public static function render_my_orders_button(): void {
+		echo '<p><a class="button button-secondary" href="' . esc_url( 'https://shop.compath.ee/customer-dashboard/' ) . '" target="_blank" rel="noopener noreferrer">';
+		esc_html_e( 'My orders..', 'compath-choir-rehearsal' );
+		echo '</a></p>';
+	}
+
+	public static function deactivate_license_confirm_text(): string {
+		return __( 'Deactivate the Pro license on this site? Pro features will be disabled and the activation slot freed.', 'compath-choir-rehearsal' );
+	}
+
+	public static function license_deactivated_notice(): string {
+		return __( 'License deactivated', 'compath-choir-rehearsal' );
+	}
+
+	/**
 	 * @param array<string, string> $links
 	 * @return array<string, string>
 	 */

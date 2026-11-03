@@ -181,6 +181,16 @@ msgstr "Купить Pro"
 msgid "Unlimited voice tracks, microphone recording, song search, Play preview in the editor, and song notes."
 msgstr "Неограниченные голосовые дорожки, запись с микрофона, поиск песен, Play-превью в редакторе и заметки к песне."
 
+msgid "My orders.."
+msgstr "Мои заказы.."
+
+msgid "Deactivate the Pro license on this site? Pro features will be disabled and the activation slot freed."
+msgstr "Деактивировать лицензию Pro на этом сайте? Функции Pro будут отключены, а слот активации освобождён."
+
+msgid "License deactivated"
+msgstr "Лицензия деактивирована"
+
+
 msgid "Plugin version"
 msgstr "Версия плагина"
 

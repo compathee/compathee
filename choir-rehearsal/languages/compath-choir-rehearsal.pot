@@ -212,6 +212,15 @@ msgstr ""
 msgid "Buy Pro"
 msgstr ""
 
+msgid "My orders.."
+msgstr ""
+
+msgid "Deactivate the Pro license on this site? Pro features will be disabled and the activation slot freed."
+msgstr ""
+
+msgid "License deactivated"
+msgstr ""
+
 #: includes/class-admin.php:113
 msgid "Unlimited voice tracks, microphone recording, song search, Play preview in the editor, and song notes."
 msgstr ""

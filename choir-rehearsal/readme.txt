@@ -102,6 +102,14 @@ Yes. In the song editor, set a voice track’s source to **YouTube** and paste a
 
 Pro: song notes and per-track recommendations. Voice Leader and Administrator write them; every role that can open the song can read them. No emails to singers.
 
+= 0.4.68 =
+
+Choir Rehearsal → Pro License includes a My orders.. button that opens the shop customer dashboard. The activation ID and license key are shown masked. Estonian and Russian catalogs include the Pro deactivation prompt.
+
+= 0.4.67 =
+
+Attaching a PDF or making a song public now requires confirmation that you have rights to the score or that it is public domain. The plugin records who confirmed and when.
+
 == Changelog ==
 
 = 0.4.69 =
@@ -113,6 +121,12 @@ Pro: song notes and per-track recommendations. Voice Leader and Administrator wr
 * Mobile: notes open as a bottom sheet with large tap targets, a locked page scroll, and a local draft if the sheet closes
 * Estonian and Russian strings for the new notes copy
 * Demo distribution (CHOIR_REHEARSAL_DISTRIBUTION=demo) includes song notes with no license. GitHub Lite without a license does not. The WordPress.org package does not include this feature
+
+= 0.4.68 =
+
+* Pro License: My orders.. opens the shop customer dashboard in a new tab
+* Pro License page shows a masked activation ID and license key; the full values stay out of the page HTML
+* Estonian and Russian translations for that button and for Pro license deactivation
 
 = 0.4.67 =
 

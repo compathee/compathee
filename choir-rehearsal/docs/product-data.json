@@ -137,6 +137,16 @@
       "open": true
     },
     {
+      "version": "0.4.68",
+      "summary": "Pro License: My orders.. opens the shop customer dashboard in a new tab",
+      "items": [
+        "Pro License: My orders.. opens the shop customer dashboard in a new tab",
+        "Pro License page shows a masked activation ID and license key; the full values stay out of the page HTML",
+        "Estonian and Russian translations for that button and for Pro license deactivation"
+      ],
+      "open": false
+    },
+    {
       "version": "0.4.67",
       "summary": "Copyright confirmation for PDF scores and public songs",
       "items": [
