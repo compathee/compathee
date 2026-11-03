@@ -147,15 +147,11 @@
 	(function () {
 		'use strict';
 
-		/** Tries active release branch first, then main after merge */
+		/** Product JSON comes from main. Older cursor branches are not consulted. */
 		var CONFIG = {
 			repo: 'compathee/compathee',
 			branches: [
-				'cursor/youtube-embed-button-c2eb',
-				'cursor/rehearsal-copy-main-abc2',
-				'cursor/lite-pro-hub-setup-abc2',
-				'main',
-				'cursor/choir-rehearsal-plugin-090e'
+				'main'
 			],
 			releasesUrl: 'https://api.github.com/repos/compathee/compathee/releases?per_page=100',
 			buyProUrl: 'https://shop.compath.ee/products/choir-rehearsal-pro/',
