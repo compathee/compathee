@@ -111,7 +111,7 @@ foreach ( array( '0.4.70', '0.4.69' ) as $version ) {
 $text = substr( $text, 0, $changelog_at ) . $changelog;
 $text = rtrim( $text ) . "\n";
 
-foreach ( array( '0.4.71', '0.4.70', '0.4.69', '0.4.68', '0.4.67' ) as $version ) {
+foreach ( array( '0.4.72', '0.4.71', '0.4.70', '0.4.69', '0.4.68', '0.4.67' ) as $version ) {
 	if ( ! str_contains( $text, "= {$version} =\n" ) ) {
 		fwrite( STDERR, "wporg readme is missing the {$version} release\n" );
 		exit( 1 );
