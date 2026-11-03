@@ -1210,6 +1210,18 @@ msgstr "Загруженные PDF-партитуры и аудиодорожк�
 msgid "The optional feedback form sends the message, name, email address, and technical site information to rehearsal.compath.ee (Compath OÜ). Non-secret Pro license identifiers are included only when a separate Pro add-on license is active. The full license key is not sent."
 msgstr "Необязательная форма обратной связи отправляет сообщение, имя, адрес электронной почты и технические сведения о сайте на rehearsal.compath.ee (Compath OÜ). Несекретные идентификаторы лицензии Pro добавляются только когда активна лицензия отдельного дополнения Pro. Полный лицензионный ключ не отправляется."
 
+msgid "Appearance"
+msgstr "Оформление"
+
+msgid "Classic"
+msgstr "Классическое"
+
+msgid "New"
+msgstr "Новое"
+
+msgid "New uses a light blue background and white cards for songs and voice tracks. Classic keeps the current look."
+msgstr "Новое включает светло-голубой фон и белые карточки песен и партий. Классическое оставляет текущий вид."
+
 msgid "Open song notes"
 msgstr "Открыть заметки к песне"
 

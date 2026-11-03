@@ -52,8 +52,152 @@
 	});
 
 	function formatTracks(count) {
+		const forms = config.i18n.trackForms;
+		if (forms && typeof forms === 'object') {
+			let category = count === 1 ? 'one' : 'other';
+			try {
+				if (typeof Intl !== 'undefined' && typeof Intl.PluralRules === 'function') {
+					category = new Intl.PluralRules(document.documentElement.lang || 'en').select(count);
+				}
+			} catch (err) {
+				category = count === 1 ? 'one' : 'other';
+			}
+			const template = forms[category] || forms.other || forms.one;
+			if (template) {
+				return String(template).replace('%d', String(count));
+			}
+		}
 		const template = count === 1 ? config.i18n.trackSingular : config.i18n.trackPlural;
 		return template.replace('%d', String(count));
+	}
+
+	function outlineSvg(className, inner) {
+		return '<svg class="' + className + '" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round">' + inner + '</svg>';
+	}
+
+	function createOutlinePdfBadge() {
+		const badge = document.createElement('span');
+		badge.className = 'choir-song-pdf-badge';
+		badge.title = config.i18n.pdfAttached || 'PDF score attached';
+		const sr = document.createElement('span');
+		sr.className = 'screen-reader-text';
+		sr.textContent = config.i18n.pdfAttached || 'PDF score attached';
+		badge.appendChild(sr);
+		badge.insertAdjacentHTML(
+			'beforeend',
+			outlineSvg(
+				'choir-song-pdf-badge__icon choir-icon choir-icon--pdf',
+				'<path d="M7 2.8h6.1L19.2 8.9V19.2A1.8 1.8 0 0 1 17.4 21H7A1.8 1.8 0 0 1 5.2 19.2V4.6A1.8 1.8 0 0 1 7 2.8z"/>' +
+					'<path d="M13 2.9V8.2h5.3"/>' +
+					'<text x="12" y="17.2" text-anchor="middle" font-size="6.4" font-weight="700" fill="currentColor" stroke="none" font-family="Arial, Helvetica, sans-serif">PDF</text>'
+			)
+		);
+		return badge;
+	}
+
+	function createOutlineYoutubeBadge() {
+		const badge = document.createElement('span');
+		badge.className = 'choir-song-youtube-badge';
+		badge.title = config.i18n.youtubeTrack || 'Has YouTube track';
+		const sr = document.createElement('span');
+		sr.className = 'screen-reader-text';
+		sr.textContent = config.i18n.youtubeTrack || 'Has YouTube track';
+		badge.appendChild(sr);
+		badge.insertAdjacentHTML(
+			'beforeend',
+			outlineSvg(
+				'choir-song-youtube-badge__icon choir-icon choir-icon--youtube',
+				'<rect x="3.2" y="6.1" width="17.6" height="11.8" rx="2.6"/>' +
+					'<path d="M10.5 9.2v5.6l4.8-2.8-4.8-2.8z"/>'
+			)
+		);
+		return badge;
+	}
+
+	function createOutlinePublicBadge() {
+		const badge = document.createElement('span');
+		badge.className = 'choir-song-public-badge';
+		badge.title = config.i18n.publicSong || 'Public — available without login';
+		const sr = document.createElement('span');
+		sr.className = 'screen-reader-text';
+		sr.textContent = config.i18n.publicSong || 'Public — available without login';
+		badge.appendChild(sr);
+		badge.insertAdjacentHTML(
+			'beforeend',
+			outlineSvg(
+				'choir-song-public-badge__icon choir-icon choir-icon--public',
+				'<circle cx="12" cy="12" r="8.15"/>' +
+					'<ellipse cx="12" cy="12" rx="3.5" ry="8.15"/>' +
+					'<path d="M4.1 12h15.8M5.3 8.15h13.4M5.3 15.85h13.4"/>'
+			)
+		);
+		return badge;
+	}
+
+	function createTrackBadge(count) {
+		const label = formatTracks(count);
+		const wrap = document.createElement('span');
+		wrap.className = 'choir-track-count';
+		wrap.setAttribute('aria-label', label);
+		const sr = document.createElement('span');
+		sr.className = 'screen-reader-text';
+		sr.textContent = label;
+		wrap.appendChild(sr);
+		const badge = document.createElement('span');
+		badge.className = 'choir-track-count__badge';
+		badge.setAttribute('aria-hidden', 'true');
+		const num = document.createElement('span');
+		num.className = 'choir-track-count__num';
+		num.textContent = String(count);
+		badge.appendChild(num);
+		badge.insertAdjacentHTML(
+			'beforeend',
+			outlineSvg(
+				'choir-icon choir-icon--notes',
+				'<ellipse cx="7.7" cy="16.7" rx="2.15" ry="1.55" transform="rotate(-24 7.7 16.7)"/>' +
+					'<ellipse cx="15.5" cy="15" rx="2.15" ry="1.55" transform="rotate(-24 15.5 15)"/>' +
+					'<path d="M9.55 15.9V6.6M17.35 14.2V4.9M9.55 6.6l7.8-1.7"/>'
+			)
+		);
+		wrap.appendChild(badge);
+		return wrap;
+	}
+
+	function cardSlot(className, node) {
+		const slot = document.createElement('span');
+		slot.className = 'choir-song-card__slot ' + className;
+		if (node) {
+			slot.appendChild(node);
+		} else {
+			slot.setAttribute('aria-hidden', 'true');
+		}
+		return slot;
+	}
+
+	function createWaveItem(song) {
+		const item = document.createElement('li');
+		item.setAttribute('data-song-title', song.title);
+
+		const link = document.createElement('a');
+		link.className = 'choir-song-list__title';
+		link.href = song.url;
+		link.textContent = song.title;
+		link.title = song.title;
+		item.appendChild(link);
+		item.appendChild(cardSlot('choir-song-card__pdf', song.hasPdf ? createOutlinePdfBadge() : null));
+		item.appendChild(cardSlot('choir-song-card__tracks', createTrackBadge(song.trackCount)));
+		item.appendChild(cardSlot('choir-song-card__youtube', song.hasYoutube ? createOutlineYoutubeBadge() : null));
+		item.appendChild(cardSlot('choir-song-card__public', showPublicBadges && song.isPublic ? createOutlinePublicBadge() : null));
+
+		if (song.editUrl) {
+			const edit = document.createElement('a');
+			edit.className = 'choir-song-edit';
+			edit.href = song.editUrl;
+			edit.textContent = config.i18n.edit;
+			item.appendChild(edit);
+		}
+
+		return item;
 	}
 
 	function createPdfBadge() {
@@ -139,6 +283,10 @@
 	}
 
 	function createItem(song) {
+		if (config.waveAppearance) {
+			return createWaveItem(song);
+		}
+
 		const item = document.createElement('li');
 		item.setAttribute('data-song-title', song.title);
 

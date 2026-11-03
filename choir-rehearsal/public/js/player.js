@@ -133,6 +133,24 @@
 		}
 	}
 
+	function clearActiveTrack() {
+		document.querySelectorAll('.choir-track-item.is-active').forEach(function (item) {
+			item.classList.remove('is-active');
+		});
+	}
+
+	function markActiveTrack(trackId) {
+		clearActiveTrack();
+		var id = parseInt(trackId, 10) || 0;
+		if (!id) {
+			return;
+		}
+		var item = document.querySelector('.choir-track-item[data-track-id="' + id + '"]');
+		if (item) {
+			item.classList.add('is-active');
+		}
+	}
+
 	function closePlayer() {
 		durationFixToken += 1;
 		currentTrackId = 0;
@@ -147,6 +165,7 @@
 		}
 		setPlaying(false);
 		setPlayerWaveform('');
+		clearActiveTrack();
 		player.classList.add('is-hidden');
 		player.setAttribute('aria-hidden', 'true');
 		document.body.classList.remove('choir-sticky-player-open');
@@ -167,6 +186,7 @@
 		}
 		currentTrackId = parseInt(trackId, 10) || 0;
 		currentUrl = url;
+		markActiveTrack(currentTrackId);
 		if (title) {
 			title.textContent = trackTitle || '';
 		}
