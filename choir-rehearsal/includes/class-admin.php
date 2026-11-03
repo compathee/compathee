@@ -79,6 +79,7 @@ final class Choir_Rehearsal_Admin {
 			)
 		);
 
+		Choir_Rehearsal_Appearance::register_settings();
 		Choir_Rehearsal_Pages::register_settings();
 		if ( Choir_Rehearsal_Distribution::uses_github_updater() ) {
 			Choir_Rehearsal_Updater::register_settings();
@@ -251,6 +252,22 @@ final class Choir_Rehearsal_Admin {
 							<p class="description">
 								<?php echo esc_html( Choir_Rehearsal_Roles::describe_activation() ); ?>
 							</p>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row">
+							<label for="choir_rehearsal_appearance"><?php esc_html_e( 'Appearance', 'compath-choir-rehearsal' ); ?></label>
+						</th>
+						<td>
+							<select name="<?php echo esc_attr( Choir_Rehearsal_Appearance::OPTION ); ?>" id="choir_rehearsal_appearance">
+								<option value="classic" <?php selected( Choir_Rehearsal_Appearance::current(), Choir_Rehearsal_Appearance::CLASSIC ); ?>>
+									<?php esc_html_e( 'Classic', 'compath-choir-rehearsal' ); ?>
+								</option>
+								<option value="new" <?php selected( Choir_Rehearsal_Appearance::current(), Choir_Rehearsal_Appearance::NEW_LOOK ); ?>>
+									<?php esc_html_e( 'New', 'compath-choir-rehearsal' ); ?>
+								</option>
+							</select>
+							<p class="description"><?php esc_html_e( 'New uses a light blue background and white cards for songs and voice tracks. Classic keeps the current look.', 'compath-choir-rehearsal' ); ?></p>
 						</td>
 					</tr>
 					<tr>

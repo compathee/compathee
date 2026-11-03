@@ -1339,6 +1339,22 @@ msgstr ""
 msgid "Standard"
 msgstr ""
 
+#: includes/class-admin.php
+msgid "Appearance"
+msgstr ""
+
+#: includes/class-admin.php
+msgid "Classic"
+msgstr ""
+
+#: includes/class-admin.php
+msgid "New"
+msgstr ""
+
+#: includes/class-admin.php
+msgid "New uses a light blue background and white cards for songs and voice tracks. Classic keeps the current look."
+msgstr ""
+
 msgid "Open song notes"
 msgstr ""
 

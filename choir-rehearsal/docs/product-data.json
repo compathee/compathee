@@ -126,6 +126,14 @@
   ],
   "changelog": [
     {
+      "version": "0.4.72",
+      "summary": "New optional Appearance (Settings → Appearance)",
+      "items": [
+        "New optional Appearance (Settings → Appearance)"
+      ],
+      "open": true
+    },
+    {
       "version": "0.4.71",
       "summary": "Song notes, mixer, and SureCart update check",
       "items": [
@@ -141,7 +149,26 @@
         "An inactive Pro license is explained on the page and the Lite check still runs. The license key and activation id are not shown",
         "Estonian and Russian strings for the notes, the mixer, and the update check"
       ],
-      "open": true
+      "open": false
+    },
+    {
+      "version": "0.4.70",
+      "summary": "Multi-track mixer on the song page",
+      "items": [
+        "Mixer sits on the Voice tracks row and builds one channel per audio track",
+        "Tracks play together on one timeline with volume, mute, solo, speed, and an A–B loop",
+        "Licensed Pro and the Demo distribution include the mixer. The WordPress.org package does not include it"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.69",
+      "summary": "Song notes and track recommendations",
+      "items": [
+        "Licensed Pro: Voice Leader and Administrator leave notes on a song. @ addresses a voice track and a time mark seeks the player",
+        "Demo distribution includes song notes with no license. GitHub Lite without a license does not. The WordPress.org package does not include song notes"
+      ],
+      "open": false
     },
     {
       "version": "0.4.68",

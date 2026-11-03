@@ -1,0 +1,410 @@
+/**
+ * New appearance (Settings → Appearance → New).
+ * Scoped to body.choir-appearance-wave so Classic and other WP screens stay unchanged.
+ * Background is CSS gradients plus appearance-wave-bg.svg (notes, waves, equalizer). No bitmaps.
+ */
+
+body.choir-appearance-wave {
+	--choir-wave-ink: #102044;
+	--choir-wave-accent: #1a3fd1;
+	--choir-wave-accent-ink: #ffffff;
+	--choir-wave-card: #ffffff;
+	--choir-wave-active: #d9e8fb;
+	--choir-wave-page: #e7f3fd;
+	--choir-col-icon: 40px;
+	--choir-col-count: 58px;
+	background-color: var(--choir-wave-page);
+	color: var(--choir-wave-ink);
+}
+
+body.choir-appearance-wave::before {
+	content: "";
+	position: fixed;
+	inset: 0;
+	z-index: -1;
+	pointer-events: none;
+	background-color: var(--choir-wave-page);
+	background-image:
+		url("appearance-wave-bg.svg"),
+		radial-gradient(ellipse 72% 48% at 84% -8%, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0) 60%),
+		radial-gradient(ellipse 40% 30% at 8% 20%, rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0) 70%),
+		linear-gradient(180deg, #f7fbff 0%, #e7f3fd 46%, #c5e2f7 100%);
+	background-repeat: no-repeat;
+	background-position: center bottom, center, center, center;
+	background-size: cover, cover, cover, cover;
+}
+
+html:has(body.choir-appearance-wave) {
+	background-color: var(--choir-wave-page, #e7f3fd);
+}
+
+body.choir-appearance-wave .site,
+body.choir-appearance-wave #page,
+body.choir-appearance-wave .wp-site-blocks,
+body.choir-appearance-wave .site-content,
+body.choir-appearance-wave #content,
+body.choir-appearance-wave .content-area,
+body.choir-appearance-wave #primary,
+body.choir-appearance-wave .site-main,
+body.choir-appearance-wave .entry-content:has(.choir-rehearsal-archive, .choir-rehearsal-single, .choir-rehearsal-login),
+body.choir-appearance-wave .wp-block-post-content:has(.choir-rehearsal-archive, .choir-rehearsal-single, .choir-rehearsal-login) {
+	background: transparent;
+	background-color: transparent;
+}
+
+body.choir-appearance-wave .choir-rehearsal-main {
+	color: var(--choir-wave-ink);
+	color-scheme: light;
+}
+
+body.choir-appearance-wave .choir-rehearsal-archive .choir-rehearsal-title,
+body.choir-appearance-wave .choir-rehearsal-single .choir-rehearsal-title,
+body.choir-appearance-wave .choir-section-title {
+	color: var(--choir-wave-accent);
+}
+
+body.choir-appearance-wave .choir-rehearsal-archive .choir-rehearsal-title {
+	font-size: clamp(1.65rem, 4.2vw, 2.5rem);
+	font-weight: 700;
+	letter-spacing: -0.03em;
+	line-height: 1.12;
+}
+
+body.choir-appearance-wave .choir-rehearsal-single .choir-rehearsal-title {
+	overflow-wrap: anywhere;
+}
+
+body.choir-appearance-wave .choir-back-link a,
+body.choir-appearance-wave .choir-rehearsal-archive__intro,
+body.choir-appearance-wave .choir-song-pagination__summary {
+	color: var(--choir-wave-ink);
+}
+
+body.choir-appearance-wave .choir-user-bar,
+body.choir-appearance-wave .choir-song-notes,
+body.choir-appearance-wave .choir-feedback__form,
+body.choir-appearance-wave .choir-rehearsal-login__card {
+	background: var(--choir-wave-card);
+	color: var(--choir-wave-ink);
+	border: 0;
+	border-radius: 16px;
+	box-shadow: 0 10px 28px rgba(26, 63, 209, 0.1);
+}
+
+body.choir-appearance-wave .choir-user-bar__label,
+body.choir-appearance-wave .choir-user-bar__name {
+	color: var(--choir-wave-ink);
+}
+
+body.choir-appearance-wave .choir-song-search__input {
+	background: #fff;
+	color: var(--choir-wave-ink);
+	border-color: rgba(26, 63, 209, 0.22);
+}
+
+body.choir-appearance-wave .screen-reader-text {
+	border: 0;
+	clip: rect(1px, 1px, 1px, 1px);
+	clip-path: inset(50%);
+	height: 1px;
+	margin: -1px;
+	overflow: hidden;
+	padding: 0;
+	position: absolute;
+	width: 1px;
+	word-wrap: normal !important;
+}
+
+body.choir-appearance-wave .choir-song-list--wave {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+body.choir-appearance-wave .choir-song-list--wave > li {
+	display: grid;
+	grid-template-columns:
+		minmax(0, 1fr)
+		var(--choir-col-icon)
+		var(--choir-col-count)
+		var(--choir-col-icon)
+		var(--choir-col-icon);
+	align-items: center;
+	column-gap: 10px;
+	box-sizing: border-box;
+	max-width: 100%;
+	margin: 0;
+	padding: 14px 16px;
+	border: 0;
+	border-bottom: 0;
+	border-radius: 16px;
+	background: var(--choir-wave-card);
+	color: var(--choir-wave-ink);
+	box-shadow: 0 10px 28px rgba(26, 63, 209, 0.1), 0 1px 2px rgba(16, 24, 40, 0.04);
+}
+
+body.choir-appearance-wave .choir-song-list--wave.choir-song-list--manage > li {
+	grid-template-columns:
+		minmax(0, 1fr)
+		var(--choir-col-icon)
+		var(--choir-col-count)
+		var(--choir-col-icon)
+		var(--choir-col-icon)
+		max-content;
+}
+
+body.choir-appearance-wave .choir-song-list--wave > li:hover {
+	box-shadow: 0 12px 32px rgba(26, 63, 209, 0.16);
+}
+
+body.choir-appearance-wave .choir-song-list__title {
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+	line-clamp: 2;
+	overflow: hidden;
+	min-width: 0;
+	padding-right: 8px;
+	color: var(--choir-wave-ink);
+	font-size: 1.05rem;
+	font-weight: 700;
+	line-height: 1.3;
+	white-space: normal;
+	overflow-wrap: break-word;
+	text-decoration: none;
+}
+
+body.choir-appearance-wave .choir-song-list__title:hover,
+body.choir-appearance-wave .choir-song-list__title:focus-visible {
+	color: var(--choir-wave-accent);
+}
+
+body.choir-appearance-wave .choir-song-list__title:focus-visible,
+body.choir-appearance-wave .choir-song-edit:focus-visible,
+body.choir-appearance-wave .choir-play-track:focus-visible {
+	outline: 3px solid var(--choir-wave-accent);
+	outline-offset: 2px;
+}
+
+body.choir-appearance-wave .choir-song-card__slot {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 0;
+	min-height: 32px;
+}
+
+body.choir-appearance-wave .choir-song-pdf-badge,
+body.choir-appearance-wave .choir-song-youtube-badge,
+body.choir-appearance-wave .choir-song-public-badge,
+body.choir-appearance-wave .choir-track-count {
+	color: var(--choir-wave-accent);
+}
+
+body.choir-appearance-wave .choir-song-card__slot svg {
+	display: block;
+	width: 22px;
+	height: 22px;
+}
+
+body.choir-appearance-wave .choir-track-count {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	font-size: inherit;
+}
+
+body.choir-appearance-wave .choir-track-count__badge {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) 1.15rem;
+	align-items: center;
+	width: 100%;
+	column-gap: 1px;
+}
+
+body.choir-appearance-wave .choir-track-count__num {
+	justify-self: end;
+	color: var(--choir-wave-accent);
+	font-size: 0.95rem;
+	font-weight: 700;
+	font-variant-numeric: tabular-nums;
+	line-height: 1;
+}
+
+body.choir-appearance-wave .choir-icon--notes {
+	width: 18px;
+	height: 18px;
+	justify-self: center;
+}
+
+body.choir-appearance-wave a.choir-song-edit,
+body.choir-appearance-wave a.choir-user-bar__link:not(.choir-user-bar__link--muted):not(.choir-user-bar__link--buy) {
+	background: var(--choir-wave-accent);
+	color: var(--choir-wave-accent-ink);
+}
+
+body.choir-appearance-wave a.choir-user-bar__link--muted {
+	background: #fff;
+	color: var(--choir-wave-ink);
+}
+
+body.choir-appearance-wave .choir-track-list {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+body.choir-appearance-wave .choir-track-item {
+	box-sizing: border-box;
+	max-width: 100%;
+	margin: 0;
+	padding: 12px 14px;
+	border: 0;
+	border-bottom: 0;
+	border-radius: 16px;
+	background: var(--choir-wave-card);
+	color: var(--choir-wave-ink);
+	box-shadow: 0 10px 28px rgba(26, 63, 209, 0.1);
+}
+
+body.choir-appearance-wave .choir-track-item.is-active {
+	background: var(--choir-wave-active);
+	box-shadow: 0 0 0 2px var(--choir-wave-accent), 0 10px 28px rgba(26, 63, 209, 0.16);
+}
+
+body.choir-appearance-wave .choir-track-voice {
+	color: var(--choir-wave-ink);
+}
+
+body.choir-appearance-wave .choir-track-item.is-active button.choir-play-track {
+	box-shadow: 0 0 0 3px #fff, 0 0 0 5px var(--choir-wave-accent) !important;
+}
+
+body.choir-appearance-wave button.choir-mixer-launch,
+body.choir-appearance-wave a.choir-mixer-launch {
+	min-height: 44px;
+	background: #fff !important;
+	background-color: #fff !important;
+	color: var(--choir-wave-accent) !important;
+	-webkit-text-fill-color: var(--choir-wave-accent) !important;
+	border: 1.5px solid var(--choir-wave-accent) !important;
+}
+
+body.choir-appearance-wave button.choir-mixer-launch:hover,
+body.choir-appearance-wave button.choir-mixer-launch:focus-visible,
+body.choir-appearance-wave a.choir-mixer-launch:hover,
+body.choir-appearance-wave a.choir-mixer-launch:focus-visible {
+	background: #eef3ff !important;
+	background-color: #eef3ff !important;
+	color: var(--choir-wave-accent) !important;
+	-webkit-text-fill-color: var(--choir-wave-accent) !important;
+}
+
+body.choir-appearance-wave .choir-mixer-launch__pro {
+	background: var(--choir-wave-accent);
+	color: #fff;
+}
+
+body.choir-appearance-wave .choir-notes-open {
+	background: #fff;
+	color: var(--choir-wave-accent);
+	border-color: rgba(26, 63, 209, 0.28);
+}
+
+body.choir-appearance-wave .choir-song-pagination .page-numbers {
+	background: #fff;
+	color: var(--choir-wave-accent);
+}
+
+body.choir-appearance-wave .choir-song-pagination .page-numbers.current {
+	background: var(--choir-wave-accent);
+	border-color: var(--choir-wave-accent);
+	color: #fff;
+}
+
+@media (max-width: 480px) {
+	body.choir-appearance-wave {
+		--choir-col-icon: 32px;
+		--choir-col-count: 46px;
+	}
+
+	body.choir-appearance-wave .choir-rehearsal-main {
+		padding-left: 8px;
+		padding-right: 8px;
+	}
+
+	body.choir-appearance-wave .choir-song-list--wave > li {
+		column-gap: 4px;
+		padding: 10px 8px;
+	}
+
+	body.choir-appearance-wave .choir-song-list__title {
+		padding-right: 4px;
+		font-size: 0.95rem;
+	}
+
+	body.choir-appearance-wave .choir-song-card__slot svg {
+		width: 20px;
+		height: 20px;
+	}
+
+	body.choir-appearance-wave .choir-icon--notes {
+		width: 16px;
+		height: 16px;
+	}
+
+	body.choir-appearance-wave .choir-track-count__num {
+		font-size: 0.85rem;
+	}
+
+	body.choir-appearance-wave a.choir-song-edit {
+		padding: 6px 8px;
+		font-size: 0.75rem;
+	}
+
+	body.choir-appearance-wave .choir-tracks-heading {
+		flex-wrap: wrap;
+	}
+
+	body.choir-appearance-wave .choir-tracks-section .choir-track-item__main,
+	body.choir-appearance-wave .choir-track-name {
+		min-width: 0;
+		max-width: none;
+		flex: 0 0 auto;
+	}
+
+	body.choir-appearance-wave .choir-track-name .choir-track-voice {
+		flex: 0 0 auto;
+		max-width: 8rem;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	body.choir-appearance-wave .choir-track-waveform {
+		flex: 1 1 0;
+		min-width: 28px;
+	}
+
+	body.choir-appearance-wave .choir-pdf-viewer__controls {
+		gap: 6px;
+	}
+
+	body.choir-appearance-wave .choir-pdf-viewer__controls button,
+	body.choir-appearance-wave button.choir-pdf-prev,
+	body.choir-appearance-wave button.choir-pdf-next {
+		padding: 6px 8px !important;
+		font-size: 0.8rem;
+	}
+
+	body.choir-appearance-wave .choir-track-item {
+		gap: 6px;
+		padding: 10px 8px;
+	}
+
+	body.choir-appearance-wave button.choir-play-track {
+		padding: 8px 10px !important;
+	}
+}

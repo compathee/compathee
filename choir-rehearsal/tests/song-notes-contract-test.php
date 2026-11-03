@@ -39,7 +39,7 @@ $github_build = (string) file_get_contents(dirname($root) . '/scripts/build-gith
 check('wordpress.org zip omits song notes and the demo drop-in', str_contains($wporg_build, 'class-song-notes.php') && str_contains($wporg_build, 'song-notes.js') && str_contains($wporg_build, 'distribution-demo.php') && str_contains($wporg_build, 'wporg-readme.php'));
 check('github zip omits the demo drop-in', str_contains($github_build, 'distribution-demo.php'));
 check('bootstrap loads the demo drop-in after wordpress.org', str_contains($boot, 'distribution-wporg.php') && str_contains($boot, 'distribution-demo.php') && strpos($boot, 'distribution-wporg.php') < strpos($boot, 'distribution-demo.php'));
-check('version is 0.4.71', str_contains($boot, "define( 'CHOIR_REHEARSAL_VERSION', '0.4.71' )"));
+check('version is 0.4.72', str_contains($boot, "define( 'CHOIR_REHEARSAL_VERSION', '0.4.72' )"));
 check('pro add-on is 0.5.4', str_contains($pro, "define( 'CHOIR_REHEARSAL_PRO_VERSION', '0.5.4' )"));
 
 check('writes require the permission helper', str_contains($notes, 'Choir_Rehearsal_Song_Notes_Format::user_can_write('));
@@ -62,7 +62,7 @@ check('reader script does not auto-publish speech', str_contains($js, 'SpeechRec
 check('sheets and 44px targets exist', str_contains($css, 'choir-notes-sheet') && str_contains($css, '44px') && str_contains($css, '320px'));
 check('readme changelog is 0.4.71', str_contains($readme, '= 0.4.71 =') && str_contains($readme, 'CHOIR_REHEARSAL_DISTRIBUTION=demo'));
 $site_changelog = (string) file_get_contents($root . '/docs/product-data.json');
-check('site changelog lists 0.4.71 and 0.4.67', str_contains($site_changelog, '"version": "0.4.71"') && str_contains($site_changelog, '"version": "0.4.67"') && !str_contains($site_changelog, '"version": "0.4.70"') && !str_contains($site_changelog, '"version": "0.4.69"'));
+check('site changelog lists 0.4.67 through 0.4.72', str_contains($site_changelog, '"version": "0.4.72"') && str_contains($site_changelog, '"version": "0.4.71"') && str_contains($site_changelog, '"version": "0.4.70"') && str_contains($site_changelog, '"version": "0.4.69"') && str_contains($site_changelog, '"version": "0.4.68"') && str_contains($site_changelog, '"version": "0.4.67"'));
 check('placeholder copy is translatable', str_contains($notes, 'Type @ and choose a part to address advice to a track'));
 
 $et = (string) file_get_contents($root . '/languages/compath-choir-rehearsal-et.l10n.php');

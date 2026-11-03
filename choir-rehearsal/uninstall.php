@@ -34,6 +34,7 @@ foreach ( $choir_rehearsal_songs as $choir_rehearsal_song_id ) {
 }
 
 delete_option( 'choir_rehearsal_require_login' );
+delete_option( 'choir_rehearsal_appearance' );
 delete_option( 'choir_rehearsal_feedback_github_token' );
 delete_option( 'choir_rehearsal_feedback_github_repo' );
 delete_option( 'choir_rehearsal_notes_db' );

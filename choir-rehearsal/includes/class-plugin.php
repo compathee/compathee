@@ -28,6 +28,7 @@ if ( is_readable( $choir_rehearsal_notes_format ) && is_readable( $choir_rehears
 	require_once $choir_rehearsal_notes_format;
 	require_once $choir_rehearsal_notes;
 }
+require_once CHOIR_REHEARSAL_PATH . 'includes/class-appearance.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-frontend.php';
 // WordPress.org builds delete this file so they do not ship a gated mixer.
 $choir_rehearsal_mixer = CHOIR_REHEARSAL_PATH . 'includes/class-mixer.php';
@@ -110,6 +111,7 @@ final class Choir_Rehearsal_Plugin {
 		if ( class_exists( 'Choir_Rehearsal_Song_Notes', false ) ) {
 			Choir_Rehearsal_Song_Notes::register();
 		}
+		Choir_Rehearsal_Appearance::register();
 		Choir_Rehearsal_Frontend::register();
 		Choir_Rehearsal_Feedback::register();
 		Choir_Rehearsal_REST::register();

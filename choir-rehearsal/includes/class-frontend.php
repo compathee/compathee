@@ -60,6 +60,15 @@ final class Choir_Rehearsal_Frontend {
 			CHOIR_REHEARSAL_VERSION
 		);
 
+		if ( Choir_Rehearsal_Appearance::is_new() ) {
+			wp_enqueue_style(
+				'choir-rehearsal-appearance-wave',
+				CHOIR_REHEARSAL_URL . 'public/css/appearance-wave.css',
+				array( 'choir-rehearsal-public' ),
+				CHOIR_REHEARSAL_VERSION
+			);
+		}
+
 		if ( Choir_Rehearsal_Access::should_show_login() ) {
 			return;
 		}
@@ -79,12 +88,14 @@ final class Choir_Rehearsal_Frontend {
 			$song_list_data = array(
 				'songs'            => self::get_songs_search_index( Choir_Rehearsal_Access::can_manage(), $public_only ),
 				'showPublicBadges' => is_user_logged_in(),
+				'waveAppearance'   => Choir_Rehearsal_Appearance::is_new(),
 				'i18n'             => array(
 					'edit' => __( 'Edit', 'compath-choir-rehearsal' ),
 					/* translators: %d: number of tracks */
 					'trackSingular' => __( '%d track', 'compath-choir-rehearsal' ),
 					/* translators: %d: number of tracks */
 					'trackPlural'   => __( '%d tracks', 'compath-choir-rehearsal' ),
+					'trackForms'    => self::track_count_forms(),
 					'pdfAttached'   => __( 'PDF score attached', 'compath-choir-rehearsal' ),
 					'publicSong'    => __( 'Public — available without login', 'compath-choir-rehearsal' ),
 					'youtubeTrack'  => __( 'Has YouTube track', 'compath-choir-rehearsal' ),
@@ -245,6 +256,10 @@ final class Choir_Rehearsal_Frontend {
 
 		global $post;
 		return $post instanceof WP_Post && Choir_Rehearsal_Pages::page_has_shortcode( (string) $post->post_content );
+	}
+
+	public static function is_public_choir_view(): bool {
+		return self::should_enqueue();
 	}
 
 	private static function should_enqueue(): bool {
@@ -516,7 +531,7 @@ final class Choir_Rehearsal_Frontend {
 						<?php esc_html_e( 'No songs match your search.', 'compath-choir-rehearsal' ); ?>
 					</p>
 				<?php endif; ?>
-				<ul class="choir-song-list">
+				<ul class="choir-song-list<?php echo Choir_Rehearsal_Appearance::is_new() ? ' choir-song-list--wave' : ''; ?><?php echo ( Choir_Rehearsal_Appearance::is_new() && $can_manage ) ? ' choir-song-list--manage' : ''; ?>">
 					<?php foreach ( $songs as $song ) : ?>
 						<?php self::render_song_list_item( $song, $can_manage ); ?>
 					<?php endforeach; ?>
@@ -614,6 +629,11 @@ final class Choir_Rehearsal_Frontend {
 	}
 
 	private static function render_song_list_item( WP_Post $song, bool $can_manage ): void {
+		if ( Choir_Rehearsal_Appearance::is_new() ) {
+			self::render_song_list_item_wave( $song, $can_manage );
+			return;
+		}
+
 		$track_count = count( Choir_Rehearsal_Post_Types::get_tracks_for_song( (int) $song->ID ) );
 		$show_pdf    = Choir_Rehearsal_Edition::can_show_pdf_badge()
 			&& Choir_Rehearsal_Post_Types::get_score_pdf_id( (int) $song->ID ) > 0;
@@ -661,6 +681,132 @@ final class Choir_Rehearsal_Frontend {
 			<?php endif; ?>
 		</li>
 		<?php
+	}
+
+	/**
+	 * Plural templates for the track-count badge (EN one/other, ET one/other, RU one/few/many).
+	 *
+	 * @return array{one: string, few: string, many: string, other: string}
+	 */
+	private static function track_count_forms(): array {
+		return array(
+			/* translators: %d: number of tracks */
+			'one'   => _n( '%d track', '%d tracks', 1, 'compath-choir-rehearsal' ),
+			/* translators: %d: number of tracks */
+			'few'   => _n( '%d track', '%d tracks', 2, 'compath-choir-rehearsal' ),
+			/* translators: %d: number of tracks */
+			'many'  => _n( '%d track', '%d tracks', 5, 'compath-choir-rehearsal' ),
+			/* translators: %d: number of tracks */
+			'other' => _n( '%d track', '%d tracks', 0, 'compath-choir-rehearsal' ),
+		);
+	}
+
+	private static function track_count_label( int $count ): string {
+		return sprintf(
+			/* translators: %d: number of tracks */
+			_n( '%d track', '%d tracks', $count, 'compath-choir-rehearsal' ),
+			$count
+		);
+	}
+
+	/**
+	 * New-appearance row: title column plus fixed icon columns (empty when absent).
+	 */
+	private static function render_song_list_item_wave( WP_Post $song, bool $can_manage ): void {
+		$track_count = count( Choir_Rehearsal_Post_Types::get_tracks_for_song( (int) $song->ID ) );
+		$show_pdf    = Choir_Rehearsal_Edition::can_show_pdf_badge()
+			&& Choir_Rehearsal_Post_Types::get_score_pdf_id( (int) $song->ID ) > 0;
+		$show_public = is_user_logged_in()
+			&& Choir_Rehearsal_Post_Types::is_public( (int) $song->ID );
+		$show_youtube = Choir_Rehearsal_Post_Types::song_has_youtube_track( (int) $song->ID );
+		$title        = get_the_title( $song );
+		$label        = self::track_count_label( $track_count );
+		?>
+		<li data-song-title="<?php echo esc_attr( $title ); ?>">
+			<a class="choir-song-list__title" href="<?php echo esc_url( get_permalink( $song ) ); ?>" title="<?php echo esc_attr( $title ); ?>">
+				<?php echo esc_html( $title ); ?>
+			</a>
+			<span class="choir-song-card__slot choir-song-card__pdf"<?php echo $show_pdf ? '' : ' aria-hidden="true"'; ?>>
+				<?php if ( $show_pdf ) : ?>
+					<?php self::render_song_pdf_badge_wave(); ?>
+				<?php endif; ?>
+			</span>
+			<span class="choir-song-card__slot choir-song-card__tracks">
+				<span class="choir-track-count" aria-label="<?php echo esc_attr( $label ); ?>">
+					<span class="screen-reader-text"><?php echo esc_html( $label ); ?></span>
+					<span class="choir-track-count__badge" aria-hidden="true">
+						<span class="choir-track-count__num"><?php echo esc_html( (string) $track_count ); ?></span>
+						<?php self::render_outline_notes_icon(); ?>
+					</span>
+				</span>
+			</span>
+			<span class="choir-song-card__slot choir-song-card__youtube"<?php echo $show_youtube ? '' : ' aria-hidden="true"'; ?>>
+				<?php if ( $show_youtube ) : ?>
+					<?php self::render_song_youtube_badge_wave(); ?>
+				<?php endif; ?>
+			</span>
+			<span class="choir-song-card__slot choir-song-card__public"<?php echo $show_public ? '' : ' aria-hidden="true"'; ?>>
+				<?php if ( $show_public ) : ?>
+					<?php self::render_song_public_badge_wave(); ?>
+				<?php endif; ?>
+			</span>
+			<?php if ( $can_manage ) : ?>
+				<a class="choir-song-edit" href="<?php echo esc_url( get_edit_post_link( $song->ID, 'raw' ) ?: '' ); ?>">
+					<?php esc_html_e( 'Edit', 'compath-choir-rehearsal' ); ?>
+				</a>
+			<?php endif; ?>
+		</li>
+		<?php
+	}
+
+	private static function render_outline_svg_open( string $class ): void {
+		echo '<svg class="' . esc_attr( $class ) . '" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round">';
+	}
+
+	private static function render_song_pdf_badge_wave(): void {
+		?>
+		<span class="choir-song-pdf-badge" title="<?php esc_attr_e( 'PDF score attached', 'compath-choir-rehearsal' ); ?>">
+			<span class="screen-reader-text"><?php esc_html_e( 'PDF score attached', 'compath-choir-rehearsal' ); ?></span>
+			<?php self::render_outline_svg_open( 'choir-song-pdf-badge__icon choir-icon choir-icon--pdf' ); ?>
+			<path d="M7 2.8h6.1L19.2 8.9V19.2A1.8 1.8 0 0 1 17.4 21H7A1.8 1.8 0 0 1 5.2 19.2V4.6A1.8 1.8 0 0 1 7 2.8z"/>
+			<path d="M13 2.9V8.2h5.3"/>
+			<text x="12" y="17.2" text-anchor="middle" font-size="6.4" font-weight="700" fill="currentColor" stroke="none" font-family="Arial, Helvetica, sans-serif">PDF</text>
+			</svg>
+		</span>
+		<?php
+	}
+
+	private static function render_song_youtube_badge_wave(): void {
+		?>
+		<span class="choir-song-youtube-badge" title="<?php esc_attr_e( 'Has YouTube track', 'compath-choir-rehearsal' ); ?>">
+			<span class="screen-reader-text"><?php esc_html_e( 'Has YouTube track', 'compath-choir-rehearsal' ); ?></span>
+			<?php self::render_outline_svg_open( 'choir-song-youtube-badge__icon choir-icon choir-icon--youtube' ); ?>
+			<rect x="3.2" y="6.1" width="17.6" height="11.8" rx="2.6"/>
+			<path d="M10.5 9.2v5.6l4.8-2.8-4.8-2.8z"/>
+			</svg>
+		</span>
+		<?php
+	}
+
+	private static function render_song_public_badge_wave(): void {
+		?>
+		<span class="choir-song-public-badge" title="<?php esc_attr_e( 'Public — available without login', 'compath-choir-rehearsal' ); ?>">
+			<span class="screen-reader-text"><?php esc_html_e( 'Public — available without login', 'compath-choir-rehearsal' ); ?></span>
+			<?php self::render_outline_svg_open( 'choir-song-public-badge__icon choir-icon choir-icon--public' ); ?>
+			<circle cx="12" cy="12" r="8.15"/>
+			<ellipse cx="12" cy="12" rx="3.5" ry="8.15"/>
+			<path d="M4.1 12h15.8M5.3 8.15h13.4M5.3 15.85h13.4"/>
+			</svg>
+		</span>
+		<?php
+	}
+
+	private static function render_outline_notes_icon(): void {
+		self::render_outline_svg_open( 'choir-icon choir-icon--notes' );
+		echo '<ellipse cx="7.7" cy="16.7" rx="2.15" ry="1.55" transform="rotate(-24 7.7 16.7)"/>';
+		echo '<ellipse cx="15.5" cy="15" rx="2.15" ry="1.55" transform="rotate(-24 15.5 15)"/>';
+		echo '<path d="M9.55 15.9V6.6M17.35 14.2V4.9M9.55 6.6l7.8-1.7"/>';
+		echo '</svg>';
 	}
 
 	/**
