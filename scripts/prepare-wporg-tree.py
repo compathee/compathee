@@ -12,7 +12,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-PRO_LINE = re.compile(r"\bPro\b|SureCart|surecart|choir-rehearsal-pro", re.I)
+PRO_LINE = re.compile(r"\bPro\b|SureCart|surecart|choir-rehearsal-pro|song notes|\bmixer\b", re.I)
 VERSION_HEADING = re.compile(r"^= \d+\.\d+\.\d+ =\s*$")
 SECTION_HEADING = re.compile(r"^== .+ ==\s*$")
 
