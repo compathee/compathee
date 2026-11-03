@@ -4,7 +4,7 @@ Tags: choir, rehearsal, voice parts, practice tracks, sheet music
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 0.4.72
+Stable tag: 0.4.73
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
