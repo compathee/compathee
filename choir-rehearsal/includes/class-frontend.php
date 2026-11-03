@@ -690,18 +690,14 @@ final class Choir_Rehearsal_Frontend {
 	 */
 	private static function track_count_forms(): array {
 		return array(
-			'one'   =>
-				/* translators: %d: number of tracks */
-				_n( '%d track', '%d tracks', 1, 'compath-choir-rehearsal' ),
-			'few'   =>
-				/* translators: %d: number of tracks */
-				_n( '%d track', '%d tracks', 2, 'compath-choir-rehearsal' ),
-			'many'  =>
-				/* translators: %d: number of tracks */
-				_n( '%d track', '%d tracks', 5, 'compath-choir-rehearsal' ),
-			'other' =>
-				/* translators: %d: number of tracks */
-				_n( '%d track', '%d tracks', 0, 'compath-choir-rehearsal' ),
+			/* translators: %d: number of tracks */
+			'one'   => _n( '%d track', '%d tracks', 1, 'compath-choir-rehearsal' ),
+			/* translators: %d: number of tracks */
+			'few'   => _n( '%d track', '%d tracks', 2, 'compath-choir-rehearsal' ),
+			/* translators: %d: number of tracks */
+			'many'  => _n( '%d track', '%d tracks', 5, 'compath-choir-rehearsal' ),
+			/* translators: %d: number of tracks */
+			'other' => _n( '%d track', '%d tracks', 0, 'compath-choir-rehearsal' ),
 		);
 	}
 
