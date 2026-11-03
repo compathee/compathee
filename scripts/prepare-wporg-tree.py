@@ -30,14 +30,35 @@ def sanitize_readme(text: str) -> str:
         kept.append(line if line.endswith("\n") else line + "\n")
 
     out = "".join(kept)
-    # A release heading with no remaining bullets still has to be listed.
+    # A release heading with no remaining text still has to be listed.
+    # Stop at the next readme section so a following "== Changelog ==" is not
+    # treated as part of the previous version.
     parts = re.split(r"(?m)(?=^= \d+\.\d+\.\d+ =$)", out)
     rebuilt: list[str] = []
     for part in parts:
-        match = re.match(r"^= (\d+\.\d+\.\d+) =$", part.strip().splitlines()[0] if part.strip() else "")
-        if match and not re.search(r"(?m)^\*", part):
-            part = part.rstrip() + "\n\n* Included in this release.\n\n"
-        rebuilt.append(part)
+        lines = part.splitlines()
+        if not lines or not VERSION_HEADING.match(lines[0].strip()):
+            rebuilt.append(part)
+            continue
+        body: list[str] = []
+        rest: list[str] = []
+        in_rest = False
+        for line in lines[1:]:
+            if line.startswith("== "):
+                in_rest = True
+            if in_rest:
+                rest.append(line)
+            else:
+                body.append(line)
+        if any(line.strip() for line in body):
+            rebuilt.append(part)
+            continue
+        filler = lines[0] + "\n\n* Included in this release.\n\n"
+        if rest:
+            filler += "\n".join(rest)
+            if part.endswith("\n"):
+                filler += "\n"
+        rebuilt.append(filler)
     out = "".join(rebuilt)
     shipped = re.findall(r"(?m)^= (\d+\.\d+\.\d+) =$", out)
     if shipped != original_versions:
