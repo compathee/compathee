@@ -1319,3 +1319,57 @@ msgstr "Demo: laulumärkmed on saadaval ilma litsentsita. Mikrofonisalvestus, la
 
 msgid "Song notes store the note text and the WordPress user ID of the author on this website. Voice input is transcribed in the browser and the audio is not stored. The plugin does not email singers about notes."
 msgstr "Laulumärkmed salvestavad märkme teksti ja autori WordPressi kasutaja ID sellel veebisaidil. Hääl teisendatakse tekstiks brauseris ja heli ei salvestata. Plugin ei saada lauljatele märkmete kohta e-kirju."
+
+msgid "A–B loop"
+msgstr "A–B kordus"
+
+msgid "All tracks play together."
+msgstr "Kõik rajad mängivad koos."
+
+msgid "Back 5 seconds"
+msgstr "5 sekundit tagasi"
+
+msgid "Clear A–B loop"
+msgstr "Tühista A–B kordus"
+
+msgid "Close mixer"
+msgstr "Sulge mikser"
+
+msgid "Could not load one or more tracks."
+msgstr "Üht või mitut rada ei õnnestunud laadida."
+
+msgid "Could not start audio. Tap Play again."
+msgstr "Heli ei käivitunud. Puuduta uuesti nuppu Esita."
+
+msgid "Forward 5 seconds"
+msgstr "5 sekundit edasi"
+
+msgid "Loading %1$d of %2$d"
+msgstr "Laadin %1$d / %2$d"
+
+msgid "Loop %1$s–%2$s"
+msgstr "Kordus %1$s–%2$s"
+
+msgid "Mixer"
+msgstr "Mikser"
+
+msgid "Mute %s"
+msgstr "Vaigista %s"
+
+msgid "Open mixer"
+msgstr "Ava mikser"
+
+msgid "Reset"
+msgstr "Lähtesta"
+
+msgid "Solo %s"
+msgstr "Solo %s"
+
+msgid "Speed %s"
+msgstr "Kiirus %s"
+
+msgid "Unmute %s"
+msgstr "Tühista vaigistus %s"
+
+msgid "Unsolo %s"
+msgstr "Tühista solo %s"

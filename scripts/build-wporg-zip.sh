@@ -24,6 +24,7 @@ rm -rf \
   "$STAGE/$SLUG/docs/product-page.html" \
   "$STAGE/$SLUG/docs/product-data.json"
 rm -f "$STAGE/$SLUG/update.json"
+# Demo sandbox drop-in must never ship in the Plugin Directory zip.
 rm -f "$STAGE/$SLUG/includes/distribution-demo.php"
 # Song notes are not part of this package. Omit the implementation entirely.
 rm -f \
@@ -34,8 +35,32 @@ php "$ROOT/scripts/wporg-readme.php" "$STAGE/$SLUG/readme.txt"
 # Plugin Check fails if custom updater code is present, even when disabled at runtime.
 rm -f "$STAGE/$SLUG/includes/class-updater.php"
 # WordPress.org package: full feature set, no Lite/Pro commercial gates in shipped code.
+# The mixer is Pro/Demo only. Do not ship its PHP or scripts (no gated mixer code).
 cp "$STAGE/$SLUG/includes/edition-wporg.php" "$STAGE/$SLUG/includes/class-edition.php"
 rm -f "$STAGE/$SLUG/includes/edition-wporg.php"
+rm -f \
+  "$STAGE/$SLUG/includes/class-mixer.php" \
+  "$STAGE/$SLUG/public/js/mixer.js" \
+  "$STAGE/$SLUG/public/js/mixer-logic.js" \
+  "$STAGE/$SLUG/admin/js/mixer-launch.js"
+python3 - "$STAGE/$SLUG/readme.txt" <<'PY'
+import re, sys
+path = sys.argv[1]
+text = open(path, encoding="utf-8").read()
+kept = []
+for line in text.splitlines():
+    if re.match(r"^=+", line.strip()):
+        kept.append(line)
+        continue
+    parts = re.split(r"(?<=[.!?])\s+", line)
+    parts = [part for part in parts if not re.search(r"\bPro\b", part) and "shop.compath.ee" not in part]
+    cleaned = " ".join(part for part in parts if part.strip())
+    if cleaned.strip():
+        kept.append(cleaned)
+    elif line.strip() == "":
+        kept.append("")
+open(path, "w", encoding="utf-8").write("\n".join(kept).rstrip() + "\n")
+PY
 
 # Mark package as WordPress.org distribution (disables GitHub self-updater).
 cat > "$STAGE/$SLUG/includes/distribution-wporg.php" <<'PHP'
@@ -103,6 +128,10 @@ if unzip -l "$ZIP" | grep -q 'edition-wporg.php'; then
   echo "ERROR: edition-wporg.php must not ship in wporg zip" >&2
   exit 1
 fi
+if unzip -l "$ZIP" | grep -q 'distribution-demo.php'; then
+  echo "ERROR: distribution-demo.php must not ship in wporg zip" >&2
+  exit 1
+fi
 if unzip -p "$ZIP" "$SLUG/includes/class-edition.php" | grep -qE 'LITE_MAX_TRACKS|choir_rehearsal_is_pro|is_full_edition'; then
   echo "ERROR: wporg class-edition.php must not contain Lite/Pro gate identifiers" >&2
   exit 1
@@ -111,10 +140,29 @@ if unzip -p "$ZIP" "$SLUG/includes/class-slugs.php" | grep -q "add_filter( 'sani
   echo "ERROR: wporg build must not register global sanitize_title filter" >&2
   exit 1
 fi
-if unzip -p "$ZIP" "$SLUG/includes/class-edition.php" | grep -q 'can_record(): bool'; then
+if unzip -p "$ZIP" "$SLUG/includes/class-edition.php" | grep -q 'can_record(): bool' \
+  && unzip -p "$ZIP" "$SLUG/includes/class-edition.php" | grep -q 'can_use_mixer(): bool'; then
   :
 else
   echo "ERROR: wporg class-edition.php missing capability helpers" >&2
+  exit 1
+fi
+if unzip -p "$ZIP" "$SLUG/includes/class-edition.php" | grep -A2 'function can_use_mixer' | grep -q 'return true'; then
+  echo "ERROR: wporg package must not unlock the mixer" >&2
+  exit 1
+fi
+if unzip -l "$ZIP" | grep -qE 'class-mixer\.php|public/js/mixer\.js|public/js/mixer-logic\.js|admin/js/mixer-launch\.js'; then
+  echo "ERROR: mixer implementation must not ship in the wporg zip" >&2
+  exit 1
+fi
+if unzip -p "$ZIP" "$SLUG/readme.txt" | grep -qiE '\bPro\b|shop\.compath\.ee|song notes|\bmixer\b'; then
+  echo "ERROR: wporg readme.txt must not mention Pro, the shop, song notes, or the mixer" >&2
+  exit 1
+fi
+if unzip -l "$ZIP" | awk '/\.php$/ {print $NF}' | while read -r php_path; do
+  unzip -p "$ZIP" "$php_path"
+done | grep -q 'choir-mixer__fader'; then
+  echo "ERROR: mixer panel markup must not ship in the wporg zip" >&2
   exit 1
 fi
 echo "OK wporg package checks passed"

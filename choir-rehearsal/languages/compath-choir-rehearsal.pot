@@ -1443,3 +1443,60 @@ msgstr ""
 
 msgid "Could not load song notes. Please try again."
 msgstr ""
+
+msgid "A–B loop"
+msgstr ""
+
+msgid "All tracks play together."
+msgstr ""
+
+msgid "Back 5 seconds"
+msgstr ""
+
+msgid "Clear A–B loop"
+msgstr ""
+
+msgid "Close mixer"
+msgstr ""
+
+msgid "Could not load one or more tracks."
+msgstr ""
+
+msgid "Could not start audio. Tap Play again."
+msgstr ""
+
+msgid "Demo"
+msgstr ""
+
+msgid "Forward 5 seconds"
+msgstr ""
+
+msgid "Loading %1$d of %2$d"
+msgstr ""
+
+msgid "Loop %1$s–%2$s"
+msgstr ""
+
+msgid "Mixer"
+msgstr ""
+
+msgid "Mute %s"
+msgstr ""
+
+msgid "Open mixer"
+msgstr ""
+
+msgid "Reset"
+msgstr ""
+
+msgid "Solo %s"
+msgstr ""
+
+msgid "Speed %s"
+msgstr ""
+
+msgid "Unmute %s"
+msgstr ""
+
+msgid "Unsolo %s"
+msgstr ""

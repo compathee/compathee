@@ -35,7 +35,7 @@ foreach ( preg_split( "/\r\n|\n|\r/", $text ) as $line ) {
 		$kept[] = $line;
 		continue;
 	}
-	if ( preg_match( '/song notes|@ Part|time mark|bottom sheet|Voice input for Voice Leader/i', $line ) ) {
+	if ( preg_match( '/song notes|@ Part|time mark|bottom sheet|Voice input for Voice Leader|\\bmixer\\b/i', $line ) ) {
 		continue;
 	}
 	if ( preg_match( '/\\bPro\\b|shop\\.compath\\.ee\\/products/i', $line ) ) {
@@ -53,8 +53,8 @@ if ( ! str_contains( $text, '= 0.4.69 =' ) ) {
 	fwrite( STDERR, "wporg readme is missing the 0.4.69 release\n" );
 	exit( 1 );
 }
-if ( preg_match( '/\\bPro\\b|shop\\.compath\\.ee\\/products|song notes/i', $text ) ) {
-	fwrite( STDERR, "wporg readme still mentions Pro, the shop, or song notes\n" );
+if ( preg_match( '/\\bPro\\b|shop\\.compath\\.ee\\/products|song notes|\\bmixer\\b/i', $text ) ) {
+	fwrite( STDERR, "wporg readme still mentions Pro, the shop, song notes, or the mixer\n" );
 	exit( 1 );
 }
 

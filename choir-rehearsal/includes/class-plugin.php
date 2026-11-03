@@ -29,6 +29,11 @@ if ( is_readable( $choir_rehearsal_notes_format ) && is_readable( $choir_rehears
 	require_once $choir_rehearsal_notes;
 }
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-frontend.php';
+// WordPress.org builds delete this file so they do not ship a gated mixer.
+$choir_rehearsal_mixer = CHOIR_REHEARSAL_PATH . 'includes/class-mixer.php';
+if ( is_readable( $choir_rehearsal_mixer ) ) {
+	require_once $choir_rehearsal_mixer;
+}
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-feedback.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-rest.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-abilities.php';

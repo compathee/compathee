@@ -126,6 +126,16 @@
   ],
   "changelog": [
     {
+      "version": "0.4.70",
+      "summary": "Multi-track mixer on the song page",
+      "items": [
+        "Mixer sits on the Voice tracks row and builds one channel per audio track",
+        "Tracks play together on one timeline with volume, mute, solo, speed, and an A–B loop",
+        "Licensed Pro and the Demo distribution include the mixer. The WordPress.org package does not include it and does not link to Pro"
+      ],
+      "open": true
+    },
+    {
       "version": "0.4.69",
       "summary": "Song notes and track recommendations",
       "items": [
@@ -134,7 +144,7 @@
         "GitHub Lite without a license does not include song notes",
         "The WordPress.org package does not include song notes"
       ],
-      "open": true
+      "open": false
     },
     {
       "version": "0.4.68",

@@ -162,6 +162,9 @@
 		if (!url) {
 			return;
 		}
+		if (window.choirMixer && typeof window.choirMixer.pause === 'function') {
+			window.choirMixer.pause();
+		}
 		currentTrackId = parseInt(trackId, 10) || 0;
 		currentUrl = url;
 		if (title) {

@@ -4,7 +4,7 @@ Tags: choir, rehearsal, voice parts, practice tracks, sheet music
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 0.4.69
+Stable tag: 0.4.70
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -98,6 +98,10 @@ Yes. In the song editor, set a voice track’s source to **YouTube** and paste a
 
 == Upgrade Notice ==
 
+= 0.4.70 =
+
+Builds that include the mixer module can play a song’s audio tracks together. The WordPress.org package does not include that module.
+
 = 0.4.69 =
 
 Pro: song notes and per-track recommendations. Voice Leader and Administrator write them; every role that can open the song can read them. No emails to singers.
@@ -111,6 +115,11 @@ Choir Rehearsal → Pro License includes a My orders.. button that opens the sho
 Attaching a PDF or making a song public now requires confirmation that you have rights to the score or that it is public domain. The plugin records who confirmed and when.
 
 == Changelog ==
+
+= 0.4.70 =
+
+* Song page mixer, when this build includes the module: one channel per audio file, shared timeline, volume, mute, and solo
+* Licensed Pro and the Demo distribution include the mixer. GitHub Lite without a license does not. The WordPress.org package does not include the mixer module
 
 = 0.4.69 =
 

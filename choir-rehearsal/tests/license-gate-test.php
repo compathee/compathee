@@ -166,9 +166,9 @@ expect_gate(
 	array(
 		'pro' => false,
 		'notes' => true,
-		'record' => false,
-		'tracks' => 4,
-		'upgrade' => true,
+		'record' => true,
+		'tracks' => 10,
+		'upgrade' => false,
 	)
 );
 

@@ -13,6 +13,11 @@ final class Choir_Rehearsal_Edition {
 
 	public const LITE_MAX_TRACKS = 4;
 
+	/**
+	 * Demo sandbox cap. The drop-in is not shipped in GitHub or WordPress.org zips.
+	 */
+	public const DEMO_MAX_TRACKS = 10;
+
 	public static function is_pro(): bool {
 		// Pro may be installed but not licensed. Always ask the filter.
 		// Default true when CHOIR_REHEARSAL_PRO is defined (add-on present, no
@@ -30,7 +35,7 @@ final class Choir_Rehearsal_Edition {
 	}
 
 	private static function is_full_edition(): bool {
-		return self::is_pro();
+		return self::is_pro() || self::is_demo();
 	}
 
 	public static function shows_commercial_upgrade(): bool {
@@ -41,7 +46,18 @@ final class Choir_Rehearsal_Edition {
 	 * Maximum voice tracks per song. Zero means unlimited.
 	 */
 	public static function max_tracks(): int {
+		if ( self::is_demo() ) {
+			return self::DEMO_MAX_TRACKS;
+		}
+
 		return self::is_full_edition() ? 0 : self::LITE_MAX_TRACKS;
+	}
+
+	/**
+	 * Song-page multi-track mixer. Licensed Pro or the Demo distribution only.
+	 */
+	public static function can_use_mixer(): bool {
+		return self::is_full_edition();
 	}
 
 	public static function can_record(): bool {

@@ -39,7 +39,7 @@ $github_build = (string) file_get_contents(dirname($root) . '/scripts/build-gith
 check('wordpress.org zip omits song notes and the demo drop-in', str_contains($wporg_build, 'class-song-notes.php') && str_contains($wporg_build, 'song-notes.js') && str_contains($wporg_build, 'distribution-demo.php') && str_contains($wporg_build, 'wporg-readme.php'));
 check('github zip omits the demo drop-in', str_contains($github_build, 'distribution-demo.php'));
 check('bootstrap loads the demo drop-in after wordpress.org', str_contains($boot, 'distribution-wporg.php') && str_contains($boot, 'distribution-demo.php') && strpos($boot, 'distribution-wporg.php') < strpos($boot, 'distribution-demo.php'));
-check('version is 0.4.69', str_contains($boot, "define( 'CHOIR_REHEARSAL_VERSION', '0.4.69' )"));
+check('version is 0.4.70', str_contains($boot, "define( 'CHOIR_REHEARSAL_VERSION', '0.4.70' )"));
 check('pro add-on is 0.5.3', str_contains($pro, "define( 'CHOIR_REHEARSAL_PRO_VERSION', '0.5.3' )"));
 
 check('writes require the permission helper', str_contains($notes, 'Choir_Rehearsal_Song_Notes_Format::user_can_write('));

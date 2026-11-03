@@ -138,6 +138,25 @@
 	overflow-x: visible;
 }
 
+#choir-rehearsal-tracks .postbox-header {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+#choir-rehearsal-tracks .postbox-header .hndle,
+#choir-rehearsal-tracks .postbox-header h2 {
+	flex: 0 1 auto;
+}
+
+#choir-rehearsal-tracks .postbox-header .choir-mixer-launch {
+	margin-left: auto;
+}
+
+#choir-rehearsal-tracks .postbox-header .handle-actions {
+	margin-left: 0;
+}
+
 .choir-track-list--editor {
 	margin: 0;
 	padding: 0;

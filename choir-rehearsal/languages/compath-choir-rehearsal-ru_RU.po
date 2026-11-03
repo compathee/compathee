@@ -1323,3 +1323,57 @@ msgstr "Demo: заметки к песне доступны без лиценз�
 
 msgid "Song notes store the note text and the WordPress user ID of the author on this website. Voice input is transcribed in the browser and the audio is not stored. The plugin does not email singers about notes."
 msgstr "Заметки к песне хранят текст заметки и ID пользователя WordPress автора на этом сайте. Речь превращается в текст в браузере, аудио не сохраняется. Плагин не отправляет хористам письма о заметках."
+
+msgid "A–B loop"
+msgstr "Повтор A–B"
+
+msgid "All tracks play together."
+msgstr "Все дорожки играют синхронно."
+
+msgid "Back 5 seconds"
+msgstr "Назад на 5 секунд"
+
+msgid "Clear A–B loop"
+msgstr "Сбросить повтор A–B"
+
+msgid "Close mixer"
+msgstr "Закрыть микшер"
+
+msgid "Could not load one or more tracks."
+msgstr "Не удалось загрузить одну или несколько дорожек."
+
+msgid "Could not start audio. Tap Play again."
+msgstr "Не удалось запустить звук. Нажмите «Воспроизвести» ещё раз."
+
+msgid "Forward 5 seconds"
+msgstr "Вперёд на 5 секунд"
+
+msgid "Loading %1$d of %2$d"
+msgstr "Загрузка %1$d из %2$d"
+
+msgid "Loop %1$s–%2$s"
+msgstr "Повтор %1$s–%2$s"
+
+msgid "Mixer"
+msgstr "Микшер"
+
+msgid "Mute %s"
+msgstr "Без звука %s"
+
+msgid "Open mixer"
+msgstr "Открыть микшер"
+
+msgid "Reset"
+msgstr "Сбросить"
+
+msgid "Solo %s"
+msgstr "Соло %s"
+
+msgid "Speed %s"
+msgstr "Скорость %s"
+
+msgid "Unmute %s"
+msgstr "Включить звук %s"
+
+msgid "Unsolo %s"
+msgstr "Снять соло %s"
