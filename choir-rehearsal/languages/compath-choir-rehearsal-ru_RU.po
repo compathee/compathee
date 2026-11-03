@@ -182,6 +182,15 @@ msgstr ""
 msgid "Buy Pro"
 msgstr "Купить Pro"
 
+msgid "My orders.."
+msgstr "Мои заказы.."
+
+msgid "Deactivate the Pro license on this site? Pro features will be disabled and the activation slot freed."
+msgstr "Деактивировать лицензию Pro на этом сайте? Функции Pro будут отключены, а слот активации освобождён."
+
+msgid "License deactivated"
+msgstr "Лицензия деактивирована"
+
 msgid ""
 "Unlimited voice tracks, microphone recording, song search, and Play preview "
 "in the editor."
