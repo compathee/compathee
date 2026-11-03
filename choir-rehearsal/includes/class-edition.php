@@ -60,6 +60,13 @@ final class Choir_Rehearsal_Edition {
 		return self::is_full_edition();
 	}
 
+	/**
+	 * Song notes and per-track recommendations. Licensed Pro only.
+	 */
+	public static function can_use_song_notes(): bool {
+		return self::is_pro();
+	}
+
 	public static function upgrade_url(): string {
 		return (string) apply_filters( 'choir_rehearsal_upgrade_url', 'https://shop.compath.ee/products/choir-rehearsal-pro/' );
 	}

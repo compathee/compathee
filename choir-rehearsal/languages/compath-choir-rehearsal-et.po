@@ -170,22 +170,14 @@ msgid "Edition"
 msgstr "Väljaanne"
 
 #, php-format
-msgid ""
-"Lite: up to %d voice tracks per song; no microphone recording, song search, "
-"or editor Play preview."
-msgstr ""
-"Lite: kuni %d häälerada laulu kohta; puuduvad mikrofonisalvestus, "
-"lauluotsing ja redaktori Play-eelvaade."
+msgid "Lite: up to %d voice tracks per song; no microphone recording, song search, editor Play preview, or song notes."
+msgstr "Lite: kuni %d häälerada laulu kohta; puuduvad mikrofonisalvestus, lauluotsing, redaktori Play-eelvaade ja laulumärkmed."
 
 msgid "Buy Pro"
 msgstr "Osta Pro"
 
-msgid ""
-"Unlimited voice tracks, microphone recording, song search, and Play preview "
-"in the editor."
-msgstr ""
-"Piiramatu arv hääleradasid, mikrofonisalvestus, lauluotsing ja Play-eelvaade "
-"redaktoris."
+msgid "Unlimited voice tracks, microphone recording, song search, Play preview in the editor, and song notes."
+msgstr "Piiramatu arv hääleradasid, mikrofonisalvestus, lauluotsing, Play-eelvaade redaktoris ja laulumärkmed."
 
 msgid "Plugin version"
 msgstr "Plugina versioon"
@@ -1203,3 +1195,108 @@ msgstr "Üles laaditud PDF-partituurid ja audiorajad salvestatakse saidi meediat
 
 msgid "The optional feedback form sends the message, name, email address, and technical site information to rehearsal.compath.ee (Compath OÜ). Non-secret Pro license identifiers are included only when a separate Pro add-on license is active. The full license key is not sent."
 msgstr "Valikuline tagasisidevorm saadab sõnumi, nime, e-posti aadressi ja tehnilise teabe saidi kohta aadressile rehearsal.compath.ee (Compath OÜ). Mittesalajased Pro litsentsi identifikaatorid lisatakse ainult siis, kui eraldi Pro lisaplugina litsents on aktiivne. Täielikku litsentsivõtit ei saadeta."
+
+msgid "Open song notes"
+msgstr "Ava laulumärkmed"
+
+msgid "Track recommendations for %s"
+msgstr "Soovitused partiile %s"
+
+msgid "Close song notes"
+msgstr "Sulge laulumärkmed"
+
+msgid "@ Part"
+msgstr "@ Partii"
+
+msgid "Insert time mark"
+msgstr "Lisa ajamärk"
+
+msgid "How song notes work"
+msgstr "Kuidas laulumärkmed töötavad"
+
+msgid "Dictate a note"
+msgstr "Dikteeeri märge"
+
+msgid "Type @ or tap @ Part and choose a track."
+msgstr "Kirjutage @ või vajutage @ Partii ja valige lugu."
+
+msgid "Tap ⏱ to add a time mark."
+msgstr "Vajutage ⏱, et lisada ajamärk."
+
+msgid "Write the recommendation and publish — a red icon appears on the track, and everyone can read it."
+msgstr "Kirjutage soovitus ja avaldage — loo juurde ilmub punane ikoon ning kõik saavad seda lugeda."
+
+msgid "Without @, the note applies to the whole song."
+msgstr "Ilma @-märgita kehtib märge kogu laulu kohta."
+
+msgid "Example: @Tenor 1:12 enter softer, crescendo from bar 17"
+msgstr "Näide: @Tenor 1:12 sisene pehmemalt, crescendo alates takist 17"
+
+msgid "Type @ and choose a part to address advice to a track"
+msgstr "Kirjutage @ ja valige partii, et suunata nõuanne loole"
+
+msgid "Voice input stays in this field for editing. Nothing is published automatically, and audio is not stored."
+msgstr "Häälsisestus jääb sellesse välja muutmiseks. Midagi ei avaldata automaatselt ja heli ei salvestata."
+
+msgid "Publish"
+msgstr "Avalda"
+
+msgid "Song notes"
+msgstr "Laulumärkmed"
+
+msgid "Track recommendations"
+msgstr "Soovitused partiile"
+
+msgid "No song notes yet."
+msgstr "Laulumärkmeid veel pole."
+
+msgid "No recommendations for this track yet."
+msgstr "Sellele loole pole veel soovitusi."
+
+msgid "Save"
+msgstr "Salvesta"
+
+msgid "Edit note"
+msgstr "Muuda märget"
+
+msgid "Delete note"
+msgstr "Kustuta märge"
+
+msgid "Delete this note?"
+msgstr "Kas kustutada see märge?"
+
+msgid "Could not save the note. Please try again."
+msgstr "Märget ei õnnestunud salvestada. Proovige uuesti."
+
+msgid "Could not delete the note. Please try again."
+msgstr "Märget ei õnnestunud kustutada. Proovige uuesti."
+
+msgid "Choose a voice part"
+msgstr "Valige häälepartii"
+
+msgid "Stop dictation"
+msgstr "Lõpeta dikteerimine"
+
+msgid "Seek to this time"
+msgstr "Kerige sellele ajale"
+
+msgid "Choir member"
+msgstr "Koori liige"
+
+msgid "You cannot edit song notes."
+msgstr "Teil pole õigust laulumärkmeid muuta."
+
+msgid "Write a note before publishing."
+msgstr "Kirjutage märge enne avaldamist."
+
+msgid "This song has too many notes. Delete one before adding another."
+msgstr "Sellel laulul on liiga palju märkmeid. Kustutage üks, enne kui lisate uue."
+
+msgid "Note not found."
+msgstr "Märget ei leitud."
+
+msgid "Song notes (Pro) store the note text and the WordPress user ID of the author on this website. Voice input is transcribed in the browser and the audio is not stored. The plugin does not email singers about notes."
+msgstr "Laulumärkmed (Pro) salvestavad märkme teksti ja autori WordPressi kasutaja ID sellel veebisaidil. Hääl teisendatakse tekstiks brauseris ja heli ei salvestata. Plugin ei saada lauljatele märkmete kohta e-kirju."
+
+msgid "Could not load song notes. Please try again."
+msgstr "Laulumärkmeid ei õnnestunud laadida. Proovige uuesti."

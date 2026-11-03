@@ -125,7 +125,7 @@ final class Choir_Rehearsal_Admin {
 									echo esc_html(
 										sprintf(
 											/* translators: %d: maximum track count */
-											__( 'Lite: up to %d voice tracks per song; no microphone recording, song search, or editor Play preview.', 'compath-choir-rehearsal' ),
+											__( 'Lite: up to %d voice tracks per song; no microphone recording, song search, editor Play preview, or song notes.', 'compath-choir-rehearsal' ),
 											(int) Choir_Rehearsal_Edition::LITE_MAX_TRACKS
 										)
 									);
@@ -137,7 +137,7 @@ final class Choir_Rehearsal_Admin {
 									</a>
 								</p>
 							<?php else : ?>
-								<p class="description"><?php esc_html_e( 'Unlimited voice tracks, microphone recording, song search, and Play preview in the editor.', 'compath-choir-rehearsal' ); ?></p>
+								<p class="description"><?php esc_html_e( 'Unlimited voice tracks, microphone recording, song search, Play preview in the editor, and song notes.', 'compath-choir-rehearsal' ); ?></p>
 							<?php endif; ?>
 						</td>
 					</tr>

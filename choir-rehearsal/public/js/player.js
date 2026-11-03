@@ -22,6 +22,8 @@
 
 	let isSeeking = false;
 	let durationFixToken = 0;
+	let currentTrackId = 0;
+	let currentUrl = '';
 
 	function formatTime(seconds) {
 		if (!isFinite(seconds) || seconds < 0) {
@@ -133,6 +135,8 @@
 
 	function closePlayer() {
 		durationFixToken += 1;
+		currentTrackId = 0;
+		currentUrl = '';
 		audio.pause();
 		audio.removeAttribute('src');
 		audio.load();
@@ -154,10 +158,12 @@
 		}
 	}
 
-	function playTrack(url, trackTitle) {
+	function playTrack(url, trackTitle, trackId, startAt) {
 		if (!url) {
 			return;
 		}
+		currentTrackId = parseInt(trackId, 10) || 0;
+		currentUrl = url;
 		if (title) {
 			title.textContent = trackTitle || '';
 		}
@@ -170,9 +176,18 @@
 		audio.src = url;
 		audio.load();
 
+		const startSeconds = typeof startAt === 'number' && isFinite(startAt) && startAt > 0 ? startAt : 0;
+
 		const startPlayback = function () {
 			if (token !== durationFixToken) {
 				return;
+			}
+			if (startSeconds > 0) {
+				try {
+					audio.currentTime = startSeconds;
+				} catch (err) {
+					// Ignore seek failures until metadata is ready.
+				}
 			}
 			updateTime();
 			audio.play().catch(function () {
@@ -259,10 +274,40 @@
 
 	document.addEventListener('click', function (event) {
 		const button = event.target.closest('.choir-play-track');
-		if (!button || button.disabled) {
+		if (!button || button.disabled || button.classList.contains('choir-youtube-toggle') || button.classList.contains('choir-track-notes')) {
 			return;
 		}
 		event.preventDefault();
-		playTrack(button.getAttribute('data-track-url'), button.getAttribute('data-track-title'));
+		playTrack(button.getAttribute('data-track-url'), button.getAttribute('data-track-title'), button.getAttribute('data-track-id'), 0);
 	});
+
+	window.choirPlayer = {
+		currentTrackId: function () {
+			return currentTrackId;
+		},
+		currentTime: function () {
+			return audio.currentTime || 0;
+		},
+		play: function (url, trackTitle, trackId) {
+			playTrack(url, trackTitle, trackId, 0);
+		},
+		seek: function (seconds, url, trackTitle, trackId) {
+			const target = Math.max(0, Number(seconds) || 0);
+			if (url && (currentUrl !== url || !audio.getAttribute('src'))) {
+				playTrack(url, trackTitle, trackId, target);
+				return;
+			}
+			try {
+				audio.currentTime = target;
+			} catch (err) {
+				return;
+			}
+			updateTime();
+			if (audio.paused) {
+				audio.play().catch(function () {
+					setPlaying(false);
+				});
+			}
+		},
+	};
 })();

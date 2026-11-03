@@ -1643,3 +1643,405 @@ body.choir-metronome-open:not(.choir-sticky-player-open) .choir-metronome-sheet 
 	font-weight: 700;
 }
 
+.choir-notes-open,
+.choir-track-notes,
+.choir-notes-close,
+.choir-notes-at,
+.choir-notes-time,
+.choir-notes-info,
+.choir-notes-mic,
+.choir-notes-picker__item,
+.choir-note__time,
+.choir-note__edit,
+.choir-note__delete {
+	min-width: 44px;
+	min-height: 44px;
+}
+
+.choir-notes-open,
+.choir-track-notes,
+.choir-notes-close,
+.choir-notes-time,
+.choir-notes-info,
+.choir-notes-mic {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 44px;
+	height: 44px;
+	padding: 0;
+	border: 1px solid rgba(0, 0, 0, 0.12);
+	border-radius: 10px;
+	background: #fff;
+	color: #344054;
+	cursor: pointer;
+	flex: 0 0 auto;
+}
+
+.choir-notes-open:hover,
+.choir-notes-open:focus-visible,
+.choir-track-notes:hover,
+.choir-track-notes:focus-visible,
+.choir-notes-close:hover,
+.choir-notes-close:focus-visible {
+	border-color: #1f4fd8;
+	color: #1f4fd8;
+	outline: none;
+}
+
+.choir-track-notes {
+	border-color: transparent;
+	background: transparent;
+	color: #d92d20;
+}
+
+.choir-track-notes[hidden] {
+	display: none !important;
+}
+
+.choir-track-item:has(.choir-track-notes) .choir-track-voice {
+	min-width: 0;
+	max-width: calc(100% - 44px);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.choir-notes-sheet .screen-reader-text {
+	border: 0;
+	clip: rect(1px, 1px, 1px, 1px);
+	clip-path: inset(50%);
+	height: 1px;
+	margin: -1px;
+	overflow: hidden;
+	padding: 0;
+	position: absolute;
+	width: 1px;
+	white-space: nowrap;
+}
+
+.choir-notes-layer {
+	position: fixed;
+	inset: 0;
+	z-index: 100400;
+}
+
+.choir-notes-layer[hidden] {
+	display: none !important;
+}
+
+.choir-notes-backdrop {
+	position: absolute;
+	inset: 0;
+	background: rgba(16, 24, 40, 0.45);
+}
+
+.choir-notes-sheet {
+	--choir-kb: 0px;
+	position: fixed;
+	z-index: 1;
+	left: 50%;
+	top: 50%;
+	bottom: auto;
+	transform: translate(-50%, -50%);
+	display: flex;
+	flex-direction: column;
+	width: min(560px, calc(100vw - 32px));
+	max-height: min(80vh, 720px);
+	border-radius: 16px;
+	background: #fff;
+	color: #101828;
+	box-shadow: 0 24px 48px rgba(16, 24, 40, 0.24);
+}
+
+.choir-notes-sheet[hidden] {
+	display: none !important;
+}
+
+.choir-notes-sheet__handle {
+	display: none;
+}
+
+.choir-notes-sheet__header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+	padding: 12px 12px 0 16px;
+}
+
+.choir-notes-sheet__title {
+	margin: 0;
+	font-size: 1.05rem;
+	line-height: 1.3;
+}
+
+.choir-notes-sheet__body {
+	flex: 1 1 auto;
+	min-height: 0;
+	overflow: auto;
+	padding: 12px 16px;
+	-webkit-overflow-scrolling: touch;
+}
+
+.choir-notes-empty {
+	margin: 0 0 12px;
+	color: #667085;
+}
+
+.choir-note {
+	padding: 12px 0;
+	border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.choir-note__meta {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin: 0 0 6px;
+	color: #667085;
+	font-size: 0.85rem;
+}
+
+.choir-note__author {
+	font-weight: 600;
+	color: #344054;
+}
+
+.choir-note__body {
+	margin: 0;
+	white-space: pre-wrap;
+	overflow-wrap: anywhere;
+}
+
+.choir-note__mention {
+	font-weight: 700;
+}
+
+.choir-note__time {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	margin: 0 2px;
+	padding: 0 10px;
+	border: 0;
+	border-radius: 999px;
+	background: #f2f4f7;
+	color: #1f4fd8;
+	font: inherit;
+	font-weight: 700;
+	cursor: pointer;
+}
+
+.choir-note__actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin-top: 8px;
+}
+
+.choir-note__edit,
+.choir-note__delete,
+.choir-notes-cancel,
+.choir-notes-publish,
+.choir-notes-at {
+	min-height: 44px;
+	padding: 0 14px;
+	border-radius: 10px;
+	font: inherit;
+	font-weight: 600;
+	cursor: pointer;
+}
+
+.choir-note__edit,
+.choir-notes-cancel,
+.choir-notes-at {
+	border: 1px solid rgba(0, 0, 0, 0.12);
+	background: #fff;
+	color: #344054;
+}
+
+.choir-note__delete {
+	border: 1px solid #fecdca;
+	background: #fff;
+	color: #b42318;
+}
+
+.choir-notes-publish {
+	border: 0;
+	background: #1f4fd8;
+	color: #fff;
+}
+
+.choir-notes-form {
+	flex: 0 0 auto;
+	padding: 8px 16px calc(12px + env(safe-area-inset-bottom));
+	border-top: 1px solid rgba(0, 0, 0, 0.08);
+	background: #fff;
+}
+
+.choir-notes-form__tools,
+.choir-notes-form__actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px;
+}
+
+.choir-notes-guide {
+	margin: 8px 0;
+	padding: 10px 12px;
+	border-radius: 10px;
+	background: #f8fafc;
+	font-size: 0.92rem;
+}
+
+.choir-notes-guide ol {
+	margin: 0;
+	padding-left: 1.2rem;
+}
+
+.choir-notes-guide__example {
+	margin: 8px 0 0;
+	color: #475467;
+}
+
+.choir-notes-picker {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	max-height: 180px;
+	margin: 8px 0;
+	overflow: auto;
+}
+
+.choir-notes-picker[hidden],
+.choir-notes-guide[hidden],
+.choir-notes-error[hidden],
+.choir-notes-cancel[hidden],
+.choir-notes-mic[hidden] {
+	display: none !important;
+}
+
+.choir-notes-picker__label,
+.choir-notes-picker__empty {
+	margin: 0;
+	color: #667085;
+	font-size: 0.85rem;
+}
+
+.choir-notes-picker__item {
+	text-align: left;
+	border: 1px solid rgba(0, 0, 0, 0.08);
+	border-radius: 10px;
+	background: #fff;
+	font: inherit;
+	cursor: pointer;
+}
+
+.choir-notes-input {
+	display: block;
+	width: 100%;
+	box-sizing: border-box;
+	margin-top: 8px;
+	padding: 10px 12px;
+	border: 1px solid rgba(0, 0, 0, 0.16);
+	border-radius: 10px;
+	font: inherit;
+	font-size: 16px;
+	line-height: 1.4;
+	resize: vertical;
+}
+
+.choir-notes-form__hint,
+.choir-notes-error {
+	margin: 8px 0 0;
+	font-size: 0.85rem;
+}
+
+.choir-notes-form__hint {
+	color: #667085;
+}
+
+.choir-notes-error {
+	color: #b42318;
+}
+
+.choir-notes-form__actions {
+	margin-top: 8px;
+}
+
+.choir-notes-mic.is-recording {
+	color: #d92d20;
+	border-color: #d92d20;
+	animation: choir-notes-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes choir-notes-pulse {
+	0%,
+	100% {
+		box-shadow: 0 0 0 0 rgba(217, 45, 32, 0.45);
+	}
+	50% {
+		box-shadow: 0 0 0 8px rgba(217, 45, 32, 0);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.choir-notes-mic.is-recording {
+		animation: none;
+		outline: 2px solid #d92d20;
+	}
+}
+
+@media (max-width: 640px) {
+	.choir-notes-sheet {
+		left: 0;
+		right: 0;
+		top: auto;
+		bottom: var(--choir-kb, 0px);
+		transform: none;
+		width: 100%;
+		max-height: min(85dvh, calc(100dvh - var(--choir-kb, 0px)));
+		border-radius: 16px 16px 0 0;
+	}
+
+	.choir-notes-sheet__handle {
+		display: block;
+		width: 100%;
+		height: 44px;
+		margin: 0;
+		cursor: grab;
+	}
+
+	.choir-notes-sheet__handle::before {
+		content: '';
+		display: block;
+		width: 36px;
+		height: 4px;
+		margin: 6px auto 0;
+		border-radius: 999px;
+		background: #d0d5dd;
+	}
+}
+
+@media (max-width: 320px) {
+	.choir-notes-sheet,
+	.choir-notes-form,
+	.choir-notes-sheet__body {
+		width: 100%;
+	}
+
+	.choir-song-header__actions {
+		gap: 4px;
+	}
+}
+
+body.choir-notes-lock {
+	position: fixed;
+	left: 0;
+	right: 0;
+	width: 100%;
+	overflow: hidden;
+}
+

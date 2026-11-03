@@ -29,6 +29,7 @@ function run_edition(string $edition, string $prelude): array {
 		. "  'search' => Choir_Rehearsal_Edition::can_search_songs(),\n"
 		. "  'play' => Choir_Rehearsal_Edition::can_play_in_editor(),\n"
 		. "  'badge' => Choir_Rehearsal_Edition::can_show_pdf_badge(),\n"
+		. "  'notes' => Choir_Rehearsal_Edition::can_use_song_notes(),\n"
 		. "  'score' => Choir_Rehearsal_Edition::can_view_score_in_editor(),\n"
 		. "  'tracks' => Choir_Rehearsal_Edition::max_tracks(),\n"
 		. "  'upgrade' => Choir_Rehearsal_Edition::shows_commercial_upgrade(),\n"
@@ -106,6 +107,7 @@ expect_gate(
 		'search' => false,
 		'play' => false,
 		'badge' => false,
+		'notes' => false,
 		'score' => true,
 		'tracks' => 4,
 		'upgrade' => true,
@@ -122,6 +124,7 @@ expect_gate(
 		'search' => true,
 		'play' => true,
 		'badge' => true,
+		'notes' => true,
 		'score' => true,
 		'tracks' => 0,
 		'upgrade' => false,
@@ -136,6 +139,7 @@ expect_gate(
 		'pro' => true,
 		'record' => true,
 		'tracks' => 0,
+		'notes' => true,
 	)
 );
 
@@ -148,6 +152,7 @@ expect_gate(
 		'record' => false,
 		'tracks' => 4,
 		'score' => true,
+		'notes' => false,
 	)
 );
 

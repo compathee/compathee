@@ -21,6 +21,8 @@ require_once CHOIR_REHEARSAL_PATH . 'includes/class-access.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-admin.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-demo-data.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-recording.php';
+require_once CHOIR_REHEARSAL_PATH . 'includes/class-song-notes-format.php';
+require_once CHOIR_REHEARSAL_PATH . 'includes/class-song-notes.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-frontend.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-feedback.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-rest.php';
@@ -73,6 +75,7 @@ final class Choir_Rehearsal_Plugin {
 		$content  = '<p>' . esc_html__( 'Compath Choir Rehearsal stores rehearsal songs on this website.', 'compath-choir-rehearsal' ) . '</p>';
 		$content .= '<p>' . esc_html__( 'When a user confirms they may attach a PDF score, the plugin stores that WordPress user ID and the confirmation time in the song post meta (_choir_score_rights_confirmed_by and _choir_score_rights_confirmed_at). When a user confirms they may make a song public, it stores the same kind of record (_choir_public_rights_confirmed_by and _choir_public_rights_confirmed_at). These records show who accepted the copyright confirmation and when. Compath does not verify that the person holds those rights.', 'compath-choir-rehearsal' ) . '</p>';
 		$content .= '<p>' . esc_html__( 'Uploaded PDF scores and audio tracks are stored in the site media library and linked to the song.', 'compath-choir-rehearsal' ) . '</p>';
+		$content .= '<p>' . esc_html__( 'Song notes (Pro) store the note text and the WordPress user ID of the author on this website. Voice input is transcribed in the browser and the audio is not stored. The plugin does not email singers about notes.', 'compath-choir-rehearsal' ) . '</p>';
 		$content .= '<p>' . esc_html__( 'The optional feedback form sends the message, name, email address, and technical site information to rehearsal.compath.ee (Compath OÜ). Non-secret Pro license identifiers are included only when a separate Pro add-on license is active. The full license key is not sent.', 'compath-choir-rehearsal' ) . '</p>';
 
 		wp_add_privacy_policy_content(
@@ -91,6 +94,7 @@ final class Choir_Rehearsal_Plugin {
 		Choir_Rehearsal_Admin::register();
 		Choir_Rehearsal_Demo_Data::register();
 		Choir_Rehearsal_Recording::register();
+		Choir_Rehearsal_Song_Notes::register();
 		Choir_Rehearsal_Frontend::register();
 		Choir_Rehearsal_Feedback::register();
 		Choir_Rehearsal_REST::register();

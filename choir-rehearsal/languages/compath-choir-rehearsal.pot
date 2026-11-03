@@ -203,9 +203,7 @@ msgstr ""
 
 #: includes/class-admin.php:101
 #, php-format
-msgid ""
-"Lite: up to %d voice tracks per song; no microphone recording, song search, "
-"or editor Play preview."
+msgid "Lite: up to %d voice tracks per song; no microphone recording, song search, editor Play preview, or song notes."
 msgstr ""
 
 #: includes/class-admin.php:109 includes/class-admin.php:247
@@ -215,9 +213,7 @@ msgid "Buy Pro"
 msgstr ""
 
 #: includes/class-admin.php:113
-msgid ""
-"Unlimited voice tracks, microphone recording, song search, and Play preview "
-"in the editor."
+msgid "Unlimited voice tracks, microphone recording, song search, Play preview in the editor, and song notes."
 msgstr ""
 
 #: includes/class-admin.php:119
@@ -1332,4 +1328,109 @@ msgstr ""
 
 #: includes/edition-wporg.php:53
 msgid "Standard"
+msgstr ""
+
+msgid "Open song notes"
+msgstr ""
+
+msgid "Track recommendations for %s"
+msgstr ""
+
+msgid "Close song notes"
+msgstr ""
+
+msgid "@ Part"
+msgstr ""
+
+msgid "Insert time mark"
+msgstr ""
+
+msgid "How song notes work"
+msgstr ""
+
+msgid "Dictate a note"
+msgstr ""
+
+msgid "Type @ or tap @ Part and choose a track."
+msgstr ""
+
+msgid "Tap ⏱ to add a time mark."
+msgstr ""
+
+msgid "Write the recommendation and publish — a red icon appears on the track, and everyone can read it."
+msgstr ""
+
+msgid "Without @, the note applies to the whole song."
+msgstr ""
+
+msgid "Example: @Tenor 1:12 enter softer, crescendo from bar 17"
+msgstr ""
+
+msgid "Type @ and choose a part to address advice to a track"
+msgstr ""
+
+msgid "Voice input stays in this field for editing. Nothing is published automatically, and audio is not stored."
+msgstr ""
+
+msgid "Publish"
+msgstr ""
+
+msgid "Song notes"
+msgstr ""
+
+msgid "Track recommendations"
+msgstr ""
+
+msgid "No song notes yet."
+msgstr ""
+
+msgid "No recommendations for this track yet."
+msgstr ""
+
+msgid "Save"
+msgstr ""
+
+msgid "Edit note"
+msgstr ""
+
+msgid "Delete note"
+msgstr ""
+
+msgid "Delete this note?"
+msgstr ""
+
+msgid "Could not save the note. Please try again."
+msgstr ""
+
+msgid "Could not delete the note. Please try again."
+msgstr ""
+
+msgid "Choose a voice part"
+msgstr ""
+
+msgid "Stop dictation"
+msgstr ""
+
+msgid "Seek to this time"
+msgstr ""
+
+msgid "Choir member"
+msgstr ""
+
+msgid "You cannot edit song notes."
+msgstr ""
+
+msgid "Write a note before publishing."
+msgstr ""
+
+msgid "This song has too many notes. Delete one before adding another."
+msgstr ""
+
+msgid "Note not found."
+msgstr ""
+
+msgid "Song notes (Pro) store the note text and the WordPress user ID of the author on this website. Voice input is transcribed in the browser and the audio is not stored. The plugin does not email singers about notes."
+msgstr ""
+
+msgid "Could not load song notes. Please try again."
 msgstr ""
