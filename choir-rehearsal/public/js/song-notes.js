@@ -281,6 +281,7 @@
 	function closeSheet() {
 		saveDraft();
 		stopDictation();
+		closeLangPopover();
 		closePicker();
 		sheet.hidden = true;
 		layer.hidden = true;
@@ -411,9 +412,13 @@
 		picker.appendChild(label);
 		tracks.forEach(function (track) {
 			const button = document.createElement('button');
+			const name = document.createElement('span');
+			const label = track.label || '';
 			button.type = 'button';
 			button.className = 'choir-notes-picker__item';
-			button.textContent = track.label || '';
+			name.className = 'choir-notes-picker__name';
+			name.textContent = label;
+			button.appendChild(name);
 			button.addEventListener('click', function () {
 				const token = '@' + (track.label || '') + ' ';
 				insertText(token, pendingAt);
@@ -532,8 +537,204 @@
 			});
 	}
 
+	const SPEECH_KEY = 'choir-notes-speech-lang';
+	const SPEECH_DEFAULT = 'en-US';
+	const SPEECH_PINNED = ['en-US', 'et-EE', 'ru-RU'];
+	const SPEECH_CODES = [
+		'af-ZA', 'am-ET', 'ar-AE', 'ar-BH', 'ar-DZ', 'ar-EG', 'ar-IQ', 'ar-JO', 'ar-KW', 'ar-LB', 'ar-MA', 'ar-OM', 'ar-QA', 'ar-SA', 'ar-TN',
+		'az-AZ', 'bg-BG', 'bn-BD', 'bn-IN', 'ca-ES', 'cs-CZ', 'da-DK', 'de-DE', 'el-GR',
+		'en-AU', 'en-CA', 'en-GB', 'en-IN', 'en-US',
+		'es-AR', 'es-CL', 'es-CO', 'es-ES', 'es-MX', 'es-US',
+		'et-EE', 'eu-ES', 'fa-IR', 'fi-FI', 'fil-PH', 'fr-CA', 'fr-FR', 'gl-ES', 'gu-IN', 'he-IL', 'hi-IN', 'hr-HR', 'hu-HU',
+		'hy-AM', 'id-ID', 'is-IS', 'it-IT', 'ja-JP', 'jv-ID', 'ka-GE', 'km-KH', 'kn-IN', 'ko-KR', 'lo-LA', 'lt-LT', 'lv-LV',
+		'ml-IN', 'mr-IN', 'ms-MY', 'nb-NO', 'ne-NP', 'nl-NL', 'pl-PL', 'pt-BR', 'pt-PT', 'ro-RO', 'ru-RU',
+		'si-LK', 'sk-SK', 'sl-SI', 'sr-RS', 'su-ID', 'sv-SE', 'sw-KE', 'ta-IN', 'te-IN', 'th-TH', 'tr-TR', 'uk-UA', 'ur-PK', 'vi-VN',
+		'zh-CN', 'zh-HK', 'zh-TW', 'zu-ZA'
+	];
+	const langPop = document.getElementById('choir-notes-langpop');
+	const langSearch = langPop ? langPop.querySelector('.choir-notes-langsearch') : null;
+	const langList = document.getElementById('choir-notes-langlist');
+	const speechNote = sheet.querySelector('.choir-notes-speech-unsupported');
+	let langActive = -1;
+
 	function speechSupported() {
 		return !!(window.SpeechRecognition || window.webkitSpeechRecognition);
+	}
+
+	function languageLabel(code) {
+		const parts = code.split('-');
+		try {
+			const locale = document.documentElement.lang || 'en';
+			const languages = new Intl.DisplayNames([locale, 'en'], { type: 'language' });
+			const regions = new Intl.DisplayNames([locale, 'en'], { type: 'region' });
+			const language = languages.of(parts[0]);
+			if (parts[1]) {
+				return language + ' (' + regions.of(parts[1]) + ')';
+			}
+			return language || code;
+		} catch (err) {
+			return code;
+		}
+	}
+
+	function savedSpeechLang() {
+		try {
+			const saved = window.localStorage.getItem(SPEECH_KEY);
+			if (saved && SPEECH_CODES.indexOf(saved) !== -1) {
+				return saved;
+			}
+		} catch (err) {
+			return '';
+		}
+		return '';
+	}
+
+	function currentSpeechLang() {
+		return savedSpeechLang() || SPEECH_DEFAULT;
+	}
+
+	function rememberSpeechLang(code) {
+		try {
+			window.localStorage.setItem(SPEECH_KEY, code);
+		} catch (err) {
+			// The choice still applies for this recording.
+		}
+	}
+
+	function visibleLangOptions() {
+		return langList ? Array.prototype.slice.call(langList.querySelectorAll('[role="option"]')) : [];
+	}
+
+	function setActiveLang(index) {
+		const options = visibleLangOptions();
+		if (!options.length) {
+			langActive = -1;
+			return;
+		}
+		langActive = Math.max(0, Math.min(index, options.length - 1));
+		options.forEach(function (option, i) {
+			const on = i === langActive;
+			option.classList.toggle('is-active', on);
+			option.setAttribute('aria-selected', on ? 'true' : 'false');
+			if (on) {
+				option.scrollIntoView({ block: 'nearest' });
+				if (langSearch) {
+					langSearch.setAttribute('aria-activedescendant', option.id);
+				}
+			}
+		});
+	}
+
+	function renderSpeechLanguages(query) {
+		if (!langList) {
+			return;
+		}
+		const needle = String(query || '').trim().toLowerCase();
+		const chosen = currentSpeechLang();
+		langActive = -1;
+		const items = SPEECH_CODES.map(function (code) {
+			return { code: code, label: languageLabel(code) };
+		}).filter(function (item) {
+			if (!needle) {
+				return true;
+			}
+			return item.label.toLowerCase().indexOf(needle) !== -1 || item.code.toLowerCase().indexOf(needle) !== -1;
+		});
+		items.sort(function (a, b) {
+			const ap = SPEECH_PINNED.indexOf(a.code);
+			const bp = SPEECH_PINNED.indexOf(b.code);
+			if (ap !== -1 || bp !== -1) {
+				if (ap === -1) {
+					return 1;
+				}
+				if (bp === -1) {
+					return -1;
+				}
+				return ap - bp;
+			}
+			return a.label.localeCompare(b.label);
+		});
+		langList.textContent = '';
+		if (!items.length) {
+			const empty = document.createElement('li');
+			empty.className = 'choir-notes-langempty';
+			empty.textContent = t('noLanguageMatch', 'No matching language.');
+			langList.appendChild(empty);
+			langActive = -1;
+			return;
+		}
+		items.forEach(function (item, index) {
+			const option = document.createElement('li');
+			const name = document.createElement('span');
+			option.id = 'choir-notes-langopt-' + index;
+			option.className = 'choir-notes-langopt';
+			option.setAttribute('role', 'option');
+			option.setAttribute('data-speech-lang', item.code);
+			option.tabIndex = -1;
+			name.className = 'choir-notes-langopt__name';
+			name.textContent = item.label;
+			option.appendChild(name);
+			if (item.code === chosen) {
+				option.classList.add('is-chosen');
+				option.setAttribute('aria-selected', 'true');
+				option.classList.add('is-active');
+				langActive = index;
+			} else {
+				option.setAttribute('aria-selected', 'false');
+			}
+			option.addEventListener('click', function () {
+				chooseSpeechLang(item.code);
+			});
+			langList.appendChild(option);
+		});
+		if (langActive < 0) {
+			setActiveLang(0);
+		} else if (langSearch) {
+			const active = langList.querySelector('.is-active');
+			if (active) {
+				langSearch.setAttribute('aria-activedescendant', active.id);
+			}
+		}
+	}
+
+	function closeLangPopover() {
+		if (!langPop) {
+			return;
+		}
+		langPop.hidden = true;
+		if (micBtn) {
+			micBtn.setAttribute('aria-expanded', 'false');
+		}
+		if (langSearch) {
+			langSearch.setAttribute('aria-expanded', 'false');
+		}
+	}
+
+	function openLangPopover() {
+		if (!langPop || !langSearch) {
+			return;
+		}
+		langPop.hidden = false;
+		if (micBtn) {
+			micBtn.setAttribute('aria-expanded', 'true');
+		}
+		langSearch.setAttribute('aria-expanded', 'true');
+		langSearch.value = '';
+		renderSpeechLanguages('');
+		langSearch.focus();
+		const selected = langList ? langList.querySelector('[aria-selected="true"]') : null;
+		if (selected) {
+			selected.scrollIntoView({ block: 'nearest' });
+		}
+	}
+
+	function chooseSpeechLang(code) {
+		if (SPEECH_CODES.indexOf(code) === -1) {
+			return;
+		}
+		rememberSpeechLang(code);
+		closeLangPopover();
+		startDictation(code);
 	}
 
 	function stopDictation() {
@@ -554,18 +755,16 @@
 		}
 	}
 
-	function startDictation() {
+	function startDictation(lang) {
 		if (!input || !micBtn || !speechSupported()) {
-			if (micBtn) {
-				micBtn.hidden = true;
-			}
+			showSpeechUnsupported();
 			return;
 		}
 		const Ctor = window.SpeechRecognition || window.webkitSpeechRecognition;
 		const prefix = input.value.slice(0, input.selectionStart || 0);
 		const suffix = input.value.slice(input.selectionEnd || 0);
 		recognition = new Ctor();
-		recognition.lang = cfg.speechLang || 'en-US';
+		recognition.lang = lang || currentSpeechLang();
 		recognition.continuous = true;
 		recognition.interimResults = true;
 		recognition.onresult = function (event) {
@@ -579,7 +778,7 @@
 		};
 		recognition.onerror = function (event) {
 			if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
-				micBtn.hidden = true;
+				showError(t('speechUnsupported', 'Voice input is not supported in this browser.'));
 			}
 			stopDictation();
 		};
@@ -593,10 +792,21 @@
 			micBtn.setAttribute('aria-pressed', 'true');
 			micBtn.setAttribute('aria-label', t('stopDictation', 'Stop dictation'));
 		} catch (err) {
-			micBtn.hidden = true;
+			showError(t('speechUnsupported', 'Voice input is not supported in this browser.'));
 			stopDictation();
 		}
 	}
+
+	function showSpeechUnsupported() {
+		if (micBtn) {
+			micBtn.hidden = true;
+		}
+		closeLangPopover();
+		if (speechNote) {
+			speechNote.hidden = false;
+		}
+	}
+
 
 	function syncKeyboard() {
 		if (!window.visualViewport || !window.matchMedia('(max-width: 640px)').matches) {
@@ -627,6 +837,13 @@
 
 	document.addEventListener('keydown', function (event) {
 		if ('Escape' === event.key && !sheet.hidden) {
+			if (langPop && !langPop.hidden) {
+				closeLangPopover();
+				if (micBtn) {
+					micBtn.focus();
+				}
+				return;
+			}
 			if (picker && !picker.hidden) {
 				closePicker();
 				return;
@@ -710,9 +927,92 @@
 					stopDictation();
 					return;
 				}
-				startDictation();
+				if (langPop && !langPop.hidden) {
+					closeLangPopover();
+					return;
+				}
+				openLangPopover();
 			});
+		} else {
+			showSpeechUnsupported();
 		}
+	}
+	if (langSearch) {
+		langSearch.addEventListener('input', function () {
+			renderSpeechLanguages(langSearch.value);
+		});
+		langSearch.addEventListener('keydown', function (event) {
+			const options = visibleLangOptions();
+			if ('ArrowDown' === event.key) {
+				event.preventDefault();
+				setActiveLang(langActive + 1);
+				if (options[langActive]) {
+					options[langActive].focus();
+				}
+			} else if ('ArrowUp' === event.key) {
+				event.preventDefault();
+				setActiveLang(langActive - 1);
+			} else if ('Enter' === event.key) {
+				event.preventDefault();
+				const chosen = options[langActive] || langList.querySelector('[aria-selected="true"]');
+				if (chosen) {
+					chooseSpeechLang(chosen.getAttribute('data-speech-lang'));
+				}
+			} else if ('Escape' === event.key) {
+				event.preventDefault();
+				closeLangPopover();
+				if (micBtn) {
+					micBtn.focus();
+				}
+			}
+		});
+	}
+	document.addEventListener('click', function (event) {
+		if (!langPop || langPop.hidden) {
+			return;
+		}
+		const target = event.target;
+		if (langPop.contains(target) || (micBtn && micBtn.contains(target))) {
+			return;
+		}
+		closeLangPopover();
+	});
+	if (langList) {
+		langList.addEventListener('keydown', function (event) {
+			const options = visibleLangOptions();
+			if ('ArrowDown' === event.key) {
+				event.preventDefault();
+				setActiveLang(langActive + 1);
+				if (options[langActive]) {
+					options[langActive].focus();
+				}
+			} else if ('ArrowUp' === event.key) {
+				event.preventDefault();
+				if (langActive <= 0) {
+					setActiveLang(0);
+					if (langSearch) {
+						langSearch.focus();
+					}
+					return;
+				}
+				setActiveLang(langActive - 1);
+				if (options[langActive]) {
+					options[langActive].focus();
+				}
+			} else if ('Enter' === event.key) {
+				event.preventDefault();
+				const chosen = options[langActive];
+				if (chosen) {
+					chooseSpeechLang(chosen.getAttribute('data-speech-lang'));
+				}
+			} else if ('Escape' === event.key) {
+				event.preventDefault();
+				closeLangPopover();
+				if (micBtn) {
+					micBtn.focus();
+				}
+			}
+		});
 	}
 
 	function bindSwipe(target) {

@@ -4,7 +4,7 @@ Tags: choir, rehearsal, voice parts, practice tracks, sheet music
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 0.4.72
+Stable tag: 0.4.73
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -98,6 +98,10 @@ Yes. In the song editor, set a voice track’s source to **YouTube** and paste a
 
 == Upgrade Notice ==
 
+= 0.4.73 =
+
+Voice input: choose dictation language (default English); voice-part names visible in all themes.
+
 = 0.4.72 =
 
 New optional Appearance (Settings → Appearance).
@@ -115,6 +119,10 @@ Choir Rehearsal → Pro License includes a My orders.. button that opens the sho
 Attaching a PDF or making a song public now requires confirmation that you have rights to the score or that it is public domain. The plugin records who confirmed and when.
 
 == Changelog ==
+
+= 0.4.73 =
+
+* Voice input: choose dictation language (default English); voice-part names visible in all themes
 
 = 0.4.72 =
 

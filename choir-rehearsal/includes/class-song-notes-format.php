@@ -145,7 +145,10 @@ final class Choir_Rehearsal_Song_Notes_Format {
 	 * BCP-47 tag for the Web Speech API from a WordPress locale.
 	 */
 	public static function speech_lang( string $locale ): string {
-		$locale = strtolower( str_replace( '_', '-', $locale ) );
+		$locale = strtolower( str_replace( '_', '-', trim( $locale ) ) );
+		if ( '' === $locale ) {
+			return 'en-US';
+		}
 		if ( str_starts_with( $locale, 'et' ) ) {
 			return 'et-EE';
 		}
@@ -153,9 +156,6 @@ final class Choir_Rehearsal_Song_Notes_Format {
 			return 'ru-RU';
 		}
 		if ( str_starts_with( $locale, 'en' ) ) {
-			return 'en-US';
-		}
-		if ( '' === $locale ) {
 			return 'en-US';
 		}
 

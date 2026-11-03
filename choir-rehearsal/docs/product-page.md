@@ -91,6 +91,10 @@ The plugin is licensed under GPL. Install Lite yourself for free from WordPress.
 
 ## Changelog
 
+### 0.4.72
+- Song notes: voice part names stay visible when a theme paints button text white
+- Song notes: the microphone opens a searchable language list. English is the default, and the last choice is remembered
+
 ### 0.4.69
 - Licensed Pro: song notes and per-track recommendations. No emails to singers
 - Demo distribution includes song notes with no license
