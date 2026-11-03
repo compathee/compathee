@@ -114,18 +114,20 @@ final class Choir_Rehearsal_Admin {
 							</a>
 						</td>
 					</tr>
-					<?php if ( Choir_Rehearsal_Edition::shows_commercial_upgrade() || Choir_Rehearsal_Edition::is_pro() ) : ?>
+					<?php if ( Choir_Rehearsal_Edition::shows_commercial_upgrade() || Choir_Rehearsal_Edition::is_pro() || Choir_Rehearsal_Edition::is_demo() ) : ?>
 					<tr>
 						<th scope="row"><?php esc_html_e( 'Edition', 'compath-choir-rehearsal' ); ?></th>
 						<td>
 							<code><?php echo esc_html( Choir_Rehearsal_Edition::edition_label() ); ?></code>
-							<?php if ( Choir_Rehearsal_Edition::shows_commercial_upgrade() ) : ?>
+							<?php if ( Choir_Rehearsal_Edition::is_demo() ) : ?>
+								<p class="description"><?php esc_html_e( 'Demo: song notes are available without a license. Microphone recording, song search, and editor Play preview stay off until Pro is licensed.', 'compath-choir-rehearsal' ); ?></p>
+							<?php elseif ( Choir_Rehearsal_Edition::shows_commercial_upgrade() ) : ?>
 								<p class="description">
 									<?php
 									echo esc_html(
 										sprintf(
 											/* translators: %d: maximum track count */
-											__( 'Lite: up to %d voice tracks per song; no microphone recording, song search, or editor Play preview.', 'compath-choir-rehearsal' ),
+											__( 'Lite: up to %d voice tracks per song; no microphone recording, song search, editor Play preview, or song notes.', 'compath-choir-rehearsal' ),
 											(int) Choir_Rehearsal_Edition::LITE_MAX_TRACKS
 										)
 									);
@@ -137,7 +139,7 @@ final class Choir_Rehearsal_Admin {
 									</a>
 								</p>
 							<?php else : ?>
-								<p class="description"><?php esc_html_e( 'Unlimited voice tracks, microphone recording, song search, and Play preview in the editor.', 'compath-choir-rehearsal' ); ?></p>
+								<p class="description"><?php esc_html_e( 'Unlimited voice tracks, microphone recording, song search, Play preview in the editor, and song notes.', 'compath-choir-rehearsal' ); ?></p>
 							<?php endif; ?>
 						</td>
 					</tr>
@@ -924,11 +926,18 @@ final class Choir_Rehearsal_Admin {
 			<input type="hidden" name="choir_tracks[<?php echo esc_attr( (string) $index ); ?>][id]" value="<?php echo esc_attr( (string) $track_id ); ?>" />
 			<input type="hidden" class="choir-audio-id" name="choir_tracks[<?php echo esc_attr( (string) $index ); ?>][audio_id]" value="<?php echo esc_attr( (string) $audio_id ); ?>" />
 			<div class="choir-track-item__main">
-				<select class="choir-voice-select choir-track-voice" name="choir_tracks[<?php echo esc_attr( (string) $index ); ?>][voice]" aria-label="<?php esc_attr_e( 'Voice', 'compath-choir-rehearsal' ); ?>">
-					<?php foreach ( $voices as $slug => $label ) : ?>
-						<option value="<?php echo esc_attr( $slug ); ?>" <?php selected( $voice_slug, $slug ); ?>><?php echo esc_html( $label ); ?></option>
-					<?php endforeach; ?>
-				</select>
+				<div class="choir-track-name">
+					<select class="choir-voice-select choir-track-voice" name="choir_tracks[<?php echo esc_attr( (string) $index ); ?>][voice]" aria-label="<?php esc_attr_e( 'Voice', 'compath-choir-rehearsal' ); ?>">
+						<?php foreach ( $voices as $slug => $label ) : ?>
+							<option value="<?php echo esc_attr( $slug ); ?>" <?php selected( $voice_slug, $slug ); ?>><?php echo esc_html( $label ); ?></option>
+						<?php endforeach; ?>
+					</select>
+					<?php
+					if ( $track_id > 0 && class_exists( 'Choir_Rehearsal_Song_Notes', false ) ) {
+						Choir_Rehearsal_Song_Notes::render_track_button( (int) get_the_ID(), $track_id, (string) $voice_label );
+					}
+					?>
+				</div>
 				<div class="choir-track-source" role="group" aria-label="<?php esc_attr_e( 'Track source', 'compath-choir-rehearsal' ); ?>">
 					<label class="choir-track-source__option">
 						<input

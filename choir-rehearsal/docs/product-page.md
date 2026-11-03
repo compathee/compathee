@@ -91,6 +91,15 @@ The plugin is licensed under GPL. Install Lite yourself for free from WordPress.
 
 ## Changelog
 
+### 0.4.69
+- Licensed Pro: song notes and per-track recommendations. No emails to singers
+- Demo distribution includes song notes with no license
+- GitHub Lite without a license does not include song notes
+- The WordPress.org package does not include song notes
+
+### 0.4.67
+- Copyright confirmation before a PDF score is attached or a song is made public
+
 ### 0.4.61
 - Per-track Audio / YouTube source switch in the song editor
 - YouTube tracks open the official embed on the song page (video stays visible)

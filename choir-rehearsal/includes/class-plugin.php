@@ -21,6 +21,13 @@ require_once CHOIR_REHEARSAL_PATH . 'includes/class-access.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-admin.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-demo-data.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-recording.php';
+// Song notes ship with GitHub Lite (gated) and Demo. The WordPress.org zip omits these files.
+$choir_rehearsal_notes_format = CHOIR_REHEARSAL_PATH . 'includes/class-song-notes-format.php';
+$choir_rehearsal_notes        = CHOIR_REHEARSAL_PATH . 'includes/class-song-notes.php';
+if ( is_readable( $choir_rehearsal_notes_format ) && is_readable( $choir_rehearsal_notes ) ) {
+	require_once $choir_rehearsal_notes_format;
+	require_once $choir_rehearsal_notes;
+}
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-frontend.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-feedback.php';
 require_once CHOIR_REHEARSAL_PATH . 'includes/class-rest.php';
@@ -91,6 +98,9 @@ final class Choir_Rehearsal_Plugin {
 		Choir_Rehearsal_Admin::register();
 		Choir_Rehearsal_Demo_Data::register();
 		Choir_Rehearsal_Recording::register();
+		if ( class_exists( 'Choir_Rehearsal_Song_Notes', false ) ) {
+			Choir_Rehearsal_Song_Notes::register();
+		}
 		Choir_Rehearsal_Frontend::register();
 		Choir_Rehearsal_Feedback::register();
 		Choir_Rehearsal_REST::register();

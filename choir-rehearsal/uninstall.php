@@ -36,6 +36,12 @@ foreach ( $choir_rehearsal_songs as $choir_rehearsal_song_id ) {
 delete_option( 'choir_rehearsal_require_login' );
 delete_option( 'choir_rehearsal_feedback_github_token' );
 delete_option( 'choir_rehearsal_feedback_github_repo' );
+delete_option( 'choir_rehearsal_notes_db' );
+
+global $wpdb;
+if ( isset( $wpdb ) && $wpdb instanceof wpdb ) {
+	$wpdb->query( 'DROP TABLE IF EXISTS ' . $wpdb->prefix . 'choir_song_notes' );
+}
 
 $choir_rehearsal_terms = get_terms(
 	array(

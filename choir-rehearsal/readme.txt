@@ -4,7 +4,7 @@ Tags: choir, rehearsal, voice parts, practice tracks, sheet music
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 0.4.68
+Stable tag: 0.4.69
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -24,6 +24,7 @@ Choir Rehearsal is a private choir rehearsal library for voice part rehearsal. S
 * Frontend song list at `/rehearsal/` with PDF, public, and YouTube badges
 * Send feedback from the song list (a confirmation email includes the case number)
 * Sticky HTML5 player at the bottom of the page
+* Pro: song notes and track recommendations — Voice Leader and Administrator leave notes; @ a voice part and optional time mark; singers read on the song page (no email alerts)
 * Optional login-only access with Singer and Voice Leader roles (English role names)
 * REST API and MCP abilities for automation
 
@@ -50,6 +51,8 @@ Choir Rehearsal stores rehearsal content on your WordPress site.
 When someone confirms a PDF score upload, the plugin saves that WordPress user ID and the confirmation time in the song post meta `_choir_score_rights_confirmed_by` and `_choir_score_rights_confirmed_at`. When someone confirms making a song public, it saves the same kind of record in `_choir_public_rights_confirmed_by` and `_choir_public_rights_confirmed_at`.
 
 Uploaded PDF scores and audio files are stored in the site media library.
+
+Song notes, when the Pro add-on license is active, store the note text and the WordPress user ID of the author on this site. Voice input is transcribed in the browser only. Audio from dictation is not stored. The plugin does not email singers about notes.
 
 The optional feedback form sends the data described under External services to rehearsal.compath.ee (Compath OÜ).
 
@@ -85,11 +88,19 @@ Signed-in users see **Send feedback** under the song list. Logged-out visitors d
 
 Yes, when you have the rights to use that score, or the score is in the public domain. The plugin asks you to confirm this when you attach a PDF and when you make a song public. It records who confirmed and when. Compath does not verify those rights. Arrangements and editions can be copyrighted even if the composition is in the public domain.
 
+= What are song notes? =
+
+With a licensed Pro add-on, Voice Leader and Administrator can leave notes on a song. Type @ or tap @ Part to address a voice track, and add a time mark from the player. Singer and Guest can read notes on songs they can already open. The plugin does not email singers.
+
 = Can I use YouTube instead of an audio file? =
 
 Yes. In the song editor, set a voice track’s source to **YouTube** and paste a youtube.com or youtu.be URL. On the song page a button opens the official YouTube embed (video stays visible). This is for listening/reference only — the plugin does not download or convert YouTube audio.
 
 == Upgrade Notice ==
+
+= 0.4.69 =
+
+Pro: song notes and per-track recommendations. Voice Leader and Administrator write them; every role that can open the song can read them. No emails to singers.
 
 = 0.4.68 =
 
@@ -100,6 +111,16 @@ Choir Rehearsal → Pro License includes a My orders.. button that opens the sho
 Attaching a PDF or making a song public now requires confirmation that you have rights to the score or that it is public domain. The plugin records who confirmed and when.
 
 == Changelog ==
+
+= 0.4.69 =
+
+* Pro: song notes on the song page, to the left of Share. A note without @ applies to the whole song
+* Address a voice track with @ or @ Part, and insert an editable time mark from the sticky player. A red icon opens that track’s messages and the time mark seeks the player
+* Voice Leader and Administrator can write, edit, and delete. Singer and Guest can read when the song is visible. Checks are enforced on the server
+* Optional voice input for Voice Leader and Administrator (browser speech recognition, interface language, nothing is auto-published, audio is not stored)
+* Mobile: notes open as a bottom sheet with large tap targets, a locked page scroll, and a local draft if the sheet closes
+* Estonian and Russian strings for the new notes copy
+* Demo distribution (CHOIR_REHEARSAL_DISTRIBUTION=demo) includes song notes with no license. GitHub Lite without a license does not. The WordPress.org package does not include this feature
 
 = 0.4.68 =
 

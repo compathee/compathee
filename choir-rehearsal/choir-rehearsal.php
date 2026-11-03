@@ -3,7 +3,7 @@
  * Plugin Name:       Compath Choir Rehearsal
  * Plugin URI:        https://rehearsal.compath.ee
  * Description:       Choir rehearsal library for voice part rehearsal: songs, SATB practice tracks, and sheet music.
- * Version:           0.4.68
+ * Version:           0.4.69
  * Requires at least: 6.4
  * Requires PHP:      8.0
  * Author:            Compath OÜ
@@ -40,17 +40,21 @@ if ( '' !== $choir_rehearsal_primary && $choir_rehearsal_primary !== __FILE__ ) 
 	return;
 }
 
-define( 'CHOIR_REHEARSAL_VERSION', '0.4.68' );
+define( 'CHOIR_REHEARSAL_VERSION', '0.4.69' );
 define( 'CHOIR_REHEARSAL_FILE', __FILE__ );
 define( 'CHOIR_REHEARSAL_PATH', plugin_dir_path( __FILE__ ) );
 define( 'CHOIR_REHEARSAL_URL', plugin_dir_url( __FILE__ ) );
 define( 'CHOIR_REHEARSAL_DOCS_URL', 'https://rehearsal.compath.ee/' );
 
-// WordPress.org builds ship includes/distribution-wporg.php (disables GitHub self-updater).
+// Optional drop-ins: distribution-wporg.php (Plugin Directory) or distribution-demo.php (sandbox).
+// GitHub and WordPress.org zips omit distribution-demo.php so those builds are not the Demo site.
 if ( ! defined( 'CHOIR_REHEARSAL_DISTRIBUTION' ) ) {
 	$choir_rehearsal_wporg = CHOIR_REHEARSAL_PATH . 'includes/distribution-wporg.php';
+	$choir_rehearsal_demo  = CHOIR_REHEARSAL_PATH . 'includes/distribution-demo.php';
 	if ( is_readable( $choir_rehearsal_wporg ) ) {
 		require_once $choir_rehearsal_wporg;
+	} elseif ( is_readable( $choir_rehearsal_demo ) ) {
+		require_once $choir_rehearsal_demo;
 	} else {
 		define( 'CHOIR_REHEARSAL_DISTRIBUTION', 'github' );
 	}

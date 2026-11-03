@@ -2,8 +2,8 @@
 /**
  * Plugin Name:       Compath Choir Rehearsal Pro
  * Plugin URI:        https://rehearsal.compath.ee
- * Description:       Unlocks song search, unlimited voice tracks, microphone recording, Play preview, PDF score badges, and song library backup for Choir Rehearsal. Requires a SureCart license from shop.compath.ee.
- * Version:           0.5.2
+ * Description:       Unlocks song search, unlimited voice tracks, microphone recording, Play preview, PDF score badges, song notes, and song library backup for Choir Rehearsal. Requires a SureCart license from shop.compath.ee.
+ * Version:           0.5.3
  * Requires at least: 6.4
  * Requires PHP:      8.0
  * Author:            Compath OÜ
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 define( 'CHOIR_REHEARSAL_PRO', true );
-define( 'CHOIR_REHEARSAL_PRO_VERSION', '0.5.2' );
+define( 'CHOIR_REHEARSAL_PRO_VERSION', '0.5.3' );
 define( 'CHOIR_REHEARSAL_PRO_FILE', __FILE__ );
 define( 'CHOIR_REHEARSAL_PRO_PATH', plugin_dir_path( __FILE__ ) );
 

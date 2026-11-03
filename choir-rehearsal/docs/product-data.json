@@ -126,13 +126,45 @@
   ],
   "changelog": [
     {
+      "version": "0.4.69",
+      "summary": "Song notes and track recommendations",
+      "items": [
+        "Licensed Pro: Voice Leader and Administrator leave notes on a song. @ addresses a voice track and a time mark seeks the player. Singers read on the song page. No emails",
+        "Demo distribution (CHOIR_REHEARSAL_DISTRIBUTION=demo) includes song notes with no license",
+        "GitHub Lite without a license does not include song notes",
+        "The WordPress.org package does not include song notes"
+      ],
+      "open": true
+    },
+    {
+      "version": "0.4.68",
+      "summary": "Pro License: My orders.. opens the shop customer dashboard in a new tab",
+      "items": [
+        "Pro License: My orders.. opens the shop customer dashboard in a new tab",
+        "Pro License page shows a masked activation ID and license key; the full values stay out of the page HTML",
+        "Estonian and Russian translations for that button and for Pro license deactivation"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.67",
+      "summary": "Copyright confirmation for PDF scores and public songs",
+      "items": [
+        "Before attaching a PDF score, require confirmation of copyright rights or public domain",
+        "Server rejects a new PDF without confirmation and stores confirmation audit meta",
+        "Before making a song public, warn about PDF copyright risk and require confirmation",
+        "Suggested privacy policy text for confirmation records and uploaded files"
+      ],
+      "open": false
+    },
+    {
       "version": "0.4.66",
       "summary": "Song list feedback is for signed-in users",
       "items": [
         "Logged-out visitors no longer see Send feedback under the song list",
         "Signed-in users still see that form, and Choir Rehearsal → Send feedback stays in wp-admin"
       ],
-      "open": true
+      "open": false
     },
     {
       "version": "0.4.65",

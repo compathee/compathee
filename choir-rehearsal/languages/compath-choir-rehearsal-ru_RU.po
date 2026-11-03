@@ -172,15 +172,14 @@ msgid "Edition"
 msgstr "Редакция"
 
 #, php-format
-msgid ""
-"Lite: up to %d voice tracks per song; no microphone recording, song search, "
-"or editor Play preview."
-msgstr ""
-"Lite: до %d голосовых дорожек на песню; без записи с микрофона, поиска песен "
-"и Play-превью в редакторе."
+msgid "Lite: up to %d voice tracks per song; no microphone recording, song search, editor Play preview, or song notes."
+msgstr "Lite: до %d голосовых дорожек на песню; без записи с микрофона, поиска песен, Play-превью в редакторе и заметок к песне."
 
 msgid "Buy Pro"
 msgstr "Купить Pro"
+
+msgid "Unlimited voice tracks, microphone recording, song search, Play preview in the editor, and song notes."
+msgstr "Неограниченные голосовые дорожки, запись с микрофона, поиск песен, Play-превью в редакторе и заметки к песне."
 
 msgid "My orders.."
 msgstr "Мои заказы.."
@@ -191,12 +190,6 @@ msgstr "Деактивировать лицензию Pro на этом сайт
 msgid "License deactivated"
 msgstr "Лицензия деактивирована"
 
-msgid ""
-"Unlimited voice tracks, microphone recording, song search, and Play preview "
-"in the editor."
-msgstr ""
-"Неограниченные голосовые дорожки, запись с микрофона, поиск песен и Play-"
-"превью в редакторе."
 
 msgid "Plugin version"
 msgstr "Версия плагина"
@@ -1216,3 +1209,117 @@ msgstr "Загруженные PDF-партитуры и аудиодорожк�
 
 msgid "The optional feedback form sends the message, name, email address, and technical site information to rehearsal.compath.ee (Compath OÜ). Non-secret Pro license identifiers are included only when a separate Pro add-on license is active. The full license key is not sent."
 msgstr "Необязательная форма обратной связи отправляет сообщение, имя, адрес электронной почты и технические сведения о сайте на rehearsal.compath.ee (Compath OÜ). Несекретные идентификаторы лицензии Pro добавляются только когда активна лицензия отдельного дополнения Pro. Полный лицензионный ключ не отправляется."
+
+msgid "Open song notes"
+msgstr "Открыть заметки к песне"
+
+msgid "Track recommendations for %s"
+msgstr "Рекомендации к партии %s"
+
+msgid "Close song notes"
+msgstr "Закрыть заметки к песне"
+
+msgid "@ Part"
+msgstr "@ Партия"
+
+msgid "Insert time mark"
+msgstr "Добавить метку времени"
+
+msgid "How song notes work"
+msgstr "Как работают заметки к песне"
+
+msgid "Dictate a note"
+msgstr "Надиктовать заметку"
+
+msgid "Type @ or tap @ Part and choose a track."
+msgstr "Напишите @ или нажмите @ Партия и выберите дорожку."
+
+msgid "Tap ⏱ to add a time mark."
+msgstr "Нажмите ⏱, чтобы добавить метку времени."
+
+msgid "Write the recommendation and publish — a red icon appears on the track, and everyone can read it."
+msgstr "Напишите рекомендацию и опубликуйте — у дорожки появится красная иконка, читать могут все."
+
+msgid "Without @, the note applies to the whole song."
+msgstr "Без @ заметка относится ко всей песне."
+
+msgid "Example: @Tenor 1:12 enter softer, crescendo from bar 17"
+msgstr "Пример: @Тенор 1:12 вступаем тише, crescendo с 17-го такта"
+
+msgid "Type @ and choose a part to address advice to a track"
+msgstr "Напишите @ и выберите партию, чтобы адресовать совет треку"
+
+msgid "Voice input stays in this field for editing. Nothing is published automatically, and audio is not stored."
+msgstr "Голосовой ввод остаётся в этом поле для правки. Ничего не публикуется автоматически, аудио не сохраняется."
+
+msgid "Publish"
+msgstr "Опубликовать"
+
+msgid "Song notes"
+msgstr "Заметки к песне"
+
+msgid "Track recommendations"
+msgstr "Рекомендации к партии"
+
+msgid "No song notes yet."
+msgstr "Заметок к песне пока нет."
+
+msgid "No recommendations for this track yet."
+msgstr "Для этой дорожки пока нет рекомендаций."
+
+msgid "Save"
+msgstr "Сохранить"
+
+msgid "Edit note"
+msgstr "Изменить заметку"
+
+msgid "Delete note"
+msgstr "Удалить заметку"
+
+msgid "Delete this note?"
+msgstr "Удалить эту заметку?"
+
+msgid "Could not save the note. Please try again."
+msgstr "Не удалось сохранить заметку. Попробуйте ещё раз."
+
+msgid "Could not delete the note. Please try again."
+msgstr "Не удалось удалить заметку. Попробуйте ещё раз."
+
+msgid "Choose a voice part"
+msgstr "Выберите партию"
+
+msgid "Stop dictation"
+msgstr "Остановить диктовку"
+
+msgid "Seek to this time"
+msgstr "Перемотать на это время"
+
+msgid "Choir member"
+msgstr "Участник хора"
+
+msgid "You cannot edit song notes."
+msgstr "У вас нет права изменять заметки к песне."
+
+msgid "Write a note before publishing."
+msgstr "Напишите заметку перед публикацией."
+
+msgid "This song has too many notes. Delete one before adding another."
+msgstr "У этой песни слишком много заметок. Удалите одну, прежде чем добавлять новую."
+
+msgid "Note not found."
+msgstr "Заметка не найдена."
+
+msgid "Song notes (Pro) store the note text and the WordPress user ID of the author on this website. Voice input is transcribed in the browser and the audio is not stored. The plugin does not email singers about notes."
+msgstr "Заметки к песне (Pro) хранят текст заметки и ID пользователя WordPress автора на этом сайте. Речь превращается в текст в браузере, аудио не сохраняется. Плагин не отправляет хористам письма о заметках."
+
+msgid "Could not load song notes. Please try again."
+msgstr "Не удалось загрузить заметки к песне. Попробуйте ещё раз."
+
+msgid "Demo"
+msgstr "Demo"
+
+msgid "Demo: song notes are available without a license. Microphone recording, song search, and editor Play preview stay off until Pro is licensed."
+msgstr "Demo: заметки к песне доступны без лицензии. Запись с микрофона, поиск песен и Play-превью в редакторе остаются выключенными, пока Pro не лицензирован."
+
+msgid "Song notes store the note text and the WordPress user ID of the author on this website. Voice input is transcribed in the browser and the audio is not stored. The plugin does not email singers about notes."
+msgstr "Заметки к песне хранят текст заметки и ID пользователя WordPress автора на этом сайте. Речь превращается в текст в браузере, аудио не сохраняется. Плагин не отправляет хористам письма о заметках."
