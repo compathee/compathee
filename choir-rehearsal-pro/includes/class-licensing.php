@@ -169,4 +169,25 @@ final class Choir_Rehearsal_Pro_Licensing {
 			echo '</p></div>';
 		}
 	}
+
+	/**
+	 * Newest SureCart release version, or an empty string when the request fails.
+	 * The license key and activation id are not returned.
+	 */
+	public static function current_release_version(): string {
+		if ( ! self::$client instanceof \SureCart\Licensing\Client ) {
+			return '';
+		}
+
+		$release = self::$client->license()->get_current_release( 12 * HOUR_IN_SECONDS );
+		if ( is_wp_error( $release ) || ! is_object( $release ) || ! isset( $release->release_json ) ) {
+			return '';
+		}
+
+		if ( ! class_exists( 'Choir_Rehearsal_Pro_Updates', false ) ) {
+			return '';
+		}
+
+		return Choir_Rehearsal_Pro_Updates::release_version( $release->release_json );
+	}
 }

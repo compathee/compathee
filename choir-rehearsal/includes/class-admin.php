@@ -166,6 +166,23 @@ final class Choir_Rehearsal_Admin {
 								$last_check = Choir_Rehearsal_Updater::get_last_check_result();
 								if ( ! empty( $last_check['time'] ) && ! empty( $last_check['status'] ) ) :
 									$when = wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), (int) $last_check['time'] );
+									$last_plugins = isset( $last_check['plugins'] ) && is_array( $last_check['plugins'] ) ? $last_check['plugins'] : array();
+									if ( array() !== $last_plugins ) :
+										?>
+										<p class="description">
+											<?php
+											echo esc_html(
+												sprintf(
+													/* translators: %s: datetime */
+													__( 'Last check: %s', 'compath-choir-rehearsal' ),
+													$when
+												)
+											);
+											?>
+										</p>
+										<p class="description"><?php Choir_Rehearsal_Updater::echo_plugin_check_lines( $last_plugins ); ?></p>
+										<?php
+									else :
 									$remote_version = isset( $last_check['remote_version'] ) ? (string) $last_check['remote_version'] : '';
 									if ( 'available' === $last_check['status'] && '' !== $remote_version ) {
 										$last_summary = sprintf(
@@ -195,6 +212,7 @@ final class Choir_Rehearsal_Admin {
 									}
 									?>
 									<p class="description"><?php echo esc_html( $last_summary ); ?></p>
+									<?php endif; ?>
 								<?php endif; ?>
 							<?php endif; ?>
 						</td>
@@ -281,7 +299,7 @@ final class Choir_Rehearsal_Admin {
 					<a class="button button-secondary" href="<?php echo esc_url( Choir_Rehearsal_Updater::get_check_updates_url() ); ?>">
 						<?php esc_html_e( 'Check for plugin updates', 'compath-choir-rehearsal' ); ?>
 					</a>
-					<span class="description" style="margin-left:0.5em;"><?php esc_html_e( 'Contacts GitHub Releases and shows the result on this page.', 'compath-choir-rehearsal' ); ?></span>
+					<span class="description" style="margin-left:0.5em;"><?php esc_html_e( 'Contacts GitHub Releases and SureCart and shows the result for each plugin on this page.', 'compath-choir-rehearsal' ); ?></span>
 				<?php endif; ?>
 				<a class="button button-secondary" href="<?php echo esc_url( Choir_Rehearsal_Pages::get_flush_rewrites_url() ); ?>">
 					<?php esc_html_e( 'Refresh permalinks', 'compath-choir-rehearsal' ); ?>

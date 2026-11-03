@@ -3,7 +3,7 @@
  * Plugin Name:       Compath Choir Rehearsal Pro
  * Plugin URI:        https://rehearsal.compath.ee
  * Description:       Unlocks song search, unlimited voice tracks, microphone recording, Play preview, PDF score badges, and song library backup for Choir Rehearsal. Requires a SureCart license from shop.compath.ee.
- * Version:           0.5.2
+ * Version:           0.5.4
  * Requires at least: 6.4
  * Requires PHP:      8.0
  * Author:            Compath OÜ
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 define( 'CHOIR_REHEARSAL_PRO', true );
-define( 'CHOIR_REHEARSAL_PRO_VERSION', '0.5.2' );
+define( 'CHOIR_REHEARSAL_PRO_VERSION', '0.5.4' );
 define( 'CHOIR_REHEARSAL_PRO_FILE', __FILE__ );
 define( 'CHOIR_REHEARSAL_PRO_PATH', plugin_dir_path( __FILE__ ) );
 
@@ -31,6 +31,11 @@ function choir_rehearsal_pro_load_includes(): void {
 	$licensing = CHOIR_REHEARSAL_PRO_PATH . 'includes/class-licensing.php';
 	if ( is_readable( $licensing ) ) {
 		require_once $licensing;
+	}
+
+	$pro_updates = CHOIR_REHEARSAL_PRO_PATH . 'includes/class-pro-updates.php';
+	if ( is_readable( $pro_updates ) ) {
+		require_once $pro_updates;
 	}
 
 	$backup_file = CHOIR_REHEARSAL_PRO_PATH . 'includes/class-backup.php';
@@ -49,6 +54,10 @@ add_action(
 	static function (): void {
 		if ( class_exists( 'Choir_Rehearsal_Pro_Licensing', false ) ) {
 			Choir_Rehearsal_Pro_Licensing::register();
+		}
+
+		if ( class_exists( 'Choir_Rehearsal_Pro_Updates', false ) ) {
+			Choir_Rehearsal_Pro_Updates::register();
 		}
 
 		if ( class_exists( 'Choir_Rehearsal_Pro_Backup', false ) ) {

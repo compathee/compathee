@@ -4,7 +4,7 @@ Tags: choir, rehearsal, voice parts, practice tracks, sheet music
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 0.4.68
+Stable tag: 0.4.71
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -91,6 +91,10 @@ Yes. In the song editor, set a voice track’s source to **YouTube** and paste a
 
 == Upgrade Notice ==
 
+= 0.4.71 =
+
+Check for plugin updates also asks SureCart for a Pro release. The notice lists the installed version, the available version, and an Update link or Up to date for each plugin. An inactive Pro license shows a notice and still checks Lite.
+
 = 0.4.68 =
 
 Choir Rehearsal → Pro License includes a My orders.. button that opens the shop customer dashboard. The activation ID and license key are shown masked. Estonian and Russian catalogs include the Pro deactivation prompt.
@@ -100,6 +104,14 @@ Choir Rehearsal → Pro License includes a My orders.. button that opens the sho
 Attaching a PDF or making a song public now requires confirmation that you have rights to the score or that it is public domain. The plugin records who confirmed and when.
 
 == Changelog ==
+
+= 0.4.71 =
+
+* Check for plugin updates clears the Lite and SureCart caches, then checks both plugins
+* The result lists each plugin’s installed version, available version, and an Update link or Up to date
+* If Pro is installed without an active license, the notice says so and the Lite check still runs
+* Pro updates use the on-disk version and a 12-hour SureCart download link so Plugins → Updates can see a new release
+* Estonian and Russian strings for the combined update result
 
 = 0.4.68 =
 

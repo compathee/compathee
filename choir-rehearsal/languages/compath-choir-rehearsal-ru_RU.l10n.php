@@ -311,5 +311,12 @@ return [
         'listen plus add/edit songs in the admin' => 'слушать и добавлять/редактировать песни в админке',
         'recommended for existing sites' => 'рекомендуется для существующих сайтов',
         '— Select —' => '— Выбрать —',
+        '%1$s: installed %2$s, available %3$s.' => '%1$s: установлена %2$s, доступна %3$s.',
+        '%1$s: installed %2$s. Could not check for updates.' => '%1$s: установлена %2$s. Не удалось проверить обновления.',
+        'Compath Choir Rehearsal Pro is installed (version %s), but its license is not activated. Pro updates are not checked until you activate the license. The Lite check still runs.' => 'Compath Choir Rehearsal Pro установлен (версия %s), но лицензия не активирована. Обновления Pro не проверяются, пока вы не активируете лицензию. Проверка Lite работает как прежде.',
+        'Contacts GitHub Releases and SureCart and shows the result for each plugin on this page.' => 'Обращается к GitHub Releases и SureCart и показывает результат по каждому плагину на этой странице.',
+        'Pro License' => 'Лицензия Pro',
+        'Up to date.' => 'Актуально.',
+        'Update' => 'Обновить',
     ],
 ];

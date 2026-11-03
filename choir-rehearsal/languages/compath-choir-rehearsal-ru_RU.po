@@ -1216,3 +1216,24 @@ msgstr "Загруженные PDF-партитуры и аудиодорожк�
 
 msgid "The optional feedback form sends the message, name, email address, and technical site information to rehearsal.compath.ee (Compath OÜ). Non-secret Pro license identifiers are included only when a separate Pro add-on license is active. The full license key is not sent."
 msgstr "Необязательная форма обратной связи отправляет сообщение, имя, адрес электронной почты и технические сведения о сайте на rehearsal.compath.ee (Compath OÜ). Несекретные идентификаторы лицензии Pro добавляются только когда активна лицензия отдельного дополнения Pro. Полный лицензионный ключ не отправляется."
+
+msgid "%1$s: installed %2$s, available %3$s."
+msgstr "%1$s: установлена %2$s, доступна %3$s."
+
+msgid "%1$s: installed %2$s. Could not check for updates."
+msgstr "%1$s: установлена %2$s. Не удалось проверить обновления."
+
+msgid "Compath Choir Rehearsal Pro is installed (version %s), but its license is not activated. Pro updates are not checked until you activate the license. The Lite check still runs."
+msgstr "Compath Choir Rehearsal Pro установлен (версия %s), но лицензия не активирована. Обновления Pro не проверяются, пока вы не активируете лицензию. Проверка Lite работает как прежде."
+
+msgid "Contacts GitHub Releases and SureCart and shows the result for each plugin on this page."
+msgstr "Обращается к GitHub Releases и SureCart и показывает результат по каждому плагину на этой странице."
+
+msgid "Pro License"
+msgstr "Лицензия Pro"
+
+msgid "Up to date."
+msgstr "Актуально."
+
+msgid "Update"
+msgstr "Обновить"

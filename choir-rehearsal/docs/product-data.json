@@ -126,13 +126,23 @@
   ],
   "changelog": [
     {
+      "version": "0.4.71",
+      "summary": "Check Updates includes Pro on SureCart",
+      "items": [
+        "Settings → Check for plugin updates clears Lite and SureCart caches and checks both plugins",
+        "The notice shows the installed version, the available version, and an Update link or Up to date",
+        "An inactive Pro license is explained on the page; the Lite check still runs"
+      ],
+      "open": true
+    },
+    {
       "version": "0.4.66",
       "summary": "Song list feedback is for signed-in users",
       "items": [
         "Logged-out visitors no longer see Send feedback under the song list",
         "Signed-in users still see that form, and Choir Rehearsal → Send feedback stays in wp-admin"
       ],
-      "open": true
+      "open": false
     },
     {
       "version": "0.4.65",

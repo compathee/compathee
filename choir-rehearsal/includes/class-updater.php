@@ -64,7 +64,7 @@ final class Choir_Rehearsal_Updater {
 	}
 
 	public static function handle_check_updates(): void {
-		if ( ! current_user_can( 'update_plugins' ) ) {
+		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_die( esc_html__( 'Sorry, you are not allowed to update plugins.', 'compath-choir-rehearsal' ) );
 		}
 
@@ -72,17 +72,29 @@ final class Choir_Rehearsal_Updater {
 
 		self::clear_update_caches();
 
-		$remote    = self::fetch_remote_metadata();
-		$installed = self::get_installed_version();
-		$status    = 'failed';
-		$version   = '';
+		$remote          = self::fetch_remote_metadata();
+		$installed       = self::get_installed_version();
+		$remote_version  = is_array( $remote ) && isset( $remote['version'] ) ? (string) $remote['version'] : null;
+		$lite            = self::summarize_version_check( $installed, $remote_version );
+		$lite['id']       = 'lite';
+		$lite['name']     = 'Compath Choir Rehearsal';
+		$lite['basename'] = self::plugin_basename_slug();
 
-		if ( is_array( $remote ) && isset( $remote['version'] ) ) {
-			$version = (string) $remote['version'];
-			if ( '' !== $installed && version_compare( $installed, $version, '<' ) ) {
-				$status = 'available';
-			} else {
-				$status = 'up_to_date';
+		// Rebuild after both caches are cleared so Plugins shows Lite and Pro together.
+		if ( function_exists( 'wp_update_plugins' ) ) {
+			wp_update_plugins();
+		}
+
+		$plugins = apply_filters(
+			'choir_rehearsal_update_check_plugins',
+			array( self::sanitize_plugin_check_row( $lite ) )
+		);
+		$clean = array();
+		if ( is_array( $plugins ) ) {
+			foreach ( $plugins as $row ) {
+				if ( is_array( $row ) ) {
+					$clean[] = self::sanitize_plugin_check_row( $row );
+				}
 			}
 		}
 
@@ -90,44 +102,29 @@ final class Choir_Rehearsal_Updater {
 			self::LAST_CHECK_OPTION,
 			array(
 				'time'           => time(),
-				'status'         => $status,
-				'remote_version' => $version,
-				'installed'      => $installed,
+				'status'         => (string) $lite['status'],
+				'remote_version' => (string) ( $lite['available'] ?? '' ),
+				'installed'      => (string) ( $lite['installed'] ?? '' ),
+				'plugins'        => $clean,
 			),
 			false
 		);
 
-		// Rebuild the update transient so Plugins shows a ready "Update now" when available.
-		if ( function_exists( 'wp_update_plugins' ) ) {
-			wp_update_plugins();
-		}
-
-		if ( 'available' === $status ) {
-			$redirect = add_query_arg(
-				array(
-					'choir_rehearsal_update_check'   => $status,
-					'choir_rehearsal_update_version' => $version,
-				),
-				admin_url( 'plugins.php' )
-			);
-		} else {
-			$redirect = add_query_arg(
-				array(
-					'post_type'                      => Choir_Rehearsal_Post_Types::SONG,
-					'page'                           => 'choir-rehearsal-settings',
-					'choir_rehearsal_update_check'   => $status,
-					'choir_rehearsal_update_version' => $version,
-				),
-				admin_url( 'edit.php' )
-			);
-		}
+		$redirect = add_query_arg(
+			array(
+				'post_type'                    => Choir_Rehearsal_Post_Types::SONG,
+				'page'                         => 'choir-rehearsal-settings',
+				'choir_rehearsal_update_check' => 'done',
+			),
+			admin_url( 'edit.php' )
+		);
 
 		wp_safe_redirect( $redirect );
 		exit;
 	}
 
 	public static function render_check_notices(): void {
-		if ( ! current_user_can( 'update_plugins' ) ) {
+		if ( ! current_user_can( 'manage_options' ) ) {
 			return;
 		}
 
@@ -136,6 +133,13 @@ final class Choir_Rehearsal_Updater {
 			: '';
 
 		if ( '' === $status ) {
+			return;
+		}
+
+		$last    = self::get_last_check_result();
+		$plugins = isset( $last['plugins'] ) && is_array( $last['plugins'] ) ? $last['plugins'] : array();
+		if ( array() !== $plugins ) {
+			self::render_plugin_check_notice( $plugins );
 			return;
 		}
 
@@ -192,7 +196,186 @@ final class Choir_Rehearsal_Updater {
 	}
 
 	/**
-	 * @return array{time?:int,status?:string,remote_version?:string,installed?:string}
+	 * Compare an installed version with one reported by an update server.
+	 *
+	 * @return array{status:string,installed:string,available:string}
+	 */
+	public static function summarize_version_check( string $installed, ?string $remote ): array {
+		$installed  = self::sanitize_version_string( $installed );
+		$remote_raw = is_string( $remote ) ? self::sanitize_version_string( $remote ) : '';
+		if ( '' === $remote_raw ) {
+			return array(
+				'status'    => 'failed',
+				'installed' => $installed,
+				'available' => '',
+			);
+		}
+
+		if ( '' !== $installed && version_compare( $installed, $remote_raw, '>' ) ) {
+			$status = 'ahead';
+		} elseif ( '' !== $installed && version_compare( $installed, $remote_raw, '<' ) ) {
+			$status = 'available';
+		} else {
+			$status = 'up_to_date';
+			if ( '' === $installed ) {
+				$installed = $remote_raw;
+			}
+		}
+
+		return array(
+			'status'    => $status,
+			'installed' => $installed,
+			'available' => $remote_raw,
+		);
+	}
+
+	public static function sanitize_version_string( string $version ): string {
+		$version = ltrim( trim( $version ), 'vV' );
+		if ( 1 === preg_match( '/^(\d+(?:\.\d+){1,3})/', $version, $matches ) ) {
+			return $matches[1];
+		}
+
+		return '';
+	}
+
+	/**
+	 * Keep only display fields. License keys, activation ids, and download URLs are dropped.
+	 *
+	 * @param array<string, mixed> $row
+	 * @return array{id:string,name:string,status:string,installed:string,available:string,basename:string}
+	 */
+	public static function sanitize_plugin_check_row( array $row ): array {
+		$status  = isset( $row['status'] ) ? (string) $row['status'] : 'failed';
+		$allowed = array( 'available', 'up_to_date', 'failed', 'unlicensed', 'ahead' );
+		if ( ! in_array( $status, $allowed, true ) ) {
+			$status = 'failed';
+		}
+
+		$name = isset( $row['name'] ) ? (string) $row['name'] : '';
+		$name = trim( (string) preg_replace( '/[^A-Za-z0-9 .:_-]/', '', $name ) );
+		if ( strlen( $name ) > 80 ) {
+			$name = substr( $name, 0, 80 );
+		}
+
+		$id = isset( $row['id'] ) ? (string) $row['id'] : 'plugin';
+		if ( 1 !== preg_match( '/^[a-z0-9_-]{1,40}$/', $id ) ) {
+			$id = 'plugin';
+		}
+
+		$basename = isset( $row['basename'] ) ? (string) $row['basename'] : '';
+		if ( 1 !== preg_match( '#^[a-z0-9_-]+/[a-z0-9_-]+\.php$#', $basename ) ) {
+			$basename = '';
+		}
+
+		return array(
+			'id'        => $id,
+			'name'      => $name,
+			'status'    => $status,
+			'installed' => self::sanitize_version_string( isset( $row['installed'] ) ? (string) $row['installed'] : '' ),
+			'available' => self::sanitize_version_string( isset( $row['available'] ) ? (string) $row['available'] : '' ),
+			'basename'  => $basename,
+		);
+	}
+
+	/**
+	 * @param list<array<string, mixed>> $plugins
+	 */
+	public static function echo_plugin_check_lines( array $plugins ): void {
+		$first = true;
+		foreach ( $plugins as $row ) {
+			if ( ! is_array( $row ) ) {
+				continue;
+			}
+			if ( ! $first ) {
+				echo '<br />';
+			}
+			$first = false;
+			self::render_plugin_check_line( self::sanitize_plugin_check_row( $row ) );
+		}
+	}
+
+	/**
+	 * @param list<array<string, mixed>> $plugins
+	 */
+	private static function render_plugin_check_notice( array $plugins ): void {
+		echo '<div class="notice notice-info is-dismissible"><p>';
+		self::echo_plugin_check_lines( $plugins );
+		echo '</p></div>';
+	}
+
+	/**
+	 * @param array{id:string,name:string,status:string,installed:string,available:string,basename:string} $row
+	 */
+	private static function render_plugin_check_line( array $row ): void {
+		$name      = (string) $row['name'];
+		$installed = (string) $row['installed'];
+		$available = (string) $row['available'];
+		$status    = (string) $row['status'];
+		$shown     = '' !== $installed ? $installed : '—';
+
+		if ( 'unlicensed' === $status ) {
+			echo esc_html(
+				sprintf(
+					/* translators: %s: installed Pro version */
+					__( 'Compath Choir Rehearsal Pro is installed (version %s), but its license is not activated. Pro updates are not checked until you activate the license. The Lite check still runs.', 'compath-choir-rehearsal' ),
+					$shown
+				)
+			);
+			$license_url = admin_url( 'edit.php?post_type=' . Choir_Rehearsal_Post_Types::SONG . '&page=choir-rehearsal-pro-license' );
+			echo ' <a href="' . esc_url( $license_url ) . '">' . esc_html__( 'Pro License', 'compath-choir-rehearsal' ) . '</a>';
+			return;
+		}
+
+		if ( 'failed' === $status ) {
+			echo esc_html(
+				sprintf(
+					/* translators: 1: plugin name, 2: installed version */
+					__( '%1$s: installed %2$s. Could not check for updates.', 'compath-choir-rehearsal' ),
+					$name,
+					$shown
+				)
+			);
+			return;
+		}
+
+		if ( 'ahead' === $status ) {
+			echo esc_html(
+				sprintf(
+					/* translators: 1: installed version, 2: version reported by update server */
+					__( 'Your installed version is %1$s, but the update server only reported %2$s (likely stale metadata). Open Plugins and use Update now if shown, upload the latest zip, or set Update JSON URL to the latest GitHub release update.json.', 'compath-choir-rehearsal' ),
+					$shown,
+					'' !== $available ? $available : '—'
+				)
+			);
+			return;
+		}
+
+		echo esc_html(
+			sprintf(
+				/* translators: 1: plugin name, 2: installed version, 3: available version */
+				__( '%1$s: installed %2$s, available %3$s.', 'compath-choir-rehearsal' ),
+				$name,
+				$shown,
+				'' !== $available ? $available : '—'
+			)
+		);
+
+		if ( 'available' === $status && '' !== (string) $row['basename'] ) {
+			$update_url = wp_nonce_url(
+				self_admin_url( 'update.php?action=upgrade-plugin&plugin=' . rawurlencode( (string) $row['basename'] ) ),
+				'upgrade-plugin_' . (string) $row['basename']
+			);
+			echo ' <a href="' . esc_url( $update_url ) . '"><strong>' . esc_html__( 'Update', 'compath-choir-rehearsal' ) . '</strong></a>';
+			return;
+		}
+
+		if ( 'up_to_date' === $status ) {
+			echo ' ' . esc_html__( 'Up to date.', 'compath-choir-rehearsal' );
+		}
+	}
+
+	/**
+	 * @return array{time?:int,status?:string,remote_version?:string,installed?:string,plugins?:list<array<string, string>>}
 	 */
 	public static function get_last_check_result(): array {
 		$stored = get_option( self::LAST_CHECK_OPTION, array() );
@@ -249,6 +432,11 @@ final class Choir_Rehearsal_Updater {
 	private static function clear_update_caches(): void {
 		delete_transient( 'choir_rehearsal_update_metadata' );
 		delete_site_transient( 'update_plugins' );
+
+		/**
+		 * Pro deletes the SureCart release transient here, before wp_update_plugins() runs.
+		 */
+		do_action( 'choir_rehearsal_clear_update_caches' );
 
 		if ( function_exists( 'wp_clean_plugins_cache' ) ) {
 			wp_clean_plugins_cache( true );

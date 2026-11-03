@@ -311,5 +311,12 @@ return [
         'listen plus add/edit songs in the admin' => 'kuula ning lisa/muuda lugusid adminis',
         'recommended for existing sites' => 'soovitatav olemasolevatele saitidele',
         '— Select —' => '— Vali —',
+        '%1$s: installed %2$s, available %3$s.' => '%1$s: paigaldatud %2$s, saadaval %3$s.',
+        '%1$s: installed %2$s. Could not check for updates.' => '%1$s: paigaldatud %2$s. Uuendusi ei õnnestunud kontrollida.',
+        'Compath Choir Rehearsal Pro is installed (version %s), but its license is not activated. Pro updates are not checked until you activate the license. The Lite check still runs.' => 'Compath Choir Rehearsal Pro on paigaldatud (versioon %s), aga litsents ei ole aktiveeritud. Pro uuendusi ei kontrollita enne litsentsi aktiveerimist. Lite kontroll töötab endiselt.',
+        'Contacts GitHub Releases and SureCart and shows the result for each plugin on this page.' => 'Võtab ühendust GitHub Releasesi ja SureCartiga ning näitab iga plugina tulemust sellel lehel.',
+        'Pro License' => 'Pro litsents',
+        'Up to date.' => 'Ajakohane.',
+        'Update' => 'Uuenda',
     ],
 ];
