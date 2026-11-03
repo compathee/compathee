@@ -24,8 +24,12 @@ rm -rf \
   "$STAGE/$SLUG/docs/product-page.html" \
   "$STAGE/$SLUG/docs/product-data.json"
 rm -f "$STAGE/$SLUG/update.json"
+# Internal docs name the commercial add-on. The catalog zip does not ship them.
+rm -rf "$STAGE/$SLUG/docs"
 # Plugin Check fails if custom updater code is present, even when disabled at runtime.
+# That file also holds the SureCart update-check control, so the .org package has neither.
 rm -f "$STAGE/$SLUG/includes/class-updater.php"
+python3 "$ROOT/scripts/prepare-wporg-tree.py" "$STAGE/$SLUG"
 # WordPress.org package: full feature set, no Lite/Pro commercial gates in shipped code.
 cp "$STAGE/$SLUG/includes/edition-wporg.php" "$STAGE/$SLUG/includes/class-edition.php"
 rm -f "$STAGE/$SLUG/includes/edition-wporg.php"
@@ -110,4 +114,30 @@ else
   echo "ERROR: wporg class-edition.php missing capability helpers" >&2
   exit 1
 fi
+python3 - "$ZIP" "$SLUG" <<'PY'
+import sys, zipfile, re
+zip_path, slug = sys.argv[1], sys.argv[2]
+banned = re.compile(r"surecart", re.I)
+pro_readme = re.compile(r"\bPro\b")
+with zipfile.ZipFile(zip_path) as zf:
+    names = zf.namelist()
+    if any(n.endswith("class-updater.php") for n in names):
+        sys.exit("ERROR: class-updater.php shipped in wporg zip")
+    if any("/docs/" in n for n in names):
+        sys.exit("ERROR: docs shipped in wporg zip")
+    readme = zf.read(f"{slug}/readme.txt").decode("utf-8")
+    if pro_readme.search(readme) or banned.search(readme):
+        sys.exit("ERROR: wporg readme mentions Pro or SureCart")
+    headings = set(re.findall(r"(?m)^= (\d+\.\d+\.\d+) =$", readme))
+    # Source of truth is the staged file already checked; require 0.4.0 through the stable tag.
+    stable = re.search(r"(?m)^Stable tag:\s*(\d+\.\d+\.\d+)\s*$", readme)
+    if not stable or stable.group(1) not in headings:
+        sys.exit("ERROR: stable tag missing from wporg changelog")
+    for name in names:
+        if name.endswith((".php", ".txt", ".po", ".json", ".md", ".js", ".css")) or name.endswith(".l10n.php"):
+            text = zf.read(name).decode("utf-8", "replace")
+            if banned.search(text):
+                sys.exit(f"ERROR: {name} mentions SureCart or the Pro package slug")
+print("OK wporg package has no SureCart update-check copy")
+PY
 echo "OK wporg package checks passed"

@@ -14,7 +14,7 @@ $privacy_strings = array(
 	'Compath Choir Rehearsal stores rehearsal songs on this website.',
 	'When a user confirms they may attach a PDF score, the plugin stores that WordPress user ID and the confirmation time in the song post meta (_choir_score_rights_confirmed_by and _choir_score_rights_confirmed_at). When a user confirms they may make a song public, it stores the same kind of record (_choir_public_rights_confirmed_by and _choir_public_rights_confirmed_at). These records show who accepted the copyright confirmation and when. Compath does not verify that the person holds those rights.',
 	'Uploaded PDF scores and audio tracks are stored in the site media library and linked to the song.',
-	'The optional feedback form sends the message, name, email address, and technical site information to rehearsal.compath.ee (Compath OÜ). Non-secret Pro license identifiers are included only when a separate Pro add-on license is active. The full license key is not sent.',
+	'The optional feedback form sends the message, name, email address, and technical site information to rehearsal.compath.ee (Compath OÜ). The full license key is not sent.',
 );
 
 $confirmation_strings = array(

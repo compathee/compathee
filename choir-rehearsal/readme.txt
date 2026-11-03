@@ -35,7 +35,7 @@ Upload only scores you have the rights to use, or that are in the public domain.
 
 The rehearsal library works without external services. Song data, audio, and PDF scores stay on your WordPress site.
 
-Optional **feedback** (under the song list): when someone sends feedback, the site server posts the request to `https://rehearsal.compath.ee/api/feedback.php` (Compath OÜ). The request includes the message, feedback type, name (optional), email address, WordPress role (or guest), the sender’s locale, plugin version, site home URL, WordPress version, and PHP version. Non-secret Pro license identifiers are included only when the separate Choir Rehearsal Pro add-on is installed and a license is active (license, purchase, order, customer, and activation IDs, or a masked key if those IDs are empty). The WordPress.org plugin alone does not send license identifiers. The full license key is not sent. Compath registers a support case and emails a confirmation to the address on the form. No token is stored in the plugin. The email is used only to answer the request.
+Optional **feedback** (under the song list): when someone sends feedback, the site server posts the request to `https://rehearsal.compath.ee/api/feedback.php` (Compath OÜ). The request includes the message, feedback type, name (optional), email address, WordPress role (or guest), the sender’s locale, plugin version, site home URL, WordPress version, and PHP version. The full license key is not sent. Compath registers a support case and emails a confirmation to the address on the form. No token is stored in the plugin. The email is used only to answer the request.
 
 Optional **YouTube tracks** (song editor): choose YouTube as a track source and paste a URL. The song page opens the official YouTube embed player (`youtube.com`). Playback uses YouTube’s embed; no download. Subject to [YouTube Terms of Service](https://www.youtube.com/static?template=terms). No YouTube API key is required for this embed.
 
@@ -93,7 +93,7 @@ Yes. In the song editor, set a voice track’s source to **YouTube** and paste a
 
 = 0.4.71 =
 
-Check for plugin updates also asks SureCart for a Pro release. The notice lists the installed version, the available version, and an Update link or Up to date for each plugin. An inactive Pro license shows a notice and still checks Lite.
+The update check lists the installed version, the available version, and an update link or up to date.
 
 = 0.4.68 =
 
@@ -107,11 +107,8 @@ Attaching a PDF or making a song public now requires confirmation that you have 
 
 = 0.4.71 =
 
-* Check for plugin updates clears the Lite and SureCart caches, then checks both plugins
-* The result lists each plugin’s installed version, available version, and an Update link or Up to date
-* If Pro is installed without an active license, the notice says so and the Lite check still runs
-* Pro updates use the on-disk version and a 12-hour SureCart download link so Plugins → Updates can see a new release
-* Estonian and Russian strings for the combined update result
+* Update check shows the installed version, the available version, and an update link or up to date
+* Estonian and Russian strings for that result
 
 = 0.4.68 =
 

@@ -318,5 +318,7 @@ return [
         'Pro License' => 'Pro litsents',
         'Up to date.' => 'Ajakohane.',
         'Update' => 'Uuenda',
+        'The optional feedback form sends the message, name, email address, and technical site information to rehearsal.compath.ee (Compath OÜ). The full license key is not sent.' => 'Valikuline tagasisidevorm saadab sõnumi, nime, e-posti aadressi ja tehnilise teabe saidi kohta aadressile rehearsal.compath.ee (Compath OÜ). Täielikku litsentsivõtit ei saadeta.',
+        'Non-secret Pro license identifiers are included only when a separate Pro add-on license is active.' => 'Mittesalajased Pro litsentsi identifikaatorid lisatakse ainult siis, kui eraldi Pro lisaplugina litsents on aktiivne.',
     ],
 ];

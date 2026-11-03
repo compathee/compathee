@@ -101,7 +101,9 @@ check('check updates keeps its nonce', str_contains($lite, "check_admin_referer(
 check('lite clear notifies pro before the plugin transient is rebuilt', str_contains($lite, "do_action( 'choir_rehearsal_clear_update_caches' )") && str_contains($lite, 'wp_update_plugins'));
 check('notice names installed and available versions', str_contains($lite, '%1$s: installed %2$s, available %3$s.'));
 check('notice offers update or up to date', str_contains($lite, "__( 'Update', 'compath-choir-rehearsal' )") && str_contains($lite, 'Up to date.'));
-check('settings button mentions SureCart', str_contains($admin, 'SureCart'));
+check('settings button mentions SureCart', str_contains($lite, 'SureCart') && str_contains($lite, 'function render_settings_button'));
+check('wporg admin file has no SureCart update copy', !str_contains($admin, 'SureCart'));
+check('admin asks the updater for the button', str_contains($admin, 'Choir_Rehearsal_Updater::render_settings_button'));
 
 check('pro clears the surecart version transient', str_contains($pro, 'delete_transient') && str_contains($pro, 'version_cache_key'));
 check('pro flushes that cache when WordPress rebuilds update_plugins', str_contains($pro, 'pre_set_site_transient_update_plugins'));

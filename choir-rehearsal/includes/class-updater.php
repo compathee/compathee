@@ -390,6 +390,26 @@ final class Choir_Rehearsal_Updater {
 	}
 
 	/**
+	 * Extra privacy sentence for the GitHub build. Absent from the WordPress.org package.
+	 */
+	public static function privacy_license_sentence(): string {
+		return __( 'Non-secret Pro license identifiers are included only when a separate Pro add-on license is active.', 'compath-choir-rehearsal' );
+	}
+
+	public static function render_settings_button(): void {
+		if ( ! class_exists( 'Choir_Rehearsal_Distribution', false ) || ! Choir_Rehearsal_Distribution::uses_github_updater() ) {
+			return;
+		}
+
+		echo '<a class="button button-secondary" href="' . esc_url( self::get_check_updates_url() ) . '">';
+		esc_html_e( 'Check for plugin updates', 'compath-choir-rehearsal' );
+		echo '</a>';
+		echo '<span class="description" style="margin-left:0.5em;">';
+		esc_html_e( 'Contacts GitHub Releases and SureCart and shows the result for each plugin on this page.', 'compath-choir-rehearsal' );
+		echo '</span> ';
+	}
+
+	/**
 	 * @param WP_Upgrader $upgrader
 	 * @param array<string, mixed> $options
 	 */

@@ -295,12 +295,11 @@ final class Choir_Rehearsal_Admin {
 				</div>
 			<?php endif; ?>
 			<p>
-				<?php if ( Choir_Rehearsal_Distribution::uses_github_updater() ) : ?>
-					<a class="button button-secondary" href="<?php echo esc_url( Choir_Rehearsal_Updater::get_check_updates_url() ); ?>">
-						<?php esc_html_e( 'Check for plugin updates', 'compath-choir-rehearsal' ); ?>
-					</a>
-					<span class="description" style="margin-left:0.5em;"><?php esc_html_e( 'Contacts GitHub Releases and SureCart and shows the result for each plugin on this page.', 'compath-choir-rehearsal' ); ?></span>
-				<?php endif; ?>
+				<?php
+				if ( class_exists( 'Choir_Rehearsal_Updater', false ) ) {
+					Choir_Rehearsal_Updater::render_settings_button();
+				}
+				?>
 				<a class="button button-secondary" href="<?php echo esc_url( Choir_Rehearsal_Pages::get_flush_rewrites_url() ); ?>">
 					<?php esc_html_e( 'Refresh permalinks', 'compath-choir-rehearsal' ); ?>
 				</a>
