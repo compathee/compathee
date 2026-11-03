@@ -4,7 +4,7 @@ Tags: choir, rehearsal, voice parts, practice tracks, sheet music
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 0.4.70
+Stable tag: 0.4.71
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -98,13 +98,9 @@ Yes. In the song editor, set a voice track’s source to **YouTube** and paste a
 
 == Upgrade Notice ==
 
-= 0.4.70 =
+= 0.4.71 =
 
-Builds that include the mixer module can play a song’s audio tracks together. The WordPress.org package does not include that module.
-
-= 0.4.69 =
-
-Pro: song notes and per-track recommendations. Voice Leader and Administrator write them; every role that can open the song can read them. No emails to singers.
+Song notes, the multi-track mixer, and a Settings update check for Lite and Pro. Song notes and the mixer require a licensed Pro add-on or the Demo distribution. The WordPress.org package does not include those features.
 
 = 0.4.68 =
 
@@ -116,20 +112,19 @@ Attaching a PDF or making a song public now requires confirmation that you have 
 
 == Changelog ==
 
-= 0.4.70 =
+= 0.4.71 =
 
-* Song page mixer, when this build includes the module: one channel per audio file, shared timeline, volume, mute, and solo
-* Licensed Pro and the Demo distribution include the mixer. GitHub Lite without a license does not. The WordPress.org package does not include the mixer module
-
-= 0.4.69 =
-
-* Pro: song notes on the song page, to the left of Share. A note without @ applies to the whole song
+* Song notes on the song page, to the left of Share. A note without @ applies to the whole song
 * Address a voice track with @ or @ Part, and insert an editable time mark from the sticky player. A red icon opens that track’s messages and the time mark seeks the player
-* Voice Leader and Administrator can write, edit, and delete. Singer and Guest can read when the song is visible. Checks are enforced on the server
+* Voice Leader and Administrator can write, edit, and delete notes. Singer and Guest can read when the song is visible. Checks are enforced on the server
 * Optional voice input for Voice Leader and Administrator (browser speech recognition, interface language, nothing is auto-published, audio is not stored)
 * Mobile: notes open as a bottom sheet with large tap targets, a locked page scroll, and a local draft if the sheet closes
-* Estonian and Russian strings for the new notes copy
-* Demo distribution (CHOIR_REHEARSAL_DISTRIBUTION=demo) includes song notes with no license. GitHub Lite without a license does not. The WordPress.org package does not include this feature
+* Song page mixer: one channel per audio file, shared timeline, volume, mute, solo, speed, and an A–B loop
+* Licensed Pro and the Demo distribution (CHOIR_REHEARSAL_DISTRIBUTION=demo) include song notes and the mixer. GitHub Lite without a license does not. The WordPress.org package does not include either feature
+* Settings → Check for plugin updates clears the Lite and SureCart caches and checks both plugins
+* The notice shows the installed version, the available version, and an Update link or Up to date
+* An inactive Pro license is explained on the page and the Lite check still runs. The license key and activation id are not shown
+* Estonian and Russian strings for the notes, the mixer, and the update check
 
 = 0.4.68 =
 

@@ -91,10 +91,12 @@ If you install the *same* version that you just published, Check for plugin upda
 
 1. Bump version in `choir-rehearsal-pro/choir-rehearsal-pro.php`.
 2. Zip folder `choir-rehearsal-pro/` → `choir-rehearsal-pro.zip`.
-3. SureCart product **Choir Rehearsal Pro** → replace **Current release** download.
+3. SureCart product **Choir Rehearsal Pro** → replace **Current release** download. The zip’s `release.json` `version` must be higher than the installed Pro version, and `slug` must stay `choir-rehearsal-pro` (the plugin folder name).
 4. Do not put Pro on public GitHub Releases.
 
-Pro customers update Pro by downloading the new zip from their SureCart account until a licensed updater is added.
+Licensed sites see the new Pro version under **Plugins → Updates** after WordPress rebuilds plugin updates. **Choir Rehearsal → Settings → Check for plugin updates** clears the Lite metadata cache, the SureCart release cache (`surecart_` + md5 of the plugin folder + `_version_info`), and the `update_plugins` transient, then checks both plugins. The notice shows the installed version, the available version, and an Update link or Up to date. If Pro is installed but the license is not activated, the notice says so and the Lite check still runs. The license key and activation id are not shown.
+
+Pro customers can still download the zip from their SureCart account.
 
 ---
 

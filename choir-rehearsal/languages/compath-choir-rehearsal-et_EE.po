@@ -1373,3 +1373,30 @@ msgstr "Tühista vaigistus %s"
 
 msgid "Unsolo %s"
 msgstr "Tühista solo %s"
+
+msgid "%1$s: installed %2$s, available %3$s."
+msgstr "%1$s: paigaldatud %2$s, saadaval %3$s."
+
+msgid "%1$s: installed %2$s. Could not check for updates."
+msgstr "%1$s: paigaldatud %2$s. Uuendusi ei õnnestunud kontrollida."
+
+msgid "Compath Choir Rehearsal Pro is installed (version %s), but its license is not activated. Pro updates are not checked until you activate the license. The Lite check still runs."
+msgstr "Compath Choir Rehearsal Pro on paigaldatud (versioon %s), aga litsents ei ole aktiveeritud. Pro uuendusi ei kontrollita enne litsentsi aktiveerimist. Lite kontroll töötab endiselt."
+
+msgid "Contacts GitHub Releases and SureCart and shows the result for each plugin on this page."
+msgstr "Võtab ühendust GitHub Releasesi ja SureCartiga ning näitab iga plugina tulemust sellel lehel."
+
+msgid "Pro License"
+msgstr "Pro litsents"
+
+msgid "Up to date."
+msgstr "Ajakohane."
+
+msgid "Update"
+msgstr "Uuenda"
+
+msgid "The optional feedback form sends the message, name, email address, and technical site information to rehearsal.compath.ee (Compath OÜ). The full license key is not sent."
+msgstr "Valikuline tagasisidevorm saadab sõnumi, nime, e-posti aadressi ja tehnilise teabe saidi kohta aadressile rehearsal.compath.ee (Compath OÜ). Täielikku litsentsivõtit ei saadeta."
+
+msgid "Non-secret Pro license identifiers are included only when a separate Pro add-on license is active."
+msgstr "Mittesalajased Pro litsentsi identifikaatorid lisatakse ainult siis, kui eraldi Pro lisaplugina litsents on aktiivne."

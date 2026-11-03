@@ -45,12 +45,12 @@ foreach ( preg_split( "/\r\n|\n|\r/", $text ) as $line ) {
 }
 
 $text = implode( "\n", $kept );
-$text = preg_replace( '/(= 0\.4\.69 =\n).*?(?=\n= |\n== )/s', "= 0.4.69 =\n\n* Maintenance release.\n\n", $text ) ?? $text;
+$text = preg_replace( '/(= 0\.4\.71 =\n).*?(?=\n= |\n== )/s', "= 0.4.71 =\n\n* Maintenance release.\n\n", $text ) ?? $text;
 $text = preg_replace( "/(= [0-9][^\\n]* =\\n)\\n+(?== )/s", "$1\n* Maintenance release.\n\n", $text ) ?? $text;
 $text = rtrim( $text ) . "\n";
 
-if ( ! str_contains( $text, '= 0.4.69 =' ) ) {
-	fwrite( STDERR, "wporg readme is missing the 0.4.69 release\n" );
+if ( ! str_contains( $text, '= 0.4.71 =' ) ) {
+	fwrite( STDERR, "wporg readme is missing the 0.4.71 release\n" );
 	exit( 1 );
 }
 if ( preg_match( '/\\bPro\\b|shop\\.compath\\.ee\\/products|song notes|\\bmixer\\b/i', $text ) ) {

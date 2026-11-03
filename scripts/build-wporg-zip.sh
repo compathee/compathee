@@ -24,6 +24,8 @@ rm -rf \
   "$STAGE/$SLUG/docs/product-page.html" \
   "$STAGE/$SLUG/docs/product-data.json"
 rm -f "$STAGE/$SLUG/update.json"
+# Internal docs name the commercial add-on. The catalog zip does not ship them.
+rm -rf "$STAGE/$SLUG/docs"
 # Demo sandbox drop-in must never ship in the Plugin Directory zip.
 rm -f "$STAGE/$SLUG/includes/distribution-demo.php"
 # Song notes are not part of this package. Omit the implementation entirely.
@@ -33,7 +35,9 @@ rm -f \
   "$STAGE/$SLUG/public/js/song-notes.js"
 php "$ROOT/scripts/wporg-readme.php" "$STAGE/$SLUG/readme.txt"
 # Plugin Check fails if custom updater code is present, even when disabled at runtime.
+# That file also holds the SureCart update-check control, so the .org package has neither.
 rm -f "$STAGE/$SLUG/includes/class-updater.php"
+python3 "$ROOT/scripts/prepare-wporg-tree.py" "$STAGE/$SLUG"
 # WordPress.org package: full feature set, no Lite/Pro commercial gates in shipped code.
 # The mixer is Pro/Demo only. Do not ship its PHP or scripts (no gated mixer code).
 cp "$STAGE/$SLUG/includes/edition-wporg.php" "$STAGE/$SLUG/includes/class-edition.php"
@@ -155,8 +159,8 @@ if unzip -l "$ZIP" | grep -qE 'class-mixer\.php|public/js/mixer\.js|public/js/mi
   echo "ERROR: mixer implementation must not ship in the wporg zip" >&2
   exit 1
 fi
-if unzip -p "$ZIP" "$SLUG/readme.txt" | grep -qiE '\bPro\b|shop\.compath\.ee|song notes|\bmixer\b'; then
-  echo "ERROR: wporg readme.txt must not mention Pro, the shop, song notes, or the mixer" >&2
+if unzip -p "$ZIP" "$SLUG/readme.txt" | grep -qiE '\bPro\b|shop\.compath\.ee|song notes|\bmixer\b|surecart'; then
+  echo "ERROR: wporg readme.txt must not mention Pro, the shop, song notes, the mixer, or SureCart" >&2
   exit 1
 fi
 if unzip -l "$ZIP" | awk '/\.php$/ {print $NF}' | while read -r php_path; do
@@ -165,4 +169,31 @@ done | grep -q 'choir-mixer__fader'; then
   echo "ERROR: mixer panel markup must not ship in the wporg zip" >&2
   exit 1
 fi
+python3 - "$ZIP" "$SLUG" <<'PY'
+import sys, zipfile, re
+zip_path, slug = sys.argv[1], sys.argv[2]
+banned = re.compile(r"surecart", re.I)
+pro_readme = re.compile(r"\bPro\b|song notes|\bmixer\b", re.I)
+with zipfile.ZipFile(zip_path) as zf:
+    names = zf.namelist()
+    if any(n.endswith("class-updater.php") for n in names):
+        sys.exit("ERROR: class-updater.php shipped in wporg zip")
+    if any(n.endswith("class-song-notes.php") or n.endswith("class-song-notes-format.php") or n.endswith("song-notes.js") for n in names):
+        sys.exit("ERROR: song notes code shipped in wporg zip")
+    if any("/docs/" in n for n in names):
+        sys.exit("ERROR: docs shipped in wporg zip")
+    readme = zf.read(f"{slug}/readme.txt").decode("utf-8")
+    if pro_readme.search(readme) or banned.search(readme) or "shop.compath.ee" in readme:
+        sys.exit("ERROR: wporg readme mentions Pro, SureCart, song notes, the mixer, or the shop")
+    headings = set(re.findall(r"(?m)^= (\d+\.\d+\.\d+) =$", readme))
+    stable = re.search(r"(?m)^Stable tag:\s*(\d+\.\d+\.\d+)\s*$", readme)
+    if not stable or stable.group(1) not in headings:
+        sys.exit("ERROR: stable tag missing from wporg changelog")
+    for name in names:
+        if name.endswith((".php", ".txt", ".po", ".json", ".md", ".js", ".css")) or name.endswith(".l10n.php"):
+            text = zf.read(name).decode("utf-8", "replace")
+            if banned.search(text):
+                sys.exit(f"ERROR: {name} mentions SureCart")
+print("OK wporg package has no SureCart, song notes, or mixer code")
+PY
 echo "OK wporg package checks passed"

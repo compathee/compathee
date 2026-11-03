@@ -72,7 +72,8 @@ class Updater {
 			return $transient_data;
 		}
 
-		if ( ! empty( $transient_data->response ) && ! empty( $transient_data->response[ $this->client->basename ] ) ) {
+		// WordPress sets an empty transient while clearing caches. Injecting then makes the update reappear after install.
+		if ( empty( $transient_data->checked ) || ! is_array( $transient_data->checked ) ) {
 			return $transient_data;
 		}
 
@@ -82,21 +83,30 @@ class Updater {
 
 			unset( $version_info->sections );
 
-			// Ensure the 'plugin' property is set.
-			if ( ! isset( $version_info->plugin ) ) {
-				$version_info->plugin = $this->client->basename;
-			}
+			// Installed folder wins over a release.json plugin path that does not match this site.
+			$version_info->plugin = $this->client->basename;
 
-			// If new version available then set to `response`.
-			if ( version_compare( $this->client->project_version, $version_info->new_version, '<' ) ) {
+			$installed = isset( $transient_data->checked[ $this->client->basename ] )
+				? (string) $transient_data->checked[ $this->client->basename ]
+				: (string) $this->client->project_version;
+
+			// Replace a stale response or no_update entry with this release.
+			if ( ! isset( $transient_data->response ) || ! is_array( $transient_data->response ) ) {
+				$transient_data->response = array();
+			}
+			if ( ! isset( $transient_data->no_update ) || ! is_array( $transient_data->no_update ) ) {
+				$transient_data->no_update = array();
+			}
+			if ( version_compare( $installed, (string) $version_info->new_version, '<' ) ) {
+				unset( $transient_data->no_update[ $this->client->basename ] );
 				$transient_data->response[ $this->client->basename ] = $version_info;
 			} else {
-				// If new version is not available then set to `no_update`.
+				unset( $transient_data->response[ $this->client->basename ] );
 				$transient_data->no_update[ $this->client->basename ] = $version_info;
 			}
 
 			$transient_data->last_checked                       = time();
-			$transient_data->checked[ $this->client->basename ] = $this->client->project_version;
+			$transient_data->checked[ $this->client->basename ] = $installed;
 		}
 
 		return $transient_data;
@@ -134,21 +144,25 @@ class Updater {
 	 * Get plugin info from SureCart\Licensing
 	 */
 	private function get_project_latest_version() {
-		$current_release = $this->client->license()->get_current_release( 3 * HOUR_IN_SECONDS );
+		// The signed package URL must outlive WordPress' update_plugins transient (up to 12 hours).
+		$current_release = $this->client->license()->get_current_release( 12 * HOUR_IN_SECONDS );
 
 		if ( is_wp_error( $current_release ) || empty( $current_release ) ) {
 			return false;
 		}
 
-		$release = $current_release->release_json;
+		$release = isset( $current_release->release_json ) ? $current_release->release_json : null;
+		if ( is_string( $release ) ) {
+			$release = json_decode( $release );
+		}
 
 		// must have a slug.
-		if ( ! isset( $release->slug ) ) {
+		if ( ! is_object( $release ) || ! isset( $release->slug ) ) {
 			return false;
 		}
 
 		// set the new version.
-		$release->new_version = $release->version;
+		$release->new_version = ltrim( (string) $release->version, 'vV' );
 
 		if ( empty( $release->last_updated ) ) {
 			$release->last_updated = date_i18n( get_option( 'date_format' ), isset( $current_release->updated_at ) ? $current_release->updated_at : time() );
@@ -261,6 +275,32 @@ class Updater {
 		if ( false === $version_info ) {
 			$version_info = $this->get_project_latest_version();
 			$this->set_cached_version_info( $version_info );
+		}
+
+		return $this->normalize_version_info( $version_info );
+	}
+
+	/**
+	 * Cached releases from older SDK copies stored icons and banners as objects.
+	 *
+	 * @param mixed $version_info Release payload.
+	 * @return mixed
+	 */
+	private function normalize_version_info( $version_info ) {
+		if ( ! is_object( $version_info ) ) {
+			return $version_info;
+		}
+
+		if ( isset( $version_info->icons ) ) {
+			$version_info->icons = (array) $version_info->icons;
+		}
+
+		if ( isset( $version_info->banners ) ) {
+			$version_info->banners = (array) $version_info->banners;
+		}
+
+		if ( empty( $version_info->plugin ) ) {
+			$version_info->plugin = $this->client->basename;
 		}
 
 		return $version_info;

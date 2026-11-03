@@ -301,9 +301,9 @@ final class Choir_Rehearsal_Feedback {
 	}
 
 	/**
-	 * Local SureCart record used for the support request. No remote call by itself.
+	 * Local license record used for the support request. No remote call by itself.
 	 *
-	 * @param array<string, mixed> $options sc_* values from the Pro license option.
+	 * @param array<string, mixed> $options Stored public license fields.
 	 * @return array{pro: bool, status: string, license_id: string, activation_id: string, customer_id: string, purchase_id: string, order_id: string, license_key: string}
 	 */
 	public static function license_snapshot( bool $is_pro, array $options ): array {
