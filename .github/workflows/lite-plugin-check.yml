@@ -24,6 +24,12 @@ jobs:
             php "$f"
           done
 
+      - name: Run mixer logic tests
+        run: node --test choir-rehearsal/tests/mixer-logic.test.js
+
+      - name: Install gettext
+        run: sudo apt-get update && sudo apt-get install -y gettext
+
       - name: Build distribution zips
         run: |
           set -euo pipefail

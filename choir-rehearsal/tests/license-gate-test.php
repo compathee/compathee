@@ -29,6 +29,7 @@ function run_edition(string $edition, string $prelude): array {
 		. "  'search' => Choir_Rehearsal_Edition::can_search_songs(),\n"
 		. "  'play' => Choir_Rehearsal_Edition::can_play_in_editor(),\n"
 		. "  'badge' => Choir_Rehearsal_Edition::can_show_pdf_badge(),\n"
+		. "  'notes' => Choir_Rehearsal_Edition::can_use_song_notes(),\n"
 		. "  'score' => Choir_Rehearsal_Edition::can_view_score_in_editor(),\n"
 		. "  'tracks' => Choir_Rehearsal_Edition::max_tracks(),\n"
 		. "  'upgrade' => Choir_Rehearsal_Edition::shows_commercial_upgrade(),\n"
@@ -55,7 +56,7 @@ function run_edition(string $edition, string $prelude): array {
 	return array('exit' => $exit, 'out' => (string) $out);
 }
 
-function prelude(bool $define_pro, ?bool $filter): string {
+function prelude(bool $define_pro, ?bool $filter, ?string $distribution = null): string {
 	$lines = array(
 		"define('ABSPATH', '1');",
 		"function __(\$text, \$domain = 'default') { return \$text; }",
@@ -66,6 +67,9 @@ function prelude(bool $define_pro, ?bool $filter): string {
 		"  return \$value;",
 		"}",
 	);
+	if (null !== $distribution) {
+		$lines[] = "define('CHOIR_REHEARSAL_DISTRIBUTION', " . var_export($distribution, true) . ');';
+	}
 	if (null !== $filter) {
 		$lines[] = '$GLOBALS[\'choir_license_filter\'] = ' . ($filter ? 'true' : 'false') . ';';
 	}
@@ -106,6 +110,7 @@ expect_gate(
 		'search' => false,
 		'play' => false,
 		'badge' => false,
+		'notes' => false,
 		'score' => true,
 		'tracks' => 4,
 		'upgrade' => true,
@@ -122,6 +127,7 @@ expect_gate(
 		'search' => true,
 		'play' => true,
 		'badge' => true,
+		'notes' => true,
 		'score' => true,
 		'tracks' => 0,
 		'upgrade' => false,
@@ -136,6 +142,7 @@ expect_gate(
 		'pro' => true,
 		'record' => true,
 		'tracks' => 0,
+		'notes' => true,
 	)
 );
 
@@ -148,6 +155,31 @@ expect_gate(
 		'record' => false,
 		'tracks' => 4,
 		'score' => true,
+		'notes' => false,
+	)
+);
+
+expect_gate(
+	'demo distribution unlocks song notes without a license',
+	$edition,
+	prelude(false, null, 'demo'),
+	array(
+		'pro' => false,
+		'notes' => true,
+		'record' => true,
+		'tracks' => 10,
+		'upgrade' => false,
+	)
+);
+
+expect_gate(
+	'github distribution without a license keeps song notes off',
+	$edition,
+	prelude(false, false, 'github'),
+	array(
+		'pro' => false,
+		'notes' => false,
+		'record' => false,
 	)
 );
 

@@ -127,11 +127,19 @@
   "changelog": [
     {
       "version": "0.4.71",
-      "summary": "Check Updates includes Pro on SureCart",
+      "summary": "Song notes, mixer, and SureCart update check",
       "items": [
-        "Settings → Check for plugin updates clears Lite and SureCart caches and checks both plugins",
+        "Song notes on the song page, to the left of Share. A note without @ applies to the whole song",
+        "Address a voice track with @ or @ Part, and insert an editable time mark from the sticky player. A red icon opens that track’s messages and the time mark seeks the player",
+        "Voice Leader and Administrator can write, edit, and delete notes. Singer and Guest can read when the song is visible. Checks are enforced on the server",
+        "Optional voice input for Voice Leader and Administrator (browser speech recognition, interface language, nothing is auto-published, audio is not stored)",
+        "Mobile: notes open as a bottom sheet with large tap targets, a locked page scroll, and a local draft if the sheet closes",
+        "Song page mixer: one channel per audio file, shared timeline, volume, mute, solo, speed, and an A–B loop",
+        "Licensed Pro and the Demo distribution (CHOIR_REHEARSAL_DISTRIBUTION=demo) include song notes and the mixer. GitHub Lite without a license does not. The WordPress.org package does not include either feature",
+        "Settings → Check for plugin updates clears the Lite and SureCart caches and checks both plugins",
         "The notice shows the installed version, the available version, and an Update link or Up to date",
-        "An inactive Pro license is explained on the page; the Lite check still runs"
+        "An inactive Pro license is explained on the page and the Lite check still runs. The license key and activation id are not shown",
+        "Estonian and Russian strings for the notes, the mixer, and the update check"
       ],
       "open": true
     },

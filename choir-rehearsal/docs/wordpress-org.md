@@ -41,6 +41,7 @@ Continue shipping `compath-choir-rehearsal.zip` from GitHub Releases **without**
 ## Reviewer notes
 
 * WordPress.org package replaces `class-edition.php` with a full-feature stub (no Lite track cap, no license checks, no Buy Pro UI)
+* The multi-track mixer is not in the WordPress.org zip (`class-mixer.php`, `mixer.js`, `mixer-logic.js`, and `mixer-launch.js` are removed). The shipped readme does not mention Pro or the shop
 * GitHub / commercial Lite+Pro builds use the standard `class-edition.php` and a separate Pro add-on plugin — not submitted to WordPress.org
 * No global `sanitize_title` filter — song slugs are handled only in `wp_insert_post_data` and `save_post` for the song post type
 * No custom update hooks ship in the WordPress.org package — updates only via wordpress.org

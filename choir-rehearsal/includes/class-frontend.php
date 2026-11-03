@@ -227,6 +227,10 @@ final class Choir_Rehearsal_Frontend {
 					)
 				);
 			}
+
+			if ( class_exists( 'Choir_Rehearsal_Mixer', false ) && Choir_Rehearsal_Edition::can_use_mixer() && Choir_Rehearsal_Mixer::song_has_mixable_audio( $song_id ) ) {
+				Choir_Rehearsal_Mixer::enqueue_scripts();
+			}
 		}
 	}
 
@@ -742,8 +746,8 @@ final class Choir_Rehearsal_Frontend {
 	}
 
 	public static function render_song( WP_Post $song ): void {
-		$tracks     = Choir_Rehearsal_Post_Types::get_tracks_for_song( (int) $song->ID );
-		$pdf_url    = Choir_Rehearsal_Post_Types::get_score_pdf_url( (int) $song->ID );
+		$tracks  = Choir_Rehearsal_Post_Types::get_tracks_for_song( (int) $song->ID );
+		$pdf_url = Choir_Rehearsal_Post_Types::get_score_pdf_url( (int) $song->ID );
 		$can_manage = Choir_Rehearsal_Access::can_manage();
 		$share_url  = get_permalink( $song );
 		$share_url  = is_string( $share_url ) ? $share_url : '';
@@ -753,6 +757,11 @@ final class Choir_Rehearsal_Frontend {
 			<div class="choir-song-header">
 				<h1 class="choir-rehearsal-title"><?php echo esc_html( get_the_title( $song ) ); ?></h1>
 				<div class="choir-song-header__actions">
+					<?php
+					if ( class_exists( 'Choir_Rehearsal_Song_Notes', false ) ) {
+						Choir_Rehearsal_Song_Notes::render_header_button( (int) $song->ID );
+					}
+					?>
 					<?php if ( '' !== $share_url ) : ?>
 						<div class="choir-share" data-share-url="<?php echo esc_url( $share_url ); ?>">
 							<button
@@ -813,7 +822,10 @@ final class Choir_Rehearsal_Frontend {
 			<?php endif; ?>
 
 			<section class="choir-tracks-section" aria-label="<?php esc_attr_e( 'Voice tracks', 'compath-choir-rehearsal' ); ?>">
-				<h2 class="choir-section-title"><?php esc_html_e( 'Voice tracks', 'compath-choir-rehearsal' ); ?></h2>
+				<div class="choir-tracks-heading">
+					<h2 class="choir-section-title"><?php esc_html_e( 'Voice tracks', 'compath-choir-rehearsal' ); ?></h2>
+					<?php self::render_tracks_heading_action( $tracks ); ?>
+				</div>
 				<?php if ( empty( $tracks ) ) : ?>
 					<p><?php esc_html_e( 'No tracks uploaded yet.', 'compath-choir-rehearsal' ); ?></p>
 				<?php else : ?>
@@ -832,8 +844,17 @@ final class Choir_Rehearsal_Frontend {
 								}
 								$yt_mount = 'choir-youtube-player-' . $track_id;
 								?>
-								<li class="choir-track-item choir-track-item--youtube" data-source="youtube">
-									<span class="choir-track-voice"><?php echo esc_html( $voice_lbl ); ?></span>
+								<li class="choir-track-item choir-track-item--youtube" data-source="youtube" data-track-id="<?php echo esc_attr( (string) $track_id ); ?>">
+									<div class="choir-track-item__main">
+										<div class="choir-track-name">
+											<span class="choir-track-voice"><?php echo esc_html( $voice_lbl ); ?></span>
+											<?php
+											if ( class_exists( 'Choir_Rehearsal_Song_Notes', false ) ) {
+												Choir_Rehearsal_Song_Notes::render_track_button( (int) $song->ID, $track_id, $voice_lbl );
+											}
+											?>
+										</div>
+									</div>
 									<span class="choir-track-youtube-label"><?php esc_html_e( 'YouTube', 'compath-choir-rehearsal' ); ?></span>
 									<button
 										type="button"
@@ -860,8 +881,17 @@ final class Choir_Rehearsal_Frontend {
 								continue;
 							}
 							?>
-							<li class="choir-track-item" data-source="audio">
-								<span class="choir-track-voice"><?php echo esc_html( $voice_lbl ); ?></span>
+							<li class="choir-track-item" data-source="audio" data-track-id="<?php echo esc_attr( (string) $track_id ); ?>">
+								<div class="choir-track-item__main">
+									<div class="choir-track-name">
+										<span class="choir-track-voice"><?php echo esc_html( $voice_lbl ); ?></span>
+										<?php
+										if ( class_exists( 'Choir_Rehearsal_Song_Notes', false ) ) {
+											Choir_Rehearsal_Song_Notes::render_track_button( (int) $song->ID, $track_id, $voice_lbl );
+										}
+										?>
+									</div>
+								</div>
 								<div class="choir-track-waveform" data-audio-url="<?php echo esc_url( $audio_url ); ?>" aria-hidden="true">
 									<canvas class="choir-track-waveform__canvas"></canvas>
 								</div>
@@ -878,9 +908,19 @@ final class Choir_Rehearsal_Frontend {
 						<?php endforeach; ?>
 					</ul>
 				<?php endif; ?>
+				<?php
+				if ( class_exists( 'Choir_Rehearsal_Mixer', false ) ) {
+					Choir_Rehearsal_Mixer::render( Choir_Rehearsal_Mixer::mixable_audio_tracks( $tracks ) );
+				}
+				?>
 			</section>
 		</div>
 
+		<?php
+		if ( class_exists( 'Choir_Rehearsal_Song_Notes', false ) ) {
+			Choir_Rehearsal_Song_Notes::render_shell( (int) $song->ID );
+		}
+		?>
 		<?php self::render_sticky_player(); ?>
 		<?php
 	}
@@ -945,5 +985,18 @@ final class Choir_Rehearsal_Frontend {
 			</div>
 		</div>
 		<?php
+	}
+
+	/**
+	 * Mixer control when the mixer module is part of this build. Otherwise nothing.
+	 *
+	 * @param WP_Post[] $tracks Track posts.
+	 */
+	private static function render_tracks_heading_action( array $tracks ): void {
+		if ( ! class_exists( 'Choir_Rehearsal_Mixer', false ) ) {
+			return;
+		}
+
+		Choir_Rehearsal_Mixer::render_launch( Choir_Rehearsal_Mixer::mixable_audio_tracks( $tracks ) );
 	}
 }
