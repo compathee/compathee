@@ -45,17 +45,22 @@
 <header class="site-header">
   <div class="wrap header__bar">
     <a class="brand" href="/"><img class="brand__logo" src="/assets/logo.png" alt="Compath" width="133" height="36" /></a>
-    <nav class="nav" aria-label="Primary">
+    <nav class="nav" id="site-nav" aria-label="Primary">
       <a href="/">Home</a>
       <a href="/services/" aria-current="page">Services</a>
       <a href="/contact/">Contact</a>
       <a href="https://shop.compath.ee/" rel="noopener noreferrer">Shop</a>
     </nav>
-    <div class="lang">
-      <label for="lang" class="visually-hidden">Language</label>
-      <select id="lang">
-        <option value="en" lang="en" selected>ENG</option><option value="et" lang="et">EST</option><option value="ru" lang="ru">RUS</option>
-      </select>
+    <div class="header__end">
+      <button type="button" class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Open menu" data-label-open="Open menu" data-label-close="Close menu">
+        <span class="nav-toggle__icon" aria-hidden="true"></span>
+      </button>
+      <div class="lang">
+        <label for="lang" class="visually-hidden">Language</label>
+        <select id="lang">
+          <option value="en" lang="en" selected>ENG</option><option value="et" lang="et">EST</option><option value="ru" lang="ru">RUS</option>
+        </select>
+      </div>
     </div>
   </div>
 </header>

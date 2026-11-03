@@ -96,6 +96,9 @@ export function validate(dist, options = {}) {
     if (!/<nav class="nav"[\s\S]*?href="https:\/\/shop\.compath\.ee\/"/.test(html)) {
       problems.push(`${rel} missing shop link`);
     }
+    if (!html.includes('id="site-nav"') || !html.includes('class="nav-toggle"') || !html.includes('aria-controls="site-nav"') || !html.includes('aria-expanded="false"')) {
+      problems.push(`${rel} missing mobile nav toggle`);
+    }
     const pageLang = html.match(/<html lang="(en|et|ru)"/);
     if (pageLang) {
       const ogUrl = `${origin}${preview ? base : ""}/assets/og-${pageLang[1]}.png`;
@@ -110,6 +113,17 @@ export function validate(dist, options = {}) {
     }
     const shopLabel = { en: ">Shop<", et: ">Pood<", ru: ">Магазин<" };
     if (pageLang && !html.includes(shopLabel[pageLang[1]])) problems.push(`${rel} shop label`);
+    const menuLabels = {
+      en: ["Open menu", "Close menu"],
+      et: ["Ava menüü", "Sulge menüü"],
+      ru: ["Открыть меню", "Закрыть меню"],
+    };
+    if (pageLang) {
+      const [openLabel, closeLabel] = menuLabels[pageLang[1]];
+      if (!html.includes(`aria-label="${openLabel}"`) || !html.includes(`data-label-open="${openLabel}"`) || !html.includes(`data-label-close="${closeLabel}"`)) {
+        problems.push(`${rel} menu labels`);
+      }
+    }
     if (!html.includes('<label for="lang" class="visually-hidden">')) problems.push(`${rel} language label is visible`);
     const main = html.match(/<main id="main">([\s\S]*?)<\/main>/);
     const allowPlace = new Set([

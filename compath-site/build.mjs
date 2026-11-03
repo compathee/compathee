@@ -270,17 +270,22 @@ ${ld(graph)}
 <header class="site-header">${basePath ? `\n  <p class="preview-badge">${esc(lang.ui.previewBadge)}</p>` : ""}
   <div class="wrap header__bar">
     <a class="brand" href="${pub(urlFor(lang, "home"))}"><img class="brand__logo" src="${pub("/assets/logo.png")}" alt="Compath" width="${logoMeta.width}" height="${logoMeta.height}" /></a>
-    <nav class="nav" aria-label="${esc(lang.ui.navLabel)}">
+    <nav class="nav" id="site-nav" aria-label="${esc(lang.ui.navLabel)}">
       ${navLink(lang, id, "home")}
       ${navLink(lang, id, "services")}
       ${navLink(lang, id, "contact")}
       <a href="https://shop.compath.ee/" rel="noopener noreferrer">${esc(lang.ui.shop)}</a>
     </nav>
-    <div class="lang">
-      <label for="lang" class="visually-hidden">${esc(lang.ui.langLabel)}</label>
-      <select id="lang">
-        ${langs.map((item) => `<option value="${item.code}" lang="${item.htmlLang}"${item.code === lang.code ? " selected" : ""}>${item.label}</option>`).join("")}
-      </select>
+    <div class="header__end">
+      <button type="button" class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="${esc(lang.ui.menuOpen)}" data-label-open="${esc(lang.ui.menuOpen)}" data-label-close="${esc(lang.ui.menuClose)}">
+        <span class="nav-toggle__icon" aria-hidden="true"></span>
+      </button>
+      <div class="lang">
+        <label for="lang" class="visually-hidden">${esc(lang.ui.langLabel)}</label>
+        <select id="lang">
+          ${langs.map((item) => `<option value="${item.code}" lang="${item.htmlLang}"${item.code === lang.code ? " selected" : ""}>${item.label}</option>`).join("")}
+        </select>
+      </div>
     </div>
   </div>
 </header>

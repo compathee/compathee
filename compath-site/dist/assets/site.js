@@ -92,3 +92,91 @@
     });
   });
 })();
+
+(function () {
+  "use strict";
+
+  var button = document.querySelector(".nav-toggle");
+  var nav = document.getElementById("site-nav");
+  if (!button || !nav) return;
+
+  var labelOpen = button.getAttribute("data-label-open") || button.getAttribute("aria-label") || "";
+  var labelClose = button.getAttribute("data-label-close") || labelOpen;
+  var mq = window.matchMedia("(max-width: 768px)");
+
+  function isOpen() {
+    return button.getAttribute("aria-expanded") === "true";
+  }
+
+  function focusEl(el) {
+    if (!el || typeof el.focus !== "function") return;
+    try { el.focus({ preventScroll: true }); } catch (error) { el.focus(); }
+  }
+
+  function close(restore) {
+    button.setAttribute("aria-expanded", "false");
+    button.setAttribute("aria-label", labelOpen);
+    nav.classList.remove("is-open");
+    if (restore) focusEl(button);
+  }
+
+  function open() {
+    nav.classList.add("is-open");
+    button.setAttribute("aria-expanded", "true");
+    button.setAttribute("aria-label", labelClose);
+    focusEl(nav.querySelector("a"));
+  }
+
+  button.addEventListener("click", function () {
+    if (!mq.matches) return;
+    if (isOpen()) close(false);
+    else open();
+  });
+
+  nav.addEventListener("click", function (event) {
+    var link = event.target && event.target.closest ? event.target.closest("a") : null;
+    if (!link || !isOpen()) return;
+    var path = link.pathname.replace(/\/index\.html$/, "/");
+    var here = location.pathname.replace(/\/index\.html$/, "/");
+    close(path === here);
+  });
+
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape" && isOpen()) {
+      event.preventDefault();
+      close(true);
+    }
+  });
+
+  document.addEventListener("pointerdown", function (event) {
+    if (!isOpen()) return;
+    var target = event.target;
+    if (!target || nav.contains(target) || button.contains(target)) return;
+    var toControl = target.closest ? target.closest("a, button, input, select, textarea, label") : null;
+    var focusInside = nav.contains(document.activeElement);
+    button.setAttribute("aria-expanded", "false");
+    button.setAttribute("aria-label", labelOpen);
+    nav.classList.remove("is-open");
+    if (focusInside && !toControl) focusEl(button);
+  });
+
+  document.addEventListener("focusin", function (event) {
+    if (!isOpen()) return;
+    var target = event.target;
+    if (target && (nav.contains(target) || button.contains(target))) return;
+    button.setAttribute("aria-expanded", "false");
+    button.setAttribute("aria-label", labelOpen);
+    nav.classList.remove("is-open");
+  });
+
+  function onViewport() {
+    if (!mq.matches && isOpen()) {
+      button.setAttribute("aria-expanded", "false");
+      button.setAttribute("aria-label", labelOpen);
+      nav.classList.remove("is-open");
+    }
+  }
+
+  if (mq.addEventListener) mq.addEventListener("change", onViewport);
+  else if (mq.addListener) mq.addListener(onViewport);
+})();

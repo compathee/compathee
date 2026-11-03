@@ -45,17 +45,22 @@
 <header class="site-header">
   <div class="wrap header__bar">
     <a class="brand" href="/ru/"><img class="brand__logo" src="/assets/logo.png" alt="Compath" width="133" height="36" /></a>
-    <nav class="nav" aria-label="Основное меню">
+    <nav class="nav" id="site-nav" aria-label="Основное меню">
       <a href="/ru/">Главная</a>
       <a href="/ru/uslugi/">Услуги</a>
       <a href="/ru/kontakty/" aria-current="page">Контакты</a>
       <a href="https://shop.compath.ee/" rel="noopener noreferrer">Магазин</a>
     </nav>
-    <div class="lang">
-      <label for="lang" class="visually-hidden">Язык</label>
-      <select id="lang">
-        <option value="en" lang="en">ENG</option><option value="et" lang="et">EST</option><option value="ru" lang="ru" selected>RUS</option>
-      </select>
+    <div class="header__end">
+      <button type="button" class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Открыть меню" data-label-open="Открыть меню" data-label-close="Закрыть меню">
+        <span class="nav-toggle__icon" aria-hidden="true"></span>
+      </button>
+      <div class="lang">
+        <label for="lang" class="visually-hidden">Язык</label>
+        <select id="lang">
+          <option value="en" lang="en">ENG</option><option value="et" lang="et">EST</option><option value="ru" lang="ru" selected>RUS</option>
+        </select>
+      </div>
     </div>
   </div>
 </header>
