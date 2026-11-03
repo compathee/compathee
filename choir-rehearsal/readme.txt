@@ -24,7 +24,6 @@ Choir Rehearsal is a private choir rehearsal library for voice part rehearsal. S
 * Frontend song list at `/rehearsal/` with PDF, public, and YouTube badges
 * Send feedback from the song list (a confirmation email includes the case number)
 * Sticky HTML5 player at the bottom of the page
-* Multi-track mixer: play a song’s audio tracks together, with volume, mute, and solo
 * Optional login-only access with Singer and Voice Leader roles (English role names)
 * REST API and MCP abilities for automation
 
@@ -86,10 +85,6 @@ Signed-in users see **Send feedback** under the song list. Logged-out visitors d
 
 Yes, when you have the rights to use that score, or the score is in the public domain. The plugin asks you to confirm this when you attach a PDF and when you make a song public. It records who confirmed and when. Compath does not verify those rights. Arrangements and editions can be copyrighted even if the composition is in the public domain.
 
-= Can singers mix every audio track together? =
-
-On a licensed Pro site, the Demo site, and the WordPress.org package, the song page shows **Mixer** on the same line as **Voice tracks**. It plays that song’s audio files on one timeline, with a volume fader, Mute, and Solo for each track. YouTube tracks stay on their own player. GitHub Lite without a license keeps the single-track player; the Mixer button there links to Pro.
-
 = Can I use YouTube instead of an audio file? =
 
 Yes. In the song editor, set a voice track’s source to **YouTube** and paste a youtube.com or youtu.be URL. On the song page a button opens the official YouTube embed (video stays visible). This is for listening/reference only — the plugin does not download or convert YouTube audio.
@@ -98,17 +93,14 @@ Yes. In the song editor, set a voice track’s source to **YouTube** and paste a
 
 = 0.4.70 =
 
-Song page Mixer plays a song’s audio tracks together on Pro, Demo, and the WordPress.org package. GitHub Lite without a license keeps the single-track player.
+Builds that include the mixer module can play a song’s audio tracks together. The WordPress.org package does not include that module.
 
 == Changelog ==
 
 = 0.4.70 =
 
-* Song page Mixer button on the same line as Voice tracks, with one channel per audio track
-* Shared timeline: play, pause, seek, skip, playback speed, and A–B loop, using one Web Audio clock
-* Each channel has a volume fader (70% on launch and on Reset), Mute, and Solo
-* Pro license gate. Demo and the WordPress.org package include the mixer without a license. GitHub Lite keeps the single-track player
-* Estonian and Russian strings for the mixer. Role names stay English
+* Song page mixer, when this build includes the module: one channel per audio file, shared timeline, volume, mute, and solo
+* The WordPress.org package does not include the mixer module
 
 = 0.4.67 =
 

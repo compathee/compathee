@@ -101,6 +101,7 @@ function expect_edition(string $name, string $file, string $prelude, array $expe
 $edition = $root . '/includes/class-edition.php';
 $wporg = $root . '/includes/edition-wporg.php';
 $frontend = (string) file_get_contents($root . '/includes/class-frontend.php');
+$mixer_php = (string) file_get_contents($root . '/includes/class-mixer.php');
 $distribution = (string) file_get_contents($root . '/includes/class-distribution.php');
 $bootstrap = (string) file_get_contents($root . '/choir-rehearsal.php');
 $player = (string) file_get_contents($root . '/public/js/player.js');
@@ -153,13 +154,13 @@ expect_edition(
 );
 
 expect_edition(
-	'wordpress.org edition includes the mixer and has no commercial gate',
+	'wordpress.org edition does not unlock the mixer',
 	$wporg,
 	edition_prelude(false, null, null),
 	array(
 		'pro' => false,
 		'demo' => false,
-		'mixer' => true,
+		'mixer' => false,
 		'record' => true,
 		'tracks' => 0,
 		'upgrade' => false,
@@ -189,26 +190,34 @@ if (!(0 === $dist['exit'] && is_array($dist_json) && true === $dist_json['demo']
 check('bootstrap loads the demo drop-in only when wordpress.org is absent', str_contains($bootstrap, 'distribution-wporg.php') && str_contains($bootstrap, 'distribution-demo.php') && strpos($bootstrap, 'distribution-wporg.php') < strpos($bootstrap, 'distribution-demo.php'));
 check('github zip still strips the demo drop-in', str_contains($github_zip, 'distribution-demo.php'));
 check('wordpress.org zip strips the demo drop-in', str_contains($wporg_zip, 'distribution-demo.php'));
+check(
+	'wordpress.org zip strips the mixer module',
+	str_contains($wporg_zip, 'class-mixer.php')
+	&& str_contains($wporg_zip, 'public/js/mixer.js')
+	&& str_contains($wporg_zip, 'mixer-logic.js')
+	&& str_contains($wporg_zip, 'mixer-launch.js')
+);
 check('distribution names the demo channel', str_contains($distribution, "CHANNEL_DEMO"));
 
 $heading = '';
 if (preg_match('/<div class="choir-tracks-heading">.*?<\/div>/s', $frontend, $heading_match)) {
 	$heading = $heading_match[0];
 }
-check('mixer button sits on the voice tracks heading row', str_contains($heading, "esc_html_e( 'Voice tracks'") && str_contains($heading, 'render_mixer_launch') && strpos($heading, 'Voice tracks') < strpos($heading, 'render_mixer_launch'));
-check('launch control is gated by can_use_mixer', str_contains($frontend, 'Choir_Rehearsal_Edition::can_use_mixer()'));
-check('launch markup lives in the shared template', str_contains($frontend, 'function render_mixer_launch') && str_contains($frontend, 'class="choir-mixer-launch"'));
+check('mixer button sits on the voice tracks heading row', str_contains($heading, "esc_html_e( 'Voice tracks'") && str_contains($heading, 'render_tracks_heading_action') && strpos($heading, 'Voice tracks') < strpos($heading, 'render_tracks_heading_action'));
+check('launch control is gated by can_use_mixer', str_contains($mixer_php, 'Choir_Rehearsal_Edition::can_use_mixer()'));
+check('launch markup lives in the mixer module', str_contains($mixer_php, 'function render_launch') && str_contains($mixer_php, 'class="choir-mixer-launch"'));
+check('directory package has no mixer shop link', !str_contains($frontend, 'shop.compath.ee') && !str_contains($frontend, 'choir-mixer-note') && !str_contains($frontend, 'choir-mixer__fader'));
 $admin = (string) file_get_contents($root . '/includes/class-admin.php');
 $place = (string) file_get_contents($root . '/admin/js/mixer-launch.js');
-check('editor metabox uses the same Mixer control', str_contains($admin, "__( 'Voice Tracks'") && str_contains($admin, 'Choir_Rehearsal_Frontend::render_mixer_launch'));
+check('editor metabox uses the mixer module', str_contains($admin, "__( 'Voice Tracks'") && str_contains($admin, 'Choir_Rehearsal_Mixer::render_launch'));
 check('editor button is placed after the Voice Tracks heading', str_contains($place, 'choir-rehearsal-tracks') && str_contains($place, "insertAdjacentElement('afterend', button)"));
 $mixable = '';
-if (preg_match('/function mixable_audio_tracks\(.*?\n\t\}/s', $frontend, $mixable_match)) {
+if (preg_match('/function mixable_audio_tracks\(.*?\n\t\}/s', $mixer_php, $mixable_match)) {
 	$mixable = $mixable_match[0];
 }
 check('youtube tracks are not mixer channels', str_contains($mixable, "'youtube'") && str_contains($mixable, 'continue'));
-check('channels default to 70 percent', str_contains($frontend, 'aria-valuenow="70"') && str_contains($frontend, 'data-default-volume="70"'));
-check('pro badge is omitted on the wordpress.org build', str_contains($frontend, 'Choir_Rehearsal_Distribution::is_wporg()'));
+check('channels default to 70 percent', str_contains($mixer_php, 'aria-valuenow="70"') && str_contains($mixer_php, 'data-default-volume="70"'));
+check('wordpress.org edition keeps the mixer off', str_contains($wporg_src, "can_use_mixer(): bool") && str_contains($wporg_src, 'return false;'));
 check('song notes block is unchanged', str_contains($frontend, '<div class="choir-song-notes"><?php echo wp_kses_post( wpautop( $song->post_content ) ); ?></div>'));
 
 $ui = $frontend . $mixer . $css . $player;

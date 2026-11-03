@@ -10,7 +10,7 @@
 		if (!box) {
 			return;
 		}
-		var button = box.querySelector('.choir-mixer-launch');
+		var button = box.querySelector('.choir-mixer-launch, .choir-mixer-note');
 		if (!button || button.getAttribute('data-choir-mixer-placed') === '1') {
 			return;
 		}

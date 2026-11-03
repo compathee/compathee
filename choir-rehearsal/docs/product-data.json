@@ -132,9 +132,18 @@
       "items": [
         "Mixer sits on the Voice tracks row and builds one channel per audio track",
         "Tracks play together on one timeline with volume, mute, solo, speed, and an A–B loop",
-        "Licensed Pro, the Demo site, and the WordPress.org package include it. GitHub Lite keeps the single-track player"
+        "Licensed Pro and the Demo distribution include the mixer. The WordPress.org package does not include it and does not link to Pro"
       ],
       "open": true
+    },
+    {
+      "version": "0.4.67",
+      "summary": "Score rights confirmation",
+      "items": [
+        "Attaching a PDF or making a song public requires a rights or public-domain confirmation",
+        "The plugin records who confirmed and when"
+      ],
+      "open": false
     },
     {
       "version": "0.4.66",
@@ -248,6 +257,88 @@
       "summary": "Editor PDF for all editions",
       "items": [
         "Song editor embedded PDF preview available in Lite and Pro"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.53",
+      "summary": "Sticky player icons and editor PDF refresh",
+      "items": [
+        "Theme-proof piano and close icons against theme button colors",
+        "Editor PDF re-renders when the Sheet Music metabox becomes visible"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.52",
+      "summary": "Repair ghost Lite plugin rows",
+      "items": [
+        "Repair duplicate active_plugins rows when only one Lite folder is on disk"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.51",
+      "summary": "WordPress.org catalog build",
+      "items": [
+        "Catalog build has the full feature set and no global sanitize_title filter"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.50",
+      "summary": "Replace the installed plugin folder",
+      "items": [
+        "Upload or update replaces the existing plugin folder instead of adding a second copy"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.49",
+      "summary": "Migration wizard for duplicate folders",
+      "items": [
+        "Keep one Lite folder and remove extras without deleting songs"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.48",
+      "summary": "Stay in the installed plugin folder",
+      "items": [
+        "Updates stay in the folder that is already installed"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.47",
+      "summary": "GitHub zip folder name",
+      "items": [
+        "GitHub zip installs into choir-rehearsal/ again"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.46",
+      "summary": "Text domain matches the directory slug",
+      "items": [
+        "Text domain is compath-choir-rehearsal"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.45",
+      "summary": "Song library backup hook",
+      "items": [
+        "Settings hook for song library backup export and import"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.43",
+      "summary": "Activate beside an older plugin folder",
+      "items": [
+        "Activating beside an old choir-rehearsal folder shows a notice instead of a fatal error",
+        "Keep one plugin copy active"
       ],
       "open": false
     },

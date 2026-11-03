@@ -592,16 +592,19 @@ final class Choir_Rehearsal_Admin {
 			CHOIR_REHEARSAL_VERSION,
 			true
 		);
-		wp_enqueue_script(
-			'choir-rehearsal-mixer-launch',
-			CHOIR_REHEARSAL_URL . 'admin/js/mixer-launch.js',
-			array(),
-			CHOIR_REHEARSAL_VERSION,
-			true
-		);
+		$mixer_launch = CHOIR_REHEARSAL_PATH . 'admin/js/mixer-launch.js';
+		if ( is_readable( $mixer_launch ) ) {
+			wp_enqueue_script(
+				'choir-rehearsal-mixer-launch',
+				CHOIR_REHEARSAL_URL . 'admin/js/mixer-launch.js',
+				array(),
+				CHOIR_REHEARSAL_VERSION,
+				true
+			);
+		}
 		$editor_song_id = (int) get_the_ID();
-		if ( Choir_Rehearsal_Edition::can_use_mixer() && $editor_song_id > 0 && Choir_Rehearsal_Frontend::song_has_mixable_audio( $editor_song_id ) ) {
-			Choir_Rehearsal_Frontend::enqueue_mixer_scripts();
+		if ( class_exists( 'Choir_Rehearsal_Mixer', false ) && Choir_Rehearsal_Edition::can_use_mixer() && $editor_song_id > 0 && Choir_Rehearsal_Mixer::song_has_mixable_audio( $editor_song_id ) ) {
+			Choir_Rehearsal_Mixer::enqueue_scripts();
 		}
 		if ( Choir_Rehearsal_Edition::can_play_in_editor() ) {
 			wp_enqueue_script(
@@ -828,12 +831,15 @@ final class Choir_Rehearsal_Admin {
 
 	public static function render_tracks_metabox( WP_Post $post ): void {
 		wp_nonce_field( 'choir_rehearsal_save_tracks', 'choir_rehearsal_tracks_nonce' );
-		$tracks     = Choir_Rehearsal_Post_Types::get_tracks_for_song( (int) $post->ID );
-		$voices     = Choir_Rehearsal_Voice_Types::choices();
-		$mix_tracks = Choir_Rehearsal_Frontend::mixable_audio_tracks( $tracks );
+		$tracks = Choir_Rehearsal_Post_Types::get_tracks_for_song( (int) $post->ID );
+		$voices = Choir_Rehearsal_Voice_Types::choices();
 		?>
 		<div class="choir-tracks-wrap choir-song-card-section">
-			<?php Choir_Rehearsal_Frontend::render_mixer_launch( $mix_tracks ); ?>
+			<?php
+			if ( class_exists( 'Choir_Rehearsal_Mixer', false ) ) {
+				Choir_Rehearsal_Mixer::render_launch( Choir_Rehearsal_Mixer::mixable_audio_tracks( $tracks ) );
+			}
+			?>
 			<p class="description">
 				<?php
 				if ( Choir_Rehearsal_Edition::can_record() ) {
@@ -872,7 +878,11 @@ final class Choir_Rehearsal_Admin {
 				<?php endif; ?>
 			</ul>
 			<p><button type="button" class="button" id="choir-add-track"><?php esc_html_e( 'Add track', 'compath-choir-rehearsal' ); ?></button></p>
-			<?php Choir_Rehearsal_Frontend::render_mixer( $mix_tracks ); ?>
+			<?php
+			if ( class_exists( 'Choir_Rehearsal_Mixer', false ) ) {
+				Choir_Rehearsal_Mixer::render( Choir_Rehearsal_Mixer::mixable_audio_tracks( $tracks ) );
+			}
+			?>
 		</div>
 		<?php
 	}

@@ -2,6 +2,9 @@
 /**
  * WordPress.org edition helpers — full feature set, no commercial gates.
  *
+ * The multi-track mixer is not part of this package. The build deletes
+ * includes/class-mixer.php and the mixer scripts so no gated mixer code ships.
+ *
  * Copied over class-edition.php in the WordPress.org build (see build-wporg-zip.sh).
  */
 
@@ -22,7 +25,7 @@ final class Choir_Rehearsal_Edition {
 	}
 
 	public static function can_use_mixer(): bool {
-		return true;
+		return false;
 	}
 
 	public static function max_tracks(): int {
