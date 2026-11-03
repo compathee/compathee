@@ -8,6 +8,8 @@
   "ui": {
     "skip": "Liigu sisu juurde",
     "navLabel": "Põhimenüü",
+    "menuOpen": "Ava menüü",
+    "menuClose": "Sulge menüü",
     "langLabel": "Keel",
     "footerNav": "Lehel",
     "home": "Avaleht",

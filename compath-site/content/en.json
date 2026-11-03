@@ -8,6 +8,8 @@
   "ui": {
     "skip": "Skip to content",
     "navLabel": "Primary",
+    "menuOpen": "Open menu",
+    "menuClose": "Close menu",
     "langLabel": "Language",
     "footerNav": "On this site",
     "home": "Home",

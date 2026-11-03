@@ -119,6 +119,65 @@ a:hover { text-decoration: none; }
   margin-left: auto;
 }
 
+.header__end {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.nav-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid #8b97ad;
+  border-radius: 10px;
+  background: var(--white);
+  color: var(--ink);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.nav-toggle__icon,
+.nav-toggle__icon::before,
+.nav-toggle__icon::after {
+  display: block;
+  width: 18px;
+  height: 2px;
+  background: currentColor;
+  border-radius: 1px;
+}
+
+.nav-toggle__icon {
+  position: relative;
+}
+
+.nav-toggle__icon::before,
+.nav-toggle__icon::after {
+  content: "";
+  position: absolute;
+  left: 0;
+}
+
+.nav-toggle__icon::before { top: -6px; }
+.nav-toggle__icon::after { top: 6px; }
+
+.nav-toggle[aria-expanded="true"] .nav-toggle__icon { background: transparent; }
+
+.nav-toggle[aria-expanded="true"] .nav-toggle__icon::before {
+  top: 0;
+  transform: rotate(45deg);
+}
+
+.nav-toggle[aria-expanded="true"] .nav-toggle__icon::after {
+  top: 0;
+  transform: rotate(-45deg);
+}
+
 .nav a,
 .footer-nav a {
   color: var(--ink);
@@ -388,11 +447,46 @@ address { font-style: normal; }
 @media (max-width: 860px) {
   .header__bar { flex-wrap: wrap; padding: 10px 0; }
   .nav { order: 3; width: 100%; margin-left: 0; }
-  .lang { margin-left: auto; }
+  .header__end { margin-left: auto; }
   .cards, .feature-grid, .why, .product-grid, .split, .editions, .footer__grid {
     grid-template-columns: 1fr;
   }
   .hero { padding-top: 36px; }
+}
+
+@media (max-width: 768px) {
+  .header__bar { flex-wrap: nowrap; }
+  .nav {
+    display: none;
+    position: absolute;
+    top: calc(100% + 1px);
+    left: 0;
+    right: 0;
+    order: 0;
+    width: auto;
+    margin: 0;
+    flex-direction: column;
+    gap: 4px;
+    padding: 8px 20px 12px;
+    background: #fff;
+    border-bottom: 1px solid var(--line);
+    box-shadow: 0 16px 28px rgba(28, 28, 28, 0.1);
+    z-index: 6;
+  }
+  .nav.is-open { display: flex; }
+  .nav.is-open a { width: 100%; }
+  .nav.is-open a[aria-current="page"] {
+    color: var(--orange-deep);
+    background: #fff4ec;
+    box-shadow: inset 3px 0 0 var(--orange-deep);
+  }
+  .nav-toggle { display: inline-flex; }
+  .header__end { margin-left: auto; }
+}
+
+@media (max-width: 340px) {
+  .header__bar { gap: 8px; }
+  .brand__logo { width: 108px; height: auto; }
 }
 
 @media (prefers-reduced-motion: reduce) {
