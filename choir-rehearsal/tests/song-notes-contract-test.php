@@ -82,11 +82,18 @@ if (!is_string($tmp_readme) || !copy($root . '/readme.txt', $tmp_readme)) {
 	$clean = (string) file_get_contents($tmp_readme);
 	unlink($tmp_readme);
 	check(
-		'wordpress.org readme lists 0.4.71 without pro or song notes',
+		'wordpress.org readme lists 0.4.67-0.4.72 without pro or song notes',
 		0 === $code
+		&& str_contains($clean, 'Create songs and attach unlimited voice tracks')
+		&& str_contains($clean, 'New optional Appearance (Settings → Appearance)')
+		&& str_contains($clean, '= 0.4.72 =')
 		&& str_contains($clean, '= 0.4.71 =')
+		&& str_contains($clean, '= 0.4.70 =')
+		&& str_contains($clean, '= 0.4.69 =')
+		&& str_contains($clean, '= 0.4.68 =')
+		&& str_contains($clean, '= 0.4.67 =')
 		&& str_contains($clean, 'Maintenance release.')
-		&& !preg_match('/\\bPro\\b|shop\\.compath\\.ee\\/products|song notes/i', $clean)
+		&& !preg_match('/\\bPro\\b|SureCart|shop\\.compath\\.ee|song notes|\\bmixer\\b/i', $clean)
 	);
 }
 
