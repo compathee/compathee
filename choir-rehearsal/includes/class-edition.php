@@ -54,7 +54,7 @@ final class Choir_Rehearsal_Edition {
 	}
 
 	/**
-	 * Song-page multi-track mixer. Pro license, Demo, or the WordPress.org package.
+	 * Song-page multi-track mixer. Licensed Pro or the Demo distribution only.
 	 */
 	public static function can_use_mixer(): bool {
 		return self::is_full_edition();
@@ -81,6 +81,14 @@ final class Choir_Rehearsal_Edition {
 
 	public static function can_show_pdf_badge(): bool {
 		return self::is_full_edition();
+	}
+
+	/**
+	 * Song notes and per-track recommendations.
+	 * Licensed Pro, or the Demo distribution. Off for GitHub Lite without a license.
+	 */
+	public static function can_use_song_notes(): bool {
+		return self::is_pro() || self::is_demo();
 	}
 
 	public static function upgrade_url(): string {

@@ -98,16 +98,33 @@ class License {
 		$deactivated = $this->client->activation()->delete( sanitize_text_field( $activation_id ) );
 
 		if ( is_wp_error( $deactivated ) ) {
-			// it has been deleted remotely.
+			// Already removed on the server: drop the local copy so the slot is not stuck.
 			if ( 'not_found' === $deactivated->get_error_code() ) {
-				$this->client->settings()->clear_options();
+				$this->clear_local_license();
 				return true;
 			}
+			// Network and API failures keep the saved license so the site can retry.
 			return $deactivated;
 		}
 
-		$this->client->settings()->clear_options();
+		$this->clear_local_license();
 		return true;
+	}
+
+	/**
+	 * Drop the saved license, the SureCart activation slot, and the Pro license cache.
+	 */
+	private function clear_local_license(): void {
+		$this->client->settings()->clear_options();
+
+		$slug = isset( $this->client->slug ) ? (string) $this->client->slug : '';
+		if ( '' !== $slug && function_exists( 'delete_option' ) ) {
+			delete_option( 'surecart_' . md5( $slug ) . '_license_activation_id' );
+		}
+
+		if ( function_exists( 'delete_transient' ) ) {
+			delete_transient( 'choir_rehearsal_pro_license_cache' );
+		}
 	}
 
 	/**

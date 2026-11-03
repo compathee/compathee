@@ -52,6 +52,13 @@ final class Choir_Rehearsal_Edition {
 		return true;
 	}
 
+	/**
+	 * Not included in this package.
+	 */
+	public static function can_use_song_notes(): bool {
+		return false;
+	}
+
 	public static function shows_commercial_upgrade(): bool {
 		return false;
 	}
