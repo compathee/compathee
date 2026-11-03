@@ -1,5 +1,6 @@
 .choir-pdf-viewer .screen-reader-text,
-.choir-sticky-player .screen-reader-text {
+.choir-sticky-player .screen-reader-text,
+.choir-mixer .screen-reader-text {
 	border: 0;
 	clip: rect(1px, 1px, 1px, 1px);
 	clip-path: inset(50%);
@@ -1641,5 +1642,333 @@ body.choir-metronome-open:not(.choir-sticky-player-open) .choir-metronome-sheet 
 .choir-feedback__status a {
 	color: inherit;
 	font-weight: 700;
+}
+
+.choir-tracks-heading {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	margin: 2rem 0 1rem;
+}
+
+.choir-tracks-heading .choir-section-title {
+	margin: 0;
+	min-width: 0;
+}
+
+.choir-mixer-launch,
+button.choir-mixer-launch,
+a.choir-mixer-launch {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	flex: 0 0 auto;
+	min-height: 44px;
+	padding: 0 14px;
+	border: 0 !important;
+	border-radius: 999px !important;
+	background: #f59e0b !important;
+	background-color: #f59e0b !important;
+	color: #1a1204 !important;
+	-webkit-text-fill-color: #1a1204 !important;
+	font: inherit;
+	font-weight: 700;
+	line-height: 1.2;
+	text-decoration: none !important;
+	cursor: pointer;
+	box-shadow: none !important;
+}
+
+.choir-mixer-launch:hover,
+.choir-mixer-launch:focus-visible,
+button.choir-mixer-launch:hover,
+a.choir-mixer-launch:hover {
+	background: #d97706 !important;
+	background-color: #d97706 !important;
+	color: #1a1204 !important;
+	-webkit-text-fill-color: #1a1204 !important;
+}
+
+.choir-mixer-launch__pro {
+	display: inline-flex;
+	align-items: center;
+	min-height: 22px;
+	padding: 0 7px;
+	border-radius: 999px;
+	background: #fff;
+	color: #c2410c;
+	font-size: 11px;
+	font-weight: 800;
+	letter-spacing: 0.04em;
+}
+
+.choir-mixer {
+	margin-top: 16px;
+	padding: 16px;
+	border-radius: 18px;
+	background: #1b212c;
+	color: #f8fafc;
+}
+
+.choir-mixer[hidden] {
+	display: none !important;
+}
+
+.choir-mixer__hint {
+	margin: 0 0 12px;
+	color: #cbd5e1;
+	font-size: 0.92rem;
+}
+
+.choir-mixer__timeline {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin-bottom: 14px;
+}
+
+.choir-mixer__time,
+.choir-mixer__duration {
+	flex: 0 0 auto;
+	font-variant-numeric: tabular-nums;
+	font-size: 0.95rem;
+}
+
+.choir-mixer__seek {
+	flex: 1 1 auto;
+	min-width: 0;
+	min-height: 44px;
+	accent-color: #f59e0b;
+}
+
+.choir-mixer__channels {
+	display: flex;
+	flex-wrap: nowrap;
+	gap: 8px;
+	overflow-x: auto;
+	overscroll-behavior-x: contain;
+	-webkit-overflow-scrolling: touch;
+	padding-bottom: 8px;
+	scroll-snap-type: x proximity;
+}
+
+.choir-mixer__channel {
+	flex: 0 0 132px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 10px;
+	min-height: 280px;
+	padding: 12px 8px;
+	border-radius: 14px;
+	background: #262d3a;
+	scroll-snap-align: start;
+}
+
+.choir-mixer__channel.is-silent {
+	opacity: 0.55;
+}
+
+.choir-mixer__channel.is-error .choir-mixer__name {
+	color: #fda29b;
+}
+
+.choir-mixer__name {
+	max-width: 100%;
+	font-size: 0.82rem;
+	font-weight: 700;
+	text-align: center;
+	line-height: 1.2;
+	overflow-wrap: normal;
+}
+
+.choir-mixer__fader {
+	position: relative;
+	width: 44px;
+	min-width: 44px;
+	height: 160px;
+	touch-action: none;
+	cursor: pointer;
+	--value: 70;
+}
+
+.choir-mixer__fader-track {
+	position: absolute;
+	left: 50%;
+	top: 14px;
+	bottom: 14px;
+	width: 8px;
+	transform: translateX(-50%);
+	border-radius: 999px;
+	background: #4b5568;
+}
+
+.choir-mixer__fader-fill {
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	height: calc(var(--value) * 1%);
+	border-radius: 999px;
+	background: #3d9a4a;
+}
+
+.choir-mixer__fader-thumb {
+	position: absolute;
+	left: 50%;
+	bottom: calc(14px + (100% - 28px) * var(--value) / 100);
+	width: 44px;
+	height: 28px;
+	transform: translate(-50%, 50%);
+	border-radius: 8px;
+	background: #fff;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+.choir-mixer__fader:focus-visible {
+	outline: 2px solid #f59e0b;
+	outline-offset: 2px;
+}
+
+.choir-mixer__flags {
+	display: flex;
+	gap: 8px;
+}
+
+.choir-mixer__mute,
+.choir-mixer__solo {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 44px;
+	min-width: 44px;
+	height: 44px;
+	min-height: 44px;
+	padding: 0 !important;
+	border: 0 !important;
+	border-radius: 10px !important;
+	background: #3a4150 !important;
+	background-color: #3a4150 !important;
+	color: #e5e7eb !important;
+	-webkit-text-fill-color: #e5e7eb !important;
+	font: inherit;
+	font-weight: 800;
+	cursor: pointer;
+	box-shadow: none !important;
+}
+
+.choir-mixer__mute.is-on,
+.choir-mixer__solo.is-on,
+button.choir-mixer__mute.is-on,
+button.choir-mixer__solo.is-on {
+	background: #f59e0b !important;
+	background-color: #f59e0b !important;
+	color: #1a1204 !important;
+	-webkit-text-fill-color: #1a1204 !important;
+}
+
+.choir-mixer__controls {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px;
+	margin-top: 12px;
+}
+
+.choir-mixer__back,
+.choir-mixer__forward,
+.choir-mixer__play,
+.choir-mixer__ab,
+.choir-mixer__speed,
+.choir-mixer__reset,
+button.choir-mixer__back,
+button.choir-mixer__forward,
+button.choir-mixer__play,
+button.choir-mixer__ab,
+button.choir-mixer__speed,
+button.choir-mixer__reset {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 44px;
+	min-width: 44px;
+	padding: 0 12px !important;
+	border: 0 !important;
+	border-radius: 12px !important;
+	background: #2c3444 !important;
+	background-color: #2c3444 !important;
+	color: #f8fafc !important;
+	-webkit-text-fill-color: #f8fafc !important;
+	font: inherit;
+	font-weight: 600;
+	cursor: pointer;
+	box-shadow: none !important;
+}
+
+.choir-mixer__play,
+button.choir-mixer__play {
+	width: 52px;
+	background: #f59e0b !important;
+	background-color: #f59e0b !important;
+	color: #1a1204 !important;
+	-webkit-text-fill-color: #1a1204 !important;
+}
+
+.choir-mixer__play svg,
+.choir-mixer__back svg,
+.choir-mixer__forward svg {
+	display: block;
+	fill: currentColor;
+}
+
+.choir-mixer__pause-icon {
+	display: none;
+}
+
+.choir-mixer__play.is-playing .choir-mixer__play-icon {
+	display: none;
+}
+
+.choir-mixer__play.is-playing .choir-mixer__pause-icon {
+	display: block;
+}
+
+.choir-mixer__ab[aria-pressed="true"],
+button.choir-mixer__ab[aria-pressed="true"] {
+	background: #f59e0b !important;
+	background-color: #f59e0b !important;
+	color: #1a1204 !important;
+	-webkit-text-fill-color: #1a1204 !important;
+}
+
+.choir-mixer__status {
+	min-height: 1.2em;
+	margin: 10px 0 0;
+	color: #cbd5e1;
+	font-size: 0.9rem;
+}
+
+.choir-mixer button:focus-visible,
+.choir-mixer-launch:focus-visible {
+	outline: 2px solid #fff;
+	outline-offset: 2px;
+}
+
+@media (max-width: 640px) {
+	.choir-tracks-heading {
+		align-items: center;
+	}
+
+	.choir-mixer {
+		padding: 12px;
+	}
+
+	.choir-mixer__ab,
+	.choir-mixer__speed,
+	.choir-mixer__reset {
+		flex: 1 1 auto;
+	}
 }
 

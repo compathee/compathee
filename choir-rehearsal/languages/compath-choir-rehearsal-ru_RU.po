@@ -1207,3 +1207,60 @@ msgstr "Загруженные PDF-партитуры и аудиодорожк�
 
 msgid "The optional feedback form sends the message, name, email address, and technical site information to rehearsal.compath.ee (Compath OÜ). Non-secret Pro license identifiers are included only when a separate Pro add-on license is active. The full license key is not sent."
 msgstr "Необязательная форма обратной связи отправляет сообщение, имя, адрес электронной почты и технические сведения о сайте на rehearsal.compath.ee (Compath OÜ). Несекретные идентификаторы лицензии Pro добавляются только когда активна лицензия отдельного дополнения Pro. Полный лицензионный ключ не отправляется."
+
+msgid "A–B loop"
+msgstr "Повтор A–B"
+
+msgid "All tracks play together."
+msgstr "Все дорожки играют синхронно."
+
+msgid "Back 5 seconds"
+msgstr "Назад на 5 секунд"
+
+msgid "Clear A–B loop"
+msgstr "Сбросить повтор A–B"
+
+msgid "Close mixer"
+msgstr "Закрыть микшер"
+
+msgid "Could not load one or more tracks."
+msgstr "Не удалось загрузить одну или несколько дорожек."
+
+msgid "Could not start audio. Tap Play again."
+msgstr "Не удалось запустить звук. Нажмите «Воспроизвести» ещё раз."
+
+msgid "Demo"
+msgstr "Демо"
+
+msgid "Forward 5 seconds"
+msgstr "Вперёд на 5 секунд"
+
+msgid "Loading %1$d of %2$d"
+msgstr "Загрузка %1$d из %2$d"
+
+msgid "Loop %1$s–%2$s"
+msgstr "Повтор %1$s–%2$s"
+
+msgid "Mixer"
+msgstr "Микшер"
+
+msgid "Mute %s"
+msgstr "Без звука %s"
+
+msgid "Open mixer"
+msgstr "Открыть микшер"
+
+msgid "Reset"
+msgstr "Сбросить"
+
+msgid "Solo %s"
+msgstr "Соло %s"
+
+msgid "Speed %s"
+msgstr "Скорость %s"
+
+msgid "Unmute %s"
+msgstr "Включить звук %s"
+
+msgid "Unsolo %s"
+msgstr "Снять соло %s"

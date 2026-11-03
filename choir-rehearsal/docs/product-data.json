@@ -17,7 +17,7 @@
     "Private access — optional login-only rehearsal pages",
     "Singer & Voice Leader roles — WordPress roles created on install (English names)",
     "Lite (free) — WordPress.org or GitHub, up to 4 tracks per song, audio upload",
-    "Pro add-on — unlimited tracks, mic recording, search, editor Play, embedded PDF in the editor"
+    "Pro add-on — unlimited tracks, mic recording, search, editor Play, embedded PDF in the editor, and the song-page mixer"
   ],
   "featureCards": [
     {
@@ -63,7 +63,7 @@
     {
       "icon": "pro",
       "title": "Pro add-on",
-      "text": "Unlimited tracks, mic recording, search by title, Play preview, and embedded PDF preview in the editor."
+      "text": "Unlimited tracks, mic recording, search by title, Play preview, and embedded PDF preview in the editor, and the song-page mixer."
     }
   ],
   "pricing": [
@@ -87,6 +87,7 @@
       "ctaLabel": "Order Pro",
       "items": [
         "Install beside Lite (separate add-on)",
+        "Multi-track mixer on the song page (volume, mute, solo)",
         "Unlimited voice tracks per song",
         "Microphone recording in the admin",
         "Play preview of voice tracks in the song editor",
@@ -126,13 +127,23 @@
   ],
   "changelog": [
     {
+      "version": "0.4.70",
+      "summary": "Multi-track mixer on the song page",
+      "items": [
+        "Mixer sits on the Voice tracks row and builds one channel per audio track",
+        "Tracks play together on one timeline with volume, mute, solo, speed, and an A–B loop",
+        "Licensed Pro, the Demo site, and the WordPress.org package include it. GitHub Lite keeps the single-track player"
+      ],
+      "open": true
+    },
+    {
       "version": "0.4.66",
       "summary": "Song list feedback is for signed-in users",
       "items": [
         "Logged-out visitors no longer see Send feedback under the song list",
         "Signed-in users still see that form, and Choir Rehearsal → Send feedback stays in wp-admin"
       ],
-      "open": true
+      "open": false
     },
     {
       "version": "0.4.65",
@@ -158,7 +169,8 @@
         "Arabic and CJK titles transliterate with ICU Any-Latin when php-intl is available",
         "Fallback permalink song-{id} when romanization is empty",
         "Includes the 0.4.62 Cyrillic hex-dump repair"
-      ]
+      ],
+      "open": false
     },
     {
       "version": "0.4.62",

@@ -158,6 +158,9 @@
 		if (!url) {
 			return;
 		}
+		if (window.choirMixer && typeof window.choirMixer.pause === 'function') {
+			window.choirMixer.pause();
+		}
 		if (title) {
 			title.textContent = trackTitle || '';
 		}

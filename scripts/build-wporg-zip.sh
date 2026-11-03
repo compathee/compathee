@@ -24,6 +24,8 @@ rm -rf \
   "$STAGE/$SLUG/docs/product-page.html" \
   "$STAGE/$SLUG/docs/product-data.json"
 rm -f "$STAGE/$SLUG/update.json"
+# Demo sandbox drop-in must never ship in the Plugin Directory zip.
+rm -f "$STAGE/$SLUG/includes/distribution-demo.php"
 # Plugin Check fails if custom updater code is present, even when disabled at runtime.
 rm -f "$STAGE/$SLUG/includes/class-updater.php"
 # WordPress.org package: full feature set, no Lite/Pro commercial gates in shipped code.
@@ -96,6 +98,10 @@ if unzip -l "$ZIP" | grep -q 'edition-wporg.php'; then
   echo "ERROR: edition-wporg.php must not ship in wporg zip" >&2
   exit 1
 fi
+if unzip -l "$ZIP" | grep -q 'distribution-demo.php'; then
+  echo "ERROR: distribution-demo.php must not ship in wporg zip" >&2
+  exit 1
+fi
 if unzip -p "$ZIP" "$SLUG/includes/class-edition.php" | grep -qE 'LITE_MAX_TRACKS|choir_rehearsal_is_pro|is_full_edition'; then
   echo "ERROR: wporg class-edition.php must not contain Lite/Pro gate identifiers" >&2
   exit 1
@@ -104,7 +110,8 @@ if unzip -p "$ZIP" "$SLUG/includes/class-slugs.php" | grep -q "add_filter( 'sani
   echo "ERROR: wporg build must not register global sanitize_title filter" >&2
   exit 1
 fi
-if unzip -p "$ZIP" "$SLUG/includes/class-edition.php" | grep -q 'can_record(): bool'; then
+if unzip -p "$ZIP" "$SLUG/includes/class-edition.php" | grep -q 'can_record(): bool' \
+  && unzip -p "$ZIP" "$SLUG/includes/class-edition.php" | grep -q 'can_use_mixer(): bool'; then
   :
 else
   echo "ERROR: wporg class-edition.php missing capability helpers" >&2

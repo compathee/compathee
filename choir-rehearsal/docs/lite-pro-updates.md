@@ -5,7 +5,7 @@ Choir Rehearsal uses the WordPress add-on model (same pattern as WooCommerce, AC
 | Plugin | What it is | Who installs it |
 |--------|------------|-----------------|
 | **Compath Choir Rehearsal** (`compath-choir-rehearsal.zip`) | Base library. Always Lite until Pro is active. | Everyone |
-| **Compath Choir Rehearsal Pro** (`choir-rehearsal-pro.zip`) | Add-on. Unlocks search, unlimited tracks, microphone recording, Play preview, and embedded PDF in the editor. | Paying customers only |
+| **Compath Choir Rehearsal Pro** (`choir-rehearsal-pro.zip`) | Add-on. Unlocks search, unlimited tracks, microphone recording, Play preview, embedded PDF in the editor, and the song-page mixer. | Paying customers only |
 
 **Never replace Lite with Pro.** Pro is an extra plugin next to Lite. Songs, tracks, and PDFs stay in WordPress; the add-on only turns features on.
 
@@ -23,7 +23,7 @@ Choir Rehearsal uses the WordPress add-on model (same pattern as WooCommerce, AC
 5. Do **not** install `choir-rehearsal-pro.zip` on this site if you want a Lite-only test.
 6. Assign choir roles under **Users**: **Singer** (listen) or **Voice Leader** (manage songs). Plugin **Settings** stay Administrator-only. Role names stay in English.
 
-Lite limits: 4 voice tracks per song; no mic recording, search, editor Play, or embedded PDF in the editor.
+Lite limits: 4 voice tracks per song; no mic recording, search, editor Play, embedded PDF in the editor, or multi-track mixer.
 
 ---
 

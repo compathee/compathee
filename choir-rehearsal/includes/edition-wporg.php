@@ -17,6 +17,14 @@ final class Choir_Rehearsal_Edition {
 		return false;
 	}
 
+	public static function is_demo(): bool {
+		return false;
+	}
+
+	public static function can_use_mixer(): bool {
+		return true;
+	}
+
 	public static function max_tracks(): int {
 		return 0;
 	}
