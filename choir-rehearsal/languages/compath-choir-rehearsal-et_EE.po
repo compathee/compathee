@@ -1412,3 +1412,24 @@ msgstr "Valikuline tagasisidevorm saadab sõnumi, nime, e-posti aadressi ja tehn
 
 msgid "Non-secret Pro license identifiers are included only when a separate Pro add-on license is active."
 msgstr "Mittesalajased Pro litsentsi identifikaatorid lisatakse ainult siis, kui eraldi Pro lisaplugina litsents on aktiivne."
+
+msgid "Dictation language"
+msgstr "Diktsioonikeel"
+
+msgid "English"
+msgstr "Inglise keel"
+
+msgid "Estonian"
+msgstr "Eesti keel"
+
+msgid "Russian"
+msgstr "Vene keel"
+
+msgid "Search languages"
+msgstr "Otsi keeli"
+
+msgid "Voice input is not supported in this browser."
+msgstr "Häälisisestus ei ole selles brauseris toetatud."
+
+msgid "No matching language."
+msgstr "Sobivat keelt ei leitud."

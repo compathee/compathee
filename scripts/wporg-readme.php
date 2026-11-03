@@ -80,7 +80,7 @@ foreach ( preg_split( "/\r\n|\n|\r/", $text ) as $line ) {
 		$kept[] = $line;
 		continue;
 	}
-	if ( preg_match( '/song notes|@ Part|time mark|bottom sheet|Voice input for Voice Leader|\\bmixer\\b/i', $line ) ) {
+	if ( preg_match( '/song notes|@ Part|time mark|bottom sheet|Voice input|dictation language|voice-part names|\\bmixer\\b/i', $line ) ) {
 		continue;
 	}
 	if ( preg_match( '/\\bPro\\b|SureCart|shop\\.compath\\.ee/i', $line ) ) {
@@ -90,6 +90,7 @@ foreach ( preg_split( "/\r\n|\n|\r/", $text ) as $line ) {
 }
 
 $text = implode( "\n", $kept );
+$text = preg_replace( '/(= 0\.4\.73 =\n).*?(?=\n= |\n== )/s', "= 0.4.73 =\n\n* Maintenance release.\n\n", $text ) ?? $text;
 $text = preg_replace( '/(= 0\.4\.71 =\n).*?(?=\n= |\n== )/s', "= 0.4.71 =\n\n* Maintenance release.\n\n", $text ) ?? $text;
 $text = preg_replace( "/(= [0-9][^\\n]* =\\n)\\n+(?== )/s", "$1\n* Maintenance release.\n\n", $text ) ?? $text;
 
@@ -111,7 +112,7 @@ foreach ( array( '0.4.70', '0.4.69' ) as $version ) {
 $text = substr( $text, 0, $changelog_at ) . $changelog;
 $text = rtrim( $text ) . "\n";
 
-foreach ( array( '0.4.72', '0.4.71', '0.4.70', '0.4.69', '0.4.68', '0.4.67' ) as $version ) {
+foreach ( array( '0.4.73', '0.4.72', '0.4.71', '0.4.70', '0.4.69', '0.4.68', '0.4.67' ) as $version ) {
 	if ( ! str_contains( $text, "= {$version} =\n" ) ) {
 		fwrite( STDERR, "wporg readme is missing the {$version} release\n" );
 		exit( 1 );

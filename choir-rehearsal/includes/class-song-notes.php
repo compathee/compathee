@@ -344,7 +344,6 @@ final class Choir_Rehearsal_Song_Notes {
 			true
 		);
 
-		$locale = function_exists( 'determine_locale' ) ? determine_locale() : get_locale();
 		$data   = array(
 			'songId'     => $song_id,
 			'restUrl'    => rest_url( 'choir-rehearsal/v1/songs/' . $song_id . '/notes' ),
@@ -355,7 +354,7 @@ final class Choir_Rehearsal_Song_Notes {
 				is_user_logged_in(),
 				Choir_Rehearsal_Access::can_manage()
 			),
-			'speechLang' => Choir_Rehearsal_Song_Notes_Format::speech_lang( (string) $locale ),
+			'speechLang' => 'en-US',
 			'tracks'     => self::track_payload( $song_id ),
 			'counts'     => self::counts_map( $song_id ),
 			'i18n'       => self::script_i18n(),
@@ -455,9 +454,14 @@ final class Choir_Rehearsal_Song_Notes {
 							<button type="button" class="choir-notes-info" aria-expanded="false" aria-controls="choir-notes-guide" aria-label="<?php esc_attr_e( 'How song notes work', 'compath-choir-rehearsal' ); ?>">
 								<span aria-hidden="true">&#9432;</span>
 							</button>
-							<button type="button" class="choir-notes-mic" hidden aria-pressed="false" aria-label="<?php esc_attr_e( 'Dictate a note', 'compath-choir-rehearsal' ); ?>">
+							<button type="button" class="choir-notes-mic" hidden aria-pressed="false" aria-expanded="false" aria-controls="choir-notes-langpop" aria-label="<?php esc_attr_e( 'Dictate a note', 'compath-choir-rehearsal' ); ?>">
 								<span class="choir-notes-mic__icon" aria-hidden="true"><?php echo self::studio_mic_svg(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static SVG. ?></span>
 							</button>
+							<p class="choir-notes-speech-unsupported" role="status" hidden><?php esc_html_e( 'Voice input is not supported in this browser.', 'compath-choir-rehearsal' ); ?></p>
+						</div>
+						<div id="choir-notes-langpop" class="choir-notes-langpop" role="dialog" aria-modal="false" aria-label="<?php esc_attr_e( 'Dictation language', 'compath-choir-rehearsal' ); ?>" hidden>
+							<input type="search" class="choir-notes-langsearch" role="combobox" autocomplete="off" aria-autocomplete="list" aria-expanded="false" aria-controls="choir-notes-langlist" aria-label="<?php esc_attr_e( 'Search languages', 'compath-choir-rehearsal' ); ?>" placeholder="<?php esc_attr_e( 'Search languages', 'compath-choir-rehearsal' ); ?>" />
+							<ul id="choir-notes-langlist" class="choir-notes-langlist" role="listbox" aria-label="<?php esc_attr_e( 'Dictation language', 'compath-choir-rehearsal' ); ?>"></ul>
 						</div>
 						<div id="choir-notes-guide" class="choir-notes-guide" hidden>
 							<ol>
@@ -504,6 +508,10 @@ final class Choir_Rehearsal_Song_Notes {
 			'noTracks'        => __( 'No tracks uploaded yet.', 'compath-choir-rehearsal' ),
 			'dictate'         => __( 'Dictate a note', 'compath-choir-rehearsal' ),
 			'stopDictation'   => __( 'Stop dictation', 'compath-choir-rehearsal' ),
+			'dictationLanguage' => __( 'Dictation language', 'compath-choir-rehearsal' ),
+			'searchLanguages' => __( 'Search languages', 'compath-choir-rehearsal' ),
+			'speechUnsupported' => __( 'Voice input is not supported in this browser.', 'compath-choir-rehearsal' ),
+			'noLanguageMatch' => __( 'No matching language.', 'compath-choir-rehearsal' ),
 			'seekTime'        => __( 'Seek to this time', 'compath-choir-rehearsal' ),
 			'placeholder'     => __( 'Type @ and choose a part to address advice to a track', 'compath-choir-rehearsal' ),
 			'loadFailed'      => __( 'Could not load song notes. Please try again.', 'compath-choir-rehearsal' ),

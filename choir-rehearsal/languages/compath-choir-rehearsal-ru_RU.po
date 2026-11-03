@@ -1416,3 +1416,24 @@ msgstr "Необязательная форма обратной связи от
 
 msgid "Non-secret Pro license identifiers are included only when a separate Pro add-on license is active."
 msgstr "Несекретные идентификаторы лицензии Pro добавляются только когда активна лицензия отдельного дополнения Pro."
+
+msgid "Dictation language"
+msgstr "Язык диктовки"
+
+msgid "English"
+msgstr "Английский"
+
+msgid "Estonian"
+msgstr "Эстонский"
+
+msgid "Russian"
+msgstr "Русский"
+
+msgid "Search languages"
+msgstr "Поиск языка"
+
+msgid "Voice input is not supported in this browser."
+msgstr "Голосовой ввод не поддерживается в этом браузере."
+
+msgid "No matching language."
+msgstr "Нет подходящего языка."
