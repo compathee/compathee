@@ -112,6 +112,7 @@ Pro: song notes and per-track recommendations. Voice Leader and Administrator wr
 * Optional voice input for Voice Leader and Administrator (browser speech recognition, interface language, nothing is auto-published, audio is not stored)
 * Mobile: notes open as a bottom sheet with large tap targets, a locked page scroll, and a local draft if the sheet closes
 * Estonian and Russian strings for the new notes copy
+* Demo distribution (CHOIR_REHEARSAL_DISTRIBUTION=demo) includes song notes with no license. GitHub Lite without a license does not. The WordPress.org package does not include this feature
 
 = 0.4.67 =
 

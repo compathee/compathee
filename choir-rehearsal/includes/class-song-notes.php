@@ -26,6 +26,21 @@ final class Choir_Rehearsal_Song_Notes {
 		add_action( 'rest_api_init', array( self::class, 'register_routes' ) );
 		add_action( 'wp_enqueue_scripts', array( self::class, 'enqueue' ), 20 );
 		add_action( 'before_delete_post', array( self::class, 'delete_for_post' ) );
+		add_action( 'admin_init', array( self::class, 'register_privacy_policy' ) );
+	}
+
+	/**
+	 * Extra privacy text only when this file is installed (not the WordPress.org package).
+	 */
+	public static function register_privacy_policy(): void {
+		if ( ! function_exists( 'wp_add_privacy_policy_content' ) || ! self::is_enabled() ) {
+			return;
+		}
+
+		wp_add_privacy_policy_content(
+			'Compath Choir Rehearsal',
+			'<p>' . esc_html__( 'Song notes store the note text and the WordPress user ID of the author on this website. Voice input is transcribed in the browser and the audio is not stored. The plugin does not email singers about notes.', 'compath-choir-rehearsal' ) . '</p>'
+		);
 	}
 
 	public static function is_enabled(): bool {

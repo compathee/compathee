@@ -17,6 +17,10 @@ final class Choir_Rehearsal_Edition {
 		return false;
 	}
 
+	public static function is_demo(): bool {
+		return false;
+	}
+
 	public static function max_tracks(): int {
 		return 0;
 	}
@@ -42,7 +46,7 @@ final class Choir_Rehearsal_Edition {
 	}
 
 	/**
-	 * Song notes ship with the licensed add-on, not this package.
+	 * Not included in this package.
 	 */
 	public static function can_use_song_notes(): bool {
 		return false;

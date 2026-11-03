@@ -114,12 +114,14 @@ final class Choir_Rehearsal_Admin {
 							</a>
 						</td>
 					</tr>
-					<?php if ( Choir_Rehearsal_Edition::shows_commercial_upgrade() || Choir_Rehearsal_Edition::is_pro() ) : ?>
+					<?php if ( Choir_Rehearsal_Edition::shows_commercial_upgrade() || Choir_Rehearsal_Edition::is_pro() || Choir_Rehearsal_Edition::is_demo() ) : ?>
 					<tr>
 						<th scope="row"><?php esc_html_e( 'Edition', 'compath-choir-rehearsal' ); ?></th>
 						<td>
 							<code><?php echo esc_html( Choir_Rehearsal_Edition::edition_label() ); ?></code>
-							<?php if ( Choir_Rehearsal_Edition::shows_commercial_upgrade() ) : ?>
+							<?php if ( Choir_Rehearsal_Edition::is_demo() ) : ?>
+								<p class="description"><?php esc_html_e( 'Demo: song notes are available without a license. Microphone recording, song search, and editor Play preview stay off until Pro is licensed.', 'compath-choir-rehearsal' ); ?></p>
+							<?php elseif ( Choir_Rehearsal_Edition::shows_commercial_upgrade() ) : ?>
 								<p class="description">
 									<?php
 									echo esc_html(
@@ -914,7 +916,7 @@ final class Choir_Rehearsal_Admin {
 						<?php endforeach; ?>
 					</select>
 					<?php
-					if ( $track_id > 0 ) {
+					if ( $track_id > 0 && class_exists( 'Choir_Rehearsal_Song_Notes', false ) ) {
 						Choir_Rehearsal_Song_Notes::render_track_button( (int) get_the_ID(), $track_id, (string) $voice_label );
 					}
 					?>

@@ -342,6 +342,9 @@ return [
         'Note not found.' => 'Märget ei leitud.',
         'Song notes (Pro) store the note text and the WordPress user ID of the author on this website. Voice input is transcribed in the browser and the audio is not stored. The plugin does not email singers about notes.' => 'Laulumärkmed (Pro) salvestavad märkme teksti ja autori WordPressi kasutaja ID sellel veebisaidil. Hääl teisendatakse tekstiks brauseris ja heli ei salvestata. Plugin ei saada lauljatele märkmete kohta e-kirju.',
         'Could not load song notes. Please try again.' => 'Laulumärkmeid ei õnnestunud laadida. Proovige uuesti.',
+        'Demo' => 'Demo',
+        'Demo: song notes are available without a license. Microphone recording, song search, and editor Play preview stay off until Pro is licensed.' => 'Demo: laulumärkmed on saadaval ilma litsentsita. Mikrofonisalvestus, lauluotsing ja redaktori Play-eelvaade jäävad väljalülitatuks, kuni Pro on litsentsitud.',
+        'Song notes store the note text and the WordPress user ID of the author on this website. Voice input is transcribed in the browser and the audio is not stored. The plugin does not email singers about notes.' => 'Laulumärkmed salvestavad märkme teksti ja autori WordPressi kasutaja ID sellel veebisaidil. Hääl teisendatakse tekstiks brauseris ja heli ei salvestata. Plugin ei saada lauljatele märkmete kohta e-kirju.',
         '— Select —' => '— Vali —',
     ],
 ];

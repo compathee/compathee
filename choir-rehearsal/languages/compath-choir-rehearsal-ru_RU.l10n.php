@@ -342,6 +342,9 @@ return [
         'Note not found.' => 'Заметка не найдена.',
         'Song notes (Pro) store the note text and the WordPress user ID of the author on this website. Voice input is transcribed in the browser and the audio is not stored. The plugin does not email singers about notes.' => 'Заметки к песне (Pro) хранят текст заметки и ID пользователя WordPress автора на этом сайте. Речь превращается в текст в браузере, аудио не сохраняется. Плагин не отправляет хористам письма о заметках.',
         'Could not load song notes. Please try again.' => 'Не удалось загрузить заметки к песне. Попробуйте ещё раз.',
+        'Demo' => 'Demo',
+        'Demo: song notes are available without a license. Microphone recording, song search, and editor Play preview stay off until Pro is licensed.' => 'Demo: заметки к песне доступны без лицензии. Запись с микрофона, поиск песен и Play-превью в редакторе остаются выключенными, пока Pro не лицензирован.',
+        'Song notes store the note text and the WordPress user ID of the author on this website. Voice input is transcribed in the browser and the audio is not stored. The plugin does not email singers about notes.' => 'Заметки к песне хранят текст заметки и ID пользователя WordPress автора на этом сайте. Речь превращается в текст в браузере, аудио не сохраняется. Плагин не отправляет хористам письма о заметках.',
         '— Select —' => '— Выбрать —',
     ],
 ];

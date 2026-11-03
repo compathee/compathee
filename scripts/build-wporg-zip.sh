@@ -24,6 +24,13 @@ rm -rf \
   "$STAGE/$SLUG/docs/product-page.html" \
   "$STAGE/$SLUG/docs/product-data.json"
 rm -f "$STAGE/$SLUG/update.json"
+rm -f "$STAGE/$SLUG/includes/distribution-demo.php"
+# Song notes are not part of this package. Omit the implementation entirely.
+rm -f \
+  "$STAGE/$SLUG/includes/class-song-notes.php" \
+  "$STAGE/$SLUG/includes/class-song-notes-format.php" \
+  "$STAGE/$SLUG/public/js/song-notes.js"
+php "$ROOT/scripts/wporg-readme.php" "$STAGE/$SLUG/readme.txt"
 # Plugin Check fails if custom updater code is present, even when disabled at runtime.
 rm -f "$STAGE/$SLUG/includes/class-updater.php"
 # WordPress.org package: full feature set, no Lite/Pro commercial gates in shipped code.
@@ -62,9 +69,9 @@ unzip -l "$ZIP" | grep -E 'distribution-wporg|pdf\.min\.js' | head -5 || true
 
 unzip -l "$ZIP" | grep -q 'distribution-wporg.php'
 unzip -l "$ZIP" | grep -q 'assets/vendor/pdfjs/pdf.min.js'
-if unzip -l "$ZIP" | grep -qE '(^|/)update\.json$|tests/|shop-setup\.md|class-updater\.php'; then
+if unzip -l "$ZIP" | grep -qE '(^|/)update\.json$|tests/|shop-setup\.md|class-updater\.php|distribution-demo\.php|class-song-notes\.php|class-song-notes-format\.php|song-notes\.js'; then
   echo "ERROR: forbidden paths found in wporg zip" >&2
-  unzip -l "$ZIP" | grep -E 'update\.json|tests/|shop-setup|class-updater' || true
+  unzip -l "$ZIP" | grep -E 'update\.json|tests/|shop-setup|class-updater|distribution-demo|song-notes' || true
   exit 1
 fi
 if unzip -p "$ZIP" "$SLUG/includes/class-frontend.php" | grep -q 'cdnjs'; then
