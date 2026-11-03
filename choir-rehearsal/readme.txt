@@ -93,7 +93,7 @@ Yes. In the song editor, set a voice track’s source to **YouTube** and paste a
 
 = 0.4.68 =
 
-Choir Rehearsal → Pro License includes a My orders.. button that opens the shop customer dashboard. Estonian and Russian catalogs include the Pro deactivation prompt.
+Choir Rehearsal → Pro License includes a My orders.. button that opens the shop customer dashboard. The activation ID and license key are shown masked. Estonian and Russian catalogs include the Pro deactivation prompt.
 
 = 0.4.67 =
 
@@ -104,6 +104,7 @@ Attaching a PDF or making a song public now requires confirmation that you have 
 = 0.4.68 =
 
 * Pro License: My orders.. opens the shop customer dashboard in a new tab
+* Pro License page shows a masked activation ID and license key; the full values stay out of the page HTML
 * Estonian and Russian translations for that button and for Pro license deactivation
 
 = 0.4.67 =

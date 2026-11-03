@@ -92,7 +92,8 @@ function add_query_arg( $key, $value, $url ): string {
 	return $url . $sep . rawurlencode( (string) $key ) . '=' . rawurlencode( (string) $value );
 }
 function wp_remote_request( $url, $args = array() ) {
-	unset( $url, $args );
+	$GLOBALS['choir_http_log'][] = (string) $url;
+	unset( $args );
 	return array( 'code' => $GLOBALS['choir_http']['code'], 'body' => $GLOBALS['choir_http']['body'] );
 }
 function wp_remote_retrieve_response_code( $response ): int { return (int) ( $response['code'] ?? 0 ); }
@@ -253,6 +254,84 @@ if ( ! method_exists( $page, 'complete_deactivation' ) || ! method_exists( $clie
 	$_POST            = array();
 	$GLOBALS['choir_can'] = true;
 
+	choir_seed_license();
+	$GLOBALS['choir_http']     = array( 'code' => 204, 'body' => '' );
+	$GLOBALS['choir_http_log'] = array();
+	$page->add_page(
+		array(
+			'type'                 => 'submenu',
+			'parent_slug'          => 'edit.php?post_type=choir_song',
+			'page_title'           => 'Pro License',
+			'menu_title'           => 'Pro License',
+			'deactivated_redirect' => null,
+			'activated_redirect'   => null,
+		)
+	);
+	$_POST = array(
+		'submit'        => 'Deactivate License',
+		'_nonce'        => 'nonce',
+		'_action'       => 'deactivate',
+		'activation_id' => 'act_FORGED_9999',
+	);
+	ob_start();
+	$page->license_form_submit();
+	ob_end_clean();
+	$page->add_page(
+		array(
+			'type'                 => 'submenu',
+			'parent_slug'          => 'edit.php?post_type=choir_song',
+			'page_title'           => 'Pro License',
+			'menu_title'           => 'Pro License',
+			'deactivated_redirect' => 'https://example.test/wp-admin/edit.php?post_type=choir_song&page=choir-rehearsal-pro-license',
+			'activated_redirect'   => 'https://example.test/wp-admin/edit.php?post_type=choir_song&page=choir-rehearsal-pro-license',
+		)
+	);
+	$deactivate_urls = implode( "\n", $GLOBALS['choir_http_log'] );
+	choir_check(
+		'deactivation uses the stored activation id',
+		str_contains( $deactivate_urls, 'act_site_1' )
+		&& ! str_contains( $deactivate_urls, 'act_FORGED_9999' )
+		&& choir_license_cleared()
+	);
+	$_POST = array();
+
+	$full_id    = 'act_site_1';
+	$full_key   = 'ABCD1234WXYZ5678';
+	$masked_id  = 'act_' . "\u{2022}\u{2022}\u{2022}\u{2022}" . 'te_1';
+	$masked_key = 'ABCD' . "\u{2022}\u{2022}\u{2022}\u{2022}" . '5678';
+	choir_seed_license();
+	$GLOBALS['choir_http'] = array( 'code' => 200, 'body' => '{"id":"act_site_1"}' );
+	$_GET['debug']         = '1';
+	ob_start();
+	$page->settings_output();
+	$masked_html = (string) ob_get_clean();
+	unset( $_GET['debug'] );
+	choir_check(
+		'activated page masks the activation id and license key',
+		str_contains( $masked_html, $masked_id )
+		&& str_contains( $masked_html, $masked_key )
+		&& str_contains( $masked_html, 'readonly' )
+		&& ! str_contains( $masked_html, $full_id )
+		&& ! str_contains( $masked_html, $full_key )
+		&& ! str_contains( $masked_html, 'name="activation_id"' )
+		&& ! preg_match( '/type="hidden"[^>]*' . preg_quote( $full_id, '/' ) . '/', $masked_html )
+	);
+
+	$GLOBALS['choir_opts'][ $option_key ] = array(
+		'sc_activation_id' => 'abcd',
+		'sc_license_key'   => 'SECRET99',
+	);
+	$GLOBALS['choir_http'] = array( 'code' => 200, 'body' => '{"id":"abcd"}' );
+	ob_start();
+	$page->settings_output();
+	$short_html = (string) ob_get_clean();
+	choir_check(
+		'short secrets are fully masked',
+		! str_contains( $short_html, 'abcd' )
+		&& ! str_contains( $short_html, 'SECRET99' )
+		&& str_contains( $short_html, "\u{2022}\u{2022}\u{2022}\u{2022}" )
+	);
+
 	$GLOBALS['choir_http'] = array( 'code' => 200, 'body' => '{"id":"act_site_1"}' );
 	$GLOBALS['choir_opts'][ $option_key ] = array(
 		'sc_license_key'   => 'ABCD1234WXYZ5678',
@@ -271,11 +350,21 @@ if ( ! method_exists( $page, 'complete_deactivation' ) || ! method_exists( $clie
 		&& str_contains( $deactivate_html, 'rel="noopener noreferrer"' )
 	);
 
-	$GLOBALS['choir_opts'][ $option_key ] = array();
+	$GLOBALS['choir_opts'][ $option_key ] = array(
+		'sc_license_key' => 'ABCD1234WXYZ5678',
+	);
 	ob_start();
 	$page->settings_output();
 	$activate_html = (string) ob_get_clean();
-	choir_check( 'activate form has no deactivate confirm', str_contains( $activate_html, 'Activate License' ) && ! str_contains( $activate_html, 'confirm(' ) && str_contains( $activate_html, 'My orders..' ) );
+	choir_check(
+		'activate form has an empty key field',
+		str_contains( $activate_html, 'Activate License' )
+		&& ! str_contains( $activate_html, 'confirm(' )
+		&& str_contains( $activate_html, 'My orders..' )
+		&& str_contains( $activate_html, 'name="license_key"' )
+		&& str_contains( $activate_html, 'value=""' )
+		&& ! str_contains( $activate_html, 'ABCD1234WXYZ5678' )
+	);
 }
 
 foreach ( array( 'et', 'et_EE', 'ru_RU' ) as $locale ) {

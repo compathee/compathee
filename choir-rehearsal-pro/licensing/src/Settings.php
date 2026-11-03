@@ -223,7 +223,6 @@ class Settings {
 				<form method="post" action="<?php echo esc_attr( $this->form_action_url() ); ?>">
 					<input type="hidden" name="_action" value="<?php echo esc_attr( $action ); ?>">
 					<input type="hidden" name="_nonce" value="<?php echo esc_attr( wp_create_nonce( $this->client->name ) ); ?>">
-					<input type="hidden" name="activation_id" value="<?php echo esc_attr( $this->activation_id ); ?>">
 
 					<h2><?php echo esc_html( $this->menu_args['page_title'] ); ?></h2>
 					<label for="license_key">
@@ -235,15 +234,15 @@ class Settings {
 					</label>
 
 					<?php if ( 'activate' === $action ) : ?> 
-						<input class="widefat" type="password" autocomplete="off" name="license_key" id="license_key" value="<?php echo esc_attr( $this->license_key ); ?>" autofocus>
+						<input class="widefat" type="password" autocomplete="off" name="license_key" id="license_key" value="" autofocus>
+					<?php else : ?>
+						<?php $this->render_masked_secret( 'activation_id', $this->client->__( 'Activation ID' ), $this->activation_id ); ?>
+						<?php $this->render_masked_secret( 'license_key_display', $this->client->__( 'License key' ), $this->license_key ); ?>
 					<?php endif; ?>
 
-					<?php if ( isset( $_GET['debug'] ) ) : // phpcs:ignore  ?>
-						<label for="license_id"><?php echo esc_html( sprintf( $this->client->__( 'License ID', 'surecart' ), $this->client->name ) ); ?></label>
-						<input class="widefat" type="text" autocomplete="off" name="license_id" id="license_id" value="<?php echo esc_attr( $this->license_id ); ?>" autofocus>
-
-						<label for="activation_id"><?php echo esc_html( sprintf( $this->client->__( 'Activation ID', 'surecart' ), $this->client->name ) ); ?></label>
-						<input class="widefat" type="text" autocomplete="off" name="activation_id" id="activation_id" value="<?php echo esc_attr( $this->activation_id ); ?>" autofocus>
+					<?php if ( isset( $_GET['debug'] ) ) : // phpcs:ignore WordPress.Security.NonceVerification.Recommended ?>
+						<label for="license_id"><?php echo esc_html( $this->client->__( 'License ID' ) ); ?></label>
+						<input class="widefat" type="text" autocomplete="off" id="license_id" value="<?php echo esc_attr( $this->mask_secret( $this->license_id ) ); ?>" readonly="readonly">
 					<?php endif; ?>
 
 					<?php $this->render_license_submit( $action ); ?>
@@ -376,7 +375,9 @@ class Settings {
 
 		// handle deactivation.
 		if ( 'deactivate' === $_POST['_action'] ) {
-			$activation_id = isset( $_POST['activation_id'] ) ? sanitize_text_field( wp_unslash( (string) $_POST['activation_id'] ) ) : '';
+			// The page never receives the activation id. Use the saved option.
+			$stored        = $this->activation_id;
+			$activation_id = is_scalar( $stored ) ? sanitize_text_field( (string) $stored ) : '';
 			$deactivated   = $this->client->license()->deactivate( $activation_id );
 			if ( is_wp_error( $deactivated ) ) {
 				$url = $this->complete_deactivation( $deactivated );
@@ -498,6 +499,44 @@ class Settings {
 			return \Choir_Rehearsal_Admin::deactivate_license_confirm_text();
 		}
 		return __( 'Deactivate the Pro license on this site? Pro features will be disabled and the activation slot freed.', 'compath-choir-rehearsal' );
+	}
+
+	/**
+	 * Mask a license key or activation id for display.
+	 *
+	 * Eight characters or fewer are replaced entirely so the value cannot be rebuilt.
+	 * Longer values keep the first four and last four characters.
+	 *
+	 * @param mixed $value Stored secret.
+	 */
+	private function mask_secret( $value ): string {
+		$value  = trim( is_scalar( $value ) ? (string) $value : '' );
+		$length = strlen( $value );
+		if ( $length < 1 ) {
+			return '';
+		}
+		if ( $length <= 8 ) {
+			return '••••';
+		}
+
+		return substr( $value, 0, 4 ) . '••••' . substr( $value, -4 );
+	}
+
+	/**
+	 * Read-only masked secret. No name attribute, so it is not submitted.
+	 *
+	 * @param string $id    Element id.
+	 * @param string $label Visible label.
+	 * @param mixed  $value Stored secret.
+	 */
+	private function render_masked_secret( string $id, string $label, $value ): void {
+		$masked = $this->mask_secret( $value );
+		if ( '' === $masked ) {
+			return;
+		}
+
+		echo '<label for="' . esc_attr( $id ) . '">' . esc_html( $label ) . '</label>';
+		echo '<input class="widefat" type="text" autocomplete="off" id="' . esc_attr( $id ) . '" value="' . esc_attr( $masked ) . '" readonly="readonly" />';
 	}
 
 	/**
