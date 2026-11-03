@@ -1206,6 +1206,18 @@ msgstr "Üles laaditud PDF-partituurid ja audiorajad salvestatakse saidi meediat
 msgid "The optional feedback form sends the message, name, email address, and technical site information to rehearsal.compath.ee (Compath OÜ). Non-secret Pro license identifiers are included only when a separate Pro add-on license is active. The full license key is not sent."
 msgstr "Valikuline tagasisidevorm saadab sõnumi, nime, e-posti aadressi ja tehnilise teabe saidi kohta aadressile rehearsal.compath.ee (Compath OÜ). Mittesalajased Pro litsentsi identifikaatorid lisatakse ainult siis, kui eraldi Pro lisaplugina litsents on aktiivne. Täielikku litsentsivõtit ei saadeta."
 
+msgid "Appearance"
+msgstr "Välimus"
+
+msgid "Classic"
+msgstr "Klassikaline"
+
+msgid "New"
+msgstr "Uus"
+
+msgid "New uses a light blue background and white cards for songs and voice tracks. Classic keeps the current look."
+msgstr "Uus kasutab helesinist tausta ning valgeid kaarte laulude ja häälepartiide jaoks. Klassikaline jätab senise ilme."
+
 msgid "Open song notes"
 msgstr "Ava laulumärkmed"
 
