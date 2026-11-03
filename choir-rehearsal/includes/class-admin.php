@@ -907,11 +907,18 @@ final class Choir_Rehearsal_Admin {
 			<input type="hidden" name="choir_tracks[<?php echo esc_attr( (string) $index ); ?>][id]" value="<?php echo esc_attr( (string) $track_id ); ?>" />
 			<input type="hidden" class="choir-audio-id" name="choir_tracks[<?php echo esc_attr( (string) $index ); ?>][audio_id]" value="<?php echo esc_attr( (string) $audio_id ); ?>" />
 			<div class="choir-track-item__main">
-				<select class="choir-voice-select choir-track-voice" name="choir_tracks[<?php echo esc_attr( (string) $index ); ?>][voice]" aria-label="<?php esc_attr_e( 'Voice', 'compath-choir-rehearsal' ); ?>">
-					<?php foreach ( $voices as $slug => $label ) : ?>
-						<option value="<?php echo esc_attr( $slug ); ?>" <?php selected( $voice_slug, $slug ); ?>><?php echo esc_html( $label ); ?></option>
-					<?php endforeach; ?>
-				</select>
+				<div class="choir-track-name">
+					<select class="choir-voice-select choir-track-voice" name="choir_tracks[<?php echo esc_attr( (string) $index ); ?>][voice]" aria-label="<?php esc_attr_e( 'Voice', 'compath-choir-rehearsal' ); ?>">
+						<?php foreach ( $voices as $slug => $label ) : ?>
+							<option value="<?php echo esc_attr( $slug ); ?>" <?php selected( $voice_slug, $slug ); ?>><?php echo esc_html( $label ); ?></option>
+						<?php endforeach; ?>
+					</select>
+					<?php
+					if ( $track_id > 0 ) {
+						Choir_Rehearsal_Song_Notes::render_track_button( (int) get_the_ID(), $track_id, (string) $voice_label );
+					}
+					?>
+				</div>
 				<div class="choir-track-source" role="group" aria-label="<?php esc_attr_e( 'Track source', 'compath-choir-rehearsal' ); ?>">
 					<label class="choir-track-source__option">
 						<input

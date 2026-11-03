@@ -989,7 +989,9 @@
 				'<input type="hidden" name="choir_tracks[' + index + '][id]" value="0" />' +
 				'<input type="hidden" class="choir-audio-id" name="choir_tracks[' + index + '][audio_id]" value="0" />' +
 				'<div class="choir-track-item__main">' +
-					'<select class="choir-voice-select choir-track-voice" name="choir_tracks[' + index + '][voice]" aria-label="Voice">' + options + '</select>' +
+					'<div class="choir-track-name">' +
+						'<select class="choir-voice-select choir-track-voice" name="choir_tracks[' + index + '][voice]" aria-label="Voice">' + options + '</select>' +
+					'</div>' +
 					'<div class="choir-track-source" role="group" aria-label="Track source">' +
 						'<label class="choir-track-source__option">' +
 							'<input type="radio" class="choir-track-source-input" name="choir_tracks[' + index + '][source]" value="audio" checked />' +

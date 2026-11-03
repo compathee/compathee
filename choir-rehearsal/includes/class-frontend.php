@@ -834,8 +834,12 @@ final class Choir_Rehearsal_Frontend {
 								$yt_mount = 'choir-youtube-player-' . $track_id;
 								?>
 								<li class="choir-track-item choir-track-item--youtube" data-source="youtube" data-track-id="<?php echo esc_attr( (string) $track_id ); ?>">
-									<span class="choir-track-voice"><?php echo esc_html( $voice_lbl ); ?></span>
-									<?php Choir_Rehearsal_Song_Notes::render_track_button( (int) $song->ID, $track_id, $voice_lbl ); ?>
+									<div class="choir-track-item__main">
+										<div class="choir-track-name">
+											<span class="choir-track-voice"><?php echo esc_html( $voice_lbl ); ?></span>
+											<?php Choir_Rehearsal_Song_Notes::render_track_button( (int) $song->ID, $track_id, $voice_lbl ); ?>
+										</div>
+									</div>
 									<span class="choir-track-youtube-label"><?php esc_html_e( 'YouTube', 'compath-choir-rehearsal' ); ?></span>
 									<button
 										type="button"
@@ -863,8 +867,12 @@ final class Choir_Rehearsal_Frontend {
 							}
 							?>
 							<li class="choir-track-item" data-source="audio" data-track-id="<?php echo esc_attr( (string) $track_id ); ?>">
-								<span class="choir-track-voice"><?php echo esc_html( $voice_lbl ); ?></span>
-								<?php Choir_Rehearsal_Song_Notes::render_track_button( (int) $song->ID, $track_id, $voice_lbl ); ?>
+								<div class="choir-track-item__main">
+									<div class="choir-track-name">
+										<span class="choir-track-voice"><?php echo esc_html( $voice_lbl ); ?></span>
+										<?php Choir_Rehearsal_Song_Notes::render_track_button( (int) $song->ID, $track_id, $voice_lbl ); ?>
+									</div>
+								</div>
 								<div class="choir-track-waveform" data-audio-url="<?php echo esc_url( $audio_url ); ?>" aria-hidden="true">
 									<canvas class="choir-track-waveform__canvas"></canvas>
 								</div>

@@ -1699,12 +1699,46 @@ body.choir-metronome-open:not(.choir-sticky-player-open) .choir-metronome-sheet 
 	display: none !important;
 }
 
-.choir-track-item:has(.choir-track-notes) .choir-track-voice {
+/* Name and the red note icon share one line. Waveform and play stay outside this group. */
+.choir-tracks-section .choir-track-item__main {
+	display: flex;
+	flex: 0 1 auto;
+	align-items: center;
+	min-width: 7.25rem;
+	max-width: 50%;
+}
+
+.choir-track-name {
+	display: flex;
+	align-items: center;
+	gap: 0;
 	min-width: 0;
-	max-width: calc(100% - 44px);
+	max-width: 100%;
+}
+
+.choir-track-name .choir-track-voice {
+	flex: 1 1 auto;
+	min-width: 0;
+	max-width: none;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
+}
+
+.choir-track-name .choir-track-notes {
+	flex: 0 0 44px;
+	margin-left: 2px;
+}
+
+@media (max-width: 640px) {
+	.choir-tracks-section .choir-track-item {
+		gap: 8px;
+	}
+
+	.choir-tracks-section .choir-track-item__main {
+		min-width: 9rem;
+		max-width: 58%;
+	}
 }
 
 .choir-notes-sheet .screen-reader-text {

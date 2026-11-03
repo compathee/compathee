@@ -49,6 +49,9 @@ check('uninstall drops the notes table', str_contains($uninstall, 'choir_song_no
 
 check('song page renders the notes control', str_contains($front, 'Choir_Rehearsal_Song_Notes::render_header_button('));
 check('track list can show the recommendation icon', str_contains($front, 'Choir_Rehearsal_Song_Notes::render_track_button('));
+$admin_tracks = (string) file_get_contents($root . '/includes/class-admin.php');
+check('public icon is on the track name line', str_contains($front, 'choir-track-name') && str_contains($front, 'choir-track-item__main'));
+check('admin icon is beside the voice name', str_contains($admin_tracks, 'choir-track-name') && str_contains($admin_tracks, 'Choir_Rehearsal_Song_Notes::render_track_button('));
 check('player exposes seek for time marks', str_contains($player, 'window.choirPlayer') && str_contains($player, 'seek:'));
 check('reader script does not auto-publish speech', str_contains($js, 'SpeechRecognition') && !str_contains($js, 'autoPublish') && str_contains($js, 'localStorage'));
 check('sheets and 44px targets exist', str_contains($css, 'choir-notes-sheet') && str_contains($css, '44px') && str_contains($css, '320px'));
