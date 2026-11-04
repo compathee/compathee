@@ -2,9 +2,21 @@
 
 > Compath OÜ: IT support and maintenance for companies and homes, WordPress plugin development, AI agents and workflow automation, and consulting on launching on Amazon. The work can be done remotely.
 
-Compath OÜ is an Estonian company. Registry code 11502963. VAT EE101244231. The work is remote. Phone +372 55520482. Hours Monday–Friday 09:00–17:00.
+Compath OÜ is an Estonian company. Registry code 11502963. VAT EE101244231. The work is remote. WhatsApp: https://wa.me/37255520482. Hours Monday–Friday 09:00–17:00.
 
 The company has three services. It does not offer translation or video production.
+
+## Home
+
+- [English](https://compath.ee/): Compath OÜ: IT support and maintenance for companies and homes, WordPress plugin development, AI agents and workflow automation, and consulting on launching on Amazon. The work can be done remotely.
+- [Eesti](https://compath.ee/et/): Compath OÜ: IT tugi ja hooldus ettevõtetele ning kodudele, WordPressi pluginate arendus, tehisintellekti agendid ja nõustamine Amazoni käivitamisel. Tööd saab teha kaugelt.
+- [Русский](https://compath.ee/ru/): Compath OÜ: ИТ-поддержка и сопровождение для компаний и дома, разработка плагинов WordPress, ИИ-агенты и консультации по запуску на Amazon. Работу можно делать удалённо.
+
+## About
+
+- [English — About](https://compath.ee/about/): Compath OÜ: IT support and maintenance for companies and homes, WordPress plugins and AI agents, Amazon launch consulting, and the Choir Rehearsal plugin. Tallinn, Estonia.
+- [Eesti — Meist](https://compath.ee/et/meist/): Compath OÜ: IT tugi ja hooldus ettevõtetele ja kodudele, WordPressi pluginad ja tehisintellekti agendid, Amazoni käivitamise nõustamine ning plugin Choir Rehearsal. Tallinn, Eesti.
+- [Русский — О нас](https://compath.ee/ru/o-nas/): Compath OÜ: ИТ-поддержка и сопровождение для компаний и дома, плагины WordPress и ИИ-агенты, консультации по запуску на Amazon и плагин Choir Rehearsal. Таллин, Эстония.
 
 ## Services
 
@@ -50,7 +62,13 @@ Choir Rehearsal is Compath’s own WordPress plugin: a private rehearsal library
 - Estonian: https://compath.ee/et/kontakt/
 - Russian: https://compath.ee/ru/kontakty/
 - Email: support@compath.ee
-- Phone: +372 55520482
+- WhatsApp: https://wa.me/37255520482
 - Address: Ahtri 12, Tallinn 10151, Estonia
 - Hours: Mo-Fr 09:00-17:00
 - Map: https://www.openstreetmap.org/search?query=Ahtri%2012%2C%2010151%20Tallinn
+
+## Privacy
+
+- English: https://compath.ee/privacy/
+- Estonian: https://compath.ee/et/privaatsus/
+- Russian: https://compath.ee/ru/konfidencialnost/

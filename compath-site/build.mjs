@@ -28,12 +28,17 @@ const product = {
 const mapUrl = "https://www.openstreetmap.org/search?query=Ahtri%2012%2C%2010151%20Tallinn";
 const supportEmail = "support@compath.ee";
 const chatSlot = "<!-- AI chat widget: insert script here -->";
-const pageIds = ["home", "services", "it", "plugins", "amazon", "choir", "contact", "privacy", "thanks", "formError"];
-const sitemapIds = ["home", "services", "it", "plugins", "amazon", "choir", "contact", "privacy"];
+const pageIds = ["home", "services", "it", "plugins", "amazon", "choir", "about", "contact", "privacy", "thanks", "formError"];
+const sitemapIds = ["home", "services", "it", "plugins", "amazon", "choir", "about", "contact", "privacy"];
+const whatsappUrl = "https://wa.me/37255520482";
 const noindexIds = new Set(["thanks", "formError"]);
 
 function mailLink() {
   return `<a href="mailto:${supportEmail}">${supportEmail}</a>`;
+}
+
+function whatsappLink(lang) {
+  return `<a class="whatsapp" href="${whatsappUrl}" target="_blank" rel="noopener noreferrer" aria-label="${esc(lang.ui.whatsappAria)}"><svg class="whatsapp__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12.04 2C6.58 2 2.15 6.4 2.15 11.83c0 1.74.46 3.44 1.34 4.94L2 22l5.39-1.41a10.1 10.1 0 0 0 4.65 1.18h.01c5.46 0 9.89-4.4 9.89-9.83C21.94 6.4 17.5 2 12.04 2zm5.76 13.89c-.24.68-1.4 1.3-1.94 1.38-.5.08-1.13.11-1.82-.11-.42-.14-.95-.31-1.64-.61-2.88-1.25-4.76-4.15-4.9-4.34-.14-.19-1.16-1.54-1.16-2.94s.73-2.08 1-2.37c.24-.28.64-.41.85-.41.21 0 .42 0 .6.01.19.01.45-.07.7.53.26.64.88 2.2.96 2.36.08.16.13.35.03.56-.1.21-.15.34-.3.52-.15.18-.31.4-.45.54-.15.15-.3.31-.13.6.17.3.76 1.25 1.63 2.03 1.12 1 2.06 1.31 2.36 1.46.3.15.47.12.64-.07.17-.19.74-.86.94-1.16.2-.3.4-.24.67-.14.27.1 1.73.82 2.03.97.3.15.5.22.57.34.07.12.07.7-.17 1.38z"/></svg><span>${esc(lang.ui.whatsappLabel)}</span></a>`;
 }
 
 function esc(value) {
@@ -45,13 +50,15 @@ function esc(value) {
   }[char]));
 }
 
-function inline(src) {
-  const re = /\[([^\]]+)\]\((https?:\/\/[^\s)]+|\/[^\s)]*)\)|\*\*([^*]+)\*\*/g;
+function inline(src, lang) {
+  const re = /\[\[whatsapp\]\]|\[([^\]]+)\]\((https?:\/\/[^\s)]+|mailto:[^\s)]+|\/[^\s)]*)\)|\*\*([^*]+)\*\*/g;
   let html = "";
   let index = 0;
   for (const match of String(src).matchAll(re)) {
     html += esc(src.slice(index, match.index));
-    if (match[1]) {
+    if (match[0] === "[[whatsapp]]") {
+      html += whatsappLink(lang);
+    } else if (match[1]) {
       const href = match[2].startsWith("/") ? pub(match[2]) : match[2];
       const external = href.startsWith("http") && !href.startsWith(origin);
       html += `<a href="${esc(href)}"${external ? ' rel="noopener noreferrer"' : ""}>${esc(match[1])}</a>`;
@@ -313,6 +320,7 @@ function footer(lang) {
     ["services", lang.ui.services],
     ...lang.services.map((item) => [item.id, item.name]),
     ["choir", "Choir Rehearsal"],
+    ["about", lang.ui.about],
     ["contact", lang.ui.contact],
     ["privacy", lang.ui.privacy],
   ];
@@ -331,7 +339,7 @@ function footer(lang) {
       ${links.map(([id, name]) => `<a href="${pub(urlFor(lang, id))}">${esc(name)}</a>`).join("")}
     </nav>
     <div>
-      <p><span class="meta">${esc(lang.ui.phoneLabel)}</span><br /><a href="tel:+37255520482">+372 55520482</a></p>
+      <p>${whatsappLink(lang)}</p>
       <p><span class="meta">${esc(lang.ui.emailLabel)}</span><br />${mailLink()}</p>
       <p><span class="meta">${esc(lang.ui.hoursLabel)}</span><br />${esc(lang.ui.hours)}</p>
       <p><span class="meta">${esc(lang.ui.regLabel)}</span><br />11502963<br />${esc(lang.ui.vatLabel)} EE101244231</p>
@@ -375,7 +383,7 @@ function figure(lang, eager) {
 
 function home(lang) {
   const cards = lang.services.map((service, index) => `<li><a href="${pub(urlFor(lang, service.id))}"><span class="num">${String(index + 1).padStart(2, "0")}</span><h3>${esc(service.name)}</h3><p>${esc(service.summary)}</p></a></li>`).join("");
-  const why = lang.pages.home.why.map((item) => `<article><h3>${esc(item.title)}</h3><p>${esc(item.text)}</p></article>`).join("");
+  const why = lang.pages.home.why.map((item) => `<article><h3>${esc(item.title)}</h3><p>${inline(item.text, lang)}</p>${item.whatsapp ? `<p>${whatsappLink(lang)}</p>` : ""}</article>`).join("");
   const features = lang.product.features.map((item) => `<article class="feature"><h3>${esc(item.title)}</h3><p>${esc(item.text)}</p></article>`).join("");
   const main = `<section class="hero"><div class="wrap">
     <p class="eyebrow">${esc(lang.pages.home.eyebrow)}</p>
@@ -396,7 +404,7 @@ function home(lang) {
     <div class="product-grid">
       <div>
         <h2>Choir Rehearsal</h2>
-        ${lang.product.homeLead.map((paragraph) => `<p>${inline(paragraph)}</p>`).join("")}
+        ${lang.product.homeLead.map((paragraph) => `<p>${inline(paragraph, lang)}</p>`).join("")}
         ${productLinks(lang, true)}
       </div>
       ${figure(lang, false)}
@@ -455,9 +463,9 @@ function servicePage(lang, id) {
     { name: service.name, path: urlFor(lang, id) },
   ]);
   const body = service.blocks.map((block) => {
-    if (block.h2) return `<h2>${inline(block.h2)}</h2>`;
-    if (block.p) return `<p>${inline(block.p)}</p>`;
-    if (block.ul) return `<ul>${block.ul.map((item) => `<li>${inline(item)}</li>`).join("")}</ul>`;
+    if (block.h2) return `<h2>${inline(block.h2, lang)}</h2>`;
+    if (block.p) return `<p>${inline(block.p, lang)}</p>`;
+    if (block.ul) return `<ul>${block.ul.map((item) => `<li>${inline(item, lang)}</li>`).join("")}</ul>`;
     return "";
   }).join("\n");
   const others = lang.services.filter((item) => item.id !== id).map((item) => `<li><a href="${pub(urlFor(lang, item.id))}">${esc(item.name)}</a></li>`).join("");
@@ -493,7 +501,7 @@ function choirPage(lang) {
     <div class="product-grid">
       <div>
         <h2>${esc(copy.whatTitle)}</h2>
-        ${copy.what.map((paragraph) => `<p>${inline(paragraph)}</p>`).join("")}
+        ${copy.what.map((paragraph) => `<p>${inline(paragraph, lang)}</p>`).join("")}
         <h2>${esc(copy.whoTitle)}</h2>
         ${list(copy.who)}
       </div>
@@ -507,7 +515,7 @@ function choirPage(lang) {
       <article class="edition edition--pro"><h3>${esc(copy.proTitle)}</h3><p class="price">${esc(copy.proPrice)}</p>${list(copy.pro)}</article>
     </div>
     <h2>${esc(copy.demoTitle)}</h2>
-    <p>${inline(copy.demo)} <a href="${product.demo}" rel="noopener noreferrer">${esc(product.demo)}</a></p>
+    <p>${inline(copy.demo, lang)} <a href="${product.demo}" rel="noopener noreferrer">${esc(product.demo)}</a></p>
     <h2>${esc(copy.langTitle)}</h2>
     <p>${esc(copy.languages)}</p>
     ${productLinks(lang, false)}
@@ -532,7 +540,7 @@ function contactPage(lang) {
     <div>
     <dl class="facts">
       <div><dt>${esc(lang.ui.addressLabel)}</dt><dd>Compath OÜ<br />Ahtri 12<br />Tallinn 10151<br />Estonia</dd></div>
-      <div><dt>${esc(lang.ui.phoneLabel)}</dt><dd><a href="tel:+37255520482">+372 55520482</a></dd></div>
+      <div><dt>${esc(lang.ui.whatsappField)}</dt><dd>${whatsappLink(lang)}</dd></div>
       <div><dt>${esc(lang.ui.emailLabel)}</dt><dd>${mailLink()}</dd></div>
       <div><dt>${esc(lang.ui.hoursLabel)}</dt><dd>${esc(lang.ui.hours)}</dd></div>
       <div><dt>${esc(lang.ui.regLabel)}</dt><dd>11502963</dd></div>
@@ -540,7 +548,7 @@ function contactPage(lang) {
     </dl>
     <p><a href="${mapUrl}" rel="noopener noreferrer">${esc(lang.ui.map)}</a></p>
     </div>
-    ${basePath ? `<div class="preview-note" role="note"><p>${esc(lang.ui.previewForm)}</p></div>` : `<form id="contact-form" class="form" method="post" action="/api/contact.php" data-sending="${esc(form.sending)}" data-success="${esc(form.success)}" data-invalid="${esc(form.invalid)}" data-error="${esc(form.error)}">
+    ${basePath ? `<div class="preview-note" role="note"><p>${inline(lang.ui.previewForm, lang)}</p></div>` : `<form id="contact-form" class="form" method="post" action="/api/contact.php" data-sending="${esc(form.sending)}" data-success="${esc(form.success)}" data-invalid="${esc(form.invalid)}" data-error="${esc(form.error)}">
       <p class="meta">${esc(lang.ui.required)} ${esc(lang.ui.privacyNote)} <a href="${pub(urlFor(lang, "privacy"))}">${esc(lang.ui.privacy)}</a></p>
       <div class="hp" aria-hidden="true"><label for="company">${esc(form.hp)}</label><input id="company" name="company" type="text" tabindex="-1" autocomplete="off" value="" /></div>
       <input type="hidden" name="locale" value="${lang.code}" />
@@ -559,6 +567,47 @@ function contactPage(lang) {
   ]);
 }
 
+function sectionHtml(lang, section) {
+  const parts = [`<h2>${esc(section.h2)}</h2>`];
+  if (section.paragraphs) parts.push(section.paragraphs.map((paragraph) => `<p>${inline(paragraph, lang)}</p>`).join(""));
+  if (section.ol) parts.push(`<ol>${section.ol.map((item) => `<li>${inline(item, lang)}</li>`).join("")}</ol>`);
+  if (section.ul) parts.push(`<ul>${section.ul.map((item) => `<li>${inline(item, lang)}</li>`).join("")}</ul>`);
+  if (section.closing) parts.push(section.closing.map((paragraph) => `<p>${inline(paragraph, lang)}</p>`).join(""));
+  return parts.join("");
+}
+
+function aboutPage(lang) {
+  const page = lang.pages.about;
+  const trail = crumbs(lang, [
+    { name: lang.ui.home, path: urlFor(lang, "home") },
+    { name: lang.ui.about, path: urlFor(lang, "about") },
+  ]);
+  const body = page.sections.map((section) => sectionHtml(lang, section)).join("");
+  const main = `<header class="page-head"><div class="wrap">
+    ${trail.html}
+    <h1>${esc(page.h1)}</h1>
+    <p class="lead">${inline(page.lead, lang)}</p>
+  </div></header>
+  <div class="section"><div class="wrap prose">${body}</div></div>`;
+  const url = abs(urlFor(lang, "about"));
+  return layout(lang, "about", main, [
+    organization(),
+    {
+      "@type": "AboutPage",
+      "@id": `${url}#aboutpage`,
+      url,
+      name: page.h1,
+      inLanguage: lang.code,
+      isPartOf: { "@id": `${origin}/#website` },
+      about: { "@id": `${origin}/#organization` },
+      mainEntity: { "@id": `${origin}/#organization` },
+      publisher: { "@id": `${origin}/#organization` },
+      description: page.description,
+    },
+    trail.data,
+  ]);
+}
+
 function prosePage(lang, id) {
   const page = lang.pages[id];
   const trail = crumbs(lang, [
@@ -567,8 +616,8 @@ function prosePage(lang, id) {
     ...(id === "privacy" ? [] : [{ name: page.h1, path: urlFor(lang, id) }]),
   ]);
   const body = page.sections
-    ? `<p class="meta">${esc(page.updated)}</p>${page.sections.map((section) => `<h2>${esc(section.h2)}</h2>${section.paragraphs.map((paragraph) => `<p>${inline(paragraph)}</p>`).join("")}`).join("")}`
-    : `<p>${esc(page.text)}</p><p><a href="${pub(urlFor(lang, "contact"))}">${esc(lang.ui.contact)}</a></p>`;
+    ? `<p class="meta">${esc(page.updated)}</p>${page.sections.map((section) => sectionHtml(lang, section)).join("")}`
+    : `<p>${inline(page.text, lang)}</p>${page.whatsapp ? `<p>${whatsappLink(lang)}</p>` : ""}<p><a href="${pub(urlFor(lang, "contact"))}">${esc(lang.ui.contact)}</a></p>`;
   const main = `<header class="page-head"><div class="wrap">${trail.html}<h1>${esc(page.h1)}</h1></div></header>
   <div class="section"><div class="wrap prose">${body}</div></div>`;
   const graph = [organization(), trail.data];
@@ -645,9 +694,21 @@ function llms() {
     "",
     `> ${en.pages.home.description}`,
     "",
-    "Compath OÜ is an Estonian company. Registry code 11502963. VAT EE101244231. The work is remote. Phone +372 55520482. Hours Monday–Friday 09:00–17:00.",
+    `Compath OÜ is an Estonian company. Registry code 11502963. VAT EE101244231. The work is remote. WhatsApp: ${whatsappUrl}. Hours Monday–Friday 09:00–17:00.`,
     "",
     "The company has three services. It does not offer translation or video production.",
+    "",
+    "## Home",
+    "",
+    `- [English](${abs(urlFor(byCode.en, "home"))}): ${byCode.en.pages.home.description}`,
+    `- [Eesti](${abs(urlFor(byCode.et, "home"))}): ${byCode.et.pages.home.description}`,
+    `- [Русский](${abs(urlFor(byCode.ru, "home"))}): ${byCode.ru.pages.home.description}`,
+    "",
+    "## About",
+    "",
+    `- [English — About](${abs(urlFor(byCode.en, "about"))}): ${byCode.en.pages.about.description}`,
+    `- [Eesti — Meist](${abs(urlFor(byCode.et, "about"))}): ${byCode.et.pages.about.description}`,
+    `- [Русский — О нас](${abs(urlFor(byCode.ru, "about"))}): ${byCode.ru.pages.about.description}`,
     "",
     "## Services",
     "",
@@ -679,10 +740,16 @@ function llms() {
     `- Estonian: ${abs(urlFor(byCode.et, "contact"))}`,
     `- Russian: ${abs(urlFor(byCode.ru, "contact"))}`,
     `- Email: ${supportEmail}`,
-    "- Phone: +372 55520482",
+    `- WhatsApp: ${whatsappUrl}`,
     "- Address: Ahtri 12, Tallinn 10151, Estonia",
     "- Hours: Mo-Fr 09:00-17:00",
     "- Map: " + mapUrl,
+    "",
+    "## Privacy",
+    "",
+    `- English: ${abs(urlFor(byCode.en, "privacy"))}`,
+    `- Estonian: ${abs(urlFor(byCode.et, "privacy"))}`,
+    `- Russian: ${abs(urlFor(byCode.ru, "privacy"))}`,
     "",
   );
   fs.writeFileSync(path.join(dist, "llms.txt"), lines.join("\n"));
@@ -745,7 +812,8 @@ function notFound() {
 </div></main>
 <footer class="site-footer">
   <div class="wrap">
-    <p><a href="tel:+37255520482">+372 55520482</a></p>
+    <p>${whatsappLink(byCode.en)}</p>
+    <p><a href="${pub("/about/")}">About</a></p>
     <p>${mailLink()}</p>
   </div>
 </footer>
@@ -838,6 +906,7 @@ for (const lang of langs) {
   writePage(urlFor(lang, "services"), servicesPage(lang));
   for (const id of ["it", "plugins", "amazon"]) writePage(urlFor(lang, id), servicePage(lang, id));
   writePage(urlFor(lang, "choir"), choirPage(lang));
+  writePage(urlFor(lang, "about"), aboutPage(lang));
   writePage(urlFor(lang, "contact"), contactPage(lang));
   writePage(urlFor(lang, "privacy"), prosePage(lang, "privacy"));
   writePage(urlFor(lang, "thanks"), prosePage(lang, "thanks"));

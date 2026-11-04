@@ -4,6 +4,7 @@ The folder .htaccess is part of this upload. It does not replace the web-root .h
 
 /public_html/preview-2026/.htaccess
 /public_html/preview-2026/404.html
+/public_html/preview-2026/about/index.html
 /public_html/preview-2026/apple-touch-icon.png
 /public_html/preview-2026/assets/choir-rehearsal.webp
 /public_html/preview-2026/assets/logo.png
@@ -24,6 +25,7 @@ The folder .htaccess is part of this upload. It does not replace the web-root .h
 /public_html/preview-2026/et/kontakt/index.html
 /public_html/preview-2026/et/kontakt/tanu/index.html
 /public_html/preview-2026/et/kontakt/viga/index.html
+/public_html/preview-2026/et/meist/index.html
 /public_html/preview-2026/et/privaatsus/index.html
 /public_html/preview-2026/et/teenused/amazon/index.html
 /public_html/preview-2026/et/teenused/index.html
@@ -42,6 +44,7 @@ The folder .htaccess is part of this upload. It does not replace the web-root .h
 /public_html/preview-2026/ru/kontakty/index.html
 /public_html/preview-2026/ru/kontakty/oshibka/index.html
 /public_html/preview-2026/ru/kontakty/spasibo/index.html
+/public_html/preview-2026/ru/o-nas/index.html
 /public_html/preview-2026/ru/uslugi/amazon/index.html
 /public_html/preview-2026/ru/uslugi/index.html
 /public_html/preview-2026/ru/uslugi/it-podderzhka/index.html

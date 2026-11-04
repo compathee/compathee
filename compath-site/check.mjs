@@ -129,10 +129,13 @@ export function validate(dist, options = {}) {
     const allowPlace = new Set([
       path.join("contact", "index.html"),
       path.join("privacy", "index.html"),
+      path.join("about", "index.html"),
       path.join("et", "kontakt", "index.html"),
       path.join("et", "privaatsus", "index.html"),
+      path.join("et", "meist", "index.html"),
       path.join("ru", "kontakty", "index.html"),
       path.join("ru", "konfidencialnost", "index.html"),
+      path.join("ru", "o-nas", "index.html"),
     ]);
     if (main && !allowPlace.has(rel)) {
       for (const word of ["Tallinn", "Ahtri", "Таллин"]) {
@@ -148,10 +151,22 @@ export function validate(dist, options = {}) {
     if (/position\s*:\s*fixed/i.test(html) || /bottom:\s*0/.test(html)) {
       problems.push(`${rel} has a fixed or bottom-pinned element`);
     }
+    const visible = html.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/g, "");
+    if (visible.includes("+372 55520482") || visible.includes("tel:") || (visible.includes("wa.me/") && !visible.includes('href="https://wa.me/37255520482"'))) {
+      problems.push(`${rel} shows the company phone instead of the WhatsApp link`);
+    }
+    if (!visible.includes('class="whatsapp" href="https://wa.me/37255520482" target="_blank" rel="noopener noreferrer"') || !visible.includes('class="whatsapp__icon"') || !/aria-label="[^"]+"/.test(visible.match(/class="whatsapp"[^>]*/)?.[0] || "")) {
+      problems.push(`${rel} missing WhatsApp button`);
+    }
+    const aboutHref = { en: `${preview ? base : ""}/about/`, et: `${preview ? base : ""}/et/meist/`, ru: `${preview ? base : ""}/ru/o-nas/` };
+    const aboutLabel = { en: "About", et: "Meist", ru: "О нас" };
+    if (pageLang && !html.includes(`<a href="${aboutHref[pageLang[1]]}">${aboutLabel[pageLang[1]]}</a>`)) {
+      problems.push(`${rel} footer missing About link`);
+    }
     if (rel === path.join("contact", "index.html") || rel === path.join("et", "kontakt", "index.html") || rel === path.join("ru", "kontakty", "index.html")) {
       const facts = html.match(/<dl class="facts">([\s\S]*?)<\/dl>/);
-      if (!facts || !facts[1].includes('href="mailto:support@compath.ee"') || !facts[1].includes('href="tel:+37255520482"')) {
-        problems.push(`${rel} contact facts missing email next to the phone`);
+      if (!facts || !facts[1].includes('href="mailto:support@compath.ee"') || !facts[1].includes('href="https://wa.me/37255520482"')) {
+        problems.push(`${rel} contact facts missing email next to WhatsApp`);
       }
     }
     const blocks = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)];
@@ -197,6 +212,18 @@ export function validate(dist, options = {}) {
         if (business && business.openingHours !== "Mo-Fr 09:00-17:00") problems.push(`${rel} openingHours`);
         const services = data["@graph"].filter((node) => node["@type"] === "Service");
         if (services.length !== 3) problems.push(`${rel} expected 3 Service nodes, found ${services.length}`);
+      }
+      const aboutPages = new Set([
+        path.join("about", "index.html"),
+        path.join("et", "meist", "index.html"),
+        path.join("ru", "o-nas", "index.html"),
+      ]);
+      if (aboutPages.has(rel)) {
+        const about = data["@graph"].find((node) => node["@type"] === "AboutPage");
+        if (!about || about.about?.["@id"] !== `${origin}/#organization` || about.mainEntity?.["@id"] !== `${origin}/#organization`) {
+          problems.push(`${rel} missing AboutPage`);
+        }
+        if (business && business.telephone !== "+37255520482") problems.push(`${rel} About JSON-LD telephone changed`);
       }
       if (rel.includes(`${path.sep}choir-rehearsal${path.sep}`) || rel.startsWith(`choir-rehearsal${path.sep}`)) {
         const app = data["@graph"].find((node) => node["@type"] === "SoftwareApplication");
@@ -258,6 +285,7 @@ export function validate(dist, options = {}) {
     ["#ffffff", "#1c1c1c"],
     ["#f0ebe4", "#1c1c1c"],
     ["#173ea8", "#ffffff"],
+    ["#ffffff", "#075E54"],
   ];
   for (const [fg, bg] of pairs) {
     const ratio = contrast(fg, bg);
@@ -315,6 +343,11 @@ export function validate(dist, options = {}) {
   if (!/class="site-footer"[\s\S]*?href="mailto:support@compath\.ee">support@compath\.ee<\/a>/.test(missing)) {
     problems.push("404 footer missing support mailto");
   }
+  if (!missing.includes('class="whatsapp" href="https://wa.me/37255520482" target="_blank" rel="noopener noreferrer"') || missing.includes("tel:") || missing.includes("+372 55520482")) {
+    problems.push("404 footer still shows the phone");
+  }
+  const about404 = preview ? 'href="/preview-2026/about/">About</a>' : 'href="/about/">About</a>';
+  if (!missing.includes(about404)) problems.push("404 footer missing About link");
   if (!missing.includes("<!-- AI chat widget: insert script here -->\n</body>")) {
     problems.push("404 missing chat widget placeholder");
   }
@@ -357,7 +390,15 @@ export function validate(dist, options = {}) {
     if (!sitemap.includes('hreflang="x-default"') || !sitemap.includes(`${origin}/et/`)) problems.push("sitemap hreflang");
     const llms = fs.readFileSync(path.join(dist, "llms.txt"), "utf8");
     if (!llms.includes("Choir Rehearsal") || !llms.includes("support@compath.ee") || !llms.includes("Mo-Fr 09:00-17:00") || !llms.includes("Ahtri 12, Tallinn 10151")) problems.push("llms.txt");
+    if (!llms.includes("## Home") || !llms.includes("## About") || !llms.includes("## Privacy")) problems.push("llms.txt missing merged sections");
+    if (!llms.includes(`${origin}/about/`) || !llms.includes(`${origin}/et/meist/`) || !llms.includes(`${origin}/ru/o-nas/`)) problems.push("llms.txt missing About URLs");
+    if (!llms.includes(`${origin}/privacy/`) || !llms.includes(`${origin}/et/privaatsus/`) || !llms.includes(`${origin}/ru/konfidencialnost/`)) problems.push("llms.txt missing Privacy URLs");
+    if (!llms.includes("https://wa.me/37255520482")) problems.push("llms.txt missing WhatsApp");
+    if (/\+372 55520482/.test(llms) || /^Phone:/m.test(llms) || /Phone \+372/.test(llms)) problems.push("llms.txt still publishes the phone as a call number");
     if (/company in Tallinn/i.test(llms)) problems.push("llms.txt sells Tallinn");
+    for (const aboutPath of [`${origin}/about/`, `${origin}/et/meist/`, `${origin}/ru/o-nas/`]) {
+      if (!sitemap.includes(`<loc>${aboutPath}</loc>`)) problems.push(`sitemap missing ${aboutPath}`);
+    }
     const contact = fs.readFileSync(path.join(dist, "contact", "index.html"), "utf8");
     if (!contact.includes('action="/api/contact.php"')) problems.push("production contact form");
   }
