@@ -303,7 +303,95 @@ class Updater {
 			$version_info->plugin = $this->client->basename;
 		}
 
+		$file = isset( $this->client->file ) ? (string) $this->client->file : '';
+
+		return self::apply_compatibility_fields( $version_info, $file );
+	}
+
+	/**
+	 * SureCart release_json often has no WordPress "tested" field.
+	 * The plugin details card then cannot show Compatible up to.
+	 * Fill requires, tested, and requires_php from the plugin header and release.json.
+	 * A remote tested value is kept when it is newer than this install.
+	 *
+	 * @param object $version_info Release payload.
+	 * @param string $plugin_file  Main plugin file.
+	 * @return object
+	 */
+	public static function apply_compatibility_fields( $version_info, $plugin_file ) {
+		if ( ! is_object( $version_info ) ) {
+			return $version_info;
+		}
+
+		$local = self::compatibility_from_install( (string) $plugin_file );
+		if ( empty( $version_info->requires ) && '' !== $local['requires'] ) {
+			$version_info->requires = $local['requires'];
+		}
+		if ( empty( $version_info->requires_php ) && '' !== $local['requires_php'] ) {
+			$version_info->requires_php = $local['requires_php'];
+		}
+
+		$tested = isset( $version_info->tested ) ? trim( (string) $version_info->tested ) : '';
+		if ( '' !== $local['tested'] && ( '' === $tested || version_compare( $local['tested'], $tested, '>' ) ) ) {
+			$version_info->tested = $local['tested'];
+		}
+
 		return $version_info;
+	}
+
+	/**
+	 * @param string $plugin_file Main plugin file.
+	 * @return array{requires:string,tested:string,requires_php:string}
+	 */
+	public static function compatibility_from_install( $plugin_file ) {
+		$compat = array(
+			'requires'     => '',
+			'tested'       => '',
+			'requires_php' => '',
+		);
+		$plugin_file = (string) $plugin_file;
+		if ( '' !== $plugin_file && is_readable( $plugin_file ) ) {
+			self::read_compatibility_text( (string) file_get_contents( $plugin_file ), $compat );
+		}
+
+		$release = '' !== $plugin_file ? dirname( $plugin_file ) . '/release.json' : '';
+		if ( '' !== $release && is_readable( $release ) ) {
+			$json = json_decode( (string) file_get_contents( $release ), true );
+			if ( is_array( $json ) ) {
+				foreach ( array( 'requires', 'tested', 'requires_php' ) as $key ) {
+					$value = isset( $json[ $key ] ) ? trim( (string) $json[ $key ] ) : '';
+					if ( '' === $value ) {
+						continue;
+					}
+					if ( 'tested' === $key && '' !== $compat['tested'] && version_compare( $value, $compat['tested'], '>' ) ) {
+						$compat['tested'] = $value;
+						continue;
+					}
+					if ( '' === $compat[ $key ] ) {
+						$compat[ $key ] = $value;
+					}
+				}
+			}
+		}
+
+		return $compat;
+	}
+
+	/**
+	 * @param string               $text   Plugin header or readme text.
+	 * @param array<string,string> $compat Compatibility values, updated in place.
+	 */
+	private static function read_compatibility_text( $text, array &$compat ) {
+		$patterns = array(
+			'requires'     => '/^\s*(?:\*\s*)?Requires at least:\s*(\d+\.\d+(?:\.\d+)?)/mi',
+			'tested'       => '/^\s*(?:\*\s*)?Tested up to:\s*(\d+\.\d+(?:\.\d+)?)/mi',
+			'requires_php' => '/^\s*(?:\*\s*)?Requires PHP:\s*(\d+\.\d+(?:\.\d+)?)/mi',
+		);
+		foreach ( $patterns as $key => $pattern ) {
+			if ( preg_match( $pattern, $text, $match ) ) {
+				$compat[ $key ] = $match[1];
+			}
+		}
 	}
 
 	/**
