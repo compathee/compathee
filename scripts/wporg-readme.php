@@ -26,7 +26,7 @@ $text = str_replace(
 	$text
 );
 
-$short = 'Choir rehearsal library for voice part rehearsal: songs, practice tracks, PDF scores, and YouTube.';
+$short = 'Choir rehearsal library for voice part rehearsal: songs, up to 4 voice tracks per song, and sheet music.';
 if ( strlen( $short ) > 150 ) {
 	fwrite( STDERR, "wporg short description is longer than 150 characters\n" );
 	exit( 1 );
@@ -39,25 +39,28 @@ $text = preg_replace(
 ) ?? $text;
 
 $description = <<<'TXT'
-Choir Rehearsal is a private choir library for voice part rehearsal. Singers learn their line with practice tracks and follow the score on the song page.
+Choir Rehearsal is a private choir rehearsal library for voice part rehearsal. Singers learn their line with practice tracks and follow a PDF score on the song page.
 
-= Voice part rehearsal =
+= Features =
 
-* Create songs and attach unlimited voice tracks
-* Built-in parts: backing track, bass, baritone, tenor, alto, and soprano, each with 1 and 2, plus Other
+* Create songs and attach up to 4 voice tracks per song
+* Built-in voice parts: backing track, bass, baritone, tenor, alto, and soprano, each with 1 and 2, plus Other
 * Upload an MP3 or WAV from the Media Library, or paste a YouTube link on that track
 * The song page plays the official YouTube video in place. Nothing is downloaded
-* Read a PDF score on the song page, turn pages, and open it full screen
-* Sticky player with play, pause, a waveform, seek, and close
-* Two-octave piano and a metronome from 40 to 208 BPM
-* Record from the microphone in the song editor, with the piano and metronome beside the recorder
-* Song list at /rehearsal/, with badges for a PDF, a public song, and YouTube, and search across titles
+* Read a PDF score on the song page, turn pages, and expand it to full screen
+* The song editor shows that PDF score and turns its pages
+* Sticky player with play, pause, a waveform, seek, close, and a two-octave piano
+* Each voice track shows a waveform next to the part name
+* Song list at /rehearsal/, 20 songs per page, with a badge for a public song and a badge for YouTube
 * Keep a song private, or mark it public so guests can listen
 * Copy a share link from the song page
 * Place the library on any page with the shortcode [choir_rehearsal]
 * Singer listens. Voice Leader manages songs. Administrator opens Settings. Role names stay in English
+* Optional login-only access for the private library
 * The interface is in English, Estonian, and Russian
-* Signed-in members can send feedback from the song list
+* Signed-in members can send feedback from the song list. A confirmation email includes the case number
+* Optional appearance under Settings → Appearance
+* REST API for listing and reading songs
 
 = Sheet music and PDF copyright =
 
@@ -86,6 +89,9 @@ foreach ( preg_split( "/\r\n|\n|\r/", $text ) as $line ) {
 	if ( preg_match( '/\\bPro\\b|SureCart|shop\\.compath\\.ee/i', $line ) ) {
 		continue;
 	}
+	if ( preg_match( '/unlimited voice|no Lite track cap/i', $line ) ) {
+		continue;
+	}
 	$kept[] = $line;
 }
 
@@ -112,14 +118,18 @@ foreach ( array( '0.4.70', '0.4.69' ) as $version ) {
 $text = substr( $text, 0, $changelog_at ) . $changelog;
 $text = rtrim( $text ) . "\n";
 
-foreach ( array( '0.4.73', '0.4.72', '0.4.71', '0.4.70', '0.4.69', '0.4.68', '0.4.67' ) as $version ) {
+foreach ( array( '0.4.74', '0.4.73', '0.4.72', '0.4.71', '0.4.70', '0.4.69', '0.4.68', '0.4.67' ) as $version ) {
 	if ( ! str_contains( $text, "= {$version} =\n" ) ) {
 		fwrite( STDERR, "wporg readme is missing the {$version} release\n" );
 		exit( 1 );
 	}
 }
-if ( ! str_contains( $text, 'Create songs and attach unlimited voice tracks' ) ) {
+if ( ! str_contains( $text, 'Create songs and attach up to 4 voice tracks per song' ) ) {
 	fwrite( STDERR, "wporg readme is missing the directory feature list\n" );
+	exit( 1 );
+}
+if ( str_contains( $text, 'unlimited voice' ) ) {
+	fwrite( STDERR, "wporg readme still claims unlimited voice tracks\n" );
 	exit( 1 );
 }
 if ( preg_match( '/\\bPro\\b|SureCart|shop\\.compath\\.ee|song notes|\\bmixer\\b/i', $text ) ) {

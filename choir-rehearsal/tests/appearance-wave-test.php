@@ -79,7 +79,7 @@ $checks = array(
 	'svg_vector' => str_contains($svg, '<svg') && !preg_match('/<image|data:image|\.png/', $svg),
 	'mobile_columns' => str_contains($css, 'max-width: 480px') && str_contains($css, '--choir-col-icon: 32px'),
 	'uninstall' => str_contains($uninstall, "delete_option( 'choir_rehearsal_appearance' )"),
-	'version_untouched' => str_contains($plugin, "define( 'CHOIR_REHEARSAL_VERSION', '0.4.73' )"),
+	'version_untouched' => str_contains($plugin, "define( 'CHOIR_REHEARSAL_VERSION', '0.4.74' )"),
 	'translations' => $i18n_ok,
 	'mixer_button_kept' => str_contains($css, 'choir-mixer-launch') && str_contains($php, 'render_tracks_heading_action'),
 );

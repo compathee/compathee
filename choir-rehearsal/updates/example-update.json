@@ -5,7 +5,7 @@
   "download_url": "https://github.com/compathee/compathee/releases/download/compath-choir-rehearsal-v0.4.39/compath-choir-rehearsal.zip",
   "homepage": "https://veneta.ee",
   "requires": "6.4",
-  "tested": "6.9",
+  "tested": "7.1",
   "requires_php": "8.0",
   "last_updated": "2026-08-31",
   "sections": {

@@ -2,8 +2,8 @@
 /**
  * Plugin Name:       Compath Choir Rehearsal
  * Plugin URI:        https://rehearsal.compath.ee
- * Description:       Choir rehearsal library for voice part rehearsal: songs, SATB practice tracks, and sheet music.
- * Version:           0.4.73
+ * Description:       Choir rehearsal library for voice part rehearsal: songs, up to 4 voice tracks per song, and sheet music.
+ * Version:           0.4.74
  * Requires at least: 6.4
  * Requires PHP:      8.0
  * Author:            Compath OÜ
@@ -40,7 +40,7 @@ if ( '' !== $choir_rehearsal_primary && $choir_rehearsal_primary !== __FILE__ ) 
 	return;
 }
 
-define( 'CHOIR_REHEARSAL_VERSION', '0.4.73' );
+define( 'CHOIR_REHEARSAL_VERSION', '0.4.74' );
 define( 'CHOIR_REHEARSAL_FILE', __FILE__ );
 define( 'CHOIR_REHEARSAL_PATH', plugin_dir_path( __FILE__ ) );
 define( 'CHOIR_REHEARSAL_URL', plugin_dir_url( __FILE__ ) );
