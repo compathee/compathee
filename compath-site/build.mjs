@@ -280,6 +280,7 @@ ${ld(graph)}
     <nav class="nav" id="site-nav" aria-label="${esc(lang.ui.navLabel)}">
       ${navLink(lang, id, "home")}
       ${navLink(lang, id, "services")}
+      ${navLink(lang, id, "about")}
       ${navLink(lang, id, "contact")}
       <a href="https://shop.compath.ee/" rel="noopener noreferrer">${esc(lang.ui.shop)}</a>
     </nav>

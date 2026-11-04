@@ -160,8 +160,28 @@ export function validate(dist, options = {}) {
     }
     const aboutHref = { en: `${preview ? base : ""}/about/`, et: `${preview ? base : ""}/et/meist/`, ru: `${preview ? base : ""}/ru/o-nas/` };
     const aboutLabel = { en: "About", et: "Meist", ru: "О нас" };
+    const homeLabel = { en: "Home", et: "Avaleht", ru: "Главная" };
+    const servicesLabel = { en: "Services", et: "Teenused", ru: "Услуги" };
+    const contactLabel = { en: "Contact", et: "Kontakt", ru: "Контакты" };
     if (pageLang && !html.includes(`<a href="${aboutHref[pageLang[1]]}">${aboutLabel[pageLang[1]]}</a>`)) {
       problems.push(`${rel} footer missing About link`);
+    }
+    if (pageLang) {
+      const headerNav = html.match(/<nav class="nav" id="site-nav"[\s\S]*?<\/nav>/);
+      const code = pageLang[1];
+      const navHtml = headerNav ? headerNav[0] : "";
+      const positions = [homeLabel[code], servicesLabel[code], aboutLabel[code], contactLabel[code], shopLabel[code].replace(/[><]/g, "")].map((label) => navHtml.indexOf(`>${label}<`));
+      if (!headerNav || positions.some((index) => index < 0) || positions.some((index, i) => i > 0 && index < positions[i - 1])) {
+        problems.push(`${rel} header nav missing About in order`);
+      }
+      const aboutPages = new Set([
+        path.join("about", "index.html"),
+        path.join("et", "meist", "index.html"),
+        path.join("ru", "o-nas", "index.html"),
+      ]);
+      const current = `<a href="${aboutHref[code]}" aria-current="page">${aboutLabel[code]}</a>`;
+      if (aboutPages.has(rel) && !navHtml.includes(current)) problems.push(`${rel} About is not the current header item`);
+      if (!aboutPages.has(rel) && navHtml.includes('aria-current="page">' + aboutLabel[code])) problems.push(`${rel} header marks About current`);
     }
     if (rel === path.join("contact", "index.html") || rel === path.join("et", "kontakt", "index.html") || rel === path.join("ru", "kontakty", "index.html")) {
       const facts = html.match(/<dl class="facts">([\s\S]*?)<\/dl>/);
