@@ -44,7 +44,7 @@ $checks = array(
 		&& str_contains( $plugin, '_choir_public_rights_confirmed_at' ),
 	'policy_mentions_uploads'  => str_contains( $plugin, 'media library' ),
 	'save_checks_edit_cap'     => str_contains( $admin, "current_user_can( 'edit_post', \$post_id )" ),
-	'readme_upgrade_notice'    => str_contains( $readme, "== Upgrade Notice ==\n\n= 0.4.73 =" ),
+	'readme_upgrade_notice'    => str_contains( $readme, "== Upgrade Notice ==\n\n= 0.4.74 =" ),
 	'readme_copyright_section' => str_contains( $readme, '= Sheet music and PDF copyright =' )
 		&& str_contains( $readme, 'Compath does not verify those rights.' ),
 	'readme_privacy_section'   => str_contains( $readme, "== Privacy ==\n" )
@@ -53,7 +53,7 @@ $checks = array(
 	'readme_pdf_faq'           => str_contains( $readme, '= Can I upload PDF sheet music? =' ),
 	'readme_voice_part_phrase' => str_contains( $short, 'voice part rehearsal' )
 		&& str_contains( $short, 'Choir' )
-		&& str_contains( $readme, '= Voice part rehearsal =' ),
+		&& str_contains( $readme, '= Features =' ),
 	'readme_short_length'      => strlen( $short ) > 0 && strlen( $short ) <= 150,
 	'readme_five_tags'         => 5 === count( $tags ),
 );

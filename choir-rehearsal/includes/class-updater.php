@@ -14,6 +14,13 @@ final class Choir_Rehearsal_Updater {
 	private const LAST_CHECK_OPTION = 'choir_rehearsal_last_update_check';
 
 	/**
+	 * v2 drops cached payloads that still say tested 6.9.
+	 */
+	private const METADATA_TRANSIENT = 'choir_rehearsal_update_metadata_v2';
+
+	private const METADATA_TRANSIENT_LEGACY = 'choir_rehearsal_update_metadata';
+
+	/**
 	 * Installed plugin basename (folder may be choir-rehearsal or compath-choir-rehearsal).
 	 */
 	private static function plugin_basename_slug(): string {
@@ -438,11 +445,15 @@ final class Choir_Rehearsal_Updater {
 			}
 			$installed = self::get_installed_version();
 			if ( '' !== $installed ) {
+				$compat = self::readme_compatibility();
 				$transient->no_update[ self::plugin_basename_slug() ] = (object) array(
-					'slug'        => 'choir-rehearsal',
-					'plugin'      => self::plugin_basename_slug(),
-					'new_version' => $installed,
-					'url'         => 'https://rehearsal.compath.ee',
+					'slug'         => 'choir-rehearsal',
+					'plugin'       => self::plugin_basename_slug(),
+					'new_version'  => $installed,
+					'url'          => 'https://rehearsal.compath.ee',
+					'requires'     => $compat['requires'],
+					'tested'       => $compat['tested'],
+					'requires_php' => $compat['requires_php'],
 				);
 			}
 			set_site_transient( 'update_plugins', $transient );
@@ -450,7 +461,8 @@ final class Choir_Rehearsal_Updater {
 	}
 
 	private static function clear_update_caches(): void {
-		delete_transient( 'choir_rehearsal_update_metadata' );
+		delete_transient( self::METADATA_TRANSIENT );
+		delete_transient( self::METADATA_TRANSIENT_LEGACY );
 		delete_site_transient( 'update_plugins' );
 
 		/**
@@ -512,10 +524,13 @@ final class Choir_Rehearsal_Updater {
 		if ( version_compare( $current, $remote['version'], '>=' ) ) {
 			unset( $transient->response[ self::plugin_basename_slug() ] );
 			$transient->no_update[ self::plugin_basename_slug() ] = (object) array(
-				'slug'        => 'choir-rehearsal',
-				'plugin'      => self::plugin_basename_slug(),
-				'new_version' => $current,
-				'url'         => $remote['homepage'],
+				'slug'         => 'choir-rehearsal',
+				'plugin'       => self::plugin_basename_slug(),
+				'new_version'  => $current,
+				'url'          => $remote['homepage'],
+				'requires'     => $remote['requires'],
+				'tested'       => $remote['tested'],
+				'requires_php' => $remote['requires_php'],
 			);
 			return $transient;
 		}
@@ -571,7 +586,7 @@ final class Choir_Rehearsal_Updater {
 	 * @return array<string, mixed>|null
 	 */
 	private static function fetch_remote_metadata(): ?array {
-		$cached = get_transient( 'choir_rehearsal_update_metadata' );
+		$cached = get_transient( self::METADATA_TRANSIENT );
 		if ( is_array( $cached ) ) {
 			return $cached;
 		}
@@ -595,7 +610,7 @@ final class Choir_Rehearsal_Updater {
 			return null;
 		}
 
-		set_transient( 'choir_rehearsal_update_metadata', $normalized, 12 * HOUR_IN_SECONDS );
+		set_transient( self::METADATA_TRANSIENT, $normalized, 12 * HOUR_IN_SECONDS );
 		return $normalized;
 	}
 
@@ -814,14 +829,17 @@ final class Choir_Rehearsal_Updater {
 			return null;
 		}
 
-		return array(
+		$compat = self::readme_compatibility();
+
+		return self::apply_compatibility(
+			array(
 			'name'         => 'Compath Choir Rehearsal',
 			'version'      => $version,
 			'download_url' => $download_url,
 			'homepage'     => 'https://rehearsal.compath.ee',
-			'requires'     => '6.4',
-			'tested'       => '6.9',
-			'requires_php' => '8.0',
+			'requires'     => $compat['requires'],
+			'tested'       => $compat['tested'],
+			'requires_php' => $compat['requires_php'],
 			'last_updated' => isset( $body['published_at'] ) ? substr( (string) $body['published_at'], 0, 10 ) : gmdate( 'Y-m-d' ),
 			'sections'     => array(
 				'description' => 'Private rehearsal library for choirs.',
@@ -829,6 +847,7 @@ final class Choir_Rehearsal_Updater {
 			),
 			'icons'        => array(),
 			'banners'      => array(),
+			)
 		);
 	}
 
@@ -887,15 +906,17 @@ final class Choir_Rehearsal_Updater {
 		}
 
 		$sections = isset( $data['sections'] ) && is_array( $data['sections'] ) ? $data['sections'] : array();
+		$compat   = self::readme_compatibility();
 
-		return array(
+		return self::apply_compatibility(
+			array(
 			'name'         => (string) ( $data['name'] ?? 'Compath Choir Rehearsal' ),
 			'version'      => ltrim( $version, 'v' ),
 			'download_url' => $package,
 			'homepage'     => (string) ( $data['homepage'] ?? 'https://rehearsal.compath.ee' ),
-			'requires'     => (string) ( $data['requires'] ?? '6.4' ),
-			'tested'       => (string) ( $data['tested'] ?? '6.9' ),
-			'requires_php' => (string) ( $data['requires_php'] ?? '8.0' ),
+			'requires'     => (string) ( $data['requires'] ?? $compat['requires'] ),
+			'tested'       => (string) ( $data['tested'] ?? $compat['tested'] ),
+			'requires_php' => (string) ( $data['requires_php'] ?? $compat['requires_php'] ),
 			'last_updated' => (string) ( $data['last_updated'] ?? gmdate( 'Y-m-d' ) ),
 			'sections'     => array(
 				'description' => (string) ( $sections['description'] ?? '' ),
@@ -903,6 +924,72 @@ final class Choir_Rehearsal_Updater {
 			),
 			'icons'        => isset( $data['icons'] ) && is_array( $data['icons'] ) ? $data['icons'] : array(),
 			'banners'      => isset( $data['banners'] ) && is_array( $data['banners'] ) ? $data['banners'] : array(),
+			)
 		);
+	}
+
+	/**
+	 * WordPress compatibility from this copy's readme.txt.
+	 * GitHub release objects have no tested field. A hardcoded 6.9 made the
+	 * plugin details card say "Compatible up to: 6.9" on WordPress 7.1.
+	 *
+	 * @return array{requires:string,tested:string,requires_php:string}
+	 */
+	private static function readme_compatibility(): array {
+		$compat = array(
+			'requires'     => '6.4',
+			'tested'       => '7.1',
+			'requires_php' => '8.0',
+		);
+		$root   = defined( 'CHOIR_REHEARSAL_PATH' ) ? CHOIR_REHEARSAL_PATH : dirname( __DIR__ ) . '/';
+		$readme = $root . 'readme.txt';
+		if ( is_readable( $readme ) ) {
+			$text = (string) file_get_contents( $readme );
+			if ( preg_match( '/^Requires at least:\s*(\d+\.\d+(?:\.\d+)?)/mi', $text, $match ) ) {
+				$compat['requires'] = $match[1];
+			}
+			if ( preg_match( '/^Tested up to:\s*(\d+\.\d+(?:\.\d+)?)/mi', $text, $match ) ) {
+				$compat['tested'] = $match[1];
+			}
+			if ( preg_match( '/^Requires PHP:\s*(\d+\.\d+(?:\.\d+)?)/mi', $text, $match ) ) {
+				$compat['requires_php'] = $match[1];
+			}
+		}
+
+		$header = defined( 'CHOIR_REHEARSAL_FILE' ) ? CHOIR_REHEARSAL_FILE : $root . 'choir-rehearsal.php';
+		if ( is_readable( $header ) ) {
+			$head = (string) file_get_contents( $header );
+			if ( preg_match( '/^\s*\*\s*Requires at least:\s*(\d+\.\d+(?:\.\d+)?)/mi', $head, $match ) ) {
+				$compat['requires'] = $match[1];
+			}
+			if ( preg_match( '/^\s*\*\s*Requires PHP:\s*(\d+\.\d+(?:\.\d+)?)/mi', $head, $match ) ) {
+				$compat['requires_php'] = $match[1];
+			}
+		}
+
+		return $compat;
+	}
+
+	/**
+	 * Never advertise an older "Tested up to" than this installed copy.
+	 * A newer remote value is kept so an update can raise the tested version.
+	 *
+	 * @param array<string, mixed> $meta Update metadata.
+	 * @return array<string, mixed>
+	 */
+	private static function apply_compatibility( array $meta ): array {
+		$local = self::readme_compatibility();
+		if ( '' === trim( (string) ( $meta['requires'] ?? '' ) ) ) {
+			$meta['requires'] = $local['requires'];
+		}
+		if ( '' === trim( (string) ( $meta['requires_php'] ?? '' ) ) ) {
+			$meta['requires_php'] = $local['requires_php'];
+		}
+		$tested = trim( (string) ( $meta['tested'] ?? '' ) );
+		if ( '' === $tested || version_compare( $local['tested'], $tested, '>' ) ) {
+			$meta['tested'] = $local['tested'];
+		}
+
+		return $meta;
 	}
 }

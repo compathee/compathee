@@ -1,5 +1,6 @@
 {
   "title": "Compath Choir Rehearsal",
+  "badge": "Lite 0.4.74 · Pro 0.5.5",
   "tagline": "A private rehearsal library for choirs: songs, voice tracks, optional YouTube embeds, PDF scores, and easy listening on phone or desktop.",
   "overview": "Choir Rehearsal helps choir members learn new pieces by voice part. A Voice Leader uploads PDF scores and audio — or links an official YouTube video per voice track. Singers visit /rehearsal/, pick a song, and listen. Lite is free from WordPress.org and GitHub; Pro is a separate add-on from shop.compath.ee (keep Lite installed — do not replace it).",
   "requirements": "WordPress 6.4+, PHP 8.0+",
@@ -126,12 +127,69 @@
   ],
   "changelog": [
     {
+      "version": "0.5.5",
+      "summary": "Pro: dictation language and voice-part names",
+      "items": [
+        "Unlocks dictation language choice and visible voice-part names in Choir Rehearsal 0.4.73 when the license is active"
+      ],
+      "open": true
+    },
+    {
+      "version": "0.5.4",
+      "summary": "Pro update check, song notes and mixer",
+      "items": [
+        "Check for plugin updates on the Settings page also checks the Pro add-on",
+        "Clears the SureCart release cache and the WordPress update cache before looking for a new version; the download link stays valid for 12 hours",
+        "If the license is not activated, the page says so without an error and without showing the license key or activation id",
+        "Unlocks song notes and the multi-track mixer in Choir Rehearsal 0.4.71 when the license is active"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.5.2",
+      "summary": "Pro License: My orders and safer deactivation",
+      "items": [
+        "My orders.. opens the shop customer dashboard in a new tab",
+        "Deactivate License asks for confirmation before freeing the activation slot",
+        "A failed deactivation keeps the saved license so it can be retried",
+        "Activation ID and license key are shown masked"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.5.1",
+      "summary": "License ids for feedback",
+      "items": [
+        "Stores public SureCart license ids so song-list feedback can include them without the full license key"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.5.0",
+      "summary": "Pro license and automatic updates",
+      "items": [
+        "Pro add-on: activate the license under Choir Rehearsal → Pro License",
+        "From 0.5.0, WordPress installs Pro updates while the license is active",
+        "Pro older than 0.5.0 needs one manual replacement, then updates are automatic"
+      ],
+      "open": false
+    },
+    {
+      "version": "0.4.74",
+      "summary": "Readme: corrected track limit and feature list",
+      "items": [
+        "Readme: corrected track limit and feature list",
+        "Plugin details: Compatible up to follows the readme Tested up to value"
+      ],
+      "open": false
+    },
+    {
       "version": "0.4.73",
       "summary": "Voice input: choose dictation language (default English); voice-part names visible in all themes",
       "items": [
         "Voice input: choose dictation language (default English); voice-part names visible in all themes"
       ],
-      "open": true
+      "open": false
     },
     {
       "version": "0.4.72",

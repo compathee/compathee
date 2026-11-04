@@ -4,29 +4,36 @@ Tags: choir, rehearsal, voice parts, practice tracks, sheet music
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 0.4.73
+Stable tag: 0.4.74
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Choir rehearsal library for voice part rehearsal: songs, SATB practice tracks, and sheet music.
+Choir rehearsal library for voice part rehearsal: songs, up to 4 voice tracks per song, and sheet music.
 
 == Description ==
 
-Choir Rehearsal is a private choir rehearsal library for voice part rehearsal. Singers learn their line with SATB practice tracks and learning tracks, and can follow a PDF score on the song page.
+Choir Rehearsal is a private choir rehearsal library for voice part rehearsal. Singers learn their line with practice tracks and follow a PDF score on the song page.
 
-= Voice part rehearsal =
+= Features =
 
-* Create songs and attach unlimited voice tracks
-* Built-in voice list: backing track, bass, baritone, tenor, alto, soprano, other
-* Upload MP3/WAV files from the Media Library, or choose YouTube per track
-* Official YouTube embed on the song page (video stays visible; no download)
-* Attach a PDF score per song with page-by-page viewer
-* Frontend song list at `/rehearsal/` with PDF, public, and YouTube badges
-* Send feedback from the song list (a confirmation email includes the case number)
-* Sticky HTML5 player at the bottom of the page
-* Pro: song notes and track recommendations — Voice Leader and Administrator leave notes; @ a voice part and optional time mark; singers read on the song page (no email alerts)
-* Optional login-only access with Singer and Voice Leader roles (English role names)
-* REST API and MCP abilities for automation
+* Create songs and attach up to 4 voice tracks per song
+* Built-in voice parts: backing track, bass, baritone, tenor, alto, and soprano, each with 1 and 2, plus Other
+* Upload an MP3 or WAV from the Media Library, or paste a YouTube link on that track
+* The song page plays the official YouTube video in place. Nothing is downloaded
+* Read a PDF score on the song page, turn pages, and expand it to full screen
+* The song editor shows that PDF score and turns its pages
+* Sticky player with play, pause, a waveform, seek, close, and a two-octave piano
+* Each voice track shows a waveform next to the part name
+* Song list at /rehearsal/, 20 songs per page, with a badge for a public song and a badge for YouTube
+* Keep a song private, or mark it public so guests can listen
+* Copy a share link from the song page
+* Place the library on any page with the shortcode [choir_rehearsal]
+* Singer listens. Voice Leader manages songs. Administrator opens Settings. Role names stay in English
+* Optional login-only access for the private library
+* The interface is in English, Estonian, and Russian
+* Signed-in members can send feedback from the song list. A confirmation email includes the case number
+* Optional appearance under Settings → Appearance
+* REST API for listing and reading songs
 
 = Sheet music and PDF copyright =
 
@@ -88,15 +95,15 @@ Signed-in users see **Send feedback** under the song list. Logged-out visitors d
 
 Yes, when you have the rights to use that score, or the score is in the public domain. The plugin asks you to confirm this when you attach a PDF and when you make a song public. It records who confirmed and when. Compath does not verify those rights. Arrangements and editions can be copyrighted even if the composition is in the public domain.
 
-= What are song notes? =
-
-With a licensed Pro add-on, Voice Leader and Administrator can leave notes on a song. Type @ or tap @ Part to address a voice track, and add a time mark from the player. Singer and Guest can read notes on songs they can already open. The plugin does not email singers.
-
 = Can I use YouTube instead of an audio file? =
 
 Yes. In the song editor, set a voice track’s source to **YouTube** and paste a youtube.com or youtu.be URL. On the song page a button opens the official YouTube embed (video stays visible). This is for listening/reference only — the plugin does not download or convert YouTube audio.
 
 == Upgrade Notice ==
+
+= 0.4.74 =
+
+Readme: corrected the voice-track limit and feature list. Plugin details follow the readme Tested up to value.
 
 = 0.4.73 =
 
@@ -119,6 +126,11 @@ Choir Rehearsal → Pro License includes a My orders.. button that opens the sho
 Attaching a PDF or making a song public now requires confirmation that you have rights to the score or that it is public domain. The plugin records who confirmed and when.
 
 == Changelog ==
+
+= 0.4.74 =
+
+* Readme: corrected track limit and feature list
+* Plugin details: Compatible up to follows the readme Tested up to value
 
 = 0.4.73 =
 
