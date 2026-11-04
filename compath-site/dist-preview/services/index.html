@@ -46,17 +46,23 @@
   <p class="preview-badge">Preview</p>
   <div class="wrap header__bar">
     <a class="brand" href="/preview-2026/"><img class="brand__logo" src="/preview-2026/assets/logo.png" alt="Compath" width="133" height="36" /></a>
-    <nav class="nav" aria-label="Primary">
+    <nav class="nav" id="site-nav" aria-label="Primary">
       <a href="/preview-2026/">Home</a>
       <a href="/preview-2026/services/" aria-current="page">Services</a>
+      <a href="/preview-2026/about/">About</a>
       <a href="/preview-2026/contact/">Contact</a>
       <a href="https://shop.compath.ee/" rel="noopener noreferrer">Shop</a>
     </nav>
-    <div class="lang">
-      <label for="lang" class="visually-hidden">Language</label>
-      <select id="lang">
-        <option value="en" lang="en" selected>ENG</option><option value="et" lang="et">EST</option><option value="ru" lang="ru">RUS</option>
-      </select>
+    <div class="header__end">
+      <button type="button" class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Open menu" data-label-open="Open menu" data-label-close="Close menu">
+        <span class="nav-toggle__icon" aria-hidden="true"></span>
+      </button>
+      <div class="lang">
+        <label for="lang" class="visually-hidden">Language</label>
+        <select id="lang">
+          <option value="en" lang="en" selected>ENG</option><option value="et" lang="et">EST</option><option value="ru" lang="ru">RUS</option>
+        </select>
+      </div>
     </div>
   </div>
 </header>
@@ -92,10 +98,10 @@
       <p><a href="https://www.openstreetmap.org/search?query=Ahtri%2012%2C%2010151%20Tallinn" rel="noopener noreferrer">Open Ahtri 12 in OpenStreetMap</a></p>
     </div>
     <nav class="footer-nav" aria-label="On this site">
-      <a href="/preview-2026/services/">Services</a><a href="/preview-2026/services/it-support/">IT support and maintenance</a><a href="/preview-2026/services/plugins-and-ai/">Plugins and AI agents</a><a href="/preview-2026/services/amazon-launch/">Amazon launch consulting</a><a href="/preview-2026/choir-rehearsal/">Choir Rehearsal</a><a href="/preview-2026/contact/">Contact</a><a href="/preview-2026/privacy/">Privacy</a>
+      <a href="/preview-2026/services/">Services</a><a href="/preview-2026/services/it-support/">IT support and maintenance</a><a href="/preview-2026/services/plugins-and-ai/">Plugins and AI agents</a><a href="/preview-2026/services/amazon-launch/">Amazon launch consulting</a><a href="/preview-2026/choir-rehearsal/">Choir Rehearsal</a><a href="/preview-2026/about/">About</a><a href="/preview-2026/contact/">Contact</a><a href="/preview-2026/privacy/">Privacy</a>
     </nav>
     <div>
-      <p><span class="meta">Phone</span><br /><a href="tel:+37255520482">+372 55520482</a></p>
+      <p><a class="whatsapp" href="https://wa.me/37255520482" target="_blank" rel="noopener noreferrer" aria-label="Write to us on WhatsApp"><svg class="whatsapp__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12.04 2C6.58 2 2.15 6.4 2.15 11.83c0 1.74.46 3.44 1.34 4.94L2 22l5.39-1.41a10.1 10.1 0 0 0 4.65 1.18h.01c5.46 0 9.89-4.4 9.89-9.83C21.94 6.4 17.5 2 12.04 2zm5.76 13.89c-.24.68-1.4 1.3-1.94 1.38-.5.08-1.13.11-1.82-.11-.42-.14-.95-.31-1.64-.61-2.88-1.25-4.76-4.15-4.9-4.34-.14-.19-1.16-1.54-1.16-2.94s.73-2.08 1-2.37c.24-.28.64-.41.85-.41.21 0 .42 0 .6.01.19.01.45-.07.7.53.26.64.88 2.2.96 2.36.08.16.13.35.03.56-.1.21-.15.34-.3.52-.15.18-.31.4-.45.54-.15.15-.3.31-.13.6.17.3.76 1.25 1.63 2.03 1.12 1 2.06 1.31 2.36 1.46.3.15.47.12.64-.07.17-.19.74-.86.94-1.16.2-.3.4-.24.67-.14.27.1 1.73.82 2.03.97.3.15.5.22.57.34.07.12.07.7-.17 1.38z"/></svg><span>WhatsApp</span></a></p>
       <p><span class="meta">Email</span><br /><a href="mailto:support@compath.ee">support@compath.ee</a></p>
       <p><span class="meta">Hours</span><br />Mon–Fri 9–17</p>
       <p><span class="meta">Registry code</span><br />11502963<br />VAT EE101244231</p>

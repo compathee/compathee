@@ -14,12 +14,16 @@
     "footerNav": "On this site",
     "home": "Home",
     "services": "Services",
+    "about": "About",
     "contact": "Contact",
     "shop": "Shop",
     "privacy": "Privacy",
     "hoursLabel": "Hours",
     "hours": "Mon–Fri 9–17",
     "phoneLabel": "Phone",
+    "whatsappField": "WhatsApp",
+    "whatsappLabel": "WhatsApp",
+    "whatsappAria": "Write to us on WhatsApp",
     "emailLabel": "Email",
     "addressLabel": "Address",
     "regLabel": "Registry code",
@@ -30,7 +34,7 @@
     "required": "Required fields are marked.",
     "privacyNote": "We use the form only to reply.",
     "previewBadge": "Preview",
-    "previewForm": "This is a preview. The form is turned off, so this page does not send email. Call +372 55520482 on a weekday.",
+    "previewForm": "This is a preview. The form is turned off, so this page does not send email. Write to us on WhatsApp, Monday to Friday 9–17. [[whatsapp]]",
     "rights": "Compath OÜ."
   },
   "slugs": {
@@ -39,6 +43,7 @@
     "plugins": "services/plugins-and-ai",
     "amazon": "services/amazon-launch",
     "choir": "choir-rehearsal",
+    "about": "about",
     "contact": "contact",
     "privacy": "privacy",
     "thanks": "contact/thank-you",
@@ -57,7 +62,7 @@
       "servicesLead": "Three kinds of work. Choir Rehearsal, our own WordPress plugin, is described after them.",
       "whyTitle": "Why Compath",
       "why": [
-        {"title": "A phone that is answered on weekdays", "text": "Monday to Friday, 9–17, on +372 55520482. The work does not have to happen at our office."},
+        {"title": "Write to us on WhatsApp, Mon–Fri 9–17", "text": "The work does not have to happen at our office.", "whatsapp": true},
         {"title": "We publish our own plugin", "text": "Choir Rehearsal is listed on WordPress.org. Plugin work here is something we ship and maintain."},
         {"title": "The practical jobs can stay together", "text": "A network, a plugin or an n8n workflow, and a first Amazon launch can be handled by one company when they belong to the same job."}
       ],
@@ -72,9 +77,9 @@
     },
     "contact": {
       "title": "Contact | Compath OÜ",
-      "description": "Compath OÜ, Ahtri 12, Tallinn 10151. Phone +372 55520482, Monday to Friday 9–17. Registry code 11502963, VAT EE101244231.",
+      "description": "Compath OÜ, Ahtri 12, Tallinn 10151. Write to us on WhatsApp, Monday to Friday 9–17. Registry code 11502963, VAT EE101244231.",
       "h1": "Contact",
-      "lead": "Call on weekdays, or send a note. We read it in order to reply."
+      "lead": "Write to us on WhatsApp, Monday to Friday 9–17, or send a note. We read it in order to reply."
     },
     "privacy": {
       "title": "Privacy | Compath OÜ",
@@ -83,12 +88,69 @@
       "updated": "24 September 2026",
       "sections": [
         {"h2": "Who is responsible", "paragraphs": ["The controller is Compath OÜ, Ahtri 12, Tallinn 10151, Estonia, registry code 11502963. This page covers the company website at compath.ee."]},
-        {"h2": "What the form collects", "paragraphs": ["If you write to us, we receive your name, email address, phone number if you add one, and the message. We also keep a hash of the IP address for up to one hour so the same address cannot send the form again and again. You do not have to use the form. The phone number on the contact page is an alternative."]},
+        {"h2": "What the form collects", "paragraphs": ["If you write to us, we receive your name, email address, phone number if you add one, and the message. We also keep a hash of the IP address for up to one hour so the same address cannot send the form again and again. You do not have to use the form. WhatsApp on the contact page is an alternative."]},
         {"h2": "Why, and the legal basis", "paragraphs": ["We use the message only to reply and to follow the conversation that comes from it. The legal basis is steps taken at your request before a contract, and our legitimate interest in answering enquiries (GDPR Article 6(1)(b) and 6(1)(f)). We do not add you to a mailing list, and we do not use the message for advertising."]},
         {"h2": "How long we keep it", "paragraphs": ["Correspondence stays while we handle the request and a short follow-up. We delete it when it is no longer needed, and we do not keep it longer than 24 months unless a contract or a legal duty requires longer. The rate-limit record expires within one hour."]},
         {"h2": "Who receives it", "paragraphs": ["The message is emailed to our own mailbox on this domain. We do not sell the data and we do not pass it to an advertising network. The hosting account that stores the rate-limit file is the same hosting account as this website."]},
         {"h2": "Cookies and the language choice", "paragraphs": ["This site sets no cookies and loads no analytics or advertising scripts. The language you pick is stored in your browser (localStorage) under the key compath-lang. That value stays on your device. It is not sent to our server."]},
-        {"h2": "Your rights", "paragraphs": ["You can ask for a copy of the correspondence, a correction, deletion, a restriction, or object to the use based on legitimate interest. You can also complain to the Estonian Data Protection Inspectorate (Andmekaitse Inspektsioon, aki.ee). Use the contact form or the phone number on the contact page. Please name the address you wrote from, so we can find the right message."]}
+        {"h2": "Your rights", "paragraphs": ["You can ask for a copy of the correspondence, a correction, deletion, a restriction, or object to the use based on legitimate interest. You can also complain to the Estonian Data Protection Inspectorate (Andmekaitse Inspektsioon, aki.ee). Use the contact form or WhatsApp on the contact page. Please name the address you wrote from, so we can find the right message."]}
+      ]
+    },
+    "about": {
+      "title": "About | Compath OÜ",
+      "description": "Compath OÜ: IT support and maintenance for companies and homes, WordPress plugins and AI agents, Amazon launch consulting, and the Choir Rehearsal plugin. Tallinn, Estonia.",
+      "h1": "About Compath OÜ",
+      "lead": "Compath OÜ is an Estonian company. We keep computers, networks and everyday web tools working, and we build WordPress plugins and AI agents for a process you can describe. The work can be done remotely.",
+      "sections": [
+        {
+          "h2": "Who we are",
+          "paragraphs": ["**Compath OÜ** — Tallinn, Estonia. Registry code **11502963**, VAT **EE101244231**. Address: Ahtri 12, Tallinn 10151, Estonia."]
+        },
+        {
+          "h2": "What we do",
+          "paragraphs": ["Three kinds of work:"],
+          "ol": [
+            "**IT support and maintenance** — networks, computers and office equipment, domains, hosting, e-mail, websites, VoIP, and ongoing maintenance. For companies and homes.",
+            "**Plugins and AI agents** — WordPress plugins for a workflow of your own, and AI agents with workflow automation such as n8n integrations.",
+            "**Amazon launch consulting** — account setup, listings, and the basics of advertising (PPC). We advise; you remain the seller."
+          ],
+          "closing": ["We also publish our own WordPress plugin, **Choir Rehearsal**: a private rehearsal library for choirs (songs, per-voice tracks, PDF scores, optional YouTube embeds). Lite is free on [WordPress.org](https://wordpress.org/plugins/compath-choir-rehearsal/). Pro is €49 a year from [shop.compath.ee](https://shop.compath.ee/products/choir-rehearsal-pro/). Product site: [rehearsal.compath.ee](https://rehearsal.compath.ee/)."]
+        },
+        {
+          "h2": "Who it is for",
+          "ul": [
+            "Companies and homes that need IT kept running — remotely when that fits.",
+            "Teams that want a WordPress plugin or an AI/n8n workflow described in plain language.",
+            "Sellers preparing a first launch on Amazon.",
+            "Choirs that need a private rehearsal library on their own WordPress site."
+          ]
+        },
+        {
+          "h2": "How to contact us",
+          "ul": [
+            "Email: [support@compath.ee](mailto:support@compath.ee)",
+            "[[whatsapp]]",
+            "Hours: Monday–Friday, 9–17",
+            "Address: Ahtri 12, Tallinn 10151, Estonia — [OpenStreetMap](https://www.openstreetmap.org/search?query=Ahtri%2012%2C%2010151%20Tallinn)",
+            "Contact form: [compath.ee/contact/](/contact/)"
+          ]
+        },
+        {
+          "h2": "Legal entity",
+          "ul": [
+            "Legal name: Compath OÜ",
+            "Registry code: 11502963",
+            "VAT: EE101244231",
+            "Registered address: Ahtri 12, Tallinn 10151, Estonia"
+          ]
+        },
+        {
+          "h2": "Useful links",
+          "ul": [
+            "[Home](/) · [Services](/services/) · [Contact](/contact/) · [Privacy](/privacy/)",
+            "[Choir Rehearsal on this site](/choir-rehearsal/) · [Product site](https://rehearsal.compath.ee/) · [Shop](https://shop.compath.ee/) · [Lite on WordPress.org](https://wordpress.org/plugins/compath-choir-rehearsal/)"
+          ]
+        }
       ]
     },
     "thanks": {
@@ -101,7 +163,8 @@
       "title": "Message not sent | Compath OÜ",
       "description": "The contact form could not send the message.",
       "h1": "Message not sent",
-      "text": "Please call +372 55520482 on a weekday, or try the form again in a little while. Check that the name, email and message are filled in."
+      "text": "Write to us on WhatsApp, Monday to Friday 9–17, or try the form again in a little while. Check that the name, email and message are filled in.",
+      "whatsapp": true
     }
   },
   "form": {
@@ -114,7 +177,7 @@
     "sending": "Sending…",
     "success": "Message sent. We reply on weekdays.",
     "invalid": "Check the name, email and message, then try again.",
-    "error": "The message could not be sent. Please call +372 55520482.",
+    "error": "The message could not be sent. Write to us on WhatsApp, Monday to Friday 9–17.",
     "hp": "Company website"
   },
   "services": [
@@ -139,7 +202,7 @@
         {"h2": "Companies and homes"},
         {"p": "A small office and a home can need the same kinds of jobs: a network that reaches the rooms you actually use, a computer that is set up, mail that arrives, a website that has a home. We do that work ourselves. We do not publish a response-time promise, because it depends on the job."},
         {"h2": "How to start"},
-        {"p": "Call +372 55520482 on a weekday, or [write to us](/contact/). Say what you have today and what you want changed. If the job is outside what we do, we will say so."}
+        {"p": "Write to us on WhatsApp, Monday to Friday 9–17, or [use the contact form](/contact/). [[whatsapp]] Say what you have today and what you want changed. If the job is outside what we do, we will say so."}
       ]
     },
     {
@@ -180,7 +243,7 @@
         {"h2": "What we do not claim"},
         {"p": "You remain the seller of record. We do not promise a search rank, a review score, or a revenue figure. PPC is one part of the launch conversation, not a separate ads-only retainer dressed up as strategy."},
         {"h2": "How to start"},
-        {"p": "Tell us the marketplace, whether the account already exists, and how many products you want to list first. Use the [contact form](/contact/) or call on a weekday."}
+        {"p": "Tell us the marketplace, whether the account already exists, and how many products you want to list first. Use the [contact form](/contact/) or write to us on WhatsApp, Monday to Friday 9–17. [[whatsapp]]"}
       ]
     }
   ],

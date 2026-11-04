@@ -1,6 +1,7 @@
 Static files uploaded from compath-site/dist/ (htaccess.snippet is merged by hand, not uploaded as .htaccess):
 
 /public_html/404.html
+/public_html/about/index.html
 /public_html/apple-touch-icon.png
 /public_html/assets/choir-rehearsal.webp
 /public_html/assets/logo.png
@@ -21,6 +22,7 @@ Static files uploaded from compath-site/dist/ (htaccess.snippet is merged by han
 /public_html/et/kontakt/index.html
 /public_html/et/kontakt/tanu/index.html
 /public_html/et/kontakt/viga/index.html
+/public_html/et/meist/index.html
 /public_html/et/privaatsus/index.html
 /public_html/et/teenused/amazon/index.html
 /public_html/et/teenused/index.html
@@ -41,6 +43,7 @@ Static files uploaded from compath-site/dist/ (htaccess.snippet is merged by han
 /public_html/ru/kontakty/index.html
 /public_html/ru/kontakty/oshibka/index.html
 /public_html/ru/kontakty/spasibo/index.html
+/public_html/ru/o-nas/index.html
 /public_html/ru/uslugi/amazon/index.html
 /public_html/ru/uslugi/index.html
 /public_html/ru/uslugi/it-podderzhka/index.html

@@ -14,12 +14,16 @@
     "footerNav": "Lehel",
     "home": "Avaleht",
     "services": "Teenused",
+    "about": "Meist",
     "contact": "Kontakt",
     "shop": "Pood",
     "privacy": "Privaatsus",
     "hoursLabel": "Lahtiolekuajad",
     "hours": "E–R 9–17",
     "phoneLabel": "Telefon",
+    "whatsappField": "WhatsApp",
+    "whatsappLabel": "Kirjuta WhatsAppis",
+    "whatsappAria": "Kirjuta WhatsAppis",
     "emailLabel": "E-post",
     "addressLabel": "Aadress",
     "regLabel": "Registrikood",
@@ -30,7 +34,7 @@
     "required": "Tärniga väljad on kohustuslikud.",
     "privacyNote": "Vormi kasutame ainult vastamiseks.",
     "previewBadge": "Preview",
-    "previewForm": "See on eelvaade. Vorm on välja lülitatud ega saada kirja. Helistage tööpäeval numbrile +372 55520482.",
+    "previewForm": "See on eelvaade. Vorm on välja lülitatud ega saada kirja. Kirjutage WhatsAppis esmaspäevast reedeni 9–17. [[whatsapp]]",
     "rights": "Compath OÜ."
   },
   "slugs": {
@@ -39,6 +43,7 @@
     "plugins": "teenused/pluginad-ja-tehisintellekt",
     "amazon": "teenused/amazon",
     "choir": "choir-rehearsal",
+    "about": "meist",
     "contact": "kontakt",
     "privacy": "privaatsus",
     "thanks": "kontakt/tanu",
@@ -57,7 +62,7 @@
       "servicesLead": "Kolm töösuunda. Meie enda WordPressi plugin Choir Rehearsal on nende järel.",
       "whyTitle": "Miks Compath",
       "why": [
-        {"title": "Tööpäeviti vastab telefon", "text": "Esmaspäevast reedeni 9–17, number +372 55520482. Töö ei pea toimuma meie kontoris."},
+        {"title": "Kirjutage WhatsAppis, E–R 9–17", "text": "Töö ei pea toimuma meie kontoris.", "whatsapp": true},
         {"title": "Avaldame ise plugina", "text": "Choir Rehearsal on WordPress.org-i kataloogis. Pluginatöö on meil midagi, mida viime välja ja hooldame."},
         {"title": "Praktilised tööd võivad jääda ühte kätte", "text": "Võrk, plugin või n8n-i töövoog ja esimene Amazon saab olla ühe ettevõtte töö, kui need kuuluvad sama asja juurde."}
       ],
@@ -72,9 +77,9 @@
     },
     "contact": {
       "title": "Kontakt | Compath OÜ",
-      "description": "Compath OÜ, Ahtri 12, Tallinn 10151. Telefon +372 55520482, esmaspäevast reedeni 9–17. Registrikood 11502963, KMKR EE101244231.",
+      "description": "Compath OÜ, Ahtri 12, Tallinn 10151. Kirjutage WhatsAppis esmaspäevast reedeni 9–17. Registrikood 11502963, KMKR EE101244231.",
       "h1": "Kontakt",
-      "lead": "Helistage tööpäeval või saatke sõnum. Loeme seda selleks, et vastata."
+      "lead": "Kirjutage WhatsAppis esmaspäevast reedeni 9–17 või saatke sõnum. Loeme seda selleks, et vastata."
     },
     "privacy": {
       "title": "Privaatsus | Compath OÜ",
@@ -83,12 +88,69 @@
       "updated": "24. september 2026",
       "sections": [
         {"h2": "Kes vastutab", "paragraphs": ["Vastutav töötleja on Compath OÜ, Ahtri 12, Tallinn 10151, Eesti, registrikood 11502963. See leht käib ettevõtte veebilehe compath.ee kohta."]},
-        {"h2": "Mida vorm kogub", "paragraphs": ["Kui kirjutate meile, saame teie nime, e-posti aadressi, telefoninumbri, kui selle lisate, ja sõnumi. IP-aadressi räsi hoiame kuni üks tund, et sama aadress ei saaks vormi järjest uuesti saata. Vorm ei ole kohustuslik. Kontaktilehel olev telefon on teine võimalus."]},
+        {"h2": "Mida vorm kogub", "paragraphs": ["Kui kirjutate meile, saame teie nime, e-posti aadressi, telefoninumbri, kui selle lisate, ja sõnumi. IP-aadressi räsi hoiame kuni üks tund, et sama aadress ei saaks vormi järjest uuesti saata. Vorm ei ole kohustuslik. Kontaktilehel olev WhatsApp on teine võimalus."]},
         {"h2": "Miks ja mis alusel", "paragraphs": ["Kasutame sõnumit ainult vastamiseks ja sellest kasvava kirjavahetuse jaoks. Õiguslik alus on lepingueelsed sammud teie palvel ning meie õigustatud huvi päringutele vastata (isikuandmete kaitse üldmääruse artikli 6 lõike 1 punktid b ja f). Meililisti me teid ei lisa ega kasuta sõnumit reklaamiks."]},
         {"h2": "Kui kaua andmeid hoiame", "paragraphs": ["Kirjavahetus jääb alles seni, kuni päring ja lühike järeltegevus on tehtud. Kustutame selle, kui seda enam vaja ei ole, ja ei hoia seda kauem kui 24 kuud, välja arvatud siis, kui leping või seadus nõuab pikemat tähtaega. Päringupiirangu kirje aegub ühe tunni jooksul."]},
         {"h2": "Kes andmeid saab", "paragraphs": ["Sõnum saadetakse e-kirjaga meie enda postkasti samas domeenis. Andmeid me ei müü ega anna reklaamivõrgustikule. Päringupiirangu faili hoiab sama majutuskonto, millel see veebileht töötab."]},
         {"h2": "Küpsised ja keelevalik", "paragraphs": ["See leht ei sea küpsiseid ega laadi analüütika- ega reklaamiskripte. Valitud keel salvestub teie brauseris (localStorage) võtme compath-lang all. Väärtus jääb teie seadmesse. Serverisse me seda ei saada."]},
-        {"h2": "Teie õigused", "paragraphs": ["Võite küsida kirjavahetuse koopiat, parandamist, kustutamist, töötlemise piiramist või esitada vastuväite õigustatud huvile tuginevale kasutusele. Kaebuse võite esitada Andmekaitse Inspektsioonile (aki.ee). Kasutage kontaktivormi või kontaktilehe telefoninumbrit. Kirjutage juurde aadress, millelt sõnum tuli, et leiaksime õige kirja."]}
+        {"h2": "Teie õigused", "paragraphs": ["Võite küsida kirjavahetuse koopiat, parandamist, kustutamist, töötlemise piiramist või esitada vastuväite õigustatud huvile tuginevale kasutusele. Kaebuse võite esitada Andmekaitse Inspektsioonile (aki.ee). Kasutage kontaktivormi või kontaktilehe WhatsAppi. Kirjutage juurde aadress, millelt sõnum tuli, et leiaksime õige kirja."]}
+      ]
+    },
+    "about": {
+      "title": "Meist | Compath OÜ",
+      "description": "Compath OÜ: IT tugi ja hooldus ettevõtetele ja kodudele, WordPressi pluginad ja tehisintellekti agendid, Amazoni käivitamise nõustamine ning plugin Choir Rehearsal. Tallinn, Eesti.",
+      "h1": "Meist — Compath OÜ",
+      "lead": "Compath OÜ on Eesti ettevõte. Hoiame arvutid, võrgud ja igapäevase veebi töös ning ehitame WordPressi pluginaid ja tehisintellekti agente protsessile, mida oskate kirjeldada. Tööd saab teha kaugelt.",
+      "sections": [
+        {
+          "h2": "Kes me oleme",
+          "paragraphs": ["**Compath OÜ** — Tallinn, Eesti. Registrikood **11502963**, KMKR **EE101244231**. Aadress: Ahtri 12, Tallinn 10151, Estonia."]
+        },
+        {
+          "h2": "Mida me teeme",
+          "paragraphs": ["Kolm töösuunda:"],
+          "ol": [
+            "**IT tugi ja hooldus** — võrgud, arvutid ja kontoritehnika, domeenid, majutus, e-post, veebilehed, VoIP ja jooksev hooldus. Ettevõtetele ja kodudele.",
+            "**Pluginad ja tehisintellekti agendid** — WordPressi pluginad teie enda töövoole ning tehisintellekti agendid ja automatiseerimine, näiteks n8n-i integratsioonid.",
+            "**Amazoni käivitamise nõustamine** — konto, kuulutused ja reklaami (PPC) põhitõed. Meie nõustame; müüja olete teie."
+          ],
+          "closing": ["Avaldame ka oma WordPressi pluginat **Choir Rehearsal**: privaatne proovikogu kooridele (laulud, häälepartiid, PDF-noodid, soovi korral YouTube’i manused). Lite on [WordPress.org](https://wordpress.org/plugins/compath-choir-rehearsal/)-is tasuta. Pro maksab 49 € aastas [shop.compath.ee](https://shop.compath.ee/products/choir-rehearsal-pro/)-st. Toote leht: [rehearsal.compath.ee](https://rehearsal.compath.ee/?lang=et)."]
+        },
+        {
+          "h2": "Kellele",
+          "ul": [
+            "Ettevõtted ja kodud, kes vajavad töötavat IT-d — kaugelt, kui see sobib.",
+            "Meeskonnad, kes tahavad WordPressi pluginat või AI/n8n töövoogu lihtsas keeles kirjeldatuna.",
+            "Müüjad, kes valmistuvad esimeseks Amazoni käivituseks.",
+            "Koorid, kellel on vaja privaatset proovikogu oma WordPressi saidil."
+          ]
+        },
+        {
+          "h2": "Kontakt",
+          "ul": [
+            "E-post: [support@compath.ee](mailto:support@compath.ee)",
+            "[[whatsapp]]",
+            "Lahtiolekuajad: esmaspäev–reede, 9–17",
+            "Aadress: Ahtri 12, Tallinn 10151, Estonia — [OpenStreetMap](https://www.openstreetmap.org/search?query=Ahtri%2012%2C%2010151%20Tallinn)",
+            "Kontaktivorm: [compath.ee/et/kontakt/](/et/kontakt/)"
+          ]
+        },
+        {
+          "h2": "Juriidilised andmed",
+          "ul": [
+            "Ärinimi: Compath OÜ",
+            "Registrikood: 11502963",
+            "KMKR: EE101244231",
+            "Aadress: Ahtri 12, Tallinn 10151, Estonia"
+          ]
+        },
+        {
+          "h2": "Kasulikud lingid",
+          "ul": [
+            "[Avaleht](/et/) · [Teenused](/et/teenused/) · [Kontakt](/et/kontakt/) · [Privaatsus](/et/privaatsus/)",
+            "[Choir Rehearsal sellel saidil](/et/choir-rehearsal/) · [Toote leht](https://rehearsal.compath.ee/?lang=et) · [Pood](https://shop.compath.ee/) · [Lite WordPress.org-is](https://wordpress.org/plugins/compath-choir-rehearsal/)"
+          ]
+        }
       ]
     },
     "thanks": {
@@ -101,7 +163,8 @@
       "title": "Sõnum ei läinud teele | Compath OÜ",
       "description": "Kontaktivorm ei saanud sõnumit saata.",
       "h1": "Sõnum ei läinud teele",
-      "text": "Helistage palun tööpäeval numbrile +372 55520482 või proovige vormi veidi aja pärast uuesti. Kontrollige, et nimi, e-post ja sõnum on täidetud."
+      "text": "Kirjutage WhatsAppis esmaspäevast reedeni 9–17 või proovige vormi veidi aja pärast uuesti. Kontrollige, et nimi, e-post ja sõnum on täidetud.",
+      "whatsapp": true
     }
   },
   "form": {
@@ -114,7 +177,7 @@
     "sending": "Saadan…",
     "success": "Sõnum on saadetud. Vastame tööpäeviti.",
     "invalid": "Kontrollige nime, e-posti ja sõnumit ning proovige uuesti.",
-    "error": "Sõnumit ei õnnestunud saata. Helistage palun +372 55520482.",
+    "error": "Sõnumit ei õnnestunud saata. Kirjutage palun WhatsAppis, esmaspäevast reedeni 9–17.",
     "hp": "Ettevõtte veebileht"
   },
   "services": [
@@ -139,7 +202,7 @@
         {"h2": "Ettevõtted ja kodud"},
         {"p": "Väike kontor ja kodu vajavad sageli sama laadi tööd: võrk nendesse ruumidesse, kus seda päriselt kasutatakse, seadistatud arvuti, kohale jõudev post, veebileht, millel on koht. Teeme selle töö ise. Reageerimisaega me numbriga ei luba, sest see oleneb tööst."},
         {"h2": "Kuidas alustada"},
-        {"p": "Helistage tööpäeval numbrile +372 55520482 või [kirjutage meile](/et/kontakt/). Öelge, mis teil täna on ja mida tahate muuta. Kui töö jääb sellest väljapoole, mida teeme, ütleme seda."}
+        {"p": "Kirjutage WhatsAppis esmaspäevast reedeni 9–17 või [kasutage kontaktivormi](/et/kontakt/). [[whatsapp]] Öelge, mis teil täna on ja mida tahate muuta. Kui töö jääb sellest väljapoole, mida teeme, ütleme seda."}
       ]
     },
     {
@@ -180,7 +243,7 @@
         {"h2": "Mida me ei luba"},
         {"p": "Müüja jääte teie. Me ei luba kohta otsingus, arvustuste skoori ega käibenumbrit. PPC on üks osa käivituse jutust, mitte eraldi reklaamileping, mis on strateegiaks nimetatud."},
         {"h2": "Kuidas alustada"},
-        {"p": "Öelge turg, kas konto on juba olemas ja mitu toodet tahate esimesena üles panna. Kasutage [kontaktivormi](/et/kontakt/) või helistage tööpäeval."}
+        {"p": "Öelge turg, kas konto on juba olemas ja mitu toodet tahate esimesena üles panna. Kasutage [kontaktivormi](/et/kontakt/) või kirjutage WhatsAppis esmaspäevast reedeni 9–17. [[whatsapp]]"}
       ]
     }
   ],

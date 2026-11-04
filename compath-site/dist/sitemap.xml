@@ -145,6 +145,30 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://compath.ee/et/choir-rehearsal/" />
   </url>
   <url>
+    <loc>https://compath.ee/about/</loc>
+    <lastmod>2026-09-24</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://compath.ee/about/" />
+    <xhtml:link rel="alternate" hreflang="et" href="https://compath.ee/et/meist/" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://compath.ee/ru/o-nas/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://compath.ee/et/meist/" />
+  </url>
+  <url>
+    <loc>https://compath.ee/et/meist/</loc>
+    <lastmod>2026-09-24</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://compath.ee/about/" />
+    <xhtml:link rel="alternate" hreflang="et" href="https://compath.ee/et/meist/" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://compath.ee/ru/o-nas/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://compath.ee/et/meist/" />
+  </url>
+  <url>
+    <loc>https://compath.ee/ru/o-nas/</loc>
+    <lastmod>2026-09-24</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://compath.ee/about/" />
+    <xhtml:link rel="alternate" hreflang="et" href="https://compath.ee/et/meist/" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://compath.ee/ru/o-nas/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://compath.ee/et/meist/" />
+  </url>
+  <url>
     <loc>https://compath.ee/contact/</loc>
     <lastmod>2026-09-24</lastmod>
     <xhtml:link rel="alternate" hreflang="en" href="https://compath.ee/contact/" />
