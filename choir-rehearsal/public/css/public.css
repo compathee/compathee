@@ -2043,6 +2043,63 @@ body.choir-metronome-open:not(.choir-sticky-player-open) .choir-metronome-sheet 
 	opacity: 1 !important;
 }
 
+/*
+ * Theme button:hover/button:focus often sets color:#fff and leaves the white
+ * background, so the label disappears. These states use the Publish blue.
+ * The layer + sheet scope beats a later theme rule of equal weight.
+ */
+body .choir-notes-layer .choir-notes-sheet button.choir-note__edit:hover,
+body .choir-notes-layer .choir-notes-sheet button.choir-note__edit:focus,
+body .choir-notes-layer .choir-notes-sheet button.choir-note__edit:focus-visible,
+body .choir-notes-layer .choir-notes-sheet button.choir-note__delete:hover,
+body .choir-notes-layer .choir-notes-sheet button.choir-note__delete:focus,
+body .choir-notes-layer .choir-notes-sheet button.choir-note__delete:focus-visible,
+body .choir-notes-layer .choir-notes-sheet button.choir-notes-cancel:hover,
+body .choir-notes-layer .choir-notes-sheet button.choir-notes-cancel:focus,
+body .choir-notes-layer .choir-notes-sheet button.choir-notes-cancel:focus-visible,
+body .choir-notes-layer .choir-notes-sheet button.choir-notes-at:hover,
+body .choir-notes-layer .choir-notes-sheet button.choir-notes-at:focus,
+body .choir-notes-layer .choir-notes-sheet button.choir-notes-at:focus-visible,
+body .choir-notes-layer .choir-notes-sheet button.choir-notes-time:hover,
+body .choir-notes-layer .choir-notes-sheet button.choir-notes-time:focus,
+body .choir-notes-layer .choir-notes-sheet button.choir-notes-time:focus-visible,
+body .choir-notes-layer .choir-notes-sheet button.choir-notes-info:hover,
+body .choir-notes-layer .choir-notes-sheet button.choir-notes-info:focus,
+body .choir-notes-layer .choir-notes-sheet button.choir-notes-info:focus-visible,
+body .choir-notes-layer .choir-notes-sheet button.choir-notes-mic:hover,
+body .choir-notes-layer .choir-notes-sheet button.choir-notes-mic:focus,
+body .choir-notes-layer .choir-notes-sheet button.choir-notes-mic:focus-visible {
+	background: #1f4fd8 !important;
+	background-color: #1f4fd8 !important;
+	color: #fff !important;
+	-webkit-text-fill-color: #fff !important;
+	border-color: #1f4fd8 !important;
+	opacity: 1 !important;
+	text-indent: 0 !important;
+	text-shadow: none !important;
+	box-shadow: none !important;
+}
+
+body .choir-notes-layer .choir-notes-sheet button.choir-notes-time:hover span,
+body .choir-notes-layer .choir-notes-sheet button.choir-notes-time:focus span,
+body .choir-notes-layer .choir-notes-sheet button.choir-notes-time:focus-visible span,
+body .choir-notes-layer .choir-notes-sheet button.choir-notes-info:hover span,
+body .choir-notes-layer .choir-notes-sheet button.choir-notes-info:focus span,
+body .choir-notes-layer .choir-notes-sheet button.choir-notes-info:focus-visible span,
+body .choir-notes-layer .choir-notes-sheet button.choir-notes-mic:hover span,
+body .choir-notes-layer .choir-notes-sheet button.choir-notes-mic:focus span,
+body .choir-notes-layer .choir-notes-sheet button.choir-notes-mic:focus-visible span,
+body .choir-notes-layer .choir-notes-sheet button.choir-notes-mic:hover svg,
+body .choir-notes-layer .choir-notes-sheet button.choir-notes-mic:focus svg,
+body .choir-notes-layer .choir-notes-sheet button.choir-notes-mic:focus-visible svg {
+	color: #fff !important;
+	-webkit-text-fill-color: #fff !important;
+	background: transparent !important;
+	fill: currentColor !important;
+	opacity: 1 !important;
+	text-indent: 0 !important;
+}
+
 .choir-notes-sheet .choir-notes-speech-unsupported {
 	flex: 1 1 12rem;
 	margin: 0;
