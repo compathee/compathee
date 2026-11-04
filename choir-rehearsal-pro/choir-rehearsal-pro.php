@@ -5,6 +5,7 @@
  * Description:       Unlocks song search, unlimited voice tracks, microphone recording, Play preview, PDF score badges, song notes, the song-page mixer, and song library backup for Choir Rehearsal. Requires a SureCart license from shop.compath.ee.
  * Version:           0.5.5
  * Requires at least: 6.4
+ * Tested up to:      7.1
  * Requires PHP:      8.0
  * Author:            Compath OÜ
  * Author URI:        https://compath.ee
