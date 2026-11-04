@@ -1,7 +1,59 @@
+/*
+ * Web Speech availability.
+ * Chrome on Android implements recognition (prefer webkitSpeechRecognition).
+ * Chrome, Firefox, and Edge on iPhone expose the same WebKit constructor, then
+ * start() fails with service-not-allowed. Safari on iPhone can actually start it.
+ */
+const choirSpeechSupport = (function () {
+	function constructorOf(box) {
+		if (box && typeof box.webkitSpeechRecognition === 'function') {
+			return box.webkitSpeechRecognition;
+		}
+		if (box && typeof box.SpeechRecognition === 'function') {
+			return box.SpeechRecognition;
+		}
+		return null;
+	}
+
+	function isIos(userAgent, platform, maxTouchPoints) {
+		if (/iPad|iPhone|iPod/i.test(userAgent || '')) {
+			return true;
+		}
+		return platform === 'MacIntel' && (maxTouchPoints || 0) > 1;
+	}
+
+	function isIosNonSafari(userAgent) {
+		return /CriOS|FxiOS|EdgiOS|OPiOS|OPT\/|GSA\/|DuckDuckGo|Brave|FBAV|FBAN|Instagram/i.test(userAgent || '');
+	}
+
+	function supported(env) {
+		const box = env || {};
+		if (box.secureContext === false) {
+			return false;
+		}
+		const ua = box.userAgent || '';
+		if (isIos(ua, box.platform, box.maxTouchPoints) && isIosNonSafari(ua)) {
+			return false;
+		}
+		return constructorOf(box) !== null;
+	}
+
+	return {
+		constructorOf: constructorOf,
+		isIos: isIos,
+		isIosNonSafari: isIosNonSafari,
+		supported: supported
+	};
+})();
+
+if (typeof module !== 'undefined' && module.exports) {
+	module.exports = choirSpeechSupport;
+}
+
 (function () {
 	'use strict';
 
-	const cfg = window.choirRehearsalNotes;
+	const cfg = (typeof window === 'undefined' ? null : window.choirRehearsalNotes);
 	if (!cfg || !cfg.songId) {
 		return;
 	}
@@ -558,7 +610,18 @@
 	let langActive = -1;
 
 	function speechSupported() {
-		return !!(window.SpeechRecognition || window.webkitSpeechRecognition);
+		return choirSpeechSupport.supported({
+			webkitSpeechRecognition: window.webkitSpeechRecognition,
+			SpeechRecognition: window.SpeechRecognition,
+			secureContext: window.isSecureContext,
+			userAgent: navigator.userAgent,
+			platform: navigator.platform,
+			maxTouchPoints: navigator.maxTouchPoints
+		});
+	}
+
+	function iosDevice() {
+		return choirSpeechSupport.isIos(navigator.userAgent, navigator.platform, navigator.maxTouchPoints);
 	}
 
 	function languageLabel(code) {
@@ -755,12 +818,26 @@
 		}
 	}
 
+	function speechFailure(code) {
+		if (code === 'service-not-allowed' && iosDevice()) {
+			showSpeechUnsupported();
+			return;
+		}
+		if (code === 'not-allowed' || code === 'service-not-allowed' || code === 'audio-capture') {
+			showError(t('speechDenied', 'Allow the microphone for this site, then tap the microphone again.'));
+		}
+	}
+
 	function startDictation(lang) {
 		if (!input || !micBtn || !speechSupported()) {
 			showSpeechUnsupported();
 			return;
 		}
-		const Ctor = window.SpeechRecognition || window.webkitSpeechRecognition;
+		const Ctor = choirSpeechSupport.constructorOf(window);
+		if (!Ctor) {
+			showSpeechUnsupported();
+			return;
+		}
 		const prefix = input.value.slice(0, input.selectionStart || 0);
 		const suffix = input.value.slice(input.selectionEnd || 0);
 		recognition = new Ctor();
@@ -777,9 +854,7 @@
 			saveDraft();
 		};
 		recognition.onerror = function (event) {
-			if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
-				showError(t('speechUnsupported', 'Voice input is not supported in this browser.'));
-			}
+			speechFailure(event && event.error);
 			stopDictation();
 		};
 		recognition.onend = function () {
@@ -792,7 +867,7 @@
 			micBtn.setAttribute('aria-pressed', 'true');
 			micBtn.setAttribute('aria-label', t('stopDictation', 'Stop dictation'));
 		} catch (err) {
-			showError(t('speechUnsupported', 'Voice input is not supported in this browser.'));
+			speechFailure(iosDevice() ? 'service-not-allowed' : 'not-allowed');
 			stopDictation();
 		}
 	}
@@ -802,7 +877,9 @@
 			micBtn.hidden = true;
 		}
 		closeLangPopover();
+		showError('');
 		if (speechNote) {
+			speechNote.textContent = t('speechUnsupported', 'Voice input is not available in this browser. On iPhone, open this page in Safari, or tap the microphone on the keyboard.');
 			speechNote.hidden = false;
 		}
 	}
@@ -931,6 +1008,7 @@
 					closeLangPopover();
 					return;
 				}
+				showError('');
 				openLangPopover();
 			});
 		} else {
