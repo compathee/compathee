@@ -457,7 +457,7 @@ final class Choir_Rehearsal_Song_Notes {
 							<button type="button" class="choir-notes-mic" hidden aria-pressed="false" aria-expanded="false" aria-controls="choir-notes-langpop" aria-label="<?php esc_attr_e( 'Dictate a note', 'compath-choir-rehearsal' ); ?>">
 								<span class="choir-notes-mic__icon" aria-hidden="true"><?php echo self::studio_mic_svg(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static SVG. ?></span>
 							</button>
-							<p class="choir-notes-speech-unsupported" role="status" hidden><?php esc_html_e( 'Voice input is not supported in this browser.', 'compath-choir-rehearsal' ); ?></p>
+							<p class="choir-notes-speech-unsupported" role="status" hidden><?php esc_html_e( 'Voice input is not available in this browser. On iPhone, open this page in Safari, or tap the microphone on the keyboard.', 'compath-choir-rehearsal' ); ?></p>
 						</div>
 						<div id="choir-notes-langpop" class="choir-notes-langpop" role="dialog" aria-modal="false" aria-label="<?php esc_attr_e( 'Dictation language', 'compath-choir-rehearsal' ); ?>" hidden>
 							<input type="search" class="choir-notes-langsearch" role="combobox" autocomplete="off" aria-autocomplete="list" aria-expanded="false" aria-controls="choir-notes-langlist" aria-label="<?php esc_attr_e( 'Search languages', 'compath-choir-rehearsal' ); ?>" placeholder="<?php esc_attr_e( 'Search languages', 'compath-choir-rehearsal' ); ?>" />
@@ -510,7 +510,8 @@ final class Choir_Rehearsal_Song_Notes {
 			'stopDictation'   => __( 'Stop dictation', 'compath-choir-rehearsal' ),
 			'dictationLanguage' => __( 'Dictation language', 'compath-choir-rehearsal' ),
 			'searchLanguages' => __( 'Search languages', 'compath-choir-rehearsal' ),
-			'speechUnsupported' => __( 'Voice input is not supported in this browser.', 'compath-choir-rehearsal' ),
+			'speechUnsupported' => __( 'Voice input is not available in this browser. On iPhone, open this page in Safari, or tap the microphone on the keyboard.', 'compath-choir-rehearsal' ),
+			'speechDenied'    => __( 'Allow the microphone for this site, then tap the microphone again.', 'compath-choir-rehearsal' ),
 			'noLanguageMatch' => __( 'No matching language.', 'compath-choir-rehearsal' ),
 			'seekTime'        => __( 'Seek to this time', 'compath-choir-rehearsal' ),
 			'placeholder'     => __( 'Type @ and choose a part to address advice to a track', 'compath-choir-rehearsal' ),

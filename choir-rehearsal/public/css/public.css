@@ -2101,11 +2101,11 @@ body .choir-notes-layer .choir-notes-sheet button.choir-notes-mic:focus-visible 
 }
 
 .choir-notes-sheet .choir-notes-speech-unsupported {
-	flex: 1 1 12rem;
-	margin: 0;
-	color: #475467 !important;
+	flex: 1 1 100%;
+	margin: 4px 0 0;
+	color: #344054 !important;
 	background: transparent !important;
-	-webkit-text-fill-color: #475467 !important;
+	-webkit-text-fill-color: #344054 !important;
 	font-size: 14px !important;
 	line-height: 1.35 !important;
 	text-indent: 0 !important;

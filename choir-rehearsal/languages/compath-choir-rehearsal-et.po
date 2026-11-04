@@ -1428,8 +1428,11 @@ msgstr "Vene keel"
 msgid "Search languages"
 msgstr "Otsi keeli"
 
-msgid "Voice input is not supported in this browser."
-msgstr "Häälisisestus ei ole selles brauseris toetatud."
+msgid "Voice input is not available in this browser. On iPhone, open this page in Safari, or tap the microphone on the keyboard."
+msgstr "Häälisisestus ei ole selles brauseris saadaval. iPhone’is avage see leht Safaris või puudutage klaviatuuri mikrofoni."
+
+msgid "Allow the microphone for this site, then tap the microphone again."
+msgstr "Lubage sellel saidil mikrofon ja puudutage mikrofoni uuesti."
 
 msgid "No matching language."
 msgstr "Sobivat keelt ei leitud."

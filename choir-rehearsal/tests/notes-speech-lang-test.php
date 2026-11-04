@@ -44,7 +44,10 @@ $click = strpos($js, "micBtn.addEventListener('click'");
 $click_body = false === $click ? '' : substr($js, $click, 320);
 check('microphone opens the language popover', str_contains($click_body, 'openLangPopover()') && !str_contains($click_body, 'startDictation('));
 check('keyboard can move, choose, and dismiss', str_contains($js, "'ArrowDown'") && str_contains($js, "'ArrowUp'") && str_contains($js, "'Enter'") && str_contains($js, "'Escape'") && str_contains($js, 'closeLangPopover()'));
-check('unsupported browsers get a visible message', str_contains($php, 'choir-notes-speech-unsupported') && str_contains($php, 'Voice input is not supported in this browser.') && str_contains($js, 'function showSpeechUnsupported'));
+check('unsupported browsers get a visible message', str_contains($php, 'choir-notes-speech-unsupported') && str_contains($php, 'On iPhone, open this page in Safari, or tap the microphone on the keyboard.') && str_contains($js, 'function showSpeechUnsupported'));
+check('chrome on iphone is not treated as supported', str_contains($js, 'CriOS') && str_contains($js, 'service-not-allowed') && str_contains($js, 'webkitSpeechRecognition') && strpos($js, 'webkitSpeechRecognition') < strpos($js, 'SpeechRecognition'));
+check('permission denial keeps a different message', str_contains($php, 'Allow the microphone for this site, then tap the microphone again.') && str_contains($js, 'speechDenied'));
+check('insecure pages do not offer the microphone', str_contains($js, 'secureContext === false'));
 check('picker is a searchable listbox', str_contains($php, 'id="choir-notes-langpop"') && str_contains($php, 'role="listbox"') && str_contains($php, 'role="combobox"') && str_contains($php, 'Search languages') && str_contains($js, "role', 'option'") && str_contains($js, 'choir-notes-langopt__name'));
 check('language names stay readable against themed text', str_contains($css, '.choir-notes-langopt__name') && str_contains($css, 'color: #101828 !important') && str_contains($css, '-webkit-text-fill-color: #101828 !important') && str_contains($css, 'text-indent: 0 !important') && str_contains($css, 'opacity: 1 !important'));
 
