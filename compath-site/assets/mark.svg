@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Compath">
+  <rect width="32" height="32" rx="8" fill="#1f4fd8"/>
+  <path d="M7 23c3.2-7.2 5.2-8.2 8.2-3.2 2.2 3.6 3.6 4.2 6.2-1.2 1.6-3.2 2.6-5.2 3.6-6.6" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>
+  <circle cx="7" cy="23" r="2.1" fill="#fff"/>
+  <circle cx="16.2" cy="17.2" r="2.1" fill="#fff"/>
+  <circle cx="25" cy="11" r="2.1" fill="#fff"/>
+</svg>

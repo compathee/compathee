@@ -1,0 +1,93 @@
+name: Deploy compath.ee preview
+
+# Manual only. Uploads the noindex preview to /public_html/preview-2026/.
+# Uses the same FTP secrets as the production workflow.
+# COMPATH_FTP_REMOTE_DIR must end with a slash, usually /public_html/
+# This action never deletes remote files and does not upload the production site.
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy-preview:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Build preview copy
+        run: node compath-site/build.mjs --preview
+
+      - name: Assemble preview allow-list
+        run: |
+          set -euo pipefail
+          mkdir -p deploy
+          rsync -a \
+            --exclude 'api/' \
+            --exclude 'config.php' \
+            --exclude '*.log' \
+            --exclude 'robots.txt' \
+            --exclude 'sitemap.xml' \
+            --exclude 'llms.txt' \
+            compath-site/dist-preview/ deploy/
+          test ! -e deploy/api
+          test ! -e deploy/robots.txt
+          test ! -e deploy/sitemap.xml
+          test ! -e deploy/llms.txt
+          test -f deploy/index.html
+          test -f deploy/.htaccess
+          test -f deploy/health.txt
+          grep -q 'X-Robots-Tag "noindex, nofollow"' deploy/.htaccess
+          find deploy -type f -print | sort
+
+      - name: Deploy preview to /preview-2026/ (FTP/FTPS)
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.6
+        with:
+          server: ${{ secrets.COMPATH_FTP_SERVER }}
+          username: ${{ secrets.COMPATH_FTP_USERNAME }}
+          password: ${{ secrets.COMPATH_FTP_PASSWORD }}
+          protocol: ftps
+          port: 21
+          local-dir: deploy/
+          server-dir: ${{ secrets.COMPATH_FTP_REMOTE_DIR }}preview-2026/
+          dangerous-clean-slate: false
+
+      - name: Fix remote permissions (Apache 403)
+        env:
+          FTP_SERVER: ${{ secrets.COMPATH_FTP_SERVER }}
+          FTP_USER: ${{ secrets.COMPATH_FTP_USERNAME }}
+          FTP_PASS: ${{ secrets.COMPATH_FTP_PASSWORD }}
+          FTP_DIR: ${{ secrets.COMPATH_FTP_REMOTE_DIR }}preview-2026
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y lftp
+          lftp -u "${FTP_USER}","${FTP_PASS}" "${FTP_SERVER}" <<EOF
+          set ssl:verify-certificate no
+          set ftp:ssl-force true
+          set ftp:ssl-protect-data true
+          cd ${FTP_DIR}
+          chmod 755 .
+          chmod 644 index.html .htaccess health.txt favicon.svg favicon.ico favicon-192.png favicon-512.png apple-touch-icon.png site.webmanifest 404.html
+          chmod -R 755 assets et ru services contact privacy choir-rehearsal
+          bye
+          EOF
+
+      - name: Verify preview health.txt is reachable
+        run: |
+          set -euo pipefail
+          for URL in "https://compath.ee/preview-2026/health.txt" "http://compath.ee/preview-2026/health.txt"; do
+            echo "Checking ${URL}"
+            if curl -fsSL --max-time 30 "${URL}" | grep -q "preview OK"; then
+              echo "OK: ${URL}"
+              exit 0
+            fi
+          done
+          echo "::warning::Preview not reachable yet. Check COMPATH_FTP_REMOTE_DIR (it must end with a slash) and compath-site/DEPLOY.md."
+          exit 0

@@ -1,0 +1,16 @@
+# Folder rules for /public_html/preview-2026/ only.
+# Apache reads this file for this directory and its children.
+# It does not replace /public_html/.htaccess and does not change
+# the Sitebuilder site at the web root.
+# These lines do not redirect any URL, so they cannot change the
+# Sitebuilder pages outside this folder. noindex does not depend
+# on a robots.txt in this folder or at the web root.
+
+DirectoryIndex index.html
+Options -Indexes
+
+<IfModule mod_headers.c>
+Header always set X-Robots-Tag "noindex, nofollow"
+</IfModule>
+
+ErrorDocument 404 /preview-2026/404.html
