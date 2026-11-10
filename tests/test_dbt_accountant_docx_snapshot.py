@@ -183,6 +183,10 @@ def test_admin_approve_does_not_run_accountant_agent() -> None:
     confirm = nodes["Telegram_Confirm_With_User"]["parameters"]
     assert confirm["approvalOptions"]["values"]["approveLabel"] == "Confirm"
     assert "read or write" in confirm["message"]
+    assert confirm.get("chatApproval") is True
+    assert "Telegram in-chat buttons" in prompt
+    assert "n8n.dbtmuuga.ee" in prompt
+    assert "Never quote n8n" in prompt
 
     rest = nodes["Standard_Books_REST_API"]["parameters"]
     assert "AccVc konto" in rest["description"]
@@ -213,6 +217,8 @@ def test_standard_books_api_refuses_unbounded_register_dumps() -> None:
     assert "MAX_LIMIT = 50" in js
     assert "DEFAULT_LIMIT = 25" in js
     assert "perpage=50" in js
+    http = nodes["Call Standard Books API"]["parameters"]
+    assert http["options"].get("allowUnauthorizedCerts") is True
 
     script = (
         js.split("function attachPostBody")[0]

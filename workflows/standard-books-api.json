@@ -155,7 +155,8 @@
               "responseFormat": "text"
             }
           },
-          "timeout": 120000
+          "timeout": 120000,
+          "allowUnauthorizedCerts": true
         }
       },
       "credentials": {

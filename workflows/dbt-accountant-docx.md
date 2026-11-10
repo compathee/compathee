@@ -95,7 +95,7 @@ Published together (10 Nov 2026, Europe/Kiev):
   omits `fields=` or `filter.*`. Detail paths like `145/1` are unchanged.
   Portal `register=` queries without `action=` get `perpage=50&page=1`.
 - **DBT Accountant assistant** `vQnGxLzinMZR6Vhg`
-  (`520c51c3-067c-4d68-88c4-a8b5b79b1faf`): system prompt HARD LIMITS
+  (`aae6e1fc-a659-4dea-a027-34345a27f1a8`): system prompt HARD LIMITS
   (one bounded Standard Books call; never on empty/`[No user text]`);
   REST tool description requires `fields=` + `filter.*` + `limit≤50`;
   Portal login only after a session-expired error; reports need a
@@ -109,6 +109,20 @@ Published together (10 Nov 2026, Europe/Kiev):
   ask one question and wait: конто (`AccVc`), счёт поставщика (`VIVc`),
   or счёт на продажу (`IVVc`). It must not guess a register or open Hansa
   on that turn.
+
+### Telegram confirm stays in chat
+
+Exec **3578** (10 Nov 2026, ~12:28 Europe/Kiev) used
+`Telegram_Confirm_With_User` `sendAndWait` without `chatApproval`, so
+Telegram got an n8n form URL (`n8n.dbtmuuga.ee`) instead of in-chat
+buttons. `chatApproval` is now on: Confirm/Cancel are Telegram inline
+buttons; the user does not leave the chat.
+
+The same run then called Hansa REST twice and failed
+`certificate has expired` on `stbooks.dbtmuuga.ee:1335`. The HTTP node
+now has **Ignore SSL issues** (`allowUnauthorizedCerts`) so the local
+expired Hansa cert does not block bounded reads. The agent must not
+quote SSL/n8n internals to the user.
 
 ## Files
 

@@ -142,6 +142,11 @@ jobs:
           ' /tmp/dbt-workflow-live.json >/dev/null
 
           jq -e '
+            (.nodes[] | select(.name == "Telegram_Confirm_With_User") | .parameters.chatApproval)
+            == true
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
             .connections["Admin auth callback?"].main[0][]
             | select(.node == "Redis Get tg whitelist (admin)")
           ' /tmp/dbt-workflow-live.json >/dev/null
@@ -175,6 +180,12 @@ jobs:
           jq -e '
             (.nodes[] | select(.name == "Build API request") | .parameters.jsCode)
             | contains("REST list GET refused")
+          ' /tmp/sb-workflow-live.json >/dev/null
+
+          jq -e '
+            (.nodes[] | select(.name == "Call Standard Books API")
+              | .parameters.options.allowUnauthorizedCerts)
+            == true
           ' /tmp/sb-workflow-live.json >/dev/null
 
           echo "Live DBT Accountant assistant has Word/DOCX extract+patch, unknown-user admin notify, and Standard Books crash guards."
