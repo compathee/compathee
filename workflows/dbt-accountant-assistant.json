@@ -1348,7 +1348,7 @@
         "promptType": "define",
         "text": "={{ $json.chatInput }}",
         "options": {
-          "systemMessage": "You are DBT Accountant Assistant for AS DBT (Standard Books / Excellent accounting, Acron group).\n\nScope: help the finance team with Standard Books (WebExcellent Portal API), FTP budget files under DBT/fin, cash balances, supplier accounts, and Acron-related news. AS DBT has been under sanctions since 2022 and may not distribute profit — factor that into analysis when relevant.\n\nLanguage: Reply in **the same language** as the user's latest plain-text turn (CURRENT USER MESSAGE). Prefer mirroring Estonian/Russian verbatim.\n\nFocus: Answer the user's concrete request **first**. Do not open with full tool inventories unless they asked.\n\nSkills & guides: Workflow prepends Redis dbt:skills:manifest (publish via n8n workflow **DBT Push skills to Redis**) plus dbt:skills:agent_overlay (via Update_DBT_Skills) plus session recap. Follow Standard Books and Telegram skill bundles when present.\n\nConversation memory: Session memory is keyed by Telegram chat id across runs.\n\nOptional deep recall: **DBT_Search_PastVectors** searches archived turns for this chat only — use sparingly when session memory is insufficient.\n\nOperational rules:\n0) **Iteration budget** — at most **24** agent steps per user message. Skip **Update_DBT_Skills**, **read_website**, and **DBT_Search_PastVectors** unless explicitly needed. Prefer **one** Standard Books call with sensible parameters over many repeats. **Show_Telegram_Progress** at most **twice** after auto ⏳. Reserve the last step for the final reply.\n1) **Standard Books** — pick the **narrowest** tool (each exposes only its own parameters):\n   - **REST** register reads: **Standard_Books_REST_API** — `rest_register` + `rest_query_suffix` (+ `rest_company` default 2). TRVc `@url` stubs → detail GET via `rest_query_suffix=145/1` style (≤5 links, same turn).\n   - **Portal pastespecial** (contact/name search): **Standard_Books_Portal_Paste** — `id_search` required; `paste_register` default **AllCUVc**; `paste_fuzzy=true` for numeric code without exact Code filter.\n   - **Portal register list**: **Standard_Books_Portal_Register_List** — `list_register`, `page`, `perpage`.\n   - **Portal reports**: **Standard_Books_Portal_Report_List** then **Standard_Books_Portal_Report**.\n   - **Portal login**: **Standard_Books_Portal_Login** (no args).\n   - **Portal custom** `action=…`: **Standard_Books_Portal_Query** — `portal_query` (+ POST body fields if needed).\n   Company **2**. Do not build full URLs yourself. Writes: **Telegram_Confirm_With_User** first.\n2) For any write/post to accounting that would change books, explain first and use **Telegram_Confirm_With_User** — proceed only after approval.\n3) **Telegram attachments** — PDF, CSV, XLS, XLSX, TXT/plain-text, and Word (**DOCX**/DOTX/DOCM) files are auto-extracted into **CURRENT USER MESSAGE** under the marker line \"--- Extracted attachment ---\". Word tables appear as JSON rows in that block — read them first and fill requested columns from those rows. Do **not** ask to paste the file, provide an HTTPS link, or re-upload the same .docx unless the marker is missing and **Attachment note** says extraction failed. Legacy **.doc** is not auto-read (ask for .docx).\n4) **FTP (DBT/fin only)** — **Browse:** **Call_ftp_list_files** (recursive; default **DBT/fin**). Tool **agentReturn** lines are `N. DBT/fin/…/file.ext` — copy those paths **verbatim**; never invent or shorten to filename only. Telegram **fp:1…12** / reply **1–12** auto-download only the **first 12** files in that list; for any other row use **Call_ftp_read_file** with the **full path** from agentReturn. **Upload:** **Call_ftp_upload** with full rootpath + base64_document. Do not rebuild the file tree from memory — use tool output only.\n5) **News** — EUROPA feed, Postimees, Pressa24 (RSS); **Read_Acron_news** for Acron Telegram RSS; **ERR_news** for ERR. For Acron news use one tool at a time, max ~1 month back; mention @acron_official when relevant.\n6) **Live progress (Show_Telegram_Progress)** — workflow already posts auto ⏳ at start. Call before long Standard Books / FTP / report work (max 2 agent calls per turn). Not for the final answer.\n7) **Report / file delivery (same turn)** — If the user asks for a file/report/HTML: deliver **this turn**. **FORBIDDEN**: \"I'll send later\", \"next message\", \"forming now ~30s\". If they asked to fill/edit a Word table, use the extracted rows and return the filled table **this turn** as HTML via **DBT_HTML_FILE** and/or **Document_from_JSON** (`xlsx`, filenameBase e.g. OS_updated). Do not wait for another upload.\n**FTP list HTML:** After **Call_ftp_list_files**, tables in **DBT_HTML_FILE** must include a **Path** column with exact tool strings (`DBT/fin/Subfolder/file.xlsx`). Filename-only tables break download.\nSteps: fetch data → build report → short caption → mandatory block (workflow attaches **dbt-cash-report.html**):\n<<<DBT_HTML_FILE>>>\n...complete HTML...\n<<<END_DBT_HTML_FILE>>>\n8) **Session KVM** — after visible prose (and DBT_HTML_FILE if used):\n<<<DBT_KV_JSON>>>\n{\"subject\":\"\",\"successes\":\"\",\"failures\":\"\",\"planNext\":\"\"}\n<<<END_DBT_KV_JSON>>>\n9) **Update_DBT_Skills** — skill_id: org | dbt-standard-books | dbt-telegram; note_text required; mode append|replace. Does not replace push-dbt-skills manifest.\n\nTools: Standard_Books_REST_API, Standard_Books_Portal_Paste, Standard_Books_Portal_Register_List, Standard_Books_Portal_Report_List, Standard_Books_Portal_Report, Standard_Books_Portal_Login, Standard_Books_Portal_Query, Call_ftp_list_files, Call_ftp_read_file, Call_ftp_upload, Document_from_JSON, EUROPA_feed, Postimees, Pressa24, Read_Acron_news, ERR_news, Telegram_Notify_User, Telegram_Confirm_With_User, Show_Telegram_Progress, Update_DBT_Skills, read_website, Currency exchange rates, Calculator (numeric expressions — totals, percentages, FX math on fetched figures), DBT_Search_PastVectors.\n\nTool policy: one attempt per user-visible answer for the same parameters; on empty/error explain once — do not immediately retry.",
+          "systemMessage": "You are DBT Accountant Assistant for AS DBT (Standard Books / Excellent accounting, Acron group).\n\nScope: help the finance team with Standard Books (WebExcellent Portal API), FTP budget files under DBT/fin, cash balances, supplier accounts, and Acron-related news. AS DBT has been under sanctions since 2022 and may not distribute profit — factor that into analysis when relevant.\n\nLanguage: Reply in **the same language** as the user's latest plain-text turn (CURRENT USER MESSAGE). Prefer mirroring Estonian/Russian verbatim.\n\nFocus: Answer the user's concrete request **first**. Do not open with full tool inventories unless they asked.\n\nSkills & guides: Workflow prepends Redis dbt:skills:manifest (publish via n8n workflow **DBT Push skills to Redis**) plus dbt:skills:agent_overlay (via Update_DBT_Skills) plus session recap. Follow Standard Books and Telegram skill bundles when present.\n\nConversation memory: Session memory is keyed by Telegram chat id across runs.\n\nOptional deep recall: **DBT_Search_PastVectors** searches archived turns for this chat only — use sparingly when session memory is insufficient.\n\nOperational rules:\n0) **Iteration budget** — at most **24** agent steps per user message. Skip **Update_DBT_Skills**, **read_website**, and **DBT_Search_PastVectors** unless explicitly needed. Prefer **one** Standard Books call with sensible parameters over many repeats. **Show_Telegram_Progress** at most **twice** after auto ⏳. Reserve the last step for the final reply.\n1) **Standard Books** — pick the **narrowest** tool (each exposes only its own parameters):\n   - **REST** register reads: **Standard_Books_REST_API** — `rest_register` + `rest_query_suffix` (+ `rest_company` default 2). TRVc `@url` stubs → detail GET via `rest_query_suffix=145/1` style (≤5 links, same turn).\n   - **Portal pastespecial** (contact/name search): **Standard_Books_Portal_Paste** — `id_search` required; `paste_register` default **AllCUVc**; `paste_fuzzy=true` for numeric code without exact Code filter.\n   - **Portal register list**: **Standard_Books_Portal_Register_List** — `list_register`, `page`, `perpage`.\n   - **Portal reports**: **Standard_Books_Portal_Report_List** then **Standard_Books_Portal_Report**.\n   - **Portal login**: **Standard_Books_Portal_Login** (no args).\n   - **Portal custom** `action=…`: **Standard_Books_Portal_Query** — `portal_query` (+ POST body fields if needed).\n   Company **2**. Do not build full URLs yourself. Writes: **Telegram_Confirm_With_User** first.\n2) For any write/post to accounting that would change books, explain first and use **Telegram_Confirm_With_User** — proceed only after approval.\n3) **Telegram attachments** — PDF, CSV, XLS, XLSX, TXT/plain-text, and Word (**DOCX**/DOTX/DOCM) files are auto-extracted into **CURRENT USER MESSAGE** under the marker line \"--- Extracted attachment ---\". Word tables appear as JSON rows in that block — read them first and fill requested columns from those rows. Do **not** ask to paste the file, provide an HTTPS link, or re-upload the same .docx unless the marker is missing and **Attachment note** says extraction failed. Legacy **.doc** is not auto-read (ask for .docx).\nWhen the user asks to fill/return the uploaded Word file, keep the original OOXML. Emit this block in the same turn (the workflow patches only the named cells and sends `*_updated.docx` with unchanged structure):\n<<<DBT_DOCX_PATCH>>>\n{\"table\":1,\"targetColumn\":\"Остаточная балансовая стоимость на 31.12.2026\",\"copyFromColumn\":\"Sum of Остаточная стоимость\",\"outputFileName\":\"ОС_updated.docx\"}\n<<<END_DBT_DOCX_PATCH>>>\nUse the **exact header strings** from --- Extracted attachment ---. `copyFromColumn` copies 1:1 into `targetColumn` (no added/removed rows or columns). For computed cells add `\"updates\":[{\"row\":1,\"value\":\"123.45\"}]` or `{\"match\":{\"Код\":\"OS-1\"},\"value\":\"123.45\"}` (`row` = extraction `_row`). FORBIDDEN: saying you cannot edit .docx; asking to resend the same file; substituting HTML/xlsx when they asked for the original Word file back.\n4) **FTP (DBT/fin only)** — **Browse:** **Call_ftp_list_files** (recursive; default **DBT/fin**). Tool **agentReturn** lines are `N. DBT/fin/…/file.ext` — copy those paths **verbatim**; never invent or shorten to filename only. Telegram **fp:1…12** / reply **1–12** auto-download only the **first 12** files in that list; for any other row use **Call_ftp_read_file** with the **full path** from agentReturn. **Upload:** **Call_ftp_upload** with full rootpath + base64_document. Do not rebuild the file tree from memory — use tool output only.\n5) **News** — EUROPA feed, Postimees, Pressa24 (RSS); **Read_Acron_news** for Acron Telegram RSS; **ERR_news** for ERR. For Acron news use one tool at a time, max ~1 month back; mention @acron_official when relevant.\n6) **Live progress (Show_Telegram_Progress)** — workflow already posts auto ⏳ at start. Call before long Standard Books / FTP / report work (max 2 agent calls per turn). Not for the final answer.\n7) **Report / file delivery (same turn)** — If the user asks for a file/report/HTML: deliver **this turn**. **FORBIDDEN**: \"I'll send later\", \"next message\", \"forming now ~30s\". If they asked to fill/edit the uploaded Word file, emit **DBT_DOCX_PATCH** this turn (workflow returns the original .docx with only cell values changed). Do not wait for another upload.\n**FTP list HTML:** After **Call_ftp_list_files**, tables in **DBT_HTML_FILE** must include a **Path** column with exact tool strings (`DBT/fin/Subfolder/file.xlsx`). Filename-only tables break download.\nSteps: fetch data → build report → short caption → mandatory block (workflow attaches **dbt-cash-report.html**):\n<<<DBT_HTML_FILE>>>\n...complete HTML...\n<<<END_DBT_HTML_FILE>>>\n8) **Session KVM** — after visible prose (and DBT_HTML_FILE if used):\n<<<DBT_KV_JSON>>>\n{\"subject\":\"\",\"successes\":\"\",\"failures\":\"\",\"planNext\":\"\"}\n<<<END_DBT_KV_JSON>>>\n9) **Update_DBT_Skills** — skill_id: org | dbt-standard-books | dbt-telegram; note_text required; mode append|replace. Does not replace push-dbt-skills manifest.\n\nTools: Standard_Books_REST_API, Standard_Books_Portal_Paste, Standard_Books_Portal_Register_List, Standard_Books_Portal_Report_List, Standard_Books_Portal_Report, Standard_Books_Portal_Login, Standard_Books_Portal_Query, Call_ftp_list_files, Call_ftp_read_file, Call_ftp_upload, Document_from_JSON, EUROPA_feed, Postimees, Pressa24, Read_Acron_news, ERR_news, Telegram_Notify_User, Telegram_Confirm_With_User, Show_Telegram_Progress, Update_DBT_Skills, read_website, Currency exchange rates, Calculator (numeric expressions — totals, percentages, FX math on fetched figures), DBT_Search_PastVectors.\n\nTool policy: one attempt per user-visible answer for the same parameters; on empty/error explain once — do not immediately retry.",
           "maxIterations": 24,
           "returnIntermediateSteps": false,
           "passthroughBinaryImages": true,
@@ -3040,7 +3040,7 @@
     },
     {
       "parameters": {
-        "jsCode": "var all=$input.all();var it=(all&&all.length)?all[0]:null;var aj=(it&&it.json)?it.json:{};\nvar MARKER_MAX=262144;\nvar MAX_CARRY_PARSE=50000;\nvar sessEcho={};\ntry{\n var sj=(typeof aj.sessionKvEchoJson==='string')?aj.sessionKvEchoJson:'{}';\n var eo=JSON.parse(sj||'{}');\n if(eo!==null&&typeof eo==='object'&&!Array.isArray(eo))sessEcho=eo;\n}catch(es){sessEcho={}}\nvar carry={};\ntry{\n var cr=(typeof aj._persistCarryJson==='string')?aj._persistCarryJson:'';\n var cstr=cr;\n if(cstr.length>MAX_CARRY_PARSE)cstr=cstr.slice(0,MAX_CARRY_PARSE);\n if(cstr){\n  var pj=JSON.parse(cstr);\n  if(pj!==null&&typeof pj==='object'&&!Array.isArray(pj))carry=pj;\n }\n}catch(ePc){carry={}}\nvar defaults={subject:'',successes:'',failures:'',planNext:''};\nvar prior=Object.assign({},defaults);\ntry{\n var cEcho=carry.sessionKvEcho;\n var aEcho=sessEcho;\n if(cEcho!==undefined&&cEcho!==null&&typeof cEcho==='object'&&!Array.isArray(cEcho))prior=Object.assign(prior,cEcho);\n else if(aEcho!==undefined&&aEcho!==null&&typeof aEcho==='object'&&!Array.isArray(aEcho))prior=Object.assign(prior,aEcho);\n}catch(ePri){prior=Object.assign({},defaults);}\nvar text='';\nif(typeof aj.output==='string')text=aj.output;\nelse if(typeof aj.text==='string')text=aj.text;\nelse if(typeof aj.response==='string')text=aj.response;\nelse text='';\nif(text.length>MARKER_MAX){text=text.slice(0,MARKER_MAX);}\nfunction capStore(s,n){var t=String(s===undefined||s===null?'':s);return t.length>n?t.slice(0,n):t;}\nfunction sanitizePlanNextPersist(p){\n var t=String(p===undefined||p===null?'':p).trim();\n if(!t)return t;\n if(/пришл|отправ|html|файл|отч[её]т|следующ|формиру|позже|pending|send.*file/i.test(t)){\n  return 'none';\n }\n return t;\n}\nvar K0='<<<DBT_KV_JSON>>>';\nvar K1='<<<END_DBT_KV_JSON>>>';\nvar usedStruct=false;\nvar publishText=text;\nvar kv;\nvar merged;\nvar kA=text.indexOf(K0);\nvar kB=text.indexOf(K1);\nif(kA>=0&&kB>kA){\n var inner=text.slice(kA+K0.length,kB).trim();\n try{\n  var so=JSON.parse(inner);\n  if(so&&typeof so==='object'&&!Array.isArray(so)){\n   usedStruct=true;\n   publishText=(text.slice(0,kA)+text.slice(kB+K1.length)).trim();\n   merged={\n    subject:capStore(so.subject,520),\n    successes:capStore(so.successes,2200),\n    failures:capStore(so.failures,2200),\n    planNext:capStore(sanitizePlanNextPersist(so.planNext),1200),\n    updatedAt:new Date().toISOString()\n   };\n   kv=capStore(JSON.stringify(merged),8000);\n  }\n }catch(_sj){usedStruct=false;}\n}\nif(!usedStruct){\n function grab(head,tag){\n  var ug='['+String(tag).toUpperCase()+']:';\n  var lines=String(head||'').split(/\\r?\\n/);\n  var i;\n  for(i=0;i<lines.length;i++){\n   var trimmed=String(lines[i]||'').trim();\n   if(trimmed.length<ug.length)continue;\n   if(trimmed.slice(0,ug.length).toUpperCase()===ug){\n    return trimmed.slice(ug.length).trim();\n   }\n  }\n  return '';\n }\n function splitPublish(src){\n  var s=String(src||'');\n  var low=s.toLowerCase();\n  var tag='[publish]:';\n  var ix=low.indexOf(tag);\n  if(ix<0)return {head:s,pub:s};\n  var headPart=s.slice(0,ix);\n  var after=s.slice(ix+tag.length);\n  var pubPart=String(after||'').trim();\n  return {head:headPart,pub:pubPart};\n }\n var blk=splitPublish(text);\n var gs=grab(blk.head,'SUBJECT');\n var gok=grab(blk.head,'SUCCESS');\n var gbad=grab(blk.head,'FAIL');\n var gnxt=grab(blk.head,'NEXT');\n var lowHead=blk.head.toLowerCase();\n var hasJ=lowHead.indexOf('[subject]:')>=0;\n var hasS=lowHead.indexOf('[success]:')>=0;\n var hasF=lowHead.indexOf('[fail]:')>=0;\n var hasN=lowHead.indexOf('[next]:')>=0;\n merged={\n  subject:hasJ?capStore(gs,520):capStore(String(prior.subject||''),520),\n  successes:hasS?capStore(gok,2200):capStore(String(prior.successes||''),2200),\n  failures:hasF?capStore(gbad,2200):capStore(String(prior.failures||''),2200),\n  planNext:hasN?capStore(sanitizePlanNextPersist(gnxt),1200):capStore(sanitizePlanNextPersist(String(prior.planNext||'')),1200),\n  updatedAt:new Date().toISOString()\n };\n kv=capStore(JSON.stringify(merged),8000);\n publishText=blk.pub;\n}\nfunction stripHtmlFileBlock(src){\n var H0='<<<DBT_HTML_FILE>>>';\n var H1='<<<END_DBT_HTML_FILE>>>';\n var s=String(src||'');\n var ha=s.indexOf(H0);\n var hb=s.indexOf(H1);\n if(ha<0||hb<=ha)return {text:s,html:''};\n return {\n  text:(s.slice(0,ha)+s.slice(hb+H1.length)).trim(),\n  html:s.slice(ha+H0.length,hb).trim()\n };\n}\nvar hf=stripHtmlFileBlock(publishText);\npublishText=hf.text;\nfunction ps(v,n){\n if(typeof v!=='string')return undefined;\n return v.length>n?v.slice(0,n):v;\n}\nvar mergedOut={\n chatId:(typeof aj.chatId==='string'&&aj.chatId!=='')?aj.chatId:undefined,\n sessionId:(typeof aj.sessionId==='string'&&aj.sessionId!=='')?aj.sessionId:undefined,\n text:ps(aj.text,MARKER_MAX),\n response:ps(aj.response,MARKER_MAX),\n dbtTelegramDocFileName:ps(aj.dbtTelegramDocFileName,512),\n vecIdxReadyFlag:(typeof aj.vecIdxReadyFlagStr==='string'&&aj.vecIdxReadyFlagStr!=='')?aj.vecIdxReadyFlagStr:undefined};\nmergedOut.output=ps(publishText,MARKER_MAX);\nif(hf.html){mergedOut._compathHtmlReport=ps(hf.html,500000);}\nmergedOut._kvPayload=kv;\ntry{\n var cId=(carry.chatId!==undefined&&carry.chatId!==null)?String(carry.chatId):'';\n var csId=(carry.sessionId!==undefined&&carry.sessionId!==null)?String(carry.sessionId):'';\n if(!mergedOut.chatId&&cId)mergedOut.chatId=cId;\n if(!mergedOut.sessionId&&csId)mergedOut.sessionId=csId;\n if(!mergedOut.chatId&&aj.chatId)mergedOut.chatId=aj.chatId;\n if(!mergedOut.sessionId&&aj.sessionId)mergedOut.sessionId=aj.sessionId;\n}catch(eId){}\nmergedOut._kvChatId=String(mergedOut.chatId||(carry.chatId?String(carry.chatId):'')||aj.chatId||'');\nmergedOut._telegramUserTurnForVec=String(\n (carry.telegramUserTurn!==undefined&&carry.telegramUserTurn!==null)?carry.telegramUserTurn:''\n).slice(0,8000);\nreturn[{json:mergedOut}];"
+        "jsCode": "var all=$input.all();var it=(all&&all.length)?all[0]:null;var aj=(it&&it.json)?it.json:{};\nvar MARKER_MAX=262144;\nvar MAX_CARRY_PARSE=50000;\nvar sessEcho={};\ntry{\n var sj=(typeof aj.sessionKvEchoJson==='string')?aj.sessionKvEchoJson:'{}';\n var eo=JSON.parse(sj||'{}');\n if(eo!==null&&typeof eo==='object'&&!Array.isArray(eo))sessEcho=eo;\n}catch(es){sessEcho={}}\nvar carry={};\ntry{\n var cr=(typeof aj._persistCarryJson==='string')?aj._persistCarryJson:'';\n var cstr=cr;\n if(cstr.length>MAX_CARRY_PARSE)cstr=cstr.slice(0,MAX_CARRY_PARSE);\n if(cstr){\n  var pj=JSON.parse(cstr);\n  if(pj!==null&&typeof pj==='object'&&!Array.isArray(pj))carry=pj;\n }\n}catch(ePc){carry={}}\nvar defaults={subject:'',successes:'',failures:'',planNext:''};\nvar prior=Object.assign({},defaults);\ntry{\n var cEcho=carry.sessionKvEcho;\n var aEcho=sessEcho;\n if(cEcho!==undefined&&cEcho!==null&&typeof cEcho==='object'&&!Array.isArray(cEcho))prior=Object.assign(prior,cEcho);\n else if(aEcho!==undefined&&aEcho!==null&&typeof aEcho==='object'&&!Array.isArray(aEcho))prior=Object.assign(prior,aEcho);\n}catch(ePri){prior=Object.assign({},defaults);}\nfunction stripDocxPatchBlock(src){\n var H0='<<<DBT_DOCX_PATCH>>>';\n var H1='<<<END_DBT_DOCX_PATCH>>>';\n var s=String(src||'');\n var ha=s.indexOf(H0);\n var hb=s.indexOf(H1);\n if(ha<0||hb<=ha)return {text:s,patch:null,wanted:false};\n var inner=s.slice(ha+H0.length,hb).trim();\n var m=/^```(?:json)?\\s*([\\s\\S]*?)```$/im.exec(inner);\n if(m)inner=m[1].trim();\n var patch=null;\n try{\n  var o=JSON.parse(inner);\n  if(o&&typeof o==='object'&&!Array.isArray(o))patch=o;\n }catch(_p){patch=null;}\n var wanted=!!(patch&&(patch.targetColumn||(Array.isArray(patch.updates)&&patch.updates.length)||patch.copyFromColumn));\n return {text:(s.slice(0,ha)+s.slice(hb+H1.length)).trim(),patch:patch,wanted:wanted};\n}\nvar text='';\nif(typeof aj.output==='string')text=aj.output;\nelse if(typeof aj.text==='string')text=aj.text;\nelse if(typeof aj.response==='string')text=aj.response;\nelse text='';\nif(text.length>MARKER_MAX){text=text.slice(0,MARKER_MAX);}\nvar dx=stripDocxPatchBlock(text);\ntext=dx.text;\nfunction capStore(s,n){var t=String(s===undefined||s===null?'':s);return t.length>n?t.slice(0,n):t;}\nfunction sanitizePlanNextPersist(p){\n var t=String(p===undefined||p===null?'':p).trim();\n if(!t)return t;\n if(/пришл|отправ|html|файл|отч[её]т|следующ|формиру|позже|pending|send.*file/i.test(t)){\n  return 'none';\n }\n return t;\n}\nvar K0='<<<DBT_KV_JSON>>>';\nvar K1='<<<END_DBT_KV_JSON>>>';\nvar usedStruct=false;\nvar publishText=text;\nvar kv;\nvar merged;\nvar kA=text.indexOf(K0);\nvar kB=text.indexOf(K1);\nif(kA>=0&&kB>kA){\n var inner=text.slice(kA+K0.length,kB).trim();\n try{\n  var so=JSON.parse(inner);\n  if(so&&typeof so==='object'&&!Array.isArray(so)){\n   usedStruct=true;\n   publishText=(text.slice(0,kA)+text.slice(kB+K1.length)).trim();\n   merged={\n    subject:capStore(so.subject,520),\n    successes:capStore(so.successes,2200),\n    failures:capStore(so.failures,2200),\n    planNext:capStore(sanitizePlanNextPersist(so.planNext),1200),\n    updatedAt:new Date().toISOString()\n   };\n   kv=capStore(JSON.stringify(merged),8000);\n  }\n }catch(_sj){usedStruct=false;}\n}\nif(!usedStruct){\n function grab(head,tag){\n  var ug='['+String(tag).toUpperCase()+']:';\n  var lines=String(head||'').split(/\\r?\\n/);\n  var i;\n  for(i=0;i<lines.length;i++){\n   var trimmed=String(lines[i]||'').trim();\n   if(trimmed.length<ug.length)continue;\n   if(trimmed.slice(0,ug.length).toUpperCase()===ug){\n    return trimmed.slice(ug.length).trim();\n   }\n  }\n  return '';\n }\n function splitPublish(src){\n  var s=String(src||'');\n  var low=s.toLowerCase();\n  var tag='[publish]:';\n  var ix=low.indexOf(tag);\n  if(ix<0)return {head:s,pub:s};\n  var headPart=s.slice(0,ix);\n  var after=s.slice(ix+tag.length);\n  var pubPart=String(after||'').trim();\n  return {head:headPart,pub:pubPart};\n }\n var blk=splitPublish(text);\n var gs=grab(blk.head,'SUBJECT');\n var gok=grab(blk.head,'SUCCESS');\n var gbad=grab(blk.head,'FAIL');\n var gnxt=grab(blk.head,'NEXT');\n var lowHead=blk.head.toLowerCase();\n var hasJ=lowHead.indexOf('[subject]:')>=0;\n var hasS=lowHead.indexOf('[success]:')>=0;\n var hasF=lowHead.indexOf('[fail]:')>=0;\n var hasN=lowHead.indexOf('[next]:')>=0;\n merged={\n  subject:hasJ?capStore(gs,520):capStore(String(prior.subject||''),520),\n  successes:hasS?capStore(gok,2200):capStore(String(prior.successes||''),2200),\n  failures:hasF?capStore(gbad,2200):capStore(String(prior.failures||''),2200),\n  planNext:hasN?capStore(sanitizePlanNextPersist(gnxt),1200):capStore(sanitizePlanNextPersist(String(prior.planNext||'')),1200),\n  updatedAt:new Date().toISOString()\n };\n kv=capStore(JSON.stringify(merged),8000);\n publishText=blk.pub;\n}\nfunction stripHtmlFileBlock(src){\n var H0='<<<DBT_HTML_FILE>>>';\n var H1='<<<END_DBT_HTML_FILE>>>';\n var s=String(src||'');\n var ha=s.indexOf(H0);\n var hb=s.indexOf(H1);\n if(ha<0||hb<=ha)return {text:s,html:''};\n return {\n  text:(s.slice(0,ha)+s.slice(hb+H1.length)).trim(),\n  html:s.slice(ha+H0.length,hb).trim()\n };\n}\nvar hf=stripHtmlFileBlock(publishText);\npublishText=hf.text;\nvar dx2=stripDocxPatchBlock(publishText);\npublishText=dx2.text;\nif(!dx.patch&&dx2.patch)dx.patch=dx2.patch;\nif(!dx.wanted&&dx2.wanted)dx.wanted=true;\nfunction ps(v,n){\n if(typeof v!=='string')return undefined;\n return v.length>n?v.slice(0,n):v;\n}\nvar mergedOut={\n chatId:(typeof aj.chatId==='string'&&aj.chatId!=='')?aj.chatId:undefined,\n sessionId:(typeof aj.sessionId==='string'&&aj.sessionId!=='')?aj.sessionId:undefined,\n text:ps(aj.text,MARKER_MAX),\n response:ps(aj.response,MARKER_MAX),\n dbtTelegramDocFileName:ps(aj.dbtTelegramDocFileName,512),\n vecIdxReadyFlag:(typeof aj.vecIdxReadyFlagStr==='string'&&aj.vecIdxReadyFlagStr!=='')?aj.vecIdxReadyFlagStr:undefined};\nmergedOut.output=ps(publishText,MARKER_MAX);\nif(hf.html){mergedOut._compathHtmlReport=ps(hf.html,500000);}\nif(dx.wanted){mergedOut._docxPatchWanted=true;}\nif(dx.patch){mergedOut._docxPatch=dx.patch;}\nmergedOut._kvPayload=kv;\ntry{\n var cId=(carry.chatId!==undefined&&carry.chatId!==null)?String(carry.chatId):'';\n var csId=(carry.sessionId!==undefined&&carry.sessionId!==null)?String(carry.sessionId):'';\n if(!mergedOut.chatId&&cId)mergedOut.chatId=cId;\n if(!mergedOut.sessionId&&csId)mergedOut.sessionId=csId;\n if(!mergedOut.chatId&&aj.chatId)mergedOut.chatId=aj.chatId;\n if(!mergedOut.sessionId&&aj.sessionId)mergedOut.sessionId=aj.sessionId;\n}catch(eId){}\nmergedOut._kvChatId=String(mergedOut.chatId||(carry.chatId?String(carry.chatId):'')||aj.chatId||'');\nmergedOut._telegramUserTurnForVec=String(\n (carry.telegramUserTurn!==undefined&&carry.telegramUserTurn!==null)?carry.telegramUserTurn:''\n).slice(0,8000);\nreturn[{json:mergedOut}];"
       },
       "id": "f7f44b34-dfb2-4655-8723-355017fd3478",
       "name": "Persist KVM + KV",
@@ -3138,7 +3138,7 @@
     {
       "parameters": {
         "mode": "runOnceForEachItem",
-        "jsCode": "const TELEGRAM_TEXT_MAX = 4000;\nfunction escapeHtml(s) {\n  return String(s)\n    .replace(/&/g, '&amp;')\n    .replace(/</g, '&lt;')\n    .replace(/>/g, '&gt;')\n    .replace(/\"/g, '&quot;');\n}\nfunction pickRawText(j) {\n  if (j.output !== undefined && j.output !== null) return String(j.output);\n  var t = j.text;\n  if (t === undefined || t === null) t = j.response;\n  if (t === undefined || t === null) t = j.message;\n  return String(t || '');\n}\nvar j = $input.item.json || {};\nvar origFn = j.dbtTelegramDocFileName;\nvar origName =\n  origFn !== undefined && origFn !== null && String(origFn).trim() !== ''\n    ? String(origFn)\n    : null;\nvar bin = $input.item.binary && $input.item.binary.data;\nvar raw = pickRawText(j);\nfunction stripHtmlFileBlockEgress(src){\n var H0='<<<DBT_HTML_FILE>>>';\n var H1='<<<END_DBT_HTML_FILE>>>';\n var s=String(src||'');\n var ha=s.indexOf(H0);\n var hb=s.indexOf(H1);\n if(ha<0||hb<=ha)return {visible:s,html:''};\n return {\n  visible:(s.slice(0,ha)+s.slice(hb+H1.length)).trim(),\n  html:s.slice(ha+H0.length,hb).trim()\n };\n}\nvar hfEgress=stripHtmlFileBlockEgress(raw);\nvar htmlReport='';\nif(j._compathHtmlReport!==undefined&&j._compathHtmlReport!==null&&String(j._compathHtmlReport).trim()!==''){\n htmlReport=String(j._compathHtmlReport);\n}else if(hfEgress.html){htmlReport=hfEgress.html;}\nraw=hfEgress.visible;\nvar chatId = String(j.chatId || j._kvChatId || '').trim();\nif (!chatId) {\n  try {\n    var cr = $('Compose briefing for agent').first().json;\n    if (cr && cr.chatId !== undefined && cr.chatId !== null)\n      chatId = String(cr.chatId).trim();\n  } catch (_ec) {}\n}\nif (!chatId) {\n  try {\n    var nr = $('Normalize chat payload').first().json;\n    if (nr && nr.chatId !== undefined && nr.chatId !== null)\n      chatId = String(nr.chatId).trim();\n  } catch (_en) {}\n}\nif (!chatId) {\n  try {\n    var tr = $('Telegram Trigger').first().json;\n    if (\n      tr &&\n      tr.message &&\n      tr.message.chat &&\n      tr.message.chat.id !== undefined &&\n      tr.message.chat.id !== null\n    )\n      chatId = String(tr.message.chat.id).trim();\n  } catch (_et) {}\n}\nvar hasBinaryData = !!(bin && bin.data);\nvar sameAsUserUpload = false;\nif (hasBinaryData && origName && bin.fileName) {\n  sameAsUserUpload = String(bin.fileName) === String(origName);\n}\nif (htmlReport.length > 0) {\n  var doc = htmlReport;\n  if (!/^\\s*<!DOCTYPE/i.test(doc) && !/^\\s*<html/i.test(doc)) {\n    doc =\n      '<!DOCTYPE html><html><head><meta charset=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"/><title>Compath cash report</title><style>body{font-family:system-ui,Segoe UI,sans-serif;padding:12px;line-height:1.45}table{border-collapse:collapse;width:100%}th,td{border:1px solid #ccc;padding:6px;text-align:left}</style></head><body>' +\n      doc +\n      '</body></html>';\n  }\n  var cap = raw.length > 900 ? raw.slice(0, 880) + '...' : raw;\n  if (!cap) {\n    cap = 'Cash report — open the attached HTML file.';\n  }\n  var capPlain = String(cap).replace(/</g, '(').replace(/>/g, ')');\n  var b64Report = Buffer.from(doc, 'utf8').toString('base64');\n  return {\n    json: {\n      egressKind: 'html',\n      chatId: chatId,\n      telegramText: capPlain,\n      originalLength: raw.length,\n      htmlReportChars: doc.length\n    },\n    binary: {\n      data: { data: b64Report, mimeType: 'text/html', fileName: 'dbt-cash-report.html' }\n    }\n  };\n}\nif (hasBinaryData && !sameAsUserUpload) {\n  var cap = raw.length > 900 ? raw.slice(0, 880) + '...' : raw;\n  var capPlain = String(cap).replace(/</g, '(').replace(/>/g, ')');\n  return {\n      json: {\n        egressKind: 'binary',\n        chatId: chatId,\n        caption: capPlain,\n        originalLength: raw.length\n      },\n      binary: $input.item.binary\n    };\n}\nif (raw.length > TELEGRAM_TEXT_MAX) {\n  var title = 'Compath reply';\n  var html =\n    '<!DOCTYPE html><html><head><meta charset=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"/><title>' +\n    escapeHtml(title) +\n    '</title><style>body{font-family:system-ui,Segoe UI,sans-serif;padding:12px;line-height:1.45}pre{white-space:pre-wrap;word-break:break-word}</style></head><body>' +\n    '<p><strong>Full response (' + raw.length + ' characters)</strong></p><pre>' +\n    escapeHtml(raw) +\n    '</pre></body></html>';\n  var b64 = Buffer.from(html, 'utf8').toString('base64');\n  return {\n      json: {\n        egressKind: 'html',\n        chatId: chatId,\n        telegramText:\n          'Reply is long (' + raw.length + ' chars). Open the attached HTML file for the full text.',\n        originalLength: raw.length\n      },\n      binary: {\n        data: { data: b64, mimeType: 'text/html', fileName: 'dbt-reply.html' }\n      }\n    };\n}\nreturn {\n    json: {\n      egressKind: 'text',\n      chatId: chatId,\n      telegramText: raw,\n      originalLength: raw.length\n    }\n  };\n"
+        "jsCode": "const TELEGRAM_TEXT_MAX = 4000;\nfunction escapeHtml(s) {\n  return String(s)\n    .replace(/&/g, '&amp;')\n    .replace(/</g, '&lt;')\n    .replace(/>/g, '&gt;')\n    .replace(/\"/g, '&quot;');\n}\nfunction pickRawText(j) {\n  if (j.output !== undefined && j.output !== null) return String(j.output);\n  var t = j.text;\n  if (t === undefined || t === null) t = j.response;\n  if (t === undefined || t === null) t = j.message;\n  return String(t || '');\n}\nvar j = $input.item.json || {};\nvar origFn = j.dbtTelegramDocFileName;\nvar origName =\n  origFn !== undefined && origFn !== null && String(origFn).trim() !== ''\n    ? String(origFn)\n    : null;\nvar bin = $input.item.binary && $input.item.binary.data;\nvar raw = pickRawText(j);\nfunction stripDocxPatchEgress(src){\n var H0='<<<DBT_DOCX_PATCH>>>';\n var H1='<<<END_DBT_DOCX_PATCH>>>';\n var s=String(src||'');\n var ha=s.indexOf(H0);\n var hb=s.indexOf(H1);\n if(ha<0||hb<=ha)return s;\n return (s.slice(0,ha)+s.slice(hb+H1.length)).trim();\n}\nraw = stripDocxPatchEgress(raw);\nfunction stripHtmlFileBlockEgress(src){\n var H0='<<<DBT_HTML_FILE>>>';\n var H1='<<<END_DBT_HTML_FILE>>>';\n var s=String(src||'');\n var ha=s.indexOf(H0);\n var hb=s.indexOf(H1);\n if(ha<0||hb<=ha)return {visible:s,html:''};\n return {\n  visible:(s.slice(0,ha)+s.slice(hb+H1.length)).trim(),\n  html:s.slice(ha+H0.length,hb).trim()\n };\n}\nvar hfEgress=stripHtmlFileBlockEgress(raw);\nvar htmlReport='';\nif(j._compathHtmlReport!==undefined&&j._compathHtmlReport!==null&&String(j._compathHtmlReport).trim()!==''){\n htmlReport=String(j._compathHtmlReport);\n}else if(hfEgress.html){htmlReport=hfEgress.html;}\nraw=hfEgress.visible;\nvar chatId = String(j.chatId || j._kvChatId || '').trim();\nif (!chatId) {\n  try {\n    var cr = $('Compose briefing for agent').first().json;\n    if (cr && cr.chatId !== undefined && cr.chatId !== null)\n      chatId = String(cr.chatId).trim();\n  } catch (_ec) {}\n}\nif (!chatId) {\n  try {\n    var nr = $('Normalize chat payload').first().json;\n    if (nr && nr.chatId !== undefined && nr.chatId !== null)\n      chatId = String(nr.chatId).trim();\n  } catch (_en) {}\n}\nif (!chatId) {\n  try {\n    var tr = $('Telegram Trigger').first().json;\n    if (\n      tr &&\n      tr.message &&\n      tr.message.chat &&\n      tr.message.chat.id !== undefined &&\n      tr.message.chat.id !== null\n    )\n      chatId = String(tr.message.chat.id).trim();\n  } catch (_et) {}\n}\nvar hasBinaryData = !!(bin && bin.data);\nvar sameAsUserUpload = false;\nif (hasBinaryData && origName && bin.fileName) {\n  sameAsUserUpload = String(bin.fileName) === String(origName);\n}\nif (j._docxPatched) {\n  htmlReport = '';\n}\nif (htmlReport.length > 0) {\n  var doc = htmlReport;\n  if (!/^\\s*<!DOCTYPE/i.test(doc) && !/^\\s*<html/i.test(doc)) {\n    doc =\n      '<!DOCTYPE html><html><head><meta charset=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"/><title>Compath cash report</title><style>body{font-family:system-ui,Segoe UI,sans-serif;padding:12px;line-height:1.45}table{border-collapse:collapse;width:100%}th,td{border:1px solid #ccc;padding:6px;text-align:left}</style></head><body>' +\n      doc +\n      '</body></html>';\n  }\n  var cap = raw.length > 900 ? raw.slice(0, 880) + '...' : raw;\n  if (!cap) {\n    cap = 'Cash report — open the attached HTML file.';\n  }\n  var capPlain = String(cap).replace(/</g, '(').replace(/>/g, ')');\n  var b64Report = Buffer.from(doc, 'utf8').toString('base64');\n  return {\n    json: {\n      egressKind: 'html',\n      chatId: chatId,\n      telegramText: capPlain,\n      originalLength: raw.length,\n      htmlReportChars: doc.length\n    },\n    binary: {\n      data: { data: b64Report, mimeType: 'text/html', fileName: 'dbt-cash-report.html' }\n    }\n  };\n}\nif (hasBinaryData && !sameAsUserUpload) {\n  var cap = raw.length > 900 ? raw.slice(0, 880) + '...' : raw;\n  var capPlain = String(cap).replace(/</g, '(').replace(/>/g, ')');\n  return {\n      json: {\n        egressKind: 'binary',\n        chatId: chatId,\n        caption: capPlain,\n        originalLength: raw.length\n      },\n      binary: $input.item.binary\n    };\n}\nif (raw.length > TELEGRAM_TEXT_MAX) {\n  var title = 'Compath reply';\n  var html =\n    '<!DOCTYPE html><html><head><meta charset=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"/><title>' +\n    escapeHtml(title) +\n    '</title><style>body{font-family:system-ui,Segoe UI,sans-serif;padding:12px;line-height:1.45}pre{white-space:pre-wrap;word-break:break-word}</style></head><body>' +\n    '<p><strong>Full response (' + raw.length + ' characters)</strong></p><pre>' +\n    escapeHtml(raw) +\n    '</pre></body></html>';\n  var b64 = Buffer.from(html, 'utf8').toString('base64');\n  return {\n      json: {\n        egressKind: 'html',\n        chatId: chatId,\n        telegramText:\n          'Reply is long (' + raw.length + ' chars). Open the attached HTML file for the full text.',\n        originalLength: raw.length\n      },\n      binary: {\n        data: { data: b64, mimeType: 'text/html', fileName: 'dbt-reply.html' }\n      }\n    };\n}\nreturn {\n    json: {\n      egressKind: 'text',\n      chatId: chatId,\n      telegramText: raw,\n      originalLength: raw.length\n    }\n  };\n"
       },
       "id": "6a763d4e-22f5-40cd-a2a7-6a7f86d3a4ab",
       "name": "Prepare Compath Telegram egress",
@@ -3302,6 +3302,169 @@
         "jsCode": "function decodeXml(s) {\n  return String(s || '')\n    .replace(/&amp;/g, '&')\n    .replace(/&lt;/g, '<')\n    .replace(/&gt;/g, '>')\n    .replace(/&quot;/g, '\"')\n    .replace(/&apos;/g, \"'\")\n    .replace(/&#(\\d+);/g, function (_m, n) {\n      return String.fromCharCode(Number(n));\n    })\n    .replace(/&#x([0-9a-fA-F]+);/g, function (_m, n) {\n      return String.fromCharCode(parseInt(n, 16));\n    });\n}\n\nfunction textsIn(xml) {\n  var parts = [];\n  var re = /<w:t(?:\\s[^>]*)?>([^<]*)<\\/w:t>/g;\n  var m;\n  while ((m = re.exec(xml))) parts.push(decodeXml(m[1]));\n  return parts.join('');\n}\n\nfunction parseTables(xml) {\n  var tables = [];\n  var tblRe = /<w:tbl\\b[\\s\\S]*?<\\/w:tbl>/g;\n  var t;\n  while ((t = tblRe.exec(xml))) {\n    var rows = [];\n    var trRe = /<w:tr\\b[\\s\\S]*?<\\/w:tr>/g;\n    var r;\n    while ((r = trRe.exec(t[0]))) {\n      var cells = [];\n      var tcRe = /<w:tc\\b[\\s\\S]*?<\\/w:tc>/g;\n      var c;\n      while ((c = tcRe.exec(r[0]))) {\n        cells.push(textsIn(c[0]).replace(/\\s+/g, ' ').trim());\n      }\n      rows.push(cells);\n    }\n    tables.push(rows);\n  }\n  return tables;\n}\n\nfunction parseParagraphs(xml) {\n  var xmlNoTbl = String(xml || '').replace(/<w:tbl\\b[\\s\\S]*?<\\/w:tbl>/g, '');\n  var out = [];\n  var pRe = /<w:p\\b[\\s\\S]*?<\\/w:p>/g;\n  var p;\n  while ((p = pRe.exec(xmlNoTbl))) {\n    var txt = textsIn(p[0]).replace(/\\s+/g, ' ').trim();\n    if (txt) out.push(txt);\n  }\n  return out;\n}\n\nfunction uniqueHeaders(cells) {\n  var seen = {};\n  return cells.map(function (h, i) {\n    var name = String(h || '').trim() || 'col_' + i;\n    var k = name;\n    var n = 2;\n    while (seen[k]) {\n      k = name + '_' + n;\n      n++;\n    }\n    seen[k] = true;\n    return k;\n  });\n}\n\nfunction tableToRecords(rows) {\n  if (!rows.length) return { headers: [], records: [] };\n  if (rows.length === 1) {\n    var only = {};\n    rows[0].forEach(function (v, i) {\n      only['col_' + i] = v;\n    });\n    return { headers: rows[0].map(function (_v, i) { return 'col_' + i; }), records: [only] };\n  }\n  var headers = uniqueHeaders(rows[0]);\n  var records = [];\n  for (var r = 1; r < rows.length; r++) {\n    var obj = {};\n    for (var c = 0; c < headers.length; c++) obj[headers[c]] = rows[r][c] || '';\n    records.push(obj);\n  }\n  return { headers: headers, records: records };\n}\n\nfunction isDocumentXml(name) {\n  var n = String(name || '').replace(/\\\\/g, '/');\n  if (/\\[Content_Types\\]/i.test(n) || /\\.rels$/i.test(n)) return false;\n  return /(^|\\/)document\\.xml$/i.test(n);\n}\n\nreturn (async () => {\nconst inputItems = $input.all();\nconst first = inputItems.length ? inputItems[0] : { json: {}, binary: {} };\n\nlet src = {};\nlet origBin;\ntry {\n  const cls = $('Classify attachment').first();\n  src = (cls && cls.json) || {};\n  origBin = cls && cls.binary;\n} catch (_e) {\n  src = first.json || {};\n  origBin = first.binary;\n}\n\nasync function readBinary(itemIndex, prop) {\n  if (this.helpers && typeof this.helpers.getBinaryDataBuffer === 'function') {\n    return await this.helpers.getBinaryDataBuffer(itemIndex, prop);\n  }\n  const b = (inputItems[itemIndex] && inputItems[itemIndex].binary && inputItems[itemIndex].binary[prop]) || {};\n  if (b.data && b.data !== 'filesystem-v2' && typeof b.data === 'string') {\n    return Buffer.from(b.data, 'base64');\n  }\n  throw new Error('Cannot read binary field ' + prop);\n}\n\nlet xml = '';\nlet xmlName = '';\nlet extractError = '';\nconst bins = first.binary || {};\nconst names = Object.keys(bins);\ntry {\n  for (let i = 0; i < names.length; i++) {\n    const key = names[i];\n    const meta = bins[key] || {};\n    const fname = meta.fileName || meta.file_name || key;\n    if (!isDocumentXml(fname)) continue;\n    const buf = await readBinary.call(this, 0, key);\n    xml = Buffer.from(buf).toString('utf8').replace(/^\\uFEFF/, '');\n    xmlName = fname;\n    break;\n  }\n} catch (e) {\n  extractError = String((e && e.message) || e);\n}\n\nif (!xml && first.json && first.json.error) {\n  extractError = extractError || String(first.json.error);\n}\n\nconst paragraphs = xml ? parseParagraphs(xml) : [];\nconst tables = xml ? parseTables(xml) : [];\nconst tablePacks = tables.map(tableToRecords);\nconst records = [];\ntablePacks.forEach(function (pack, ti) {\n  pack.records.forEach(function (rec, ri) {\n    records.push(Object.assign({ _source: 'docx', _table: ti + 1, _row: ri + 1 }, rec));\n  });\n});\n\nconst fileName = String(src.dbtTelegramDocFileName || src._docxOriginalFileName || 'document.docx');\nconst ok = !!(xml && (records.length || paragraphs.length));\n\nfunction seedItem(extra) {\n  return Object.assign(\n    {},\n    extra,\n    {\n      sessionId: src.sessionId,\n      chatId: src.chatId,\n      chatInput: src.chatInput,\n      dbtTelegramDocFileName: src.dbtTelegramDocFileName || fileName,\n      message: src.message,\n      _extractRoute: src._extractRoute,\n      _docxFileName: fileName,\n      _docxXmlPart: xmlName,\n      _docxExtractOk: ok\n    }\n  );\n}\n\nif (!ok) {\n  return [\n    {\n      json: seedItem({\n        text:\n          '[attachment extraction produced no text — Word XML missing, encrypted, or parser error' +\n          (extractError ? ': ' + extractError : '') +\n          ']',\n        paragraphs: paragraphs,\n        tableCount: tables.length\n      }),\n      binary: origBin\n    }\n  ];\n}\n\nif (!records.length) {\n  return [\n    {\n      json: seedItem({\n        text: paragraphs.join('\\n'),\n        paragraphs: paragraphs,\n        tableCount: 0\n      }),\n      binary: origBin\n    }\n  ];\n}\n\nreturn records.map(function (rec, i) {\n  const json = seedItem(rec);\n  if (i === 0) json._docxParagraphs = paragraphs;\n  return { json: json, binary: i === 0 ? origBin : undefined };\n});\n})();\n"
       },
       "notes": "Turn word/document.xml into table-row JSON for Collapse extract into chatInput.",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "11e7a6c4-2f81-4c3a-9d50-a1b2c3d4e5f6",
+      "name": "Has DOCX patch?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        13168,
+        1280
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "docxpatch",
+              "leftValue": "={{ !!$json._docxPatchWanted }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              },
+              "rightValue": ""
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "21e7a6c4-2f81-4c3a-9d50-a1b2c3d4e5f7",
+      "name": "Restore original DOCX binary",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        13400,
+        1408
+      ],
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const j = $input.item.json || {};\nlet binary;\ntry {\n  const cls = $('Classify attachment').first();\n  if (cls && cls.binary) binary = cls.binary;\n} catch (_e) {}\nif (!binary || !binary.data) {\n  try {\n    const tg = $('Telegram Trigger').first();\n    if (tg && tg.binary) binary = tg.binary;\n  } catch (_e2) {}\n}\nreturn {\n  json: Object.assign({}, j, { _docxRestoreOk: !!(binary && binary.data) }),\n  binary: binary\n};\n"
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "31e7a6c4-2f81-4c3a-9d50-a1b2c3d4e5f8",
+      "name": "Original DOCX binary present?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        13632,
+        1408
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "bin",
+              "leftValue": "={{ !!($binary && $binary.data) }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              },
+              "rightValue": ""
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "41e7a6c4-2f81-4c3a-9d50-a1b2c3d4e5f9",
+      "name": "Rename return DOCX to ZIP",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        13864,
+        1408
+      ],
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const item = $input.item;\nconst j = item.json || {};\nconst bin = item.binary || {};\nconst src = bin.data;\nif (!src) {\n  return {\n    json: Object.assign({}, j, { _docxRenameFailed: true }),\n    binary: item.binary\n  };\n}\nconst oldName = String(src.fileName || j.dbtTelegramDocFileName || 'document.docx');\nconst stem = oldName.replace(/\\.(docx|dotx|docm)$/i, '') || 'document';\nconst next = Object.assign({}, src, {\n  fileName: stem + '.zip',\n  fileExtension: 'zip',\n  mimeType: 'application/zip'\n});\nreturn {\n  json: Object.assign({}, j, { _docxOriginalFileName: oldName }),\n  binary: Object.assign({}, bin, { data: next })\n};\n"
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "51e7a6c4-2f81-4c3a-9d50-a1b2c3d4e5fa",
+      "name": "Decompress return DOCX",
+      "type": "n8n-nodes-base.compression",
+      "typeVersion": 1.1,
+      "position": [
+        14096,
+        1408
+      ],
+      "parameters": {
+        "operation": "decompress",
+        "binaryPropertyName": "data",
+        "outputPrefix": "docx_"
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true
+    },
+    {
+      "id": "61e7a6c4-2f81-4c3a-9d50-a1b2c3d4e5fb",
+      "name": "Patch Word table cells",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        14328,
+        1408
+      ],
+      "parameters": {
+        "jsCode": "function xmlEscape(s) {\n  return String(s)\n    .replace(/&/g, '&amp;')\n    .replace(/</g, '&lt;')\n    .replace(/>/g, '&gt;')\n    .replace(/\"/g, '&quot;');\n}\nfunction decodeXml(s) {\n  return String(s || '')\n    .replace(/&amp;/g, '&')\n    .replace(/&lt;/g, '<')\n    .replace(/&gt;/g, '>')\n    .replace(/&quot;/g, '\"')\n    .replace(/&apos;/g, \"'\")\n    .replace(/&#(\\d+);/g, function (_m, n) {\n      return String.fromCharCode(Number(n));\n    })\n    .replace(/&#x([0-9a-fA-F]+);/g, function (_m, n) {\n      return String.fromCharCode(parseInt(n, 16));\n    });\n}\nfunction textsIn(xml) {\n  var parts = [];\n  var re = /<w:t(?:\\s[^>]*)?>([^<]*)<\\/w:t>/g;\n  var m;\n  while ((m = re.exec(xml))) parts.push(decodeXml(m[1]));\n  return parts.join('');\n}\nfunction norm(s) {\n  return String(s || '').replace(/\\s+/g, ' ').trim();\n}\nfunction findCol(headers, name) {\n  var n = norm(name);\n  if (!n) return -1;\n  var i;\n  for (i = 0; i < headers.length; i++) if (norm(headers[i]) === n) return i;\n  var nl = n.toLowerCase();\n  for (i = 0; i < headers.length; i++) if (norm(headers[i]).toLowerCase() === nl) return i;\n  for (i = 0; i < headers.length; i++) {\n    var h = norm(headers[i]);\n    if (h && (h.indexOf(n) >= 0 || n.indexOf(h) >= 0)) return i;\n  }\n  return -1;\n}\nfunction uniqueHeaders(cells) {\n  var seen = {};\n  return cells.map(function (h, i) {\n    var name = norm(h) || 'col_' + i;\n    var k = name;\n    var n = 2;\n    while (seen[k]) { k = name + '_' + n; n++; }\n    seen[k] = true;\n    return k;\n  });\n}\nfunction setCellText(cellXml, value) {\n  var escaped = xmlEscape(value == null ? '' : value);\n  var tRe = /<w:t(?:\\s[^>]*)?>[^<]*<\\/w:t>/g;\n  var matches = cellXml.match(tRe);\n  if (matches && matches.length) {\n    var first = true;\n    return cellXml.replace(tRe, function (m) {\n      if (first) { first = false; return m.replace(/>[^<]*<\\//, '>' + escaped + '</'); }\n      return m.replace(/>[^<]*<\\//, '></');\n    });\n  }\n  if (/<w:p[\\s>]/.test(cellXml)) {\n    return cellXml.replace(/<\\/w:p>/, '<w:r><w:t xml:space=\"preserve\">' + escaped + '</w:t></w:r></w:p>');\n  }\n  return cellXml.replace(/<\\/w:tc>/, '<w:p><w:r><w:t xml:space=\"preserve\">' + escaped + '</w:t></w:r></w:p></w:tc>');\n}\nfunction splitTableRows(tblXml) {\n  var rows = [];\n  var trRe = /<w:tr\\b[\\s\\S]*?<\\/w:tr>/g;\n  var r;\n  while ((r = trRe.exec(tblXml))) rows.push({ xml: r[0], start: r.index, end: r.index + r[0].length });\n  return rows;\n}\nfunction splitRowCells(rowXml) {\n  var cells = [];\n  var tcRe = /<w:tc\\b[\\s\\S]*?<\\/w:tc>/g;\n  var c;\n  while ((c = tcRe.exec(rowXml))) cells.push({ xml: c[0], start: c.index, end: c.index + c[0].length });\n  return cells;\n}\nfunction rowValues(rowXml) {\n  return splitRowCells(rowXml).map(function (c) {\n    return textsIn(c.xml).replace(/\\s+/g, ' ').trim();\n  });\n}\nfunction replaceSlices(src, slices) {\n  slices = slices.slice().sort(function (a, b) { return b.start - a.start; });\n  var out = src;\n  for (var i = 0; i < slices.length; i++) {\n    var s = slices[i];\n    out = out.slice(0, s.start) + s.xml + out.slice(s.end);\n  }\n  return out;\n}\nfunction pickTableIndex(tables, patch) {\n  var requested = Number(patch.table);\n  if (requested >= 1 && requested <= tables.length) return requested - 1;\n  var target = patch.targetColumn;\n  if (target) {\n    for (var i = 0; i < tables.length; i++) {\n      var rows = splitTableRows(tables[i]);\n      if (!rows.length) continue;\n      if (findCol(uniqueHeaders(rowValues(rows[0].xml)), target) >= 0) return i;\n    }\n  }\n  return 0;\n}\nfunction applyPatchToDocumentXml(xml, patch) {\n  patch = patch || {};\n  var tblRe = /<w:tbl\\b[\\s\\S]*?<\\/w:tbl>/g;\n  var tables = [];\n  var t;\n  while ((t = tblRe.exec(xml))) tables.push(t[0]);\n  if (!tables.length) return { xml: xml, cells: 0, error: 'no tables in document.xml' };\n  var ti = pickTableIndex(tables, patch);\n  var tbl = tables[ti];\n  var rows = splitTableRows(tbl);\n  if (rows.length < 2 && !(patch.updates && patch.updates.length)) {\n    return { xml: xml, cells: 0, error: 'table has no data rows' };\n  }\n  var headerCells = rows.length ? uniqueHeaders(rowValues(rows[0].xml)) : [];\n  var targetIdx = findCol(headerCells, patch.targetColumn);\n  if (targetIdx < 0 && patch.targetColumn != null && String(patch.targetColumn).trim() !== '') {\n    return { xml: xml, cells: 0, error: 'targetColumn not found: ' + patch.targetColumn };\n  }\n  var sourceIdx = -1;\n  if (patch.copyFromColumn != null && String(patch.copyFromColumn).trim() !== '') {\n    sourceIdx = findCol(headerCells, patch.copyFromColumn);\n    if (sourceIdx < 0) return { xml: xml, cells: 0, error: 'copyFromColumn not found: ' + patch.copyFromColumn };\n  }\n  var updates = Array.isArray(patch.updates) ? patch.updates : [];\n  var cellCount = 0;\n  var newRows = [];\n  for (var ri = 0; ri < rows.length; ri++) {\n    var row = rows[ri];\n    var cells = splitRowCells(row.xml);\n    var values = cells.map(function (c) { return textsIn(c.xml).replace(/\\s+/g, ' ').trim(); });\n    var nextVal = null;\n    if (ri > 0 && sourceIdx >= 0 && targetIdx >= 0) nextVal = values[sourceIdx] || '';\n    for (var u = 0; u < updates.length; u++) {\n      var upd = updates[u] || {};\n      var hit = false;\n      if (upd.row != null && Number(upd.row) === ri) hit = true;\n      if (!hit && upd.match && typeof upd.match === 'object') {\n        hit = true;\n        var keys = Object.keys(upd.match);\n        for (var k = 0; k < keys.length; k++) {\n          var ci = findCol(headerCells, keys[k]);\n          if (ci < 0 || norm(values[ci]) !== norm(upd.match[keys[k]])) { hit = false; break; }\n        }\n      }\n      if (hit && upd.value != null) nextVal = upd.value;\n    }\n    if (ri === 0 || targetIdx < 0 || nextVal == null || !cells[targetIdx]) { newRows.push(row); continue; }\n    cells[targetIdx].xml = setCellText(cells[targetIdx].xml, nextVal);\n    row.xml = replaceSlices(row.xml, cells);\n    newRows.push(row);\n    cellCount++;\n  }\n  var newTbl = replaceSlices(tbl, newRows);\n  var tblStart = xml.indexOf(tbl);\n  var newXml = xml.slice(0, tblStart) + newTbl + xml.slice(tblStart + tbl.length);\n  return { xml: newXml, cells: cellCount, table: ti + 1, targetIndex: targetIdx, sourceIndex: sourceIdx };\n}\nfunction zipEntryName(b, fallbackKey) {\n  var fn = String((b && (b.fileName || b.file_name)) || fallbackKey || '');\n  var dir = String((b && b.directory) || '').replace(/\\\\/g, '/').replace(/\\/$/, '');\n  fn = fn.replace(/\\\\/g, '/');\n  if (dir && dir !== '.' && fn.indexOf('/') < 0) return dir + '/' + fn;\n  return fn;\n}\nfunction isDocumentXml(name) {\n  var n = String(name || '').replace(/\\\\/g, '/');\n  if (/\\.rels$/i.test(n) || /\\[Content_Types\\]/i.test(n)) return false;\n  return /(^|\\/)document\\.xml$/i.test(n);\n}\nreturn (async () => {\n  const item = $input.first() || { json: {}, binary: {} };\n  const j = Object.assign({}, item.json || {});\n  const bins = Object.assign({}, item.binary || {});\n  const keys = Object.keys(bins);\n  const patch = j._docxPatch && typeof j._docxPatch === 'object' ? j._docxPatch : {};\n  let xmlKey = '';\n  let xmlName = '';\n  for (let i = 0; i < keys.length; i++) {\n    const key = keys[i];\n    const name = zipEntryName(bins[key], key);\n    if (isDocumentXml(name)) { xmlKey = key; xmlName = name; break; }\n  }\n  if (!xmlKey) {\n    j._docxPatchError = 'word/document.xml not found in unzipped docx';\n    return [{ json: j, binary: bins }];\n  }\n  let xml = '';\n  try {\n    const buf = await this.helpers.getBinaryDataBuffer(0, xmlKey);\n    xml = Buffer.from(buf).toString('utf8').replace(/^\\uFEFF/, '');\n  } catch (e) {\n    j._docxPatchError = String((e && e.message) || e);\n    return [{ json: j, binary: bins }];\n  }\n  const result = applyPatchToDocumentXml(xml, patch);\n  j._docxPatchCells = result.cells || 0;\n  j._docxPatchTable = result.table;\n  if (result.error) j._docxPatchError = result.error;\n  const outXml = result.xml || xml;\n  try {\n    const outBuf = Buffer.from(outXml, 'utf8');\n    if (this.helpers && typeof this.helpers.prepareBinaryData === 'function') {\n      bins[xmlKey] = await this.helpers.prepareBinaryData(outBuf, xmlName, 'application/xml');\n    } else {\n      bins[xmlKey] = Object.assign({}, bins[xmlKey], {\n        data: outBuf.toString('base64'), fileName: xmlName, fileExtension: 'xml', mimeType: 'application/xml'\n      });\n    }\n  } catch (e2) {\n    j._docxPatchError = String((e2 && e2.message) || e2);\n  }\n  for (let i = 0; i < keys.length; i++) {\n    const key = keys[i];\n    const b = bins[key];\n    if (!b) continue;\n    bins[key] = Object.assign({}, b, { fileName: zipEntryName(b, key) });\n  }\n  if (!j._docxPatchError && j._docxPatchCells > 0) j._docxPatchOk = true;\n  return [{ json: j, binary: bins }];\n})();\n"
+      },
+      "notes": "Edit only w:t in the target column; keep all other OOXML parts.",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "71e7a6c4-2f81-4c3a-9d50-a1b2c3d4e5fc",
+      "name": "Compress return DOCX",
+      "type": "n8n-nodes-base.compression",
+      "typeVersion": 1.1,
+      "position": [
+        14560,
+        1408
+      ],
+      "parameters": {
+        "operation": "compress",
+        "outputFormat": "zip",
+        "binaryPropertyName": "={{ Object.keys($binary || {}).join(',') }}",
+        "fileName": "patched-document.zip",
+        "binaryPropertyOutput": "data"
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "81e7a6c4-2f81-4c3a-9d50-a1b2c3d4e5fd",
+      "name": "Stamp patched DOCX",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        14792,
+        1408
+      ],
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const item = $input.item;\nconst j = item.json || {};\nconst bin = item.binary && item.binary.data;\nconst patch = (j._docxPatch && typeof j._docxPatch === 'object') ? j._docxPatch : {};\nconst orig = String(j.dbtTelegramDocFileName || j._docxOriginalFileName || 'document.docx');\nconst stem = orig.replace(/\\.[^.]+$/, '') || 'document';\nlet outName = String(patch.outputFileName || (stem + '_updated.docx')).replace(/[/\\\\]/g, '_');\nif (!/\\.docx$/i.test(outName)) outName += '.docx';\nif (bin) {\n  item.binary.data = Object.assign({}, bin, {\n    fileName: outName,\n    fileExtension: 'docx',\n    mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'\n  });\n}\nlet extra = '';\nif (j._docxPatchError) extra = '\\nНе удалось полностью заполнить Word: ' + j._docxPatchError;\nelse extra = '\\nОбновлено ячеек: ' + String(j._docxPatchCells || 0) + '. Структура исходного файла сохранена.';\nreturn {\n  json: Object.assign({}, j, {\n    _docxPatched: true,\n    _docxOutFileName: outName,\n    output: String(j.output || j.text || '') + extra\n  }),\n  binary: item.binary\n};\n"
+      },
       "onError": "continueRegularOutput"
     }
   ],
@@ -4438,7 +4601,7 @@
             "index": 0
           },
           {
-            "node": "Prepare Compath Telegram egress",
+            "node": "Has DOCX patch?",
             "type": "main",
             "index": 0
           }
@@ -4535,12 +4698,116 @@
           }
         ]
       ]
+    },
+    "Has DOCX patch?": {
+      "main": [
+        [
+          {
+            "node": "Restore original DOCX binary",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Compath Telegram egress",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Restore original DOCX binary": {
+      "main": [
+        [
+          {
+            "node": "Original DOCX binary present?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Original DOCX binary present?": {
+      "main": [
+        [
+          {
+            "node": "Rename return DOCX to ZIP",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Compath Telegram egress",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rename return DOCX to ZIP": {
+      "main": [
+        [
+          {
+            "node": "Decompress return DOCX",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Decompress return DOCX": {
+      "main": [
+        [
+          {
+            "node": "Patch Word table cells",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Patch Word table cells": {
+      "main": [
+        [
+          {
+            "node": "Compress return DOCX",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Compress return DOCX": {
+      "main": [
+        [
+          {
+            "node": "Stamp patched DOCX",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Stamp patched DOCX": {
+      "main": [
+        [
+          {
+            "node": "Prepare Compath Telegram egress",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
     "executionOrder": "v1",
+    "binaryMode": "separate",
     "timezone": "Europe/Tallinn",
-    "executionTimeout": 900
+    "executionTimeout": 900,
+    "availableInMCP": true
   },
   "nodeGroups": [
     {

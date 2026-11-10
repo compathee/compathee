@@ -18,7 +18,8 @@ deployed with the n8n API or GitHub Actions.
   assistant** (`vQnGxLzinMZR6Vhg`) before Word/DOCX extraction.
 - `dbt-accountant-assistant.json` - published snapshot after Word/DOCX
   extraction (route 5 → unzip → `word/document.xml` →
-  `--- Extracted attachment ---`).
+  `--- Extracted attachment ---`) and in-place cell patch return
+  (`DBT_DOCX_PATCH` → original `.docx` with filled cells).
 - `dbt-accountant-docx.md` - notes for Telegram execution `3554` (`ОС.docx`).
 
 ## Deploying with n8n API

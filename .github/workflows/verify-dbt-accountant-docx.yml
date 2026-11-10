@@ -64,4 +64,23 @@ jobs:
             | select(.node == "Collapse extract into chatInput")
           ' /tmp/dbt-workflow-live.json >/dev/null
 
-          echo "Live DBT Accountant assistant has Word/DOCX extraction route 5."
+          jq -e '.nodes[] | select(.name == "Patch Word table cells")' /tmp/dbt-workflow-live.json >/dev/null
+          jq -e '.nodes[] | select(.name == "Restore original DOCX binary")' /tmp/dbt-workflow-live.json >/dev/null
+          jq -e '.nodes[] | select(.name == "Stamp patched DOCX")' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
+            .connections["Persist KVM + KV"].main[][]
+            | select(.node == "Has DOCX patch?")
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
+            .connections["Stamp patched DOCX"].main[0][]
+            | select(.node == "Prepare Compath Telegram egress")
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
+            (.nodes[] | select(.name == "DBT Accountant Agent") | .parameters.options.systemMessage)
+            | contains("<<<DBT_DOCX_PATCH>>>")
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          echo "Live DBT Accountant assistant has Word/DOCX extraction route 5 and in-place patch return."

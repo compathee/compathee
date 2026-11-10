@@ -8,8 +8,12 @@ from pathlib import Path
 SNAPSHOT = Path(__file__).resolve().parents[1] / "workflows" / "dbt-accountant-assistant.json"
 
 
+def _load() -> dict:
+    return json.loads(SNAPSHOT.read_text())
+
+
 def test_docx_extract_route_is_wired() -> None:
-    wf = json.loads(SNAPSHOT.read_text())
+    wf = _load()
     nodes = {n["name"]: n for n in wf["nodes"]}
     conns = wf["connections"]
 
@@ -37,3 +41,57 @@ def test_docx_extract_route_is_wired() -> None:
     prompt = nodes["DBT Accountant Agent"]["parameters"]["options"]["systemMessage"]
     assert "DOCX" in prompt
     assert "--- Extracted attachment ---" in prompt
+
+
+def test_docx_inplace_patch_return_is_wired() -> None:
+    wf = _load()
+    nodes = {n["name"]: n for n in wf["nodes"]}
+    conns = wf["connections"]
+
+    persist_targets = [c["node"] for arr in conns["Persist KVM + KV"]["main"] for c in arr]
+    assert "Has DOCX patch?" in persist_targets
+    assert "Prepare Compath Telegram egress" not in persist_targets
+
+    has_outs = conns["Has DOCX patch?"]["main"]
+    assert has_outs[0][0]["node"] == "Restore original DOCX binary"
+    assert has_outs[1][0]["node"] == "Prepare Compath Telegram egress"
+
+    assert (
+        conns["Restore original DOCX binary"]["main"][0][0]["node"]
+        == "Original DOCX binary present?"
+    )
+    orig_outs = conns["Original DOCX binary present?"]["main"]
+    assert orig_outs[0][0]["node"] == "Rename return DOCX to ZIP"
+    assert orig_outs[1][0]["node"] == "Prepare Compath Telegram egress"
+    assert conns["Rename return DOCX to ZIP"]["main"][0][0]["node"] == "Decompress return DOCX"
+    assert conns["Decompress return DOCX"]["main"][0][0]["node"] == "Patch Word table cells"
+    assert conns["Patch Word table cells"]["main"][0][0]["node"] == "Compress return DOCX"
+    assert conns["Compress return DOCX"]["main"][0][0]["node"] == "Stamp patched DOCX"
+    assert conns["Stamp patched DOCX"]["main"][0][0]["node"] == "Prepare Compath Telegram egress"
+
+    persist_js = nodes["Persist KVM + KV"]["parameters"]["jsCode"]
+    assert "<<<DBT_DOCX_PATCH>>>" in persist_js
+    assert "_docxPatchWanted" in persist_js
+
+    patch_js = nodes["Patch Word table cells"]["parameters"]["jsCode"]
+    assert "applyPatchToDocumentXml" in patch_js
+    assert "copyFromColumn" in patch_js
+    assert "setCellText" in patch_js
+    assert "zipEntryName" in patch_js
+
+    restore_js = nodes["Restore original DOCX binary"]["parameters"]["jsCode"]
+    assert "Classify attachment" in restore_js
+
+    stamp_js = nodes["Stamp patched DOCX"]["parameters"]["jsCode"]
+    assert "_docxPatched" in stamp_js
+    assert "_updated.docx" in stamp_js
+
+    egress_js = nodes["Prepare Compath Telegram egress"]["parameters"]["jsCode"]
+    assert "_docxPatched" in egress_js
+    assert "stripDocxPatchEgress" in egress_js
+
+    prompt = nodes["DBT Accountant Agent"]["parameters"]["options"]["systemMessage"]
+    assert "<<<DBT_DOCX_PATCH>>>" in prompt
+    assert "copyFromColumn" in prompt
+    assert "FORBIDDEN" in prompt
+    assert "ОС_updated.docx" in prompt
