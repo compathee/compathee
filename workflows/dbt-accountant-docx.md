@@ -67,9 +67,11 @@ never got the add-user request.
 
 Now an unknown chat is ignored (no agent, no reply to that user). One
 Approve/Deny message is sent **only** to admin Telegram `1075735475`
-(@compath). Repeat messages from the same unknown chat are suppressed via
-`dbt:tg:pending:<chatId>`. Approve/Deny callbacks still update the Redis
-whitelist; after that the applicant gets a short granted/denied notice.
+(@compath), as HTML (no Markdown), so names like `no_username` cannot
+break Telegram entity parsing. Repeat messages from the same unknown chat
+are suppressed via `dbt:tg:pending:v2:<chatId>` after a successful send.
+Approve/Deny callbacks still update the Redis whitelist; after that the
+applicant gets a short granted/denied notice.
 
 ## Files
 

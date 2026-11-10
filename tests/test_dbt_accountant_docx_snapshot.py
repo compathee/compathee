@@ -110,9 +110,12 @@ def test_unknown_telegram_user_notifies_admin_without_agent() -> None:
         assert "telegramSendMessageUrl" not in js
 
     prep = nodes["Prep unauthorized access"]["parameters"]["jsCode"]
-    assert 'adminChatId = "1075735475"' in prep
+    assert "adminChatId = '1075735475'" in prep or 'adminChatId = "1075735475"' in prep
     assert "telegramApproveCallback" in prep
     assert "telegramAdminNotifyText" in prep
+    assert "no_username" not in prep
+    assert "escHtml" in prep
+    assert "dbt:tg:pending:v2:" in prep
 
     auth_if = conns["If authorized user chats"]["main"]
     assert auth_if[0][0]["node"] == "Telegram typing (on receive)"
@@ -122,14 +125,15 @@ def test_unknown_telegram_user_notifies_admin_without_agent() -> None:
 
     already = conns["Already notified admin?"]["main"]
     assert already[0] == [] or already[0] is None
-    assert already[1][0]["node"] == "Redis Set pending flag"
-    assert conns["Redis Set pending flag"]["main"][0][0]["node"] == "Message from unknown user"
+    assert already[1][0]["node"] == "Message from unknown user"
+    assert conns["Message from unknown user"]["main"][0][0]["node"] == "Redis Set pending flag"
 
     admin_msg = nodes["Message from unknown user"]
     assert admin_msg["type"] == "n8n-nodes-base.telegram"
     assert admin_msg["parameters"]["replyMarkup"] == "inlineKeyboard"
     assert admin_msg["parameters"]["chatId"] == "1075735475"
     assert "{{" not in str(admin_msg["parameters"]["chatId"])
+    assert admin_msg["parameters"]["additionalFields"]["parse_mode"] == "HTML"
     assert admin_msg["credentials"]["telegramApi"]["id"] == "FeJMdrxnjZderBuQ"
 
     answer = nodes["Telegram answer auth callback"]
@@ -142,3 +146,4 @@ def test_unknown_telegram_user_notifies_admin_without_agent() -> None:
     assert conns["Telegram answer auth callback"]["main"][0][0]["node"] == (
         "Telegram notify user auth result"
     )
+    assert "dbt:tg:pending:v2:" in nodes["Redis Del pending (admin)"]["parameters"]["key"]

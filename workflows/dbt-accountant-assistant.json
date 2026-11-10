@@ -187,7 +187,7 @@
     {
       "parameters": {
         "operation": "delete",
-        "key": "={{ 'dbt:tg:pending:' + String($json.telegramAuthTargetChatId || '') }}"
+        "key": "={{ 'dbt:tg:pending:v2:' + String($('Apply admin auth decision').first().json.telegramAuthTargetChatId || $json.telegramAuthTargetChatId || '') }}"
       },
       "id": "cbde4401-5c06-4f9a-adfb-f21e1480083b",
       "name": "Redis Del pending (admin)",
@@ -282,7 +282,7 @@
     {
       "parameters": {
         "mode": "runOnceForEachItem",
-        "jsCode": "var j = $input.item.json || {};\nvar chatId = String(j.chatId || '').trim();\nvar from = j.message?.from || j.callback_query?.from || {};\nvar first = String(from.first_name || '').trim();\nvar last = String(from.last_name || '').trim();\nvar user = String(from.username || '').trim();\nvar text = String(j.message?.text || j.message?.caption || j.chatInput || '').trim().slice(0, 500);\nvar pendingKey = \"dbt:tg:pending:\" + chatId;\nvar cbApprove = \"da\" + ':a:' + chatId;\nvar cbDeny = \"da\" + ':d:' + chatId;\nvar adminChatId = \"1075735475\";\nvar displayName = (first + ' ' + last).trim() || 'unknown';\nvar adminText =\n  '🚨 Unauthorized bot access\\n\\n' +\n  '👤 ' + displayName + '\\n' +\n  '🆔 Telegram ID: ' + chatId + '\\n' +\n  '🌐 @' + (user || 'no_username') + '\\n\\n' +\n  '💬 Message:\\n' + (text || '(no text / callback)') +\n  '\\n\\nApprove to add this Telegram user to the allowed list.';\nreturn {\n  json: Object.assign({}, j, {\n    telegramPendingKey: pendingKey,\n    telegramAdminChatId: adminChatId,\n    telegramAdminNotifyText: adminText,\n    telegramApproveCallback: cbApprove,\n    telegramDenyCallback: cbDeny\n  })\n};\n"
+        "jsCode": "function escHtml(s) {\n  return String(s == null ? '' : s)\n    .replace(/&/g, '&amp;')\n    .replace(/</g, '&lt;')\n    .replace(/>/g, '&gt;');\n}\nvar j = $input.item.json || {};\nvar chatId = String(j.chatId || '').trim();\nvar from = j.message?.from || j.callback_query?.from || {};\nvar first = String(from.first_name || '').trim();\nvar last = String(from.last_name || '').trim();\nvar user = String(from.username || '').trim();\nvar text = String(j.message?.text || j.message?.caption || j.chatInput || '').trim().slice(0, 500);\nvar pendingKey = 'dbt:tg:pending:v2:' + chatId;\nvar cbApprove = 'da' + ':a:' + chatId;\nvar cbDeny = 'da' + ':d:' + chatId;\nvar adminChatId = '1075735475';\nvar displayName = (first + ' ' + last).trim() || 'unknown';\nvar handle = user ? '@' + user : 'none';\nvar adminText =\n  'Unauthorized bot access\\n\\n' +\n  'Name: ' + escHtml(displayName) + '\\n' +\n  'Telegram ID: ' + escHtml(chatId) + '\\n' +\n  'Username: ' + escHtml(handle) + '\\n\\n' +\n  'Message:\\n' + escHtml(text || '(no text / callback)') +\n  '\\n\\nApprove to add this Telegram user to the allowed list.';\nreturn {\n  json: Object.assign({}, j, {\n    telegramPendingKey: pendingKey,\n    telegramAdminChatId: adminChatId,\n    telegramAdminNotifyText: adminText,\n    telegramApproveCallback: cbApprove,\n    telegramDenyCallback: cbDeny\n  })\n};\n"
       },
       "id": "bf5c6f7c-d593-4ceb-affb-17e69dc9d171",
       "name": "Prep unauthorized access",
@@ -3433,11 +3433,13 @@
           ]
         },
         "additionalFields": {
-          "appendAttribution": false
+          "appendAttribution": false,
+          "parse_mode": "HTML",
+          "disable_web_page_preview": true
         }
       },
       "notes": "Ask admin to approve the unknown Telegram user; do not reply to that user.",
-      "onError": "continueRegularOutput",
+      "onError": "continueErrorOutput",
       "webhookId": "b3eada37-6848-411d-8b0e-0270361dbab5",
       "credentials": {
         "telegramApi": {
@@ -4768,29 +4770,6 @@
         ]
       ]
     },
-    "Already notified admin?": {
-      "main": [
-        null,
-        [
-          {
-            "node": "Redis Set pending flag",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Redis Set pending flag": {
-      "main": [
-        [
-          {
-            "node": "Message from unknown user",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Redis Del pending (admin)": {
       "main": [
         [
@@ -4807,6 +4786,29 @@
         [
           {
             "node": "Telegram notify user auth result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Already notified admin?": {
+      "main": [
+        null,
+        [
+          {
+            "node": "Message from unknown user",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message from unknown user": {
+      "main": [
+        [
+          {
+            "node": "Redis Set pending flag",
             "type": "main",
             "index": 0
           }

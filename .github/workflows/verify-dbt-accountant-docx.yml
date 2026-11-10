@@ -104,6 +104,17 @@ jobs:
           ' /tmp/dbt-workflow-live.json >/dev/null
 
           jq -e '
+            (.nodes[] | select(.name == "Message from unknown user")
+              | .parameters.additionalFields.parse_mode)
+            == "HTML"
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
+            (.nodes[] | select(.name == "Prep unauthorized access") | .parameters.jsCode)
+            | contains("no_username") | not
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
             .connections["Already notified admin?"].main[1][]
             | select(.node == "Redis Set pending flag")
           ' /tmp/dbt-workflow-live.json >/dev/null
