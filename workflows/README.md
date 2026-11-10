@@ -21,7 +21,8 @@ deployed with the n8n API or GitHub Actions.
   sent only to admin Telegram `1075735475`, and Standard Books crash
   guards (HARD LIMITS; list/report reads confirm before Hansa;
   bare «счёт» is asked as konto vs supplier vs sales invoice;
-  Confirm/Cancel stay as Telegram in-chat buttons;
+  list/report reads wait for Да/Нет in the same Telegram chat
+  (sendAndWait Confirm is disabled because it never resumes);
   Approve callbacks do not run the agent).
 - `standard-books-api.json` - published snapshot of **Standard Books —
   API (Portal + REST)** (`yW6RvQG3Bl87M8pK`). REST list GETs require

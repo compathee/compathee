@@ -128,7 +128,12 @@ jobs:
 
           jq -e '
             (.nodes[] | select(.name == "DBT Accountant Agent") | .parameters.options.systemMessage)
-            | contains("PLAN → SHOW → CONFIRM → CALL")
+            | contains("PLAN → SHOW → WAIT IN THIS CHAT → CALL")
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
+            (.nodes[] | select(.name == "DBT Accountant Agent") | .parameters.options.systemMessage)
+            | contains("Do **not** call **Telegram_Confirm_With_User**")
           ' /tmp/dbt-workflow-live.json >/dev/null
 
           jq -e '
@@ -142,8 +147,12 @@ jobs:
           ' /tmp/dbt-workflow-live.json >/dev/null
 
           jq -e '
-            (.nodes[] | select(.name == "Telegram_Confirm_With_User") | .parameters.chatApproval)
+            (.nodes[] | select(.name == "Telegram_Confirm_With_User") | .disabled)
             == true
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
+            .connections | has("Telegram_Confirm_With_User") | not
           ' /tmp/dbt-workflow-live.json >/dev/null
 
           jq -e '

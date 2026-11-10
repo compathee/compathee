@@ -95,15 +95,18 @@ Published together (10 Nov 2026, Europe/Kiev):
   omits `fields=` or `filter.*`. Detail paths like `145/1` are unchanged.
   Portal `register=` queries without `action=` get `perpage=50&page=1`.
 - **DBT Accountant assistant** `vQnGxLzinMZR6Vhg`
-  (`aae6e1fc-a659-4dea-a027-34345a27f1a8`): system prompt HARD LIMITS
+  (`a9c824d8-33b6-4519-8527-00ced3891697`): system prompt HARD LIMITS
   (one bounded Standard Books call; never on empty/`[No user text]`);
   REST tool description requires `fields=` + `filter.*` + `limit≤50`;
   Portal login only after a session-expired error; reports need a
   non-empty date spec.
-- List/report/write calls follow **PLAN → SHOW → CONFIRM → CALL**:
+- List/report/write calls follow **PLAN → SHOW → WAIT IN THIS CHAT → CALL**:
   draft from the REST skill (no Hansa yet), `Telegram_Notify_User` with
-  the plan, `Telegram_Confirm_With_User`, then one bounded API call.
-  Fast path (no confirm): only when the **type is already clear** and they
+  the plan, then a **Да / Нет** reply in the same Telegram chat, then one
+  bounded API call. `Telegram_Confirm_With_User` (`sendAndWait`) is
+  **disabled and disconnected**: the Telegram Trigger owns the bot
+  webhook, so Confirm callbacks never resume the wait.
+  Fast path (no Да/Нет): only when the **type is already clear** and they
   named the code (REST detail like `145/1`, or paste of that code).
 - Bare «счёт / arve / invoice / konto / 145» is ambiguous. The agent must
   ask one question and wait: конто (`AccVc`), счёт поставщика (`VIVc`),
@@ -115,10 +118,14 @@ Published together (10 Nov 2026, Europe/Kiev):
 Exec **3578** (10 Nov 2026, ~12:28 Europe/Kiev) used
 `Telegram_Confirm_With_User` `sendAndWait` without `chatApproval`, so
 Telegram got an n8n form URL (`n8n.dbtmuuga.ee`) instead of in-chat
-buttons. `chatApproval` is now on: Confirm/Cancel are Telegram inline
-buttons; the user does not leave the chat.
+buttons. Exec **3586** (~12:39 Europe/Kiev) used in-chat Confirm buttons
+with `chatApproval`, but clicking Confirm never resumed the wait: the
+Telegram Trigger owns the bot webhook, so the sendAndWait callback never
+arrives. Confirm is now disabled. After a plan, answer **Да** or **Нет**
+as a normal Telegram message. Ignore any leftover Confirm button from
+the hung wait.
 
-The same run then called Hansa REST twice and failed
+The same 3578 run then called Hansa REST twice and failed
 `certificate has expired` on `stbooks.dbtmuuga.ee:1335`. The HTTP node
 now has **Ignore SSL issues** (`allowUnauthorizedCerts`) so the local
 expired Hansa cert does not block bounded reads. The agent must not

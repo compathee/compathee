@@ -171,7 +171,8 @@ def test_admin_approve_does_not_run_accountant_agent() -> None:
     assert "[No user text]" in prompt
     assert "crash Excellent Books" in prompt
     assert "`limit` (max 50)" in prompt
-    assert "PLAN → SHOW → CONFIRM → CALL" in prompt
+    assert "PLAN → SHOW → WAIT IN THIS CHAT → CALL" in prompt
+    assert "Do **not** call **Telegram_Confirm_With_User**" in prompt
     assert "FAST PATH" in prompt
     assert "do **not** open Hansa/Excellent yet" in prompt
     assert "ACCOUNT NUMBER" in prompt
@@ -179,12 +180,18 @@ def test_admin_approve_does_not_run_accountant_agent() -> None:
     assert "**VIVc**" in prompt
     assert "**IVVc**" in prompt
     assert "type is already clear" in prompt
+    assert "Да" in prompt
+    assert "Нет" in prompt
 
-    confirm = nodes["Telegram_Confirm_With_User"]["parameters"]
+    confirm_node = nodes["Telegram_Confirm_With_User"]
+    assert confirm_node.get("disabled") is True
+    confirm = confirm_node["parameters"]
     assert confirm["approvalOptions"]["values"]["approveLabel"] == "Confirm"
     assert "read or write" in confirm["message"]
-    assert confirm.get("chatApproval") is True
-    assert "Telegram in-chat buttons" in prompt
+    assert "Telegram_Confirm_With_User" not in conns
+    notify_text = nodes["Telegram_Notify_User"]["parameters"]["text"]
+    assert "Да/Нет" in notify_text
+    assert "Telegram_Confirm_With_User" not in notify_text
     assert "n8n.dbtmuuga.ee" in prompt
     assert "Never quote n8n" in prompt
 
