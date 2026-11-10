@@ -25,14 +25,18 @@ deployed with the n8n API or GitHub Actions.
   (sendAndWait Confirm is disabled because it never resumes);
   Approve callbacks do not run the agent;
   invoice day counts use Portal `register=VIVc`/`IVVc` with injected
-  usercode and page=0).
+  usercode and page=0; accounting reads go through the query catalog).
 - `standard-books-api.json` - published snapshot of **Standard Books —
   API (Portal + REST)** (`yW6RvQG3Bl87M8pK`). REST list GETs require
   `fields=` + `filter.*` and inject `limit=25` (cap 50) so empty
   register dumps cannot crash Excellent Books. Live reads always use
   company **2** (company **1** is archive); invoice counts go through
   Portal `register=VIVc` with injected usercode and page=0 (REST `/api/2/VIVc`
-  returns 401 with this account).
+  returns 401 with this account). `operation=catalog` builds a query
+  from `workflows/standard-books-query-catalog.json`.
+- `standard-books-query-catalog.json` - live Portal templates taken from
+  Excellent WebExcellent/REST examples and pinned to company **2**
+  (blocked REST AccVc/TRVc/VIVc dumps stay documented, not callable).
 - `dbt-accountant-docx.md` - notes for Telegram execution `3554` (`ОС.docx`)
   plus Standard Books API crash guards.
 

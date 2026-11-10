@@ -179,6 +179,10 @@ def test_admin_approve_does_not_run_accountant_agent() -> None:
     assert "MainRClass" in prompt
     assert "MainRn" in prompt
     assert "Standard_Books_Portal_Query" in prompt
+    assert "Standard_Books_Catalog" in prompt
+    assert "purchase_invoices_period" in prompt
+    assert "gl_nominal_ledger" in prompt
+    assert "catalog_id" in prompt
     assert "page=0" in prompt
     assert "sd=YYYY-MM-DD" in prompt
     assert "FAST PATH" in prompt
@@ -227,6 +231,14 @@ def test_admin_approve_does_not_run_accountant_agent() -> None:
     assert "register=VIVc" in nodes["Standard_Books_Portal_Query"]["parameters"]["description"]
     assert "page=0" in nodes["Standard_Books_Portal_Query"]["parameters"]["description"]
     assert "0-based" in nodes["Standard_Books_Portal_Register_List"]["parameters"]["description"]
+    catalog = nodes["Standard_Books_Catalog"]["parameters"]
+    assert "catalog_id" in catalog["description"]
+    assert "gl_nominal_ledger" in catalog["description"]
+    assert catalog["workflowInputs"]["value"]["operation"] == "catalog"
+    assert "fromAI('catalog_id'" in catalog["workflowInputs"]["value"]["catalog_id"]
+    assert wf["connections"]["Standard_Books_Catalog"]["ai_tool"][0][0]["node"] == (
+        "DBT Accountant Agent"
+    )
 
 
 def test_standard_books_api_refuses_unbounded_register_dumps() -> None:
@@ -245,13 +257,29 @@ def test_standard_books_api_refuses_unbounded_register_dumps() -> None:
     assert "function liveCompany" in js
     assert "function rewritePortalCompno" in js
     assert "function portalListUsercode" in js
+    assert "function applyQueryCatalog" in js
+    assert "var QUERY_CATALOG" in js
+    assert "purchase_invoices_period" in js
+    assert "gl_nominal_ledger" in js
     assert "var company = liveCompany()" in js
     assert "company = mPath[1]" not in js
+    trigger_names = [
+        v["name"]
+        for v in nodes["When called by Agent"]["parameters"]["workflowInputs"]["values"]
+    ]
+    assert "catalog_id" in trigger_names
+    assert "catalog_slots_json" in trigger_names
+    resolve_js = nodes["Resolve catalog"]["parameters"]["jsCode"]
+    assert "purchase_invoices_period" in resolve_js
+    assert "gl_nominal_ledger" in resolve_js
+    assert wf["connections"]["When called by Agent"]["main"][0][0]["node"] == "Resolve catalog"
+    assert wf["connections"]["Resolve catalog"]["main"][0][0]["node"] == "Build API request"
     http = nodes["Call Standard Books API"]["parameters"]
     assert http["options"].get("allowUnauthorizedCerts") is True
 
+    helpers = js.split("var j = $input.item.json;")[0]
     script = (
-        js.split("function attachPostBody")[0]
+        helpers
         + """
 function assert(cond, msg) { if (!cond) { throw new Error(msg); } }
 try { clampRestListQuery(''); throw new Error('empty suffix should refuse'); }
@@ -277,6 +305,21 @@ try { guardPortalListQuery('register=VIVc&page=0'); throw new Error('missing dat
 catch (e) { assert(/sd=/.test(e.message), e.message); }
 var c1 = rewritePortalCompno('register=VIVc&compno=1&compno=3');
 assert(/compno=2/.test(c1) && !/compno=1/.test(c1) && !/compno=3/.test(c1), c1);
+var live = liveCatalogIds();
+assert(live.indexOf('purchase_invoices_period') >= 0, live.join(','));
+assert(live.indexOf('gl_nominal_ledger') >= 0, live.join(','));
+var invCat = applyQueryCatalog('purchase_invoices_period', '{"sd":"2026-11-09","ed":"2026-11-09"}');
+assert(invCat.kind === 'portal_query', invCat.kind);
+assert(/register=VIVc/.test(invCat.query) && /sd=2026-11-09/.test(invCat.query), invCat.query);
+var gl = applyQueryCatalog('gl_nominal_ledger', '{"sd":"2026-10-01","ed":"2026-10-31","acc":"4106","obj":"SOOD"}');
+assert(gl.kind === 'report' && gl.reportwindow === 'MainRClass' && gl.repname === 'MainRn', JSON.stringify(gl));
+assert(gl.spec.f4 === '4106' && gl.spec.ObjStr === 'SOOD' && gl.spec.flags6 === 1, JSON.stringify(gl.spec));
+try { applyQueryCatalog('gl_nominal_ledger', '{"sd":"2026-10-01","ed":"2026-10-31","acc":"4106:4613"}'); throw new Error('range should refuse'); }
+catch (e) { assert(/one account/.test(e.message), e.message); }
+try { applyQueryCatalog('rest_accvc_chart_card', '{}'); throw new Error('blocked should refuse'); }
+catch (e) { assert(/blocked/.test(e.message) && /gl_nominal_ledger/.test(e.message), e.message); }
+var paste = applyQueryCatalog('paste_contact_name', '{"q":"acme"}');
+assert(paste.kind === 'pastespecial' && /register=AllCUVc/.test(paste.query), paste.query);
 console.log('ok');
 """
     )
@@ -286,5 +329,23 @@ console.log('ok');
         capture_output=True,
         text=True,
     )
-    assert completed.returncode == 0, completed.stderr
+    assert completed.returncode == 0, completed.stderr + completed.stdout
     assert "ok" in completed.stdout
+
+
+def test_standard_books_query_catalog_matches_builder() -> None:
+    root = Path(__file__).resolve().parents[1]
+    catalog = json.loads((root / "workflows" / "standard-books-query-catalog.json").read_text())
+    sb = json.loads((root / "workflows" / "standard-books-api.json").read_text())
+    js = next(n for n in sb["nodes"] if n["name"] == "Build API request")["parameters"]["jsCode"]
+    live = {q["id"] for q in catalog["queries"] if q["status"] == "live"}
+    blocked = {q["id"] for q in catalog["queries"] if q["status"] != "live"}
+    assert "purchase_invoices_period" in live
+    assert "gl_nominal_ledger" in live
+    assert "rest_accvc_chart_card" in blocked
+    for qid in live | blocked:
+        assert qid in js, qid
+    gl = next(q for q in catalog["queries"] if q["id"] == "gl_nominal_ledger")
+    assert gl["reportwindow"] == "MainRClass"
+    assert gl["spec"]["f4"] == "{acc}"
+    assert catalog["company"] == 2

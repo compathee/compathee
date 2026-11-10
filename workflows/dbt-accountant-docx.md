@@ -158,10 +158,25 @@ The server-side filter without dumping October is Portal report
 `f4` = one account, `ObjStr` = object. Two kontos = two calls. Probe
 exec **3650** with usercode `API` returned Access denied on that report.
 
+### Query catalog (from Excellent API examples)
+
+`workflows/standard-books-query-catalog.json` holds typical Portal/REST
+examples from https://api-docs.excellent.ee/ adapted for AS DBT company
+**2**. Live ids (`purchase_invoices_period`, `sales_invoices_period`,
+`gl_nominal_ledger`, paste/search, PDFs, balance, payments/receipts)
+are built by `operation=catalog` in **Standard Books — API**. Official
+REST samples that dump AccVc/TRVc/VIVc stay `blocked` (this portal
+login gets HTTP 401; `filter.Konto` is ignored). The agent tool is
+**Standard_Books_Catalog**: pick `catalog_id` + slots; unknown types
+must not call Hansa.
+
 ## Files
 
 - `dbt-accountant-assistant.backup.json` — snapshot before Word extract (105 nodes).
 - `dbt-accountant-assistant.json` — published snapshot after extract, in-place
-  return, unknown-user admin notify, and Standard Books crash guards (115 nodes).
+  return, unknown-user admin notify, Standard Books crash guards, and
+  the query catalog (116 nodes).
 - `standard-books-api.json` — published snapshot of the Portal + REST
-  sub-workflow with REST/Portal list clamps.
+  sub-workflow with REST/Portal list clamps and catalog builder.
+- `standard-books-query-catalog.json` — live/blocked query templates
+  from Excellent Portal + REST examples.

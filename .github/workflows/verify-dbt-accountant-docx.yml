@@ -9,6 +9,7 @@ on:
       - ".github/workflows/verify-dbt-accountant-docx.yml"
       - "workflows/dbt-accountant-assistant.json"
       - "workflows/standard-books-api.json"
+      - "workflows/standard-books-query-catalog.json"
       - "tests/test_dbt_accountant_docx_snapshot.py"
 
 env:
@@ -162,6 +163,16 @@ jobs:
           ' /tmp/dbt-workflow-live.json >/dev/null
 
           jq -e '
+            (.nodes[] | select(.name == "DBT Accountant Agent") | .parameters.options.systemMessage)
+            | contains("Standard_Books_Catalog")
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
+            (.nodes[] | select(.name == "Standard_Books_Catalog") | .parameters.description)
+            | contains("catalog_id")
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
             (.nodes[] | select(.name == "Standard_Books_REST_API") | .parameters.description)
             | contains("AccVc konto")
           ' /tmp/dbt-workflow-live.json >/dev/null
@@ -219,6 +230,21 @@ jobs:
           jq -e '
             (.nodes[] | select(.name == "Build API request") | .parameters.jsCode)
             | contains("function portalListUsercode")
+          ' /tmp/sb-workflow-live.json >/dev/null
+
+          jq -e '
+            (.nodes[] | select(.name == "Resolve catalog") | .parameters.jsCode)
+            | contains("purchase_invoices_period")
+          ' /tmp/sb-workflow-live.json >/dev/null
+
+          jq -e '
+            (.nodes[] | select(.name == "Resolve catalog") | .parameters.jsCode)
+            | contains("gl_nominal_ledger")
+          ' /tmp/sb-workflow-live.json >/dev/null
+
+          jq -e '
+            .connections["When called by Agent"].main[0][]
+            | select(.node == "Resolve catalog")
           ' /tmp/sb-workflow-live.json >/dev/null
 
           jq -e '
