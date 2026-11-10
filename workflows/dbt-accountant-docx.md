@@ -95,7 +95,7 @@ Published together (10 Nov 2026, Europe/Kiev):
   omits `fields=` or `filter.*`. Detail paths like `145/1` are unchanged.
   Portal `register=` queries without `action=` get `perpage=50&page=1`.
 - **DBT Accountant assistant** `vQnGxLzinMZR6Vhg`
-  (`db397c35-b8e9-4a3f-8509-b64d35b09654`): system prompt HARD LIMITS
+  (`520c51c3-067c-4d68-88c4-a8b5b79b1faf`): system prompt HARD LIMITS
   (one bounded Standard Books call; never on empty/`[No user text]`);
   REST tool description requires `fields=` + `filter.*` + `limit≤50`;
   Portal login only after a session-expired error; reports need a
@@ -103,8 +103,12 @@ Published together (10 Nov 2026, Europe/Kiev):
 - List/report/write calls follow **PLAN → SHOW → CONFIRM → CALL**:
   draft from the REST skill (no Hansa yet), `Telegram_Notify_User` with
   the plan, `Telegram_Confirm_With_User`, then one bounded API call.
-  Fast path (no confirm): REST detail like `145/1` or paste of the exact
-  code the user typed.
+  Fast path (no confirm): only when the **type is already clear** and they
+  named the code (REST detail like `145/1`, or paste of that code).
+- Bare «счёт / arve / invoice / konto / 145» is ambiguous. The agent must
+  ask one question and wait: конто (`AccVc`), счёт поставщика (`VIVc`),
+  or счёт на продажу (`IVVc`). It must not guess a register or open Hansa
+  on that turn.
 
 ## Files
 

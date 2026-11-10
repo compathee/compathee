@@ -174,14 +174,22 @@ def test_admin_approve_does_not_run_accountant_agent() -> None:
     assert "PLAN → SHOW → CONFIRM → CALL" in prompt
     assert "FAST PATH" in prompt
     assert "do **not** open Hansa/Excellent yet" in prompt
+    assert "ACCOUNT NUMBER" in prompt
+    assert "**AccVc**" in prompt
+    assert "**VIVc**" in prompt
+    assert "**IVVc**" in prompt
+    assert "type is already clear" in prompt
 
     confirm = nodes["Telegram_Confirm_With_User"]["parameters"]
     assert confirm["approvalOptions"]["values"]["approveLabel"] == "Confirm"
     assert "read or write" in confirm["message"]
 
     rest = nodes["Standard_Books_REST_API"]["parameters"]
-    assert "confirmed the plan" in rest["description"]
-    assert "145/1" in rest["description"]
+    assert "AccVc konto" in rest["description"]
+    assert "VIVc supplier invoice" in rest["description"]
+    assert "IVVc sales invoice" in rest["description"]
+    paste = nodes["Standard_Books_Portal_Paste"]["parameters"]
+    assert "bare счёт/arve number" in paste["description"]
     suffix = rest["workflowInputs"]["value"]["rest_query_suffix"]
     assert "Never empty" in suffix
     assert "crashes Excellent Books" in suffix

@@ -132,6 +132,16 @@ jobs:
           ' /tmp/dbt-workflow-live.json >/dev/null
 
           jq -e '
+            (.nodes[] | select(.name == "DBT Accountant Agent") | .parameters.options.systemMessage)
+            | contains("ACCOUNT NUMBER")
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
+            (.nodes[] | select(.name == "Standard_Books_REST_API") | .parameters.description)
+            | contains("AccVc konto")
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
             .connections["Admin auth callback?"].main[0][]
             | select(.node == "Redis Get tg whitelist (admin)")
           ' /tmp/dbt-workflow-live.json >/dev/null
@@ -149,7 +159,7 @@ jobs:
 
           jq -e '
             (.nodes[] | select(.name == "Standard_Books_REST_API") | .parameters.description)
-            | contains("confirmed the plan")
+            | contains("IVVc sales invoice")
           ' /tmp/dbt-workflow-live.json >/dev/null
 
           curl --fail-with-body "${N8N_BASE_URL%/}/api/v1/workflows/yW6RvQG3Bl87M8pK" \
