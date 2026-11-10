@@ -37,6 +37,9 @@ deployed with the n8n API or GitHub Actions.
 - `standard-books-query-catalog.json` - live Portal templates taken from
   Excellent WebExcellent/REST examples and pinned to company **2**
   (blocked REST AccVc/TRVc/VIVc dumps stay documented, not callable).
+  Object codes: **LM** = Lokatsioon Muuga, **LS** = Lokatsioon Sillamäe
+  (BCT); filter via `gl_nominal_ledger` `obj` → `ObjStr`. Report usercode
+  is **N8N**.
 - `dbt-accountant-docx.md` - notes for Telegram execution `3554` (`ОС.docx`)
   plus Standard Books API crash guards.
 
