@@ -17,9 +17,8 @@ deployed with the n8n API or GitHub Actions.
 - `dbt-accountant-assistant.backup.json` - snapshot of **DBT Accountant
   assistant** (`vQnGxLzinMZR6Vhg`) before Word/DOCX extraction.
 - `dbt-accountant-assistant.json` - published snapshot after Word/DOCX
-  extraction (route 5 → unzip → `word/document.xml` →
-  `--- Extracted attachment ---`) and in-place cell patch return
-  (`DBT_DOCX_PATCH` → original `.docx` with filled cells).
+  extraction, in-place cell patch return, and unknown-user access requests
+  sent only to admin Telegram `1075735475`.
 - `dbt-accountant-docx.md` - notes for Telegram execution `3554` (`ОС.docx`).
 
 ## Deploying with n8n API

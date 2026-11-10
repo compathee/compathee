@@ -58,8 +58,21 @@ document `*_updated.docx`.
 No rows or columns are added or removed. HTML (`DBT_HTML_FILE`) is skipped
 when `_docxPatched` is set.
 
+### Unknown Telegram users
+
+Executions `3560` / `3561` (10 Nov 2026, Europe/Kiev) were `/start` from
+Jelena Podoljan (`1794699518`). `Prep unauthorized access` crashed on
+`this.getCredentials` (Code task runner has no such helper), so the admin
+never got the add-user request.
+
+Now an unknown chat is ignored (no agent, no reply to that user). One
+Approve/Deny message is sent **only** to admin Telegram `1075735475`
+(@compath). Repeat messages from the same unknown chat are suppressed via
+`dbt:tg:pending:<chatId>`. Approve/Deny callbacks still update the Redis
+whitelist; after that the applicant gets a short granted/denied notice.
+
 ## Files
 
 - `dbt-accountant-assistant.backup.json` — snapshot before Word extract (105 nodes).
-- `dbt-accountant-assistant.json` — published snapshot after extract + in-place
-  return (116 nodes).
+- `dbt-accountant-assistant.json` — published snapshot after extract, in-place
+  return, and unknown-user admin notify (115 nodes).

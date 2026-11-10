@@ -150,7 +150,7 @@
     {
       "parameters": {
         "mode": "runOnceForEachItem",
-        "jsCode": "var prep = $('Prep auth context').first().json || {};\nvar cur = $input.item.json || {};\nvar raw = cur.telegramWhitelistBlob;\nvar allowed = [\"1075735475\",\"1415485084\",\"660363678\"].slice();\nif (raw !== undefined && raw !== null && String(raw).trim() !== '') {\n  try {\n    var o = JSON.parse(String(raw));\n    if (o && Array.isArray(o.chatIds)) {\n      allowed = o.chatIds.map(function (x) { return String(x).trim(); }).filter(Boolean);\n    }\n  } catch (_e) {}\n}\nvar target = String(prep.telegramAuthTargetChatId || '').trim();\nvar action = String(prep.telegramAuthAction || '');\nvar prefix = \"da\";\nvar ok = false;\nvar msg = 'Invalid auth callback';\nif (target && /^\\d+$/.test(target)) {\n  if (action === 'a') {\n    if (allowed.indexOf(target) < 0) allowed.push(target);\n    ok = true;\n    msg = 'Approved chat ' + target;\n  } else if (action === 'd') {\n    allowed = allowed.filter(function (id) { return id !== target; });\n    ok = true;\n    msg = 'Denied chat ' + target;\n  }\n}\nvar payload = JSON.stringify({\n  v: 1,\n  chatIds: allowed,\n  updatedAt: new Date().toISOString(),\n  updatedBy: \"1075735475\"\n});\nvar telegramCredentials = await this.getCredentials('telegramApi');\nvar tgToken = String(telegramCredentials.accessToken || '').trim();\nvar tgBase = String(telegramCredentials.baseUrl || 'https://api.telegram.org').replace(/\\/+$/, '');\nvar telegramSendMessageUrl = tgBase + '/bot' + tgToken + '/sendMessage';\nvar telegramAnswerCallbackUrl = tgBase + '/bot' + tgToken + '/answerCallbackQuery';\nreturn {\n  json: Object.assign({}, prep, {\n    telegramAuthOk: ok,\n    telegramAuthResultMessage: msg,\n    telegramWhitelistPayload: payload,\n    telegramAuthTargetChatId: target,\n    telegramAuthAction: action,\n    telegramAuthCallbackPrefix: prefix,\n    telegramSendMessageUrl: telegramSendMessageUrl,\n    telegramAnswerCallbackUrl: telegramAnswerCallbackUrl\n  })\n};"
+        "jsCode": "var prep = $('Prep auth context').first().json || {};\nvar cur = $input.item.json || {};\nvar raw = cur.telegramWhitelistBlob;\nvar allowed = [\"1075735475\",\"1415485084\",\"660363678\"].slice();\nif (raw !== undefined && raw !== null && String(raw).trim() !== '') {\n  try {\n    var o = JSON.parse(String(raw));\n    if (o && Array.isArray(o.chatIds)) {\n      allowed = o.chatIds.map(function (x) { return String(x).trim(); }).filter(Boolean);\n    }\n  } catch (_e) {}\n}\nvar target = String(prep.telegramAuthTargetChatId || '').trim();\nvar action = String(prep.telegramAuthAction || '');\nvar prefix = \"da\";\nvar ok = false;\nvar msg = 'Invalid auth callback';\nif (target && /^\\d+$/.test(target)) {\n  if (action === 'a') {\n    if (allowed.indexOf(target) < 0) allowed.push(target);\n    ok = true;\n    msg = 'Approved chat ' + target;\n  } else if (action === 'd') {\n    allowed = allowed.filter(function (id) { return id !== target; });\n    ok = true;\n    msg = 'Denied chat ' + target;\n  }\n}\nvar payload = JSON.stringify({\n  v: 1,\n  chatIds: allowed,\n  updatedAt: new Date().toISOString(),\n  updatedBy: \"1075735475\"\n});\nreturn {\n  json: Object.assign({}, prep, {\n    telegramAuthOk: ok,\n    telegramAuthResultMessage: msg,\n    telegramWhitelistPayload: payload,\n    telegramAuthTargetChatId: target,\n    telegramAuthAction: action,\n    telegramAuthCallbackPrefix: prefix\n  })\n};\n"
       },
       "id": "0d829b5b-375b-4e09-bd7b-67824139386c",
       "name": "Apply admin auth decision",
@@ -204,44 +204,6 @@
           "name": "Redis localhost account"
         }
       }
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "={{ $('Apply admin auth decision').first().json.telegramAnswerCallbackUrl }}",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ callback_query_id: $(\"Prep auth context\").first().json.telegramCallbackQueryId, text: String($json.telegramAuthResultMessage || \"OK\").slice(0, 180) }) }}",
-        "options": {}
-      },
-      "id": "bf442d0b-5172-4da1-9798-ab5c54ee31ce",
-      "name": "Telegram answer auth callback",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        1792,
-        0
-      ],
-      "onError": "continueRegularOutput"
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "={{ $('Apply admin auth decision').first().json.telegramSendMessageUrl }}",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ chat_id: String($('Apply admin auth decision').first().json.telegramAuthTargetChatId || ''), text: $('Apply admin auth decision').first().json.telegramAuthAction === 'a' ? '✅ Access granted. You can use this bot now.' : '❌ Access was not granted by the administrator.' }) }}",
-        "options": {}
-      },
-      "id": "59835034-9324-4c33-a474-a3baca982d37",
-      "name": "Telegram notify user auth result",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        2016,
-        0
-      ],
-      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
@@ -320,7 +282,7 @@
     {
       "parameters": {
         "mode": "runOnceForEachItem",
-        "jsCode": "var j = $input.item.json || {};\nvar chatId = String(j.chatId || '').trim();\nvar from = j.message?.from || j.callback_query?.from || {};\nvar first = String(from.first_name || '').trim();\nvar last = String(from.last_name || '').trim();\nvar user = String(from.username || '').trim();\nvar text = String(j.message?.text || j.message?.caption || j.chatInput || '').trim().slice(0, 500);\nvar pendingKey = \"dbt:tg:pending:\" + chatId;\nvar cbApprove = \"da\" + ':a:' + chatId;\nvar cbDeny = \"da\" + ':d:' + chatId;\nvar adminPayload = {\n  chat_id: \"1075735475\",\n  text:\n    '🚨 Unauthorized bot access\\n\\n' +\n    '👤 ' + (first + ' ' + last).trim() + '\\n' +\n    '🆔 Telegram ID: ' + chatId + '\\n' +\n    '🌐 @' + (user || 'no_username') + '\\n\\n' +\n    '💬 Message:\\n' + (text || '(no text / callback)'),\n  reply_markup: {\n    inline_keyboard: [\n      [{ text: '✅ Approve access', callback_data: cbApprove }],\n      [{ text: '❌ Deny', callback_data: cbDeny }]\n    ]\n  }\n};\nvar userPayload = {\n  chat_id: chatId,\n  text:\n    '⏳ Access not granted yet. Your request was sent to the administrator. You will be notified when approved.'\n};\nvar telegramCredentials = await this.getCredentials('telegramApi');\nvar tgToken = String(telegramCredentials.accessToken || '').trim();\nvar tgBase = String(telegramCredentials.baseUrl || 'https://api.telegram.org').replace(/\\/+$/, '');\nvar telegramSendMessageUrl = tgBase + '/bot' + tgToken + '/sendMessage';\nvar telegramAnswerCallbackUrl = tgBase + '/bot' + tgToken + '/answerCallbackQuery';\nreturn {\n  json: Object.assign({}, j, {\n    telegramPendingKey: pendingKey,\n    telegramAdminNotifyPayload: adminPayload,\n    telegramUserNotifyPayload: userPayload,\n    telegramSendMessageUrl: telegramSendMessageUrl\n  })\n};"
+        "jsCode": "var j = $input.item.json || {};\nvar chatId = String(j.chatId || '').trim();\nvar from = j.message?.from || j.callback_query?.from || {};\nvar first = String(from.first_name || '').trim();\nvar last = String(from.last_name || '').trim();\nvar user = String(from.username || '').trim();\nvar text = String(j.message?.text || j.message?.caption || j.chatInput || '').trim().slice(0, 500);\nvar pendingKey = \"dbt:tg:pending:\" + chatId;\nvar cbApprove = \"da\" + ':a:' + chatId;\nvar cbDeny = \"da\" + ':d:' + chatId;\nvar adminChatId = \"1075735475\";\nvar displayName = (first + ' ' + last).trim() || 'unknown';\nvar adminText =\n  '🚨 Unauthorized bot access\\n\\n' +\n  '👤 ' + displayName + '\\n' +\n  '🆔 Telegram ID: ' + chatId + '\\n' +\n  '🌐 @' + (user || 'no_username') + '\\n\\n' +\n  '💬 Message:\\n' + (text || '(no text / callback)') +\n  '\\n\\nApprove to add this Telegram user to the allowed list.';\nreturn {\n  json: Object.assign({}, j, {\n    telegramPendingKey: pendingKey,\n    telegramAdminChatId: adminChatId,\n    telegramAdminNotifyText: adminText,\n    telegramApproveCallback: cbApprove,\n    telegramDenyCallback: cbDeny\n  })\n};\n"
       },
       "id": "bf5c6f7c-d593-4ceb-affb-17e69dc9d171",
       "name": "Prep unauthorized access",
@@ -393,25 +355,6 @@
     },
     {
       "parameters": {
-        "method": "POST",
-        "url": "={{ $('Prep unauthorized access').first().json.telegramSendMessageUrl }}",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify($('Prep unauthorized access').first().json.telegramUserNotifyPayload) }}",
-        "options": {}
-      },
-      "id": "3a4033b6-17a9-445c-816f-7cbf073b806b",
-      "name": "Telegram user access pending",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        2240,
-        992
-      ],
-      "onError": "continueRegularOutput"
-    },
-    {
-      "parameters": {
         "operation": "set",
         "key": "={{ $(\"Prep unauthorized access\").first().json.telegramPendingKey }}",
         "value": "1",
@@ -432,25 +375,6 @@
           "name": "Redis localhost account"
         }
       }
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "={{ $('Prep unauthorized access').first().json.telegramSendMessageUrl }}",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify($('Prep unauthorized access').first().json.telegramAdminNotifyPayload) }}",
-        "options": {}
-      },
-      "id": "a79de33c-083c-4464-907e-24cc2e767230",
-      "name": "Message from unknown user",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        2688,
-        992
-      ],
-      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
@@ -3466,6 +3390,111 @@
         "jsCode": "const item = $input.item;\nconst j = item.json || {};\nconst bin = item.binary && item.binary.data;\nconst patch = (j._docxPatch && typeof j._docxPatch === 'object') ? j._docxPatch : {};\nconst orig = String(j.dbtTelegramDocFileName || j._docxOriginalFileName || 'document.docx');\nconst stem = orig.replace(/\\.[^.]+$/, '') || 'document';\nlet outName = String(patch.outputFileName || (stem + '_updated.docx')).replace(/[/\\\\]/g, '_');\nif (!/\\.docx$/i.test(outName)) outName += '.docx';\nif (bin) {\n  item.binary.data = Object.assign({}, bin, {\n    fileName: outName,\n    fileExtension: 'docx',\n    mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'\n  });\n}\nlet extra = '';\nif (j._docxPatchError) extra = '\\nНе удалось полностью заполнить Word: ' + j._docxPatchError;\nelse extra = '\\nОбновлено ячеек: ' + String(j._docxPatchCells || 0) + '. Структура исходного файла сохранена.';\nreturn {\n  json: Object.assign({}, j, {\n    _docxPatched: true,\n    _docxOutFileName: outName,\n    output: String(j.output || j.text || '') + extra\n  }),\n  binary: item.binary\n};\n"
       },
       "onError": "continueRegularOutput"
+    },
+    {
+      "id": "f76b3670-e828-489d-8bfd-8304909e2467",
+      "name": "Message from unknown user",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2688,
+        992
+      ],
+      "parameters": {
+        "chatId": "1075735475",
+        "text": "={{ $('Prep unauthorized access').first().json.telegramAdminNotifyText }}",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "✅ Approve access",
+                    "additionalFields": {
+                      "callback_data": "={{ $('Prep unauthorized access').first().json.telegramApproveCallback }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "❌ Deny",
+                    "additionalFields": {
+                      "callback_data": "={{ $('Prep unauthorized access').first().json.telegramDenyCallback }}"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "notes": "Ask admin to approve the unknown Telegram user; do not reply to that user.",
+      "onError": "continueRegularOutput",
+      "webhookId": "b3eada37-6848-411d-8b0e-0270361dbab5",
+      "credentials": {
+        "telegramApi": {
+          "id": "FeJMdrxnjZderBuQ",
+          "name": "Telegram Bot API"
+        }
+      }
+    },
+    {
+      "id": "28557b5e-3e9a-4ea2-8611-26d529f67f32",
+      "name": "Telegram answer auth callback",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1792,
+        0
+      ],
+      "parameters": {
+        "resource": "callback",
+        "queryId": "={{ $('Prep auth context').first().json.telegramCallbackQueryId }}",
+        "additionalFields": {
+          "text": "={{ String($('Apply admin auth decision').first().json.telegramAuthResultMessage || 'OK').slice(0, 180) }}"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "webhookId": "bf5af25c-5dfc-4c19-83fc-f077db4b3915",
+      "credentials": {
+        "telegramApi": {
+          "id": "FeJMdrxnjZderBuQ",
+          "name": "Telegram Bot API"
+        }
+      }
+    },
+    {
+      "id": "8905cc60-2149-43df-9be9-d22680a5ee94",
+      "name": "Telegram notify user auth result",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2016,
+        0
+      ],
+      "parameters": {
+        "chatId": "={{ String($('Apply admin auth decision').first().json.telegramAuthTargetChatId || '') }}",
+        "text": "={{ $('Apply admin auth decision').first().json.telegramAuthAction === 'a' ? '✅ Access granted. You can use this bot now.' : '❌ Access was not granted by the administrator.' }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "onError": "continueRegularOutput",
+      "webhookId": "9029d252-1d85-4469-bdb0-be08f5ea948a",
+      "credentials": {
+        "telegramApi": {
+          "id": "FeJMdrxnjZderBuQ",
+          "name": "Telegram Bot API"
+        }
+      }
     }
   ],
   "connections": {
@@ -3558,28 +3587,6 @@
         ]
       ]
     },
-    "Redis Del pending (admin)": {
-      "main": [
-        [
-          {
-            "node": "Telegram answer auth callback",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Telegram answer auth callback": {
-      "main": [
-        [
-          {
-            "node": "Telegram notify user auth result",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Redis Get tg whitelist": {
       "main": [
         [
@@ -3646,46 +3653,6 @@
         [
           {
             "node": "Already notified admin?",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Already notified admin?": {
-      "main": [
-        [
-          {
-            "node": "Telegram user access pending",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Telegram user access pending",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Telegram user access pending": {
-      "main": [
-        [
-          {
-            "node": "Redis Set pending flag",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Redis Set pending flag": {
-      "main": [
-        [
-          {
-            "node": "Message from unknown user",
             "type": "main",
             "index": 0
           }
@@ -4795,6 +4762,51 @@
         [
           {
             "node": "Prepare Compath Telegram egress",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Already notified admin?": {
+      "main": [
+        null,
+        [
+          {
+            "node": "Redis Set pending flag",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis Set pending flag": {
+      "main": [
+        [
+          {
+            "node": "Message from unknown user",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis Del pending (admin)": {
+      "main": [
+        [
+          {
+            "node": "Telegram answer auth callback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram answer auth callback": {
+      "main": [
+        [
+          {
+            "node": "Telegram notify user auth result",
             "type": "main",
             "index": 0
           }

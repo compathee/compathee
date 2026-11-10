@@ -95,3 +95,50 @@ def test_docx_inplace_patch_return_is_wired() -> None:
     assert "copyFromColumn" in prompt
     assert "FORBIDDEN" in prompt
     assert "ОС_updated.docx" in prompt
+
+
+def test_unknown_telegram_user_notifies_admin_without_agent() -> None:
+    wf = _load()
+    nodes = {n["name"]: n for n in wf["nodes"]}
+    conns = wf["connections"]
+
+    assert "Telegram user access pending" not in nodes
+
+    for name in ("Prep unauthorized access", "Apply admin auth decision"):
+        js = nodes[name]["parameters"]["jsCode"]
+        assert "getCredentials" not in js
+        assert "telegramSendMessageUrl" not in js
+
+    prep = nodes["Prep unauthorized access"]["parameters"]["jsCode"]
+    assert 'adminChatId = "1075735475"' in prep
+    assert "telegramApproveCallback" in prep
+    assert "telegramAdminNotifyText" in prep
+
+    auth_if = conns["If authorized user chats"]["main"]
+    assert auth_if[0][0]["node"] == "Telegram typing (on receive)"
+    assert auth_if[1][0]["node"] == "Prep unauthorized access"
+    assert conns["Prep unauthorized access"]["main"][0][0]["node"] == "Redis Get pending flag"
+    assert conns["Redis Get pending flag"]["main"][0][0]["node"] == "Already notified admin?"
+
+    already = conns["Already notified admin?"]["main"]
+    assert already[0] == [] or already[0] is None
+    assert already[1][0]["node"] == "Redis Set pending flag"
+    assert conns["Redis Set pending flag"]["main"][0][0]["node"] == "Message from unknown user"
+
+    admin_msg = nodes["Message from unknown user"]
+    assert admin_msg["type"] == "n8n-nodes-base.telegram"
+    assert admin_msg["parameters"]["replyMarkup"] == "inlineKeyboard"
+    assert admin_msg["parameters"]["chatId"] == "1075735475"
+    assert "{{" not in str(admin_msg["parameters"]["chatId"])
+    assert admin_msg["credentials"]["telegramApi"]["id"] == "FeJMdrxnjZderBuQ"
+
+    answer = nodes["Telegram answer auth callback"]
+    assert answer["type"] == "n8n-nodes-base.telegram"
+    assert answer["parameters"]["resource"] == "callback"
+
+    notify = nodes["Telegram notify user auth result"]
+    assert notify["type"] == "n8n-nodes-base.telegram"
+    assert "telegramAuthTargetChatId" in notify["parameters"]["chatId"]
+    assert conns["Telegram answer auth callback"]["main"][0][0]["node"] == (
+        "Telegram notify user auth result"
+    )

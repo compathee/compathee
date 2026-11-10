@@ -83,4 +83,29 @@ jobs:
             | contains("<<<DBT_DOCX_PATCH>>>")
           ' /tmp/dbt-workflow-live.json >/dev/null
 
-          echo "Live DBT Accountant assistant has Word/DOCX extraction route 5 and in-place patch return."
+          jq -e '
+            (.nodes[] | select(.name == "Prep unauthorized access") | .parameters.jsCode)
+            | contains("getCredentials") | not
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
+            (.nodes[] | select(.name == "Apply admin auth decision") | .parameters.jsCode)
+            | contains("getCredentials") | not
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
+            (.nodes[] | select(.name == "Message from unknown user") | .type)
+            == "n8n-nodes-base.telegram"
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
+            (.nodes[] | select(.name == "Message from unknown user") | .parameters.chatId)
+            == "1075735475"
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
+            .connections["Already notified admin?"].main[1][]
+            | select(.node == "Redis Set pending flag")
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          echo "Live DBT Accountant assistant has Word/DOCX extract+patch and unknown-user admin notify."
