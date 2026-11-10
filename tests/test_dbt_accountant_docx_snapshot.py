@@ -182,6 +182,9 @@ def test_admin_approve_does_not_run_accountant_agent() -> None:
     assert "Standard_Books_Catalog" in prompt
     assert "purchase_invoices_period" in prompt
     assert "gl_nominal_ledger" in prompt
+    assert "LM" in prompt
+    assert "Lokatsioon Muuga" in prompt
+    assert "Lokatsioon Sillamäe" in prompt
     assert "catalog_id" in prompt
     assert "page=0" in prompt
     assert "sd=YYYY-MM-DD" in prompt
@@ -234,6 +237,8 @@ def test_admin_approve_does_not_run_accountant_agent() -> None:
     catalog = nodes["Standard_Books_Catalog"]["parameters"]
     assert "catalog_id" in catalog["description"]
     assert "gl_nominal_ledger" in catalog["description"]
+    assert "LM" in catalog["description"]
+    assert "Muuga" in catalog["description"]
     assert catalog["workflowInputs"]["value"]["operation"] == "catalog"
     assert "fromAI('catalog_id'" in catalog["workflowInputs"]["value"]["catalog_id"]
     assert wf["connections"]["Standard_Books_Catalog"]["ai_tool"][0][0]["node"] == (
@@ -257,6 +262,7 @@ def test_standard_books_api_refuses_unbounded_register_dumps() -> None:
     assert "function liveCompany" in js
     assert "function rewritePortalCompno" in js
     assert "function portalListUsercode" in js
+    assert "function mapObjectCode" in js
     assert "function applyQueryCatalog" in js
     assert "var QUERY_CATALOG" in js
     assert "purchase_invoices_period" in js
@@ -291,12 +297,17 @@ assert(q.indexOf('limit=50') >= 0, q);
 assert(isRestDetailPath('145/1') === true, 'detail path');
 assert(isRestDetailPath('fields=SerNr') === false, 'query is not detail');
 assert(liveCompany() === '2', 'live company');
-assert(portalListUsercode() === 'API', 'default usercode');
+assert(portalListUsercode() === 'N8N', 'default usercode');
+assert(mapObjectCode('Muuga') === 'LM', 'muuga alias');
+assert(mapObjectCode('терминал Мууга') === 'LM', 'muuga ru');
+assert(mapObjectCode('BCT Sillamäe') === 'LS', 'bct alias');
+assert(mapObjectCode('LS') === 'LS', 'ls code');
+assert(mapObjectCode('SOOD') === 'SOOD', 'other codes pass through');
 var g = guardPortalListQuery('register=CUVc&compno=1');
 assert(/perpage=50/.test(g) && /page=0/.test(g), g);
 assert(/compno=2/.test(g) && !/compno=1/.test(g), g);
 var inv = guardPortalListQuery('register=VIVc&sd=2026-11-09&ed=2026-11-10');
-assert(/usercode=API/.test(inv), inv);
+assert(/usercode=N8N/.test(inv), inv);
 assert(/page=0/.test(inv), inv);
 assert(/compno=2/.test(inv), inv);
 var p1 = guardPortalListQuery('register=VIVc&sd=2026-11-09&ed=2026-11-09&page=1&perpage=50');
@@ -314,6 +325,12 @@ assert(/register=VIVc/.test(invCat.query) && /sd=2026-11-09/.test(invCat.query),
 var gl = applyQueryCatalog('gl_nominal_ledger', '{"sd":"2026-10-01","ed":"2026-10-31","acc":"4106","obj":"SOOD"}');
 assert(gl.kind === 'report' && gl.reportwindow === 'MainRClass' && gl.repname === 'MainRn', JSON.stringify(gl));
 assert(gl.spec.f4 === '4106' && gl.spec.ObjStr === 'SOOD' && gl.spec.flags6 === 1, JSON.stringify(gl.spec));
+var glLm = applyQueryCatalog('gl_nominal_ledger', '{"sd":"2026-10-01","ed":"2026-10-31","acc":"4106","obj":"Muuga"}');
+assert(glLm.spec.ObjStr === 'LM', JSON.stringify(glLm.spec));
+var glLs = applyQueryCatalog('gl_nominal_ledger', '{"sd":"2026-10-01","ed":"2026-10-31","acc":"4613","obj":"BCT"}');
+assert(glLs.spec.ObjStr === 'LS' && glLs.spec.f4 === '4613', JSON.stringify(glLs.spec));
+var tb = applyQueryCatalog('trial_balance', '{"sd":"2026-10-01","ed":"2026-10-31","obj":"Sillamäe"}');
+assert(tb.kind === 'report' && tb.spec.ObjStr === 'LS', JSON.stringify(tb.spec));
 try { applyQueryCatalog('gl_nominal_ledger', '{"sd":"2026-10-01","ed":"2026-10-31","acc":"4106:4613"}'); throw new Error('range should refuse'); }
 catch (e) { assert(/one account/.test(e.message), e.message); }
 try { applyQueryCatalog('rest_accvc_chart_card', '{}'); throw new Error('blocked should refuse'); }
@@ -349,3 +366,7 @@ def test_standard_books_query_catalog_matches_builder() -> None:
     assert gl["reportwindow"] == "MainRClass"
     assert gl["spec"]["f4"] == "{acc}"
     assert catalog["company"] == 2
+    assert catalog["object_aliases"]["LM"]["name"] == "Lokatsioon Muuga"
+    assert catalog["object_aliases"]["LS"]["name"] == "Lokatsioon Sillamäe"
+    tb = next(q for q in catalog["queries"] if q["id"] == "trial_balance")
+    assert tb["spec"]["ObjStr"] == "{obj}"

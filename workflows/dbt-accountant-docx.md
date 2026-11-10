@@ -156,7 +156,12 @@ TRVc **rows** (`AccNumber`, `Objects`, `DebVal`, `CredVal`). REST
 The server-side filter without dumping October is Portal report
 **Nominal Ledger** `MainRClass` / `MainRn` with `sStartDate`/`sEndDate`,
 `f4` = one account, `ObjStr` = object. Two kontos = two calls. Probe
-exec **3650** with usercode `API` returned Access denied on that report.
+exec **3650** with usercode `API` returned Access denied; exec **3682**
+with usercode **N8N** (UserVc `n8n Rest API`) ran the report. Object
+codes **LM** = Lokatsioon Muuga (Muuga terminal) and **LS** = Lokatsioon
+Sillamäe (BCT Sillamäe): 4106 Oct opening LM 6663,05 + LS 15959,18 =
+unfiltered 22622,23. Portal VIVc/IVVc lists ignore object params;
+`search=LM` matches vendor names. REST ObjVc/IVVc listfilter is 401.
 
 ### Query catalog (from Excellent API examples)
 

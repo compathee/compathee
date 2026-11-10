@@ -1,18 +1,32 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-10T12:28:00Z",
+  "updatedAt": "2026-11-10T12:50:00Z",
   "company": 2,
   "timezone": "Europe/Tallinn",
   "sources": [
     "https://api-docs.excellent.ee/web_excellent_api_docs.html",
     "https://api-docs.excellent.ee/rest-api-docs.html"
   ],
+  "object_aliases": {
+    "LM": {
+      "code": "LM",
+      "name": "Lokatsioon Muuga",
+      "aka": ["Muuga", "Muuga terminal", "терминал Мууга", "Lokatsioon Muuga"]
+    },
+    "LS": {
+      "code": "LS",
+      "name": "Lokatsioon Sillamäe",
+      "aka": ["BCT", "Sillamäe", "Sillamae", "BCT Sillamäe", "терминал BCT", "Lokatsioon Sillamäe"]
+    }
+  },
   "rules": {
     "unknown_intent": "do_not_call_hansa",
     "company": "2 always; company 1 is archive; never copy /api/1/ from docs",
-    "rest_401_registers": ["AccVc", "TRVc", "VIVc"],
+    "report_usercode": "Portal action=report needs usercode N8N (UserVc n8n Rest API). usercode API returns Access denied.",
+    "rest_401_registers": ["AccVc", "TRVc", "VIVc", "ObjVc", "IVVc"],
     "filter_header_only": "REST filter.* matches header fields only; unknown filter names are ignored and look like an unfiltered dump",
     "page0": "Portal list first page is page=0, not 1",
+    "objects": "DBT filters by objects. LM = Lokatsioon Muuga (Muuga terminal). LS = Lokatsioon Sillamäe (BCT Sillamäe). Map those names to codes. Portal VIVc/IVVc lists ignore bfilter, objects and ObjStr; search=LM matches vendor names (ELME, LM KING), not the object. REST listfilter.Objects is 401. Use gl_nominal_ledger ObjStr (live probe 3682: 4106 Oct LM 6663,05 + LS 15959,18 = unfiltered 22622,23). ObjVc list is empty for this portal login.",
     "writes": "catalog entries with mutates=true are not live; wait for Да and a dedicated write template"
   },
   "queries": [
@@ -40,7 +54,7 @@
         "perpage": { "type": "int", "required": false, "default": "50" }
       },
       "query": "register=VIVc&sd={sd}&ed={ed}&page={page:0}&perpage={perpage:50}",
-      "do_not": ["REST /api/2/VIVc", "page=1 as first page", "company 1", "empty sd/ed"]
+      "do_not": ["REST /api/2/VIVc", "page=1 as first page", "company 1", "empty sd/ed", "bfilter/search/ObjStr as object filter", "search=LM (hits vendor names, not object LM)"]
     },
     {
       "id": "sales_invoices_period",
@@ -64,7 +78,7 @@
         "perpage": { "type": "int", "required": false, "default": "50" }
       },
       "query": "register=IVVc&sd={sd}&ed={ed}&page={page:0}&perpage={perpage:50}",
-      "do_not": ["REST /api/2/IVVc day dump", "page=1 as first page"]
+      "do_not": ["REST /api/2/IVVc day dump", "page=1 as first page", "bfilter/search/ObjStr as object filter"]
     },
     {
       "id": "paste_contact_name",
@@ -220,13 +234,17 @@
         "pearaamat",
         "GL lines",
         "konto + objekt за период",
-        "главная книга"
+        "главная книга",
+        "мууга",
+        "силламяэ",
+        "BCT",
+        "lokatsioon"
       ],
       "slots": {
         "sd": { "type": "date", "required": true },
         "ed": { "type": "date", "required": true },
         "acc": { "type": "account", "required": true, "label": "one AccNumber, no range" },
-        "obj": { "type": "text", "required": false, "label": "object code e.g. SOOD" }
+        "obj": { "type": "text", "required": false, "label": "LM (Muuga), LS (BCT Sillamäe), SOOD, or other object code" }
       },
       "reportwindow": "MainRClass",
       "repname": "MainRn",
@@ -257,14 +275,16 @@
       "phrases": ["оборотная ведомость", "saldod", "trial balance", "баланс за период"],
       "slots": {
         "sd": { "type": "date", "required": true },
-        "ed": { "type": "date", "required": true }
+        "ed": { "type": "date", "required": true },
+        "obj": { "type": "text", "required": false, "label": "LM (Muuga), LS (BCT Sillamäe), or other object code" }
       },
       "reportwindow": "BalRClass",
       "repname": "BalRn",
       "report_lang": "EST",
       "spec": {
         "sStartDate": "{sd}",
-        "sEndDate": "{ed}"
+        "sEndDate": "{ed}",
+        "ObjStr": "{obj}"
       }
     },
     {
@@ -460,7 +480,7 @@
       "doc_source": "REST listfilter.Objects",
       "doc_example": "GET /api/1/IVVc?listfilter.Objects=KONTOR&sort=InvDate&range=2025-01-01:2025-12-31",
       "purpose": "Invoices carrying object KONTOR among Objects.",
-      "reason": "listfilter works on invoice header Objects, not GL row objects. For konto+object postings use gl_nominal_ledger. filter.Objects=KONTOR does not match KONTOR,JESS.",
+      "reason": "REST /api/2/IVVc listfilter.Objects is 401. Portal VIVc/IVVc lists ignore bfilter/objects/ObjStr; search=LM is a vendor-name hit, not object LM. For LM/LS (Muuga / BCT Sillamäe) use gl_nominal_ledger ObjStr.",
       "fallback": "gl_nominal_ledger"
     },
     {
@@ -470,7 +490,7 @@
       "doc_source": "REST curl examples — ObjVc unbounded GET and sort=Code&range=ANNIKA",
       "doc_example": "GET /api/1/ObjVc?sort=Code&range=ANNIKA",
       "purpose": "Single object by code.",
-      "reason": "Docs also show GET /api/1/ObjVc with no filter (whole register). Unbounded REST lists are refused. Object codes for GL go in gl_nominal_ledger ObjStr.",
+      "reason": "REST /api/2/ObjVc is 401. Portal register=ObjVc returns empty for this login. Object cards still resolve on reports: LM = Lokatsioon Muuga, LS = Lokatsioon Sillamäe. Put those codes in gl_nominal_ledger ObjStr.",
       "fallback": "gl_nominal_ledger"
     },
     {
