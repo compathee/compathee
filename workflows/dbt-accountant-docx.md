@@ -90,16 +90,22 @@ Approve callback.
 Published together (10 Nov 2026, Europe/Kiev):
 
 - **Standard Books — API (Portal + REST)** `yW6RvQG3Bl87M8pK`
-  (`15f1dda3-75fb-4cee-bb54-82c1259c9769`): `Build API request` injects
+  (`3fec07e8-a25b-4fa3-92ff-a002ca152518`): `Build API request` injects
   `limit=25` (cap 50) on REST list GETs and **refuses** a list read that
   omits `fields=` or `filter.*`. Detail paths like `145/1` are unchanged.
-  Portal `register=` queries without `action=` get `perpage=50&page=1`.
+  Portal `register=` queries without `action=` get `perpage=50&page=0`
+  (Excellent pages are 0-based). REST and portal always pin **company 2**;
+  company **1** is the archive. Portal `register=VIVc`/`IVVc` injects
+  `usercode` (n8n var `STANDARD_BOOKS_PORTAL_REPORT_USERCODE`, else `API`)
+  and requires `sd`/`ed`. REST `/api/2/VIVc` returns 401 with this account.
 - **DBT Accountant assistant** `vQnGxLzinMZR6Vhg`
-  (`a9c824d8-33b6-4519-8527-00ced3891697`): system prompt HARD LIMITS
+  (`b836c521-38d6-4f34-9964-394c46aa83cf`): system prompt HARD LIMITS
   (one bounded Standard Books call; never on empty/`[No user text]`);
-  REST tool description requires `fields=` + `filter.*` + `limit≤50`;
-  Portal login only after a session-expired error; reports need a
-  non-empty date spec.
+  invoice day counts use **Standard_Books_Portal_Query**
+  `register=VIVc|IVVc` with `sd`/`ed` and `page=0` (REST `/api/2/VIVc`
+  is 401); REST tool description requires `fields=` + `filter.*` +
+  `limit≤50`; Portal login only after a session-expired error; reports
+  need a non-empty date spec.
 - List/report/write calls follow **PLAN → SHOW → WAIT IN THIS CHAT → CALL**:
   draft from the REST skill (no Hansa yet), `Telegram_Notify_User` with
   the plan, then a **Да / Нет** reply in the same Telegram chat, then one
@@ -130,6 +136,16 @@ The same 3578 run then called Hansa REST twice and failed
 now has **Ignore SSL issues** (`allowUnauthorizedCerts`) so the local
 expired Hansa cert does not block bounded reads. The agent must not
 quote SSL/n8n internals to the user.
+
+### False “0 invoices” (company 1 / Portal list)
+
+Exec **3589 / 3595** (~12:47 Europe/Kiev) answered **Да** and called
+Portal `register=VIVc&sd=…&ed=…` with `compno=2` but no `usercode` and
+`page=1`. Excellent returned `<data total='0'>`. A direct probe then
+found the real invoice via Portal `register=VIVc&usercode=…&sd=2026-11-09&ed=2026-11-10&page=0&compno=2`:
+SerNr **35663**, Rahandusministeerium, 289.00 EUR, InvDate 2026-11-09.
+REST `/api/2/VIVc` with the same Basic Auth is **401**. Invoice counts
+now use that Portal list (usercode injected; company **2**; page **0**).
 
 ## Files
 

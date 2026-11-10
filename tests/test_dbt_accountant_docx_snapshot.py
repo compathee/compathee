@@ -173,6 +173,11 @@ def test_admin_approve_does_not_run_accountant_agent() -> None:
     assert "`limit` (max 50)" in prompt
     assert "PLAN → SHOW → WAIT IN THIS CHAT → CALL" in prompt
     assert "Do **not** call **Telegram_Confirm_With_User**" in prompt
+    assert "Company **1** is the archive" in prompt
+    assert "INVOICE LISTS" in prompt
+    assert "Standard_Books_Portal_Query" in prompt
+    assert "page=0" in prompt
+    assert "sd=YYYY-MM-DD" in prompt
     assert "FAST PATH" in prompt
     assert "do **not** open Hansa/Excellent yet" in prompt
     assert "ACCOUNT NUMBER" in prompt
@@ -199,6 +204,10 @@ def test_admin_approve_does_not_run_accountant_agent() -> None:
     assert "AccVc konto" in rest["description"]
     assert "VIVc supplier invoice" in rest["description"]
     assert "IVVc sales invoice" in rest["description"]
+    assert rest["workflowInputs"]["value"]["rest_company"] == "2"
+    assert "fromAI" not in str(rest["workflowInputs"]["value"]["rest_company"])
+    assert "company 2" in rest["description"]
+    assert "archive" in rest["description"]
     paste = nodes["Standard_Books_Portal_Paste"]["parameters"]
     assert "bare счёт/arve number" in paste["description"]
     suffix = rest["workflowInputs"]["value"]["rest_query_suffix"]
@@ -209,6 +218,9 @@ def test_admin_approve_does_not_run_accountant_agent() -> None:
     assert "NON-EMPTY report_spec_json" in nodes["Standard_Books_Portal_Report"]["parameters"]["description"]
     assert "Confirm with the user first" in nodes["Standard_Books_Portal_Query"]["parameters"]["description"]
     assert "Confirm with the user first" in nodes["Standard_Books_Portal_Report"]["parameters"]["description"]
+    assert "register=VIVc" in nodes["Standard_Books_Portal_Query"]["parameters"]["description"]
+    assert "page=0" in nodes["Standard_Books_Portal_Query"]["parameters"]["description"]
+    assert "0-based" in nodes["Standard_Books_Portal_Register_List"]["parameters"]["description"]
 
 
 def test_standard_books_api_refuses_unbounded_register_dumps() -> None:
@@ -224,6 +236,11 @@ def test_standard_books_api_refuses_unbounded_register_dumps() -> None:
     assert "MAX_LIMIT = 50" in js
     assert "DEFAULT_LIMIT = 25" in js
     assert "perpage=50" in js
+    assert "function liveCompany" in js
+    assert "function rewritePortalCompno" in js
+    assert "function portalListUsercode" in js
+    assert "var company = liveCompany()" in js
+    assert "company = mPath[1]" not in js
     http = nodes["Call Standard Books API"]["parameters"]
     assert http["options"].get("allowUnauthorizedCerts") is True
 
@@ -239,8 +256,21 @@ var q = clampRestListQuery('fields=SerNr,TransDate&filter.TransDate=2026-01-01:2
 assert(q.indexOf('limit=50') >= 0, q);
 assert(isRestDetailPath('145/1') === true, 'detail path');
 assert(isRestDetailPath('fields=SerNr') === false, 'query is not detail');
-var g = guardPortalListQuery('register=CUVc&compno=2');
-assert(/perpage=50/.test(g) && /page=1/.test(g), g);
+assert(liveCompany() === '2', 'live company');
+assert(portalListUsercode() === 'API', 'default usercode');
+var g = guardPortalListQuery('register=CUVc&compno=1');
+assert(/perpage=50/.test(g) && /page=0/.test(g), g);
+assert(/compno=2/.test(g) && !/compno=1/.test(g), g);
+var inv = guardPortalListQuery('register=VIVc&sd=2026-11-09&ed=2026-11-10');
+assert(/usercode=API/.test(inv), inv);
+assert(/page=0/.test(inv), inv);
+assert(/compno=2/.test(inv), inv);
+var p1 = guardPortalListQuery('register=VIVc&sd=2026-11-09&ed=2026-11-09&page=1&perpage=50');
+assert(/page=0/.test(p1) && !/page=1/.test(p1), p1);
+try { guardPortalListQuery('register=VIVc&page=0'); throw new Error('missing dates should refuse'); }
+catch (e) { assert(/sd=/.test(e.message), e.message); }
+var c1 = rewritePortalCompno('register=VIVc&compno=1&compno=3');
+assert(/compno=2/.test(c1) && !/compno=1/.test(c1) && !/compno=3/.test(c1), c1);
 console.log('ok');
 """
     )

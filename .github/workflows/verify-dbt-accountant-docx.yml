@@ -142,6 +142,21 @@ jobs:
           ' /tmp/dbt-workflow-live.json >/dev/null
 
           jq -e '
+            (.nodes[] | select(.name == "DBT Accountant Agent") | .parameters.options.systemMessage)
+            | contains("Company **1** is the archive")
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
+            (.nodes[] | select(.name == "DBT Accountant Agent") | .parameters.options.systemMessage)
+            | contains("INVOICE LISTS")
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
+            (.nodes[] | select(.name == "DBT Accountant Agent") | .parameters.options.systemMessage)
+            | contains("Standard_Books_Portal_Query")
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
             (.nodes[] | select(.name == "Standard_Books_REST_API") | .parameters.description)
             | contains("AccVc konto")
           ' /tmp/dbt-workflow-live.json >/dev/null
@@ -189,6 +204,21 @@ jobs:
           jq -e '
             (.nodes[] | select(.name == "Build API request") | .parameters.jsCode)
             | contains("REST list GET refused")
+          ' /tmp/sb-workflow-live.json >/dev/null
+
+          jq -e '
+            (.nodes[] | select(.name == "Build API request") | .parameters.jsCode)
+            | contains("function liveCompany")
+          ' /tmp/sb-workflow-live.json >/dev/null
+
+          jq -e '
+            (.nodes[] | select(.name == "Build API request") | .parameters.jsCode)
+            | contains("function portalListUsercode")
+          ' /tmp/sb-workflow-live.json >/dev/null
+
+          jq -e '
+            (.nodes[] | select(.name == "Build API request") | .parameters.jsCode)
+            | contains("var company = liveCompany()")
           ' /tmp/sb-workflow-live.json >/dev/null
 
           jq -e '

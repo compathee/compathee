@@ -23,11 +23,16 @@ deployed with the n8n API or GitHub Actions.
   bare «счёт» is asked as konto vs supplier vs sales invoice;
   list/report reads wait for Да/Нет in the same Telegram chat
   (sendAndWait Confirm is disabled because it never resumes);
-  Approve callbacks do not run the agent).
+  Approve callbacks do not run the agent;
+  invoice day counts use Portal `register=VIVc`/`IVVc` with injected
+  usercode and page=0).
 - `standard-books-api.json` - published snapshot of **Standard Books —
   API (Portal + REST)** (`yW6RvQG3Bl87M8pK`). REST list GETs require
   `fields=` + `filter.*` and inject `limit=25` (cap 50) so empty
-  register dumps cannot crash Excellent Books.
+  register dumps cannot crash Excellent Books. Live reads always use
+  company **2** (company **1** is archive); invoice counts go through
+  Portal `register=VIVc` with injected usercode and page=0 (REST `/api/2/VIVc`
+  returns 401 with this account).
 - `dbt-accountant-docx.md` - notes for Telegram execution `3554` (`ОС.docx`)
   plus Standard Books API crash guards.
 
