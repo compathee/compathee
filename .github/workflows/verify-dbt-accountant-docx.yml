@@ -1,0 +1,261 @@
+name: Verify DBT Accountant Word extraction
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - cursor/docx-telegram-extract-f8f3
+    paths:
+      - ".github/workflows/verify-dbt-accountant-docx.yml"
+      - "workflows/dbt-accountant-assistant.json"
+      - "workflows/standard-books-api.json"
+      - "workflows/standard-books-query-catalog.json"
+      - "tests/test_dbt_accountant_docx_snapshot.py"
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  DBT_WORKFLOW_ID: vQnGxLzinMZR6Vhg
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Verify live DBT workflow extracts DOCX
+        env:
+          N8N_BASE_URL: ${{ secrets.N8N_BASE_URL }}
+          N8N_API_KEY: ${{ secrets.N8N_API_KEY }}
+        run: |
+          set -euo pipefail
+          test -n "${N8N_BASE_URL}"
+          test -n "${N8N_API_KEY}"
+
+          curl --fail-with-body "${N8N_BASE_URL%/}/api/v1/workflows/${DBT_WORKFLOW_ID}" \
+            -H "X-N8N-API-KEY: ${N8N_API_KEY}" \
+            -H "Accept: application/json" \
+            -o /tmp/dbt-workflow-live.json
+
+          jq -e '.nodes[] | select(.name == "Rename DOCX to ZIP")' /tmp/dbt-workflow-live.json >/dev/null
+          jq -e '.nodes[] | select(.name == "Decompress DOCX zip")' /tmp/dbt-workflow-live.json >/dev/null
+          jq -e '.nodes[] | select(.name == "Parse Word document.xml")' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
+            (.nodes[] | select(.name == "Classify attachment") | .parameters.jsCode)
+            | contains("ext === '\''docx'\''")
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
+            (.nodes[] | select(.name == "Route attachment format") | .parameters.numberOutputs) == 6
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
+            (.nodes[] | select(.name == "Extractable attachment?")
+              | .parameters.conditions.conditions[0].leftValue)
+            | contains("< 6")
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
+            .connections["Route attachment format"].main[5][]
+            | select(.node == "Rename DOCX to ZIP")
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
+            .connections["Parse Word document.xml"].main[0][]
+            | select(.node == "Collapse extract into chatInput")
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '.nodes[] | select(.name == "Patch Word table cells")' /tmp/dbt-workflow-live.json >/dev/null
+          jq -e '.nodes[] | select(.name == "Restore original DOCX binary")' /tmp/dbt-workflow-live.json >/dev/null
+          jq -e '.nodes[] | select(.name == "Stamp patched DOCX")' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
+            .connections["Persist KVM + KV"].main[][]
+            | select(.node == "Has DOCX patch?")
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
+            .connections["Stamp patched DOCX"].main[0][]
+            | select(.node == "Prepare Compath Telegram egress")
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
+            (.nodes[] | select(.name == "DBT Accountant Agent") | .parameters.options.systemMessage)
+            | contains("<<<DBT_DOCX_PATCH>>>")
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
+            (.nodes[] | select(.name == "Prep unauthorized access") | .parameters.jsCode)
+            | contains("getCredentials") | not
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
+            (.nodes[] | select(.name == "Apply admin auth decision") | .parameters.jsCode)
+            | contains("getCredentials") | not
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
+            (.nodes[] | select(.name == "Message from unknown user") | .type)
+            == "n8n-nodes-base.telegram"
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
+            (.nodes[] | select(.name == "Message from unknown user") | .parameters.chatId)
+            == "1075735475"
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
+            (.nodes[] | select(.name == "Message from unknown user")
+              | .parameters.additionalFields.parse_mode)
+            == "HTML"
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
+            (.nodes[] | select(.name == "Prep unauthorized access") | .parameters.jsCode)
+            | contains("no_username") | not
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
+            .connections["Already notified admin?"].main[1][]
+            | select(.node == "Redis Set pending flag")
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
+            (.nodes[] | select(.name == "DBT Accountant Agent") | .parameters.options.systemMessage)
+            | contains("HARD LIMITS")
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
+            (.nodes[] | select(.name == "DBT Accountant Agent") | .parameters.options.systemMessage)
+            | contains("PLAN → SHOW → WAIT IN THIS CHAT → CALL")
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
+            (.nodes[] | select(.name == "DBT Accountant Agent") | .parameters.options.systemMessage)
+            | contains("Do **not** call **Telegram_Confirm_With_User**")
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
+            (.nodes[] | select(.name == "DBT Accountant Agent") | .parameters.options.systemMessage)
+            | contains("ACCOUNT NUMBER")
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
+            (.nodes[] | select(.name == "DBT Accountant Agent") | .parameters.options.systemMessage)
+            | contains("Company **1** is the archive")
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
+            (.nodes[] | select(.name == "DBT Accountant Agent") | .parameters.options.systemMessage)
+            | contains("INVOICE LISTS")
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
+            (.nodes[] | select(.name == "DBT Accountant Agent") | .parameters.options.systemMessage)
+            | contains("GL POSTINGS")
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
+            (.nodes[] | select(.name == "DBT Accountant Agent") | .parameters.options.systemMessage)
+            | contains("Standard_Books_Portal_Query")
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
+            (.nodes[] | select(.name == "DBT Accountant Agent") | .parameters.options.systemMessage)
+            | contains("Standard_Books_Catalog")
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
+            (.nodes[] | select(.name == "Standard_Books_Catalog") | .parameters.description)
+            | contains("catalog_id")
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
+            (.nodes[] | select(.name == "Standard_Books_REST_API") | .parameters.description)
+            | contains("AccVc konto")
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
+            (.nodes[] | select(.name == "Telegram_Confirm_With_User") | .disabled)
+            == true
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
+            .connections | has("Telegram_Confirm_With_User") | not
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
+            .connections["Admin auth callback?"].main[0][]
+            | select(.node == "Redis Get tg whitelist (admin)")
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
+            [.connections["Admin auth callback?"].main[0][].node]
+            | index("Merge whitelist auth")
+            | not
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
+            (.nodes[] | select(.name == "Session memory") | .parameters.sessionKey)
+            | contains("callback_query")
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
+            (.nodes[] | select(.name == "Standard_Books_REST_API") | .parameters.description)
+            | contains("IVVc sales invoice")
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          curl --fail-with-body "${N8N_BASE_URL%/}/api/v1/workflows/yW6RvQG3Bl87M8pK" \
+            -H "X-N8N-API-KEY: ${N8N_API_KEY}" \
+            -H "Accept: application/json" \
+            -o /tmp/sb-workflow-live.json
+
+          jq -e '
+            (.nodes[] | select(.name == "Build API request") | .parameters.jsCode)
+            | contains("clampRestListQuery")
+          ' /tmp/sb-workflow-live.json >/dev/null
+
+          jq -e '
+            (.nodes[] | select(.name == "Build API request") | .parameters.jsCode)
+            | contains("REST list GET refused")
+          ' /tmp/sb-workflow-live.json >/dev/null
+
+          jq -e '
+            (.nodes[] | select(.name == "Build API request") | .parameters.jsCode)
+            | contains("function liveCompany")
+          ' /tmp/sb-workflow-live.json >/dev/null
+
+          jq -e '
+            (.nodes[] | select(.name == "Build API request") | .parameters.jsCode)
+            | contains("function portalListUsercode")
+          ' /tmp/sb-workflow-live.json >/dev/null
+
+          jq -e '
+            (.nodes[] | select(.name == "Resolve catalog") | .parameters.jsCode)
+            | contains("purchase_invoices_period")
+          ' /tmp/sb-workflow-live.json >/dev/null
+
+          jq -e '
+            (.nodes[] | select(.name == "Resolve catalog") | .parameters.jsCode)
+            | contains("gl_nominal_ledger")
+          ' /tmp/sb-workflow-live.json >/dev/null
+
+          jq -e '
+            .connections["When called by Agent"].main[0][]
+            | select(.node == "Resolve catalog")
+          ' /tmp/sb-workflow-live.json >/dev/null
+
+          jq -e '
+            (.nodes[] | select(.name == "Build API request") | .parameters.jsCode)
+            | contains("var company = liveCompany()")
+          ' /tmp/sb-workflow-live.json >/dev/null
+
+          jq -e '
+            (.nodes[] | select(.name == "Call Standard Books API")
+              | .parameters.options.allowUnauthorizedCerts)
+            == true
+          ' /tmp/sb-workflow-live.json >/dev/null
+
+          echo "Live DBT Accountant assistant has Word/DOCX extract+patch, unknown-user admin notify, and Standard Books crash guards."

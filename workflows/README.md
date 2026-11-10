@@ -14,6 +14,31 @@ deployed with the n8n API or GitHub Actions.
   `={{ Object.keys($binary || {}).join(',') }}`.
 - `water-meter-submission-backup.md` - human-readable investigation notes for
   execution `3008`.
+- `dbt-accountant-assistant.backup.json` - snapshot of **DBT Accountant
+  assistant** (`vQnGxLzinMZR6Vhg`) before Word/DOCX extraction.
+- `dbt-accountant-assistant.json` - published snapshot after Word/DOCX
+  extraction, in-place cell patch return, unknown-user access requests
+  sent only to admin Telegram `1075735475`, and Standard Books crash
+  guards (HARD LIMITS; list/report reads confirm before Hansa;
+  bare «счёт» is asked as konto vs supplier vs sales invoice;
+  list/report reads wait for Да/Нет in the same Telegram chat
+  (sendAndWait Confirm is disabled because it never resumes);
+  Approve callbacks do not run the agent;
+  invoice day counts use Portal `register=VIVc`/`IVVc` with injected
+  usercode and page=0; accounting reads go through the query catalog).
+- `standard-books-api.json` - published snapshot of **Standard Books —
+  API (Portal + REST)** (`yW6RvQG3Bl87M8pK`). REST list GETs require
+  `fields=` + `filter.*` and inject `limit=25` (cap 50) so empty
+  register dumps cannot crash Excellent Books. Live reads always use
+  company **2** (company **1** is archive); invoice counts go through
+  Portal `register=VIVc` with injected usercode and page=0 (REST `/api/2/VIVc`
+  returns 401 with this account). `operation=catalog` builds a query
+  from `workflows/standard-books-query-catalog.json`.
+- `standard-books-query-catalog.json` - live Portal templates taken from
+  Excellent WebExcellent/REST examples and pinned to company **2**
+  (blocked REST AccVc/TRVc/VIVc dumps stay documented, not callable).
+- `dbt-accountant-docx.md` - notes for Telegram execution `3554` (`ОС.docx`)
+  plus Standard Books API crash guards.
 
 ## Deploying with n8n API
 

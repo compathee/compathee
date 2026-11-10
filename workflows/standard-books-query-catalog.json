@@ -1,0 +1,537 @@
+{
+  "version": 1,
+  "updatedAt": "2026-11-10T12:28:00Z",
+  "company": 2,
+  "timezone": "Europe/Tallinn",
+  "sources": [
+    "https://api-docs.excellent.ee/web_excellent_api_docs.html",
+    "https://api-docs.excellent.ee/rest-api-docs.html"
+  ],
+  "rules": {
+    "unknown_intent": "do_not_call_hansa",
+    "company": "2 always; company 1 is archive; never copy /api/1/ from docs",
+    "rest_401_registers": ["AccVc", "TRVc", "VIVc"],
+    "filter_header_only": "REST filter.* matches header fields only; unknown filter names are ignored and look like an unfiltered dump",
+    "page0": "Portal list first page is page=0, not 1",
+    "writes": "catalog entries with mutates=true are not live; wait for Да and a dedicated write template"
+  },
+  "queries": [
+    {
+      "id": "purchase_invoices_period",
+      "status": "live",
+      "confirm": true,
+      "mutates": false,
+      "kind": "portal_query",
+      "doc_source": "WebExcellentAPI Quick Reference — List Queries",
+      "doc_example": "?register=IVVc&usercode=JOHN&sd=2026-01-01&ed=2026-12-31&page=0&perpage=50",
+      "purpose": "Count or list purchase invoices (ostuarve / счета поставщика) in a date range.",
+      "phrases": [
+        "сколько счетов поступило",
+        "счета поставщика за",
+        "ostuarved täna",
+        "ostuarve eile",
+        "purchase invoices today",
+        "сколько покупных счетов"
+      ],
+      "slots": {
+        "sd": { "type": "date", "required": true, "label": "start YYYY-MM-DD Europe/Tallinn" },
+        "ed": { "type": "date", "required": true, "label": "end YYYY-MM-DD Europe/Tallinn" },
+        "page": { "type": "int", "required": false, "default": "0" },
+        "perpage": { "type": "int", "required": false, "default": "50" }
+      },
+      "query": "register=VIVc&sd={sd}&ed={ed}&page={page:0}&perpage={perpage:50}",
+      "do_not": ["REST /api/2/VIVc", "page=1 as first page", "company 1", "empty sd/ed"]
+    },
+    {
+      "id": "sales_invoices_period",
+      "status": "live",
+      "confirm": true,
+      "mutates": false,
+      "kind": "portal_query",
+      "doc_source": "WebExcellentAPI Quick Reference — List Queries",
+      "doc_example": "?register=IVVc&usercode=JOHN&sd=2026-01-01&ed=2026-12-31&page=0&perpage=50",
+      "purpose": "Count or list sales invoices (müügiarve / счета на продажу) in a date range.",
+      "phrases": [
+        "сколько счетов на продажу",
+        "müügiarved täna",
+        "sales invoices today",
+        "счета покупателям за"
+      ],
+      "slots": {
+        "sd": { "type": "date", "required": true },
+        "ed": { "type": "date", "required": true },
+        "page": { "type": "int", "required": false, "default": "0" },
+        "perpage": { "type": "int", "required": false, "default": "50" }
+      },
+      "query": "register=IVVc&sd={sd}&ed={ed}&page={page:0}&perpage={perpage:50}",
+      "do_not": ["REST /api/2/IVVc day dump", "page=1 as first page"]
+    },
+    {
+      "id": "paste_contact_name",
+      "status": "live",
+      "confirm": false,
+      "mutates": false,
+      "kind": "pastespecial",
+      "doc_source": "WebExcellentAPI Quick Reference — Lookups & Search",
+      "doc_example": "?action=pastespecial&register=AllCUVc&id=john",
+      "purpose": "Find a customer/contact by name fragment or code.",
+      "phrases": ["клиент", "контакт", "customer", "klient", "найди фирму"],
+      "slots": {
+        "q": { "type": "text", "required": true, "label": "name fragment or code" }
+      },
+      "paste_register": "AllCUVc",
+      "do_not": ["bare invoice/счёт number as a contact search"]
+    },
+    {
+      "id": "paste_supplier_name",
+      "status": "live",
+      "confirm": false,
+      "mutates": false,
+      "kind": "pastespecial",
+      "doc_source": "WebExcellentAPI Lookups — CUVc/VEVc/AllCUVc search Code, Name, RegNr1",
+      "doc_example": "?action=pastespecial&register=CUVc&id=acme&compno=2",
+      "purpose": "Find a supplier (creditor) by name or code.",
+      "phrases": ["поставщик", "hankija", "supplier", "VEVc"],
+      "slots": {
+        "q": { "type": "text", "required": true }
+      },
+      "paste_register": "VEVc"
+    },
+    {
+      "id": "paste_item_code",
+      "status": "live",
+      "confirm": false,
+      "mutates": false,
+      "kind": "pastespecial",
+      "doc_source": "WebExcellentAPI Lookups — pastespecial INVc",
+      "doc_example": "?action=pastespecial&register=INVc&id=laptop",
+      "purpose": "Find an item/article by code or name.",
+      "phrases": ["артикул", "товар", "nomenklatuur", "item", "INVc"],
+      "slots": {
+        "q": { "type": "text", "required": true }
+      },
+      "paste_register": "INVc"
+    },
+    {
+      "id": "paste_purchase_invoice",
+      "status": "live",
+      "confirm": false,
+      "mutates": false,
+      "kind": "pastespecial",
+      "doc_source": "WebExcellentAPI pastespecial (register search, max 50)",
+      "doc_example": "?action=pastespecial&register=INVc&id=laptop",
+      "purpose": "Find a purchase invoice by serial/number once the user said ostuarve / счёт поставщика.",
+      "phrases": ["найди ostuarve", "счёт поставщика номер", "purchase invoice 35663"],
+      "slots": {
+        "q": { "type": "text", "required": true, "label": "invoice SerNr or fragment" }
+      },
+      "paste_register": "VIVc",
+      "do_not": ["use this for a bare number before konto vs ostuarve vs müügiarve is known"]
+    },
+    {
+      "id": "paste_sales_invoice",
+      "status": "live",
+      "confirm": false,
+      "mutates": false,
+      "kind": "pastespecial",
+      "doc_source": "WebExcellentAPI pastespecial",
+      "doc_example": "?action=pastespecial&register=INVc&id=laptop",
+      "purpose": "Find a sales invoice by serial/number once the user said müügiarve / счёт на продажу.",
+      "phrases": ["найди müügiarve", "счёт на продажу номер", "sales invoice"],
+      "slots": {
+        "q": { "type": "text", "required": true }
+      },
+      "paste_register": "IVVc"
+    },
+    {
+      "id": "contact_list",
+      "status": "live",
+      "confirm": true,
+      "mutates": false,
+      "kind": "portal_query",
+      "doc_source": "WebExcellentAPI List Queries",
+      "doc_example": "?register=CUVc&page=0&perpage=100",
+      "purpose": "Paged browse of contacts (not a full dump).",
+      "phrases": ["список клиентов", "contact list", "клиенты страница"],
+      "slots": {
+        "page": { "type": "int", "required": false, "default": "0" },
+        "perpage": { "type": "int", "required": false, "default": "50" }
+      },
+      "query": "register=CUVc&page={page:0}&perpage={perpage:50}"
+    },
+    {
+      "id": "attach_list",
+      "status": "live",
+      "confirm": true,
+      "mutates": false,
+      "kind": "portal_query",
+      "doc_source": "WebExcellentAPI Attachments",
+      "doc_example": "?action=action&register=getattachlist&regname=IVVc&id=12345",
+      "purpose": "List attachments on a known invoice/order.",
+      "phrases": ["вложения счёта", "attachments", "файлы к счёту"],
+      "slots": {
+        "reg": { "type": "enum", "required": true, "enum": ["IVVc", "VIVc", "ORVc", "CUVc", "OPVc", "INVc"] },
+        "sernr": { "type": "text", "required": true, "label": "record SerNr/Code" }
+      },
+      "query": "action=action&register=getattachlist&regname={reg}&id={sernr}"
+    },
+    {
+      "id": "sales_invoice_pdf",
+      "status": "live",
+      "confirm": true,
+      "mutates": false,
+      "kind": "portal_query",
+      "doc_source": "WebExcellentAPI Document Generation",
+      "doc_example": "?action=document&register=IVVc&id=10001",
+      "purpose": "Generate the official PDF for a sales invoice.",
+      "phrases": ["pdf счёта на продажу", "müügiarve pdf", "invoice pdf"],
+      "slots": {
+        "sernr": { "type": "text", "required": true }
+      },
+      "query": "action=document&register=IVVc&id={sernr}"
+    },
+    {
+      "id": "purchase_invoice_pdf",
+      "status": "live",
+      "confirm": true,
+      "mutates": false,
+      "kind": "portal_query",
+      "doc_source": "WebExcellentAPI Document Generation (VIVc among core registers)",
+      "doc_example": "?action=document&register=IVVc&id=10001",
+      "purpose": "Generate the official PDF for a purchase invoice.",
+      "phrases": ["pdf счёта поставщика", "ostuarve pdf"],
+      "slots": {
+        "sernr": { "type": "text", "required": true }
+      },
+      "query": "action=document&register=VIVc&id={sernr}"
+    },
+    {
+      "id": "gl_nominal_ledger",
+      "status": "live",
+      "confirm": true,
+      "mutates": false,
+      "kind": "report",
+      "doc_source": "WebExcellentAPI Reports + live MainRClass/MainRn probe",
+      "doc_example": "POST ?action=report&usercode=JOHN  {\"reportwindow\":\"QTHistoryRClass\",\"repname\":\"QTHstRn\",\"spec\":{\"sStartDate\":\"2026-01-01\",\"sEndDate\":\"2026-01-31\"}}",
+      "purpose": "Nominal Ledger lines for ONE account + optional object in a period. Not AccVc. Two kontos = two calls.",
+      "phrases": [
+        "проводки",
+        "kanded",
+        "pearaamat",
+        "GL lines",
+        "konto + objekt за период",
+        "главная книга"
+      ],
+      "slots": {
+        "sd": { "type": "date", "required": true },
+        "ed": { "type": "date", "required": true },
+        "acc": { "type": "account", "required": true, "label": "one AccNumber, no range" },
+        "obj": { "type": "text", "required": false, "label": "object code e.g. SOOD" }
+      },
+      "reportwindow": "MainRClass",
+      "repname": "MainRn",
+      "report_lang": "EST",
+      "spec": {
+        "sStartDate": "{sd}",
+        "sEndDate": "{ed}",
+        "f4": "{acc}",
+        "ObjStr": "{obj}",
+        "flags6": 1
+      },
+      "do_not": [
+        "REST AccVc month dump",
+        "REST TRVc with filter.Konto",
+        "f4=4106:4613",
+        "limit 500"
+      ]
+    },
+    {
+      "id": "trial_balance",
+      "status": "live",
+      "confirm": true,
+      "mutates": false,
+      "kind": "report",
+      "doc_source": "WebExcellentAPI Reports (same POST shape) + existing BalRClass/BalRn shortcut",
+      "doc_example": "POST ?action=report  {\"reportwindow\":\"QTHistoryRClass\",\"repname\":\"QTHstRn\",\"spec\":{\"sStartDate\":\"2026-01-01\",\"sEndDate\":\"2026-01-31\"}}",
+      "purpose": "Trial / balance report for a period.",
+      "phrases": ["оборотная ведомость", "saldod", "trial balance", "баланс за период"],
+      "slots": {
+        "sd": { "type": "date", "required": true },
+        "ed": { "type": "date", "required": true }
+      },
+      "reportwindow": "BalRClass",
+      "repname": "BalRn",
+      "report_lang": "EST",
+      "spec": {
+        "sStartDate": "{sd}",
+        "sEndDate": "{ed}"
+      }
+    },
+    {
+      "id": "report_filters",
+      "status": "live",
+      "confirm": true,
+      "mutates": false,
+      "kind": "portal_query",
+      "doc_source": "Portal getreportfilters (report_list)",
+      "doc_example": "?action=action&register=getreportfilters&usercode=JOHN",
+      "purpose": "List available reportwindow/repname/spec fields for the accounting user.",
+      "phrases": ["какие отчёты", "report list", "getreportfilters"],
+      "slots": {},
+      "query": "action=action&register=getreportfilters"
+    },
+    {
+      "id": "item_stock",
+      "status": "live",
+      "confirm": true,
+      "mutates": false,
+      "kind": "portal_query",
+      "doc_source": "WebExcellentAPI Lookups",
+      "doc_example": "?action=action&register=getitemstocklist&id=LAPTOP01",
+      "purpose": "Stock list for one item code.",
+      "phrases": ["остаток товара", "stock", "laos", "getitemstocklist"],
+      "slots": {
+        "code": { "type": "text", "required": true }
+      },
+      "query": "action=action&register=getitemstocklist&id={code}"
+    },
+    {
+      "id": "customer_contact_persons",
+      "status": "live",
+      "confirm": true,
+      "mutates": false,
+      "kind": "portal_query",
+      "doc_source": "WebExcellentAPI Lookups",
+      "doc_example": "?action=action&register=getcustomercontactpersons&id=ACME",
+      "purpose": "Contact persons on a customer card.",
+      "phrases": ["контактные лица", "contact persons"],
+      "slots": {
+        "code": { "type": "text", "required": true }
+      },
+      "query": "action=action&register=getcustomercontactpersons&id={code}"
+    },
+    {
+      "id": "activities_pending",
+      "status": "live",
+      "confirm": true,
+      "mutates": false,
+      "kind": "portal_query",
+      "doc_source": "WebExcellentAPI List Queries",
+      "doc_example": "?register=ActVc&usercode=JOHN&search=pending&page=0&perpage=50",
+      "purpose": "Pending activities/tasks for the portal user.",
+      "phrases": ["задачи", "activities pending", "текущие задания"],
+      "slots": {
+        "search": { "type": "text", "required": false, "default": "pending" },
+        "page": { "type": "int", "required": false, "default": "0" },
+        "perpage": { "type": "int", "required": false, "default": "50" }
+      },
+      "query": "register=ActVc&search={search:pending}&page={page:0}&perpage={perpage:50}"
+    },
+    {
+      "id": "payments_period",
+      "status": "live",
+      "confirm": true,
+      "mutates": false,
+      "kind": "portal_query",
+      "doc_source": "WebExcellentAPI List Queries (OPVc needs usercode; dates keep the list bounded)",
+      "doc_example": "?register=IVVc&usercode=JOHN&sd=2026-01-01&ed=2026-12-31&page=0&perpage=50",
+      "purpose": "Outgoing payments (OPVc) in a date range.",
+      "phrases": ["платежи", "maksed", "payments", "OPVc"],
+      "slots": {
+        "sd": { "type": "date", "required": true },
+        "ed": { "type": "date", "required": true },
+        "page": { "type": "int", "required": false, "default": "0" },
+        "perpage": { "type": "int", "required": false, "default": "50" }
+      },
+      "query": "register=OPVc&sd={sd}&ed={ed}&page={page:0}&perpage={perpage:50}"
+    },
+    {
+      "id": "receipts_period",
+      "status": "live",
+      "confirm": true,
+      "mutates": false,
+      "kind": "portal_query",
+      "doc_source": "WebExcellentAPI List Queries (IPVc needs usercode)",
+      "doc_example": "?register=IVVc&usercode=JOHN&sd=2026-01-01&ed=2026-12-31&page=0&perpage=50",
+      "purpose": "Incoming receipts (IPVc) in a date range.",
+      "phrases": ["поступления", "laekumised", "receipts", "IPVc"],
+      "slots": {
+        "sd": { "type": "date", "required": true },
+        "ed": { "type": "date", "required": true },
+        "page": { "type": "int", "required": false, "default": "0" },
+        "perpage": { "type": "int", "required": false, "default": "50" }
+      },
+      "query": "register=IPVc&sd={sd}&ed={ed}&page={page:0}&perpage={perpage:50}"
+    },
+    {
+      "id": "sales_orders_period",
+      "status": "live",
+      "confirm": true,
+      "mutates": false,
+      "kind": "portal_query",
+      "doc_source": "WebExcellentAPI List Queries (ORVc needs usercode)",
+      "doc_example": "?register=IVVc&usercode=JOHN&sd=2026-01-01&ed=2026-12-31&page=0&perpage=50",
+      "purpose": "Sales orders in a date range.",
+      "phrases": ["заказы", "müügitellimused", "sales orders", "ORVc"],
+      "slots": {
+        "sd": { "type": "date", "required": true },
+        "ed": { "type": "date", "required": true },
+        "page": { "type": "int", "required": false, "default": "0" },
+        "perpage": { "type": "int", "required": false, "default": "50" }
+      },
+      "query": "register=ORVc&sd={sd}&ed={ed}&page={page:0}&perpage={perpage:50}"
+    },
+    {
+      "id": "quotations_period",
+      "status": "live",
+      "confirm": true,
+      "mutates": false,
+      "kind": "portal_query",
+      "doc_source": "WebExcellentAPI List Queries (QTVc needs usercode) + report example QTHistoryRClass",
+      "doc_example": "?register=IVVc&usercode=JOHN&sd=2026-01-01&ed=2026-12-31&page=0&perpage=50",
+      "purpose": "Quotations in a date range.",
+      "phrases": ["предложения", "pakkumised", "quotations", "QTVc"],
+      "slots": {
+        "sd": { "type": "date", "required": true },
+        "ed": { "type": "date", "required": true },
+        "page": { "type": "int", "required": false, "default": "0" },
+        "perpage": { "type": "int", "required": false, "default": "50" }
+      },
+      "query": "register=QTVc&sd={sd}&ed={ed}&page={page:0}&perpage={perpage:50}"
+    },
+    {
+      "id": "portal_login",
+      "status": "live",
+      "confirm": false,
+      "mutates": false,
+      "kind": "portal_query",
+      "doc_source": "WebExcellentAPI Authentication",
+      "doc_example": "?action=login",
+      "purpose": "Warm Portal session. Only after a previous call said the session expired.",
+      "phrases": ["session expired", "login again"],
+      "slots": {},
+      "query": "action=login",
+      "do_not": ["call on every turn"]
+    },
+    {
+      "id": "rest_accvc_chart_card",
+      "status": "blocked",
+      "kind": "blocked",
+      "doc_source": "REST List Financial Accounts GET /api/{compcode}/AccVc",
+      "doc_example": "GET /api/1/AccVc?fields=AccNumber,Comment,AccType&filter.AccNumber=4106",
+      "purpose": "Chart-of-accounts CARD (name/type). Not journal lines.",
+      "reason": "This portal account REST /api/2/AccVc returns 401. AccVc has no Date/Debit/Credit. For проводки use gl_nominal_ledger.",
+      "fallback": "gl_nominal_ledger"
+    },
+    {
+      "id": "rest_trvc_headers",
+      "status": "blocked",
+      "kind": "blocked",
+      "doc_source": "REST GET /api/{compcode}/TRVc — filter.* is header-only",
+      "doc_example": "GET /api/1/TRVc?fields=SerNr,TransDate&filter.TransDate=2026-10-01:2026-10-31&limit=25",
+      "purpose": "Journal headers. Row AccNumber/Objects cannot be REST-filtered.",
+      "reason": "REST /api/2/TRVc returns 401. filter.Konto is ignored. Use gl_nominal_ledger.",
+      "fallback": "gl_nominal_ledger"
+    },
+    {
+      "id": "rest_vivc_by_vendor",
+      "status": "blocked",
+      "kind": "blocked",
+      "doc_source": "REST GET /api/{compcode}/VIVc filter.VECode / filter.PayDeal",
+      "doc_example": "GET /api/1/VIVc?fields=SerNr,InvDate,VECode,PayVal&filter.VECode=123&limit=10",
+      "purpose": "Purchase invoices by vendor (docs REST example).",
+      "reason": "REST /api/2/VIVc returns 401 with this portal account. Use purchase_invoices_period or paste_purchase_invoice.",
+      "fallback": "purchase_invoices_period"
+    },
+    {
+      "id": "rest_ivvc_by_customer",
+      "status": "blocked",
+      "kind": "blocked",
+      "doc_source": "REST combining parameters",
+      "doc_example": "GET /api/1/IVVc?filter.CustCode=10005&sort=InvDate&range=2026-01-27:2026-02-28&limit=10",
+      "purpose": "Sales invoices for one customer in a date range (docs REST example).",
+      "reason": "Prefer Portal sales_invoices_period. REST list dumps are unsafe if filter field is misspelled (silently ignored).",
+      "fallback": "sales_invoices_period"
+    },
+    {
+      "id": "rest_ivvc_listfilter_objects",
+      "status": "blocked",
+      "kind": "blocked",
+      "doc_source": "REST listfilter.Objects",
+      "doc_example": "GET /api/1/IVVc?listfilter.Objects=KONTOR&sort=InvDate&range=2025-01-01:2025-12-31",
+      "purpose": "Invoices carrying object KONTOR among Objects.",
+      "reason": "listfilter works on invoice header Objects, not GL row objects. For konto+object postings use gl_nominal_ledger. filter.Objects=KONTOR does not match KONTOR,JESS.",
+      "fallback": "gl_nominal_ledger"
+    },
+    {
+      "id": "rest_objvc_by_code",
+      "status": "blocked",
+      "kind": "blocked",
+      "doc_source": "REST curl examples — ObjVc unbounded GET and sort=Code&range=ANNIKA",
+      "doc_example": "GET /api/1/ObjVc?sort=Code&range=ANNIKA",
+      "purpose": "Single object by code.",
+      "reason": "Docs also show GET /api/1/ObjVc with no filter (whole register). Unbounded REST lists are refused. Object codes for GL go in gl_nominal_ledger ObjStr.",
+      "fallback": "gl_nominal_ledger"
+    },
+    {
+      "id": "rest_invc_code_range",
+      "status": "blocked",
+      "kind": "blocked",
+      "doc_source": "REST GET with filters",
+      "doc_example": "GET /api/1/INVc?sort=Code&range=104:110&fields=Code,Name,UPrice1",
+      "purpose": "Items in a code range.",
+      "reason": "Use paste_item_code for a named article. Range scans still need a verified REST account (this portal login is 401 on several registers).",
+      "fallback": "paste_item_code"
+    },
+    {
+      "id": "rest_cuvc_created_range",
+      "status": "blocked",
+      "kind": "blocked",
+      "doc_source": "REST Combining Parameters",
+      "doc_example": "GET /api/1/CUVc?sort=DateCreated&range=2020-01-01:",
+      "purpose": "Contacts created from a date onwards (open-ended range).",
+      "reason": "Open-ended REST range can dump the file. Use paste_contact_name or contact_list.",
+      "fallback": "paste_contact_name"
+    },
+    {
+      "id": "delete_record",
+      "status": "documented_not_wired",
+      "kind": "blocked",
+      "mutates": true,
+      "doc_source": "WebExcellentAPI Record Operations",
+      "doc_example": "?action=delete&register=IVVc&id=12345",
+      "purpose": "Delete a register record.",
+      "reason": "Write/delete is not in the live catalog. Do not call Hansa."
+    },
+    {
+      "id": "upload_attachment",
+      "status": "documented_not_wired",
+      "kind": "blocked",
+      "mutates": true,
+      "doc_source": "WebExcellentAPI Attachments",
+      "doc_example": "POST ?action=action&register=doupload&regname=IVVc&id=12345",
+      "purpose": "Upload a file to an invoice.",
+      "reason": "Write is not in the live catalog. Needs Да plus a dedicated write template."
+    },
+    {
+      "id": "copy_record",
+      "status": "documented_not_wired",
+      "kind": "blocked",
+      "mutates": true,
+      "doc_source": "WebExcellentAPI Utilities",
+      "doc_example": "?action=action&register=copyrecord&regname=IVVc&id=12345",
+      "purpose": "Copy an invoice/order.",
+      "reason": "Write is not in the live catalog."
+    },
+    {
+      "id": "windowactions",
+      "status": "documented_not_wired",
+      "kind": "blocked",
+      "mutates": true,
+      "doc_source": "WebExcellentAPI Field Triggers",
+      "doc_example": "POST ?action=windowactions",
+      "purpose": "Portal field triggers / new record defaults.",
+      "reason": "Not a read catalog entry. Do not invent windowactions JSON."
+    }
+  ]
+}
