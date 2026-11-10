@@ -95,11 +95,16 @@ Published together (10 Nov 2026, Europe/Kiev):
   omits `fields=` or `filter.*`. Detail paths like `145/1` are unchanged.
   Portal `register=` queries without `action=` get `perpage=50&page=1`.
 - **DBT Accountant assistant** `vQnGxLzinMZR6Vhg`
-  (`615f2d7e-16e0-4ad7-846c-c5785d08716a`): system prompt HARD LIMITS
+  (`db397c35-b8e9-4a3f-8509-b64d35b09654`): system prompt HARD LIMITS
   (one bounded Standard Books call; never on empty/`[No user text]`);
   REST tool description requires `fields=` + `filter.*` + `limit≤50`;
   Portal login only after a session-expired error; reports need a
   non-empty date spec.
+- List/report/write calls follow **PLAN → SHOW → CONFIRM → CALL**:
+  draft from the REST skill (no Hansa yet), `Telegram_Notify_User` with
+  the plan, `Telegram_Confirm_With_User`, then one bounded API call.
+  Fast path (no confirm): REST detail like `145/1` or paste of the exact
+  code the user typed.
 
 ## Files
 

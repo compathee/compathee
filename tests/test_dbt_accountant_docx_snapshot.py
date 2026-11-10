@@ -171,16 +171,25 @@ def test_admin_approve_does_not_run_accountant_agent() -> None:
     assert "[No user text]" in prompt
     assert "crash Excellent Books" in prompt
     assert "`limit` (max 50)" in prompt
+    assert "PLAN → SHOW → CONFIRM → CALL" in prompt
+    assert "FAST PATH" in prompt
+    assert "do **not** open Hansa/Excellent yet" in prompt
+
+    confirm = nodes["Telegram_Confirm_With_User"]["parameters"]
+    assert confirm["approvalOptions"]["values"]["approveLabel"] == "Confirm"
+    assert "read or write" in confirm["message"]
 
     rest = nodes["Standard_Books_REST_API"]["parameters"]
-    assert "crash" in rest["description"]
+    assert "confirmed the plan" in rest["description"]
+    assert "145/1" in rest["description"]
     suffix = rest["workflowInputs"]["value"]["rest_query_suffix"]
     assert "Never empty" in suffix
     assert "crashes Excellent Books" in suffix
 
     assert "session expired" in nodes["Standard_Books_Portal_Login"]["parameters"]["description"]
     assert "NON-EMPTY report_spec_json" in nodes["Standard_Books_Portal_Report"]["parameters"]["description"]
-    assert "unbounded lists crash" in nodes["Standard_Books_Portal_Query"]["parameters"]["description"]
+    assert "Confirm with the user first" in nodes["Standard_Books_Portal_Query"]["parameters"]["description"]
+    assert "Confirm with the user first" in nodes["Standard_Books_Portal_Report"]["parameters"]["description"]
 
 
 def test_standard_books_api_refuses_unbounded_register_dumps() -> None:

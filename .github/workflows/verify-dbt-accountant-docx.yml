@@ -127,6 +127,11 @@ jobs:
           ' /tmp/dbt-workflow-live.json >/dev/null
 
           jq -e '
+            (.nodes[] | select(.name == "DBT Accountant Agent") | .parameters.options.systemMessage)
+            | contains("PLAN → SHOW → CONFIRM → CALL")
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
             .connections["Admin auth callback?"].main[0][]
             | select(.node == "Redis Get tg whitelist (admin)")
           ' /tmp/dbt-workflow-live.json >/dev/null
@@ -144,7 +149,7 @@ jobs:
 
           jq -e '
             (.nodes[] | select(.name == "Standard_Books_REST_API") | .parameters.description)
-            | contains("crash")
+            | contains("confirmed the plan")
           ' /tmp/dbt-workflow-live.json >/dev/null
 
           curl --fail-with-body "${N8N_BASE_URL%/}/api/v1/workflows/yW6RvQG3Bl87M8pK" \

@@ -19,7 +19,8 @@ deployed with the n8n API or GitHub Actions.
 - `dbt-accountant-assistant.json` - published snapshot after Word/DOCX
   extraction, in-place cell patch return, unknown-user access requests
   sent only to admin Telegram `1075735475`, and Standard Books crash
-  guards (HARD LIMITS; Approve callbacks do not run the agent).
+  guards (HARD LIMITS; list/report reads confirm before Hansa;
+  Approve callbacks do not run the agent).
 - `standard-books-api.json` - published snapshot of **Standard Books —
   API (Portal + REST)** (`yW6RvQG3Bl87M8pK`). REST list GETs require
   `fields=` + `filter.*` and inject `limit=25` (cap 50) so empty
