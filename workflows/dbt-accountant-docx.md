@@ -99,7 +99,7 @@ Published together (10 Nov 2026, Europe/Kiev):
   `usercode` (n8n var `STANDARD_BOOKS_PORTAL_REPORT_USERCODE`, else `API`)
   and requires `sd`/`ed`. REST `/api/2/VIVc` returns 401 with this account.
 - **DBT Accountant assistant** `vQnGxLzinMZR6Vhg`
-  (`b836c521-38d6-4f34-9964-394c46aa83cf`): system prompt HARD LIMITS
+  (`7d95a2c5-d1ff-4fcc-ab99-244893946c41`): system prompt HARD LIMITS
   (one bounded Standard Books call; never on empty/`[No user text]`);
   invoice day counts use **Standard_Books_Portal_Query**
   `register=VIVc|IVVc` with `sd`/`ed` and `page=0` (REST `/api/2/VIVc`
@@ -146,6 +146,17 @@ found the real invoice via Portal `register=VIVc&usercode=…&sd=2026-11-09&ed=2
 SerNr **35663**, Rahandusministeerium, 289.00 EUR, InvDate 2026-11-09.
 REST `/api/2/VIVc` with the same Basic Auth is **401**. Invoice counts
 now use that Portal list (usercode injected; company **2**; page **0**).
+
+### GL postings (konto + object, no month dump)
+
+AccVc is the chart-of-accounts **card**, not проводки. Journal lines are
+TRVc **rows** (`AccNumber`, `Objects`, `DebVal`, `CredVal`). REST
+`filter.*` only matches headers; `filter.Konto` is ignored. REST
+`/api/2/AccVc` and `/api/2/TRVc` return **401** with this portal account.
+The server-side filter without dumping October is Portal report
+**Nominal Ledger** `MainRClass` / `MainRn` with `sStartDate`/`sEndDate`,
+`f4` = one account, `ObjStr` = object. Two kontos = two calls. Probe
+exec **3650** with usercode `API` returned Access denied on that report.
 
 ## Files
 

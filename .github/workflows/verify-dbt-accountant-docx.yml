@@ -153,6 +153,11 @@ jobs:
 
           jq -e '
             (.nodes[] | select(.name == "DBT Accountant Agent") | .parameters.options.systemMessage)
+            | contains("GL POSTINGS")
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
+            (.nodes[] | select(.name == "DBT Accountant Agent") | .parameters.options.systemMessage)
             | contains("Standard_Books_Portal_Query")
           ' /tmp/dbt-workflow-live.json >/dev/null
 

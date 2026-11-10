@@ -175,6 +175,9 @@ def test_admin_approve_does_not_run_accountant_agent() -> None:
     assert "Do **not** call **Telegram_Confirm_With_User**" in prompt
     assert "Company **1** is the archive" in prompt
     assert "INVOICE LISTS" in prompt
+    assert "GL POSTINGS" in prompt
+    assert "MainRClass" in prompt
+    assert "MainRn" in prompt
     assert "Standard_Books_Portal_Query" in prompt
     assert "page=0" in prompt
     assert "sd=YYYY-MM-DD" in prompt
@@ -202,6 +205,8 @@ def test_admin_approve_does_not_run_accountant_agent() -> None:
 
     rest = nodes["Standard_Books_REST_API"]["parameters"]
     assert "AccVc konto" in rest["description"]
+    assert "not postings" in rest["description"]
+    assert "MainRClass/MainRn" in rest["description"]
     assert "VIVc supplier invoice" in rest["description"]
     assert "IVVc sales invoice" in rest["description"]
     assert rest["workflowInputs"]["value"]["rest_company"] == "2"
@@ -216,6 +221,7 @@ def test_admin_approve_does_not_run_accountant_agent() -> None:
 
     assert "session expired" in nodes["Standard_Books_Portal_Login"]["parameters"]["description"]
     assert "NON-EMPTY report_spec_json" in nodes["Standard_Books_Portal_Report"]["parameters"]["description"]
+    assert "MainRClass" in nodes["Standard_Books_Portal_Report"]["parameters"]["description"]
     assert "Confirm with the user first" in nodes["Standard_Books_Portal_Query"]["parameters"]["description"]
     assert "Confirm with the user first" in nodes["Standard_Books_Portal_Report"]["parameters"]["description"]
     assert "register=VIVc" in nodes["Standard_Books_Portal_Query"]["parameters"]["description"]
