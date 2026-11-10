@@ -1,0 +1,4456 @@
+{
+  "name": "DBT Accountant assistant",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message",
+          "callback_query"
+        ],
+        "additionalFields": {
+          "download": true
+        }
+      },
+      "id": "8a926466-b4b5-436f-b8e6-d3899fe56f4a",
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        208
+      ],
+      "webhookId": "7e1bf673-9424-495f-be70-30e88e093cbb",
+      "credentials": {
+        "telegramApi": {
+          "id": "FeJMdrxnjZderBuQ",
+          "name": "Telegram Bot API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "s1",
+              "name": "sessionId",
+              "type": "string",
+              "value": "={{ String($json.message?.chat?.id || $json.callback_query?.message?.chat?.id || 'unknown') }}"
+            },
+            {
+              "id": "s2",
+              "name": "chatId",
+              "type": "string",
+              "value": "={{ String($json.message?.chat?.id || $json.callback_query?.message?.chat?.id || '') }}"
+            },
+            {
+              "id": "s3",
+              "name": "chatInput",
+              "type": "string",
+              "value": "={{ ($json.message?.text || $json.message?.caption || \"\").trim() + ($json.message?.document ? \" [attached file: \" + $json.message.document.file_name + \"]\" : \"\") + ($json.binary ? \" [binary data available on item]\" : \"\") }}"
+            },
+            {
+              "id": "s4",
+              "name": "dbtTelegramDocFileName",
+              "type": "string",
+              "value": "={{ $json.message?.document?.file_name != null && $json.message?.document?.file_name !== undefined ? String($json.message.document.file_name) : '' }}"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {
+          "stripBinary": false,
+          "dotNotation": true
+        }
+      },
+      "id": "1353cb7b-5e24-4c0f-9ebc-691cb7aa0101",
+      "name": "Normalize chat payload",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "var j = $input.item.json || {};\nif (typeof j !== 'object' || j === null || Array.isArray(j)) j = {};\nvar msg = j.message || {};\nvar cq = j.callback_query || {};\nvar chatId = String(\n  j.chatId || msg.chat?.id || cq.message?.chat?.id || ''\n).trim();\nvar fromId = String(msg.from?.id || cq.from?.id || '').trim();\nvar callbackData = String(cq.data || '').trim();\nvar isCallback = !!(cq.id || cq.data);\nvar adminId = \"1075735475\";\nvar isAdmin = fromId === adminId;\nvar authCb = false;\nvar authAction = '';\nvar authTargetChat = '';\nvar prefix = \"da\";\nif (isCallback && isAdmin && callbackData.indexOf(prefix + ':') === 0) {\n  var parts = callbackData.split(':');\n  if (parts.length >= 3 && (parts[1] === 'a' || parts[1] === 'd')) {\n    authCb = true;\n    authAction = parts[1];\n    authTargetChat = String(parts[2] || '').trim();\n  }\n}\nvar chatInput = String(j.chatInput || '').trim();\nif (!chatInput && isCallback) chatInput = '[callback] ' + callbackData;\nvar out = {\n  json: Object.assign({}, j, {\n    chatId: chatId,\n    sessionId: chatId || String(j.sessionId || ''),\n    chatInput: chatInput,\n    telegramFromUserId: fromId,\n    telegramCallbackData: callbackData,\n    telegramIsCallback: isCallback,\n    telegramCallbackQueryId: cq.id != null ? String(cq.id) : '',\n    telegramIsAdmin: isAdmin,\n    telegramAuthAdminCallback: authCb,\n    telegramAuthAction: authAction,\n    telegramAuthTargetChatId: authTargetChat\n  })\n};\nif ($input.item.binary) out.binary = $input.item.binary;\nreturn out;"
+      },
+      "id": "fde1e36c-7867-4bc2-b2d6-c51c628c10ee",
+      "name": "Prep auth context",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "auth-cb",
+              "leftValue": "={{ $json.telegramAuthAdminCallback === true }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "d78fae65-0415-4a89-9ba0-e1cfb927dec3",
+      "name": "Admin auth callback?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        672,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "propertyName": "telegramWhitelistBlob",
+        "key": "={{ 'dbt:tg:whitelist' }}",
+        "keyType": "string",
+        "options": {
+          "dotNotation": true
+        }
+      },
+      "id": "ea146f9b-ff18-46c0-b22d-653b7f9c7b60",
+      "name": "Redis Get tg whitelist (admin)",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        896,
+        0
+      ],
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "redis": {
+          "id": "mp3vHBJmTIr0eWnJ",
+          "name": "Redis localhost account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "var prep = $('Prep auth context').first().json || {};\nvar cur = $input.item.json || {};\nvar raw = cur.telegramWhitelistBlob;\nvar allowed = [\"1075735475\",\"1415485084\",\"660363678\"].slice();\nif (raw !== undefined && raw !== null && String(raw).trim() !== '') {\n  try {\n    var o = JSON.parse(String(raw));\n    if (o && Array.isArray(o.chatIds)) {\n      allowed = o.chatIds.map(function (x) { return String(x).trim(); }).filter(Boolean);\n    }\n  } catch (_e) {}\n}\nvar target = String(prep.telegramAuthTargetChatId || '').trim();\nvar action = String(prep.telegramAuthAction || '');\nvar prefix = \"da\";\nvar ok = false;\nvar msg = 'Invalid auth callback';\nif (target && /^\\d+$/.test(target)) {\n  if (action === 'a') {\n    if (allowed.indexOf(target) < 0) allowed.push(target);\n    ok = true;\n    msg = 'Approved chat ' + target;\n  } else if (action === 'd') {\n    allowed = allowed.filter(function (id) { return id !== target; });\n    ok = true;\n    msg = 'Denied chat ' + target;\n  }\n}\nvar payload = JSON.stringify({\n  v: 1,\n  chatIds: allowed,\n  updatedAt: new Date().toISOString(),\n  updatedBy: \"1075735475\"\n});\nvar telegramCredentials = await this.getCredentials('telegramApi');\nvar tgToken = String(telegramCredentials.accessToken || '').trim();\nvar tgBase = String(telegramCredentials.baseUrl || 'https://api.telegram.org').replace(/\\/+$/, '');\nvar telegramSendMessageUrl = tgBase + '/bot' + tgToken + '/sendMessage';\nvar telegramAnswerCallbackUrl = tgBase + '/bot' + tgToken + '/answerCallbackQuery';\nreturn {\n  json: Object.assign({}, prep, {\n    telegramAuthOk: ok,\n    telegramAuthResultMessage: msg,\n    telegramWhitelistPayload: payload,\n    telegramAuthTargetChatId: target,\n    telegramAuthAction: action,\n    telegramAuthCallbackPrefix: prefix,\n    telegramSendMessageUrl: telegramSendMessageUrl,\n    telegramAnswerCallbackUrl: telegramAnswerCallbackUrl\n  })\n};"
+      },
+      "id": "0d829b5b-375b-4e09-bd7b-67824139386c",
+      "name": "Apply admin auth decision",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "set",
+        "key": "={{ 'dbt:tg:whitelist' }}",
+        "value": "={{ $json.telegramWhitelistPayload }}",
+        "keyType": "string"
+      },
+      "id": "28b742de-e402-42b5-b459-ff587dc8ca85",
+      "name": "Redis Set tg whitelist (admin)",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        1344,
+        0
+      ],
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "redis": {
+          "id": "mp3vHBJmTIr0eWnJ",
+          "name": "Redis localhost account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "key": "={{ 'dbt:tg:pending:' + String($json.telegramAuthTargetChatId || '') }}"
+      },
+      "id": "cbde4401-5c06-4f9a-adfb-f21e1480083b",
+      "name": "Redis Del pending (admin)",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        1568,
+        0
+      ],
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "redis": {
+          "id": "mp3vHBJmTIr0eWnJ",
+          "name": "Redis localhost account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Apply admin auth decision').first().json.telegramAnswerCallbackUrl }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ callback_query_id: $(\"Prep auth context\").first().json.telegramCallbackQueryId, text: String($json.telegramAuthResultMessage || \"OK\").slice(0, 180) }) }}",
+        "options": {}
+      },
+      "id": "bf442d0b-5172-4da1-9798-ab5c54ee31ce",
+      "name": "Telegram answer auth callback",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1792,
+        0
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Apply admin auth decision').first().json.telegramSendMessageUrl }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ chat_id: String($('Apply admin auth decision').first().json.telegramAuthTargetChatId || ''), text: $('Apply admin auth decision').first().json.telegramAuthAction === 'a' ? '✅ Access granted. You can use this bot now.' : '❌ Access was not granted by the administrator.' }) }}",
+        "options": {}
+      },
+      "id": "59835034-9324-4c33-a474-a3baca982d37",
+      "name": "Telegram notify user auth result",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2016,
+        0
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "propertyName": "telegramWhitelistBlob",
+        "key": "={{ 'dbt:tg:whitelist' }}",
+        "keyType": "string",
+        "options": {
+          "dotNotation": true
+        }
+      },
+      "id": "2c769144-1fae-4fb9-bd27-73c998cf636b",
+      "name": "Redis Get tg whitelist",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        896,
+        560
+      ],
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "redis": {
+          "id": "mp3vHBJmTIr0eWnJ",
+          "name": "Redis localhost account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "var prep = $('Prep auth context').first().json || {};\nvar cur = $input.item.json || {};\nvar raw = cur.telegramWhitelistBlob;\nvar seed = [\"1075735475\",\"1415485084\",\"660363678\"];\nvar allowed = seed.slice();\nif (raw !== undefined && raw !== null && String(raw).trim() !== '') {\n  try {\n    var o = JSON.parse(String(raw));\n    if (o && Array.isArray(o.chatIds)) {\n      allowed = o.chatIds.map(function (x) { return String(x).trim(); }).filter(Boolean);\n    }\n  } catch (_e) {}\n}\nvar seen = {};\nallowed = allowed.filter(function (id) {\n  if (seen[id]) return false;\n  seen[id] = true;\n  return true;\n});\nvar chatId = String(prep.chatId || '').trim();\nvar isAdmin = prep.telegramIsAdmin === true;\nvar authorized = isAdmin || allowed.indexOf(chatId) >= 0;\nvar merged = {\n  json: Object.assign({}, prep, {\n    telegramAuthorized: authorized,\n    telegramWhitelistIds: allowed,\n    telegramWhitelistNeedsSeed: !raw || String(raw).trim() === ''\n  })\n};\nif ($input.item.binary) merged.binary = $input.item.binary;\nelse {\n  try {\n    var nb = $('Normalize chat payload').first().binary;\n    if (nb) merged.binary = nb;\n  } catch (_nb) {}\n}\nreturn merged;"
+      },
+      "id": "1eb6ca03-8852-44b1-a11a-c07794dd2d47",
+      "name": "Merge whitelist auth",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        496
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "tg-auth",
+              "leftValue": "={{ $json.telegramAuthorized === true }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "da095a30-bd02-4bbf-baf0-906612180612",
+      "name": "If authorized user chats",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1344,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "var j = $input.item.json || {};\nvar chatId = String(j.chatId || '').trim();\nvar from = j.message?.from || j.callback_query?.from || {};\nvar first = String(from.first_name || '').trim();\nvar last = String(from.last_name || '').trim();\nvar user = String(from.username || '').trim();\nvar text = String(j.message?.text || j.message?.caption || j.chatInput || '').trim().slice(0, 500);\nvar pendingKey = \"dbt:tg:pending:\" + chatId;\nvar cbApprove = \"da\" + ':a:' + chatId;\nvar cbDeny = \"da\" + ':d:' + chatId;\nvar adminPayload = {\n  chat_id: \"1075735475\",\n  text:\n    '🚨 Unauthorized bot access\\n\\n' +\n    '👤 ' + (first + ' ' + last).trim() + '\\n' +\n    '🆔 Telegram ID: ' + chatId + '\\n' +\n    '🌐 @' + (user || 'no_username') + '\\n\\n' +\n    '💬 Message:\\n' + (text || '(no text / callback)'),\n  reply_markup: {\n    inline_keyboard: [\n      [{ text: '✅ Approve access', callback_data: cbApprove }],\n      [{ text: '❌ Deny', callback_data: cbDeny }]\n    ]\n  }\n};\nvar userPayload = {\n  chat_id: chatId,\n  text:\n    '⏳ Access not granted yet. Your request was sent to the administrator. You will be notified when approved.'\n};\nvar telegramCredentials = await this.getCredentials('telegramApi');\nvar tgToken = String(telegramCredentials.accessToken || '').trim();\nvar tgBase = String(telegramCredentials.baseUrl || 'https://api.telegram.org').replace(/\\/+$/, '');\nvar telegramSendMessageUrl = tgBase + '/bot' + tgToken + '/sendMessage';\nvar telegramAnswerCallbackUrl = tgBase + '/bot' + tgToken + '/answerCallbackQuery';\nreturn {\n  json: Object.assign({}, j, {\n    telegramPendingKey: pendingKey,\n    telegramAdminNotifyPayload: adminPayload,\n    telegramUserNotifyPayload: userPayload,\n    telegramSendMessageUrl: telegramSendMessageUrl\n  })\n};"
+      },
+      "id": "bf5c6f7c-d593-4ceb-affb-17e69dc9d171",
+      "name": "Prep unauthorized access",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1568,
+        992
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "propertyName": "telegramPendingFlag",
+        "key": "={{ $json.telegramPendingKey }}",
+        "keyType": "string",
+        "options": {
+          "dotNotation": true
+        }
+      },
+      "id": "4777c263-6614-4693-9a73-95e90f879df6",
+      "name": "Redis Get pending flag",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        1792,
+        992
+      ],
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "redis": {
+          "id": "mp3vHBJmTIr0eWnJ",
+          "name": "Redis localhost account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "pending",
+              "leftValue": "={{ !!$json.telegramPendingFlag }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "c8900845-2ae0-42b6-ac47-61b2a0b542e5",
+      "name": "Already notified admin?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2016,
+        992
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Prep unauthorized access').first().json.telegramSendMessageUrl }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($('Prep unauthorized access').first().json.telegramUserNotifyPayload) }}",
+        "options": {}
+      },
+      "id": "3a4033b6-17a9-445c-816f-7cbf073b806b",
+      "name": "Telegram user access pending",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2240,
+        992
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "set",
+        "key": "={{ $(\"Prep unauthorized access\").first().json.telegramPendingKey }}",
+        "value": "1",
+        "keyType": "string"
+      },
+      "id": "97508b01-1037-4573-9ea9-735b8ffad3dd",
+      "name": "Redis Set pending flag",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        2464,
+        992
+      ],
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "redis": {
+          "id": "mp3vHBJmTIr0eWnJ",
+          "name": "Redis localhost account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Prep unauthorized access').first().json.telegramSendMessageUrl }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($('Prep unauthorized access').first().json.telegramAdminNotifyPayload) }}",
+        "options": {}
+      },
+      "id": "a79de33c-083c-4464-907e-24cc2e767230",
+      "name": "Message from unknown user",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2688,
+        992
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "sendChatAction",
+        "chatId": "={{ String($json.chatId || $json.message?.chat?.id || $('Telegram Trigger').first().json.message?.chat?.id || '') }}"
+      },
+      "id": "41e03bc1-c537-40f3-888d-42c8082226e0",
+      "name": "Telegram typing (on receive)",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1568,
+        192
+      ],
+      "webhookId": "c3ad78de-038d-4d09-8f0f-8e5a8b112ea2",
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "telegramApi": {
+          "id": "FeJMdrxnjZderBuQ",
+          "name": "Telegram Bot API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {
+          "clashHandling": {
+            "values": {
+              "resolveClash": "preferInput1"
+            }
+          }
+        }
+      },
+      "id": "2466ac2b-2db4-46b9-a9f0-fb467eecdefb",
+      "name": "Merge ftp pick context",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1792,
+        496
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "propertyName": "ftpPickBlob",
+        "key": "={{ 'dbt:tg:ftp-pick:' + String($json.chatId || '') }}",
+        "keyType": "string",
+        "options": {
+          "dotNotation": true
+        }
+      },
+      "id": "84e2c37a-fe28-4729-8379-805d195b6071",
+      "name": "Redis Get ftp pick",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        1568,
+        384
+      ],
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "redis": {
+          "id": "mp3vHBJmTIr0eWnJ",
+          "name": "Redis localhost account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "\n\nfunction normFtpSlashes(p) {\n\n  var s = String(p || '').trim();\n\n  while (s.indexOf('\\\\\\\\') >= 0) s = s.split('\\\\\\\\').join('/');\n\n  while (s.indexOf('\\\\') >= 0) s = s.split('\\\\').join('/');\n\n  while (s.indexOf('//') >= 0) s = s.split('//').join('/');\n\n  return s;\n\n}\n\n\n\nvar cur = $input.item.json || {};\n\nvar raw = cur.ftpPickBlob;\n\nvar pick = null;\n\nif (raw !== null && raw !== undefined) {\n\n  var rawStr = String(raw).trim();\n\n  if (rawStr !== '' && rawStr !== 'null') {\n\n    try {\n\n      pick = JSON.parse(rawStr);\n\n    } catch (_e) {}\n\n  }\n\n}\n\nvar cb = String(cur.telegramCallbackData || '').trim();\n\nvar chatInput = String(cur.chatInput || '').trim();\n\nvar ftpFetchPath = '';\n\nvar idx = -1;\n\n\n\nfunction parsePickIndex(input, callbackData) {\n\n  var s = String(input || '').trim();\n\n  if (callbackData.indexOf('fp:') === 0) {\n\n    var n = parseInt(callbackData.slice(3), 10);\n\n    return isNaN(n) ? -1 : n;\n\n  }\n\n  var onlyNum = new RegExp('^\\\\d{1,2}$');\n\n  if (onlyNum.test(s)) return parseInt(s, 10);\n\n  var pickRe = new RegExp('(?:^|\\\\s)(?:#|№|n[o№]?\\\\.?\\\\s*)?(\\\\d{1,2})(?:\\\\s|$|[^0-9])', 'i');\n\n  var m = s.match(pickRe);\n\n  if (!m) {\n\n    var wordRe = new RegExp('\\\\b(\\\\d{1,2})\\\\b');\n\n    m = s.match(wordRe);\n\n  }\n\n  if (m) return parseInt(m[1], 10);\n\n  return -1;\n\n}\n\n\n\nfunction trimTrailingJunk(p) {\n\n  var s = String(p || '');\n\n  var junk = \".,;:!?)»«'\";\n\n  while (s.length && junk.indexOf(s.charAt(s.length - 1)) >= 0) s = s.slice(0, -1);\n\n  return s.trim();\n\n}\n\n\n\nfunction extractExplicitFtpPath(text) {\n\n  var s = String(text || '').trim();\n\n  if (!s) return '';\n\n  var extRe = new RegExp(\n\n    '(DBT\\\\/fin\\\\/[^\\\\n\\\\r]+?\\\\.(?:xlsx|xlsm|xls|csv|pdf|txt|json|xml))',\n\n    'i'\n\n  );\n\n  var m = s.match(extRe);\n\n  if (m && m[1]) return trimTrailingJunk(normFtpSlashes(m[1]));\n\n  var pathRe = new RegExp('(DBT\\\\/fin\\\\/[^\\\\n\\\\r]+)', 'i');\n\n  m = s.match(pathRe);\n\n  if (m && m[1]) return trimTrailingJunk(normFtpSlashes(m[1]));\n\n  return '';\n\n}\n\n\n\nif (pick && pick.items && Array.isArray(pick.items)) {\n\n  idx = parsePickIndex(chatInput, cb);\n\n  if (idx >= 1 && idx <= pick.items.length) {\n\n    var itemPath = pick.items[idx - 1];\n\n    if (itemPath && itemPath.path) ftpFetchPath = normFtpSlashes(String(itemPath.path));\n\n  }\n\n}\n\n\n\nif (!ftpFetchPath) ftpFetchPath = extractExplicitFtpPath(chatInput);\n\n\n\nif (idx >= 1 && !ftpFetchPath && cb.indexOf('fp:') !== 0) {\n\n  if (!pick || !pick.items || !pick.items.length) {\n\n    chatInput =\n\n      '[FTP] Pick list expired — ask for DBT/fin file list again, then reply with number ' +\n\n      idx +\n\n      '.\\n' +\n\n      chatInput;\n\n  } else if (idx > pick.items.length) {\n\n    chatInput =\n\n      '[FTP] Number ' + idx + ' is out of range (1–' + pick.items.length + ').\\n' + chatInput;\n\n  }\n\n}\n\n\n\nif (cb.indexOf('fp:') === 0 && !ftpFetchPath) {\n\n  chatInput =\n\n    '[FTP] Pick list missing or expired — ask to show files in DBT/fin again.\\n' + chatInput;\n\n}\n\n\n\nvar allowRe = new RegExp('^(DBT\\\\/fin\\\\/|DBT\\\\/fin$)', 'i');\n\nif (ftpFetchPath && !allowRe.test(ftpFetchPath)) {\n\n  ftpFetchPath = '';\n\n  chatInput += '\\n\\n[FTP] Path not allowed (use DBT/fin/…).';\n\n}\n\nvar dotdotRe = new RegExp('\\\\.\\\\.');\n\nif (ftpFetchPath && dotdotRe.test(ftpFetchPath)) ftpFetchPath = '';\n\n\n\nreturn {\n\n  json: Object.assign({}, cur, {\n\n    chatInput: ftpFetchPath\n\n      ? '[FTP pick] ' + ftpFetchPath + (chatInput ? '\\n' + chatInput : '')\n\n      : chatInput,\n\n    ftpFetchPath: ftpFetchPath,\n\n    telegramFtpPickCallback: cb.indexOf('fp:') === 0,\n\n    telegramFtpPickAnswerText: ftpFetchPath ? 'Loading file…' : 'List files again (pick expired)'\n\n  })\n\n};"
+      },
+      "id": "e2ec308b-5a5d-4106-9220-5d2e3f94a643",
+      "name": "Resolve FTP pick",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2016,
+        496
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "cb",
+              "leftValue": "={{ $json.telegramFtpPickCallback === true && String($json.telegramCallbackQueryId || '').trim() !== '' }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              },
+              "rightValue": ""
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "53866db5-0ba1-4049-94d8-39332007cdcb",
+      "name": "FTP pick callback?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2240,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "callback",
+        "queryId": "={{ $json.telegramCallbackQueryId }}",
+        "additionalFields": {
+          "text": "={{ String($json.telegramFtpPickAnswerText || \"OK\").slice(0, 180) }}"
+        }
+      },
+      "id": "63715462-c959-4709-8d4d-2c48636364e1",
+      "name": "Telegram answer FTP pick callback",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2464,
+        384
+      ],
+      "webhookId": "ffd2d8bd-3a93-4e38-a5cf-0f095e6e3530",
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "telegramApi": {
+          "id": "FeJMdrxnjZderBuQ",
+          "name": "Telegram Bot API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "ftp-fetch",
+              "leftValue": "={{ String($json.ftpFetchPath || '').trim() !== '' }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              },
+              "rightValue": ""
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "72606a81-c2ca-4316-b6d1-fb64d6bc9871",
+      "name": "FTP auto-fetch?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2240,
+        720
+      ]
+    },
+    {
+      "parameters": {
+        "path": "={{ $json.ftpFetchPath }}",
+        "options": {}
+      },
+      "id": "5faad5d4-f617-48b4-8971-32d5565dcc26",
+      "name": "FTP download pick",
+      "type": "n8n-nodes-base.ftp",
+      "typeVersion": 1,
+      "position": [
+        2464,
+        704
+      ],
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "ftp": {
+          "id": "ODVycuB2s55jClCM",
+          "name": "FTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "function binHasPayload(b) {\n  if (!b || typeof b !== 'object') return false;\n  var data = b.data || b.filedata;\n  if (data && typeof data === 'object') {\n    if (data.id != null && String(data.id) !== '') return true;\n    if (data.data != null && data.data !== '') return true;\n    if (data.fileName || data.file_name) return true;\n  }\n  return !!(b.fileName || b.file_name);\n}\n\nfunction fileExt(name) {\n  var base = String(name || '').replace(/\\\\/g, '/');\n  var i = base.lastIndexOf('/');\n  if (i >= 0) base = base.slice(i + 1);\n  var dot = base.lastIndexOf('.');\n  return dot < 1 ? '' : base.slice(dot + 1).toLowerCase();\n}\n\nfunction routeFromDoc(doc) {\n  var ext = fileExt(doc.file_name);\n  var m = String(doc.mime_type || '').toLowerCase();\n  if (m === 'application/pdf' || ext === 'pdf') return 0;\n  if (m === 'text/csv' || ext === 'csv' || ext === 'tsv') return 1;\n  if (\n    m === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||\n    ext === 'xlsx' ||\n    (m === 'application/octet-stream' && ext === 'xlsx')\n  )\n    return 2;\n  if (m === 'application/vnd.ms-excel' || ext === 'xls' || ext === 'xlsm') return 3;\n  if (m === 'text/plain' || m.indexOf('text/') === 0 || ext === 'txt' || ext === 'log' || ext === 'md')\n    return 4;\n  return 5;\n}\n\nfor (var ii = 0; ii < items.length; ii++) {\n  var item = items[ii];\n  var j = item.json || {};\n  var route = 5;\n\n  var ftpPath = String(j.ftpFetchPath || '').trim();\n  var doc = j.message && j.message.document ? j.message.document : null;\n  var fn = String(j.dbtTelegramDocFileName || '').trim();\n  if (!doc && fn) doc = { file_name: fn, mime_type: '' };\n\n  if (ftpPath && binHasPayload(item.binary)) {\n    var base = ftpPath.split('/').pop() || 'file';\n    var mimeMap = {\n      xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',\n      xls: 'application/vnd.ms-excel',\n      pdf: 'application/pdf',\n      csv: 'text/csv',\n      txt: 'text/plain'\n    };\n    var ext = fileExt(base);\n    doc = { file_name: base, mime_type: mimeMap[ext] || 'application/octet-stream' };\n    j._ftpSource = true;\n    j.file_path = ftpPath;\n  }\n\n  if (!doc) {\n    j._extractRoute = 5;\n    item.json = j;\n    continue;\n  }\n\n  if (!binHasPayload(item.binary) && j.message && j.message.document) {\n    try {\n      var norm = $('Normalize chat payload').first();\n      if (norm && binHasPayload(norm.binary)) item.binary = norm.binary;\n    } catch (_e) {}\n  }\n\n  if (!binHasPayload(item.binary)) {\n    j._attachmentDownloadFailed = true;\n  } else {\n    route = routeFromDoc(doc);\n  }\n\n  j._extractRoute = route;\n  item.json = j;\n}\nreturn items;"
+      },
+      "id": "7262d9a7-1925-4259-9561-16ec4629ec37",
+      "name": "Classify attachment",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2688,
+        720
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "ext",
+              "leftValue": "={{ Number($json._extractRoute) < 5 }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              },
+              "rightValue": ""
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "8637b14f-6eeb-4207-bc61-1600b6037dec",
+      "name": "Extractable attachment?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2912,
+        720
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "expression",
+        "numberOutputs": 5,
+        "output": "={{ Number($json._extractRoute) }}",
+        "looseTypeValidation": true
+      },
+      "id": "532737c0-4b54-486f-8b66-f121d94e73b0",
+      "name": "Route attachment format",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        3136,
+        624
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {
+          "joinPages": true,
+          "keepSource": "json"
+        }
+      },
+      "id": "e8072b77-055b-4919-b452-6a8fb4499606",
+      "name": "Extract PDF attachment",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        3360,
+        224
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst first = items.length ? items[0] : {};\nconst src = first.json && typeof first.json === 'object' && !Array.isArray(first.json) ? first.json : {};\nconst rows = items.map((item) => item.json);\nlet blob = JSON.stringify(rows);\nif (blob === '[]' || blob === '{}' || blob.length < 8) {\n  blob =\n    '[attachment extraction produced no text — scanned/image-only PDF, password protection, corrupt file, or parser error]';\n}\nconst MAX = 150000;\nif (blob.length > MAX) {\n  blob = blob.slice(0, MAX) + '\\n...[truncated for agent context]';\n}\nconst header =\n  '\\n\\n--- Extracted attachment (rows / PDF text / sheet cells). Use for reconciliation. ---\\n';\nvar seed = String(src.chatInput || '');\nif (!seed && src.message && typeof src.message === 'object') {\n  var m = src.message;\n  seed = String((m.text || m.caption || '').trim() + (m.document ? ' [attached file: ' + m.document.file_name + ']' : '') + (first.binary ? ' [binary data available on item]' : ''));\n}\nvar base = {\n  sessionId: String(src.sessionId || (src.message && src.message.chat && src.message.chat.id) || ''),\n  chatId: String(src.chatId || (src.message && src.message.chat && src.message.chat.id) || ''),\n  chatInput: seed,\n  dbtTelegramDocFileName:\n    src.dbtTelegramDocFileName !== undefined && src.dbtTelegramDocFileName !== null\n      ? String(src.dbtTelegramDocFileName)\n      : ''\n};\nbase.chatInput = String(base.chatInput || '') + header + blob;\nreturn [{ json: base, binary: first.binary }];\n"
+      },
+      "id": "68c05afd-6c6f-4d89-97c1-cf08d4d57084",
+      "name": "Collapse extract into chatInput",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3584,
+        432
+      ]
+    },
+    {
+      "parameters": {
+        "options": {
+          "enableBOM": true,
+          "relaxQuotes": true,
+          "headerRow": true,
+          "includeEmptyCells": true,
+          "maxRowCount": -1
+        }
+      },
+      "id": "7247a45e-c1eb-454f-b2f7-874f916ff86b",
+      "name": "Extract CSV attachment",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        3360,
+        416
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "options": {
+          "headerRow": true,
+          "includeEmptyCells": true
+        }
+      },
+      "id": "55d39b9f-58d8-4971-8ce1-22af44668722",
+      "name": "Extract XLSX attachment",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        3360,
+        608
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "xls",
+        "options": {
+          "headerRow": true,
+          "includeEmptyCells": true
+        }
+      },
+      "id": "bce5c9a0-3ba1-4222-b6a3-12d3d9710940",
+      "name": "Extract XLS attachment",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        3360,
+        800
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "text",
+        "options": {
+          "keepSource": "json"
+        }
+      },
+      "id": "a63c9d0e-a252-4a9c-836e-c3c5ed521d2f",
+      "name": "Extract TXT attachment",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        3360,
+        992
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const j = $input.item.json || {};\nconst m = j.message || {};\nconst doc = m.document;\nlet chatInput = String(j.chatInput || '').trim();\nif (doc && chatInput.indexOf('--- Extracted attachment') < 0) {\n  const fn = String(doc.file_name || 'file');\n  const mime = String(doc.mime_type || 'unknown');\n  const dl = j._attachmentDownloadFailed\n    ? ' Telegram file download failed — ask user to resend.'\n    : '';\n  chatInput +=\n    '\\n\\n--- Attachment note ---\\n' +\n    'File \"' +\n    fn +\n    '\" (' +\n    mime +\n    '): automatic text extraction was not run (unsupported type or missing binary).' +\n    dl +\n    ' Supported auto-read: PDF, CSV, XLS, XLSX, TXT (plain text). Do not ask for HTTPS links for Telegram uploads; ask to resend as PDF/CSV/XLS/XLSX/TXT or paste key rows only if needed.\\n';\n}\nreturn { json: Object.assign({}, j, { chatInput: chatInput }), binary: $input.item.binary };\n"
+      },
+      "id": "81b1fd08-1fac-4794-9373-a00c01a65e41",
+      "name": "Annotate skipped attachment",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3584,
+        1152
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "propertyName": "kvSessionBlob",
+        "key": "={{ 'dbt:kvm:' + String($json.chatId || '') }}",
+        "keyType": "string",
+        "options": {
+          "dotNotation": true
+        }
+      },
+      "id": "393ee3ff-236b-46b2-b104-40b6da50e508",
+      "name": "Redis Get session KV",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        3808,
+        784
+      ],
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "redis": {
+          "id": "mp3vHBJmTIr0eWnJ",
+          "name": "Redis localhost account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "propertyName": "skillsManifestBlob",
+        "key": "={{ 'dbt:skills:manifest' }}",
+        "keyType": "string",
+        "options": {
+          "dotNotation": true
+        }
+      },
+      "id": "06799e2d-9d43-4286-bfc2-4fde0bb17f43",
+      "name": "Redis Get skills manifest",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        4032,
+        512
+      ],
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "redis": {
+          "id": "mp3vHBJmTIr0eWnJ",
+          "name": "Redis localhost account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "propertyName": "skillsAgentOverlayBlob",
+        "key": "={{ 'dbt:skills:agent_overlay' }}",
+        "keyType": "string",
+        "options": {
+          "dotNotation": true
+        }
+      },
+      "id": "a282c71d-2998-41b8-9f32-90bb3fed6097",
+      "name": "Redis Get skills agent overlay",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        4032,
+        704
+      ],
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "redis": {
+          "id": "mp3vHBJmTIr0eWnJ",
+          "name": "Redis localhost account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "numberInputs": 3,
+        "options": {
+          "clashHandling": {
+            "values": {
+              "resolveClash": "preferInput1"
+            }
+          }
+        }
+      },
+      "id": "08e18fd2-67d3-466d-b374-b3271bc7147f",
+      "name": "Merge session KVM row + skills blob",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        4256,
+        768
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "function sanitizePlainJson(raw) {\n  var seen = typeof WeakSet === 'undefined' ? null : new WeakSet();\n  if (raw === null || raw === undefined || typeof raw !== 'object' || Array.isArray(raw)) raw = {};\n  try {\n    return JSON.parse(\n      JSON.stringify(raw, function (k, v) {\n        if (typeof v === 'bigint') return String(v);\n        if (v !== v) return null;\n        if (typeof v === 'object' && v !== null && seen) {\n          if (seen.has(v)) return null;\n          seen.add(v);\n        }\n        return v;\n      })\n    );\n  } catch (eCl) {\n    return {};\n  }\n}\nfunction plainObject(input) {\n  if (input === null || input === undefined) return {};\n  if (Array.isArray(input)) {\n    for (var i = 0; i < input.length; i++) {\n      var x = input[i];\n      if (x !== null && x !== undefined && typeof x === 'object' && !Array.isArray(x))\n        return Object.assign({}, x);\n    }\n    return {};\n  }\n  if (typeof input !== 'object') return {};\n  return Object.assign({}, input);\n}\nvar STUB =\n  '{\"version\":0,\"discovery\":[],\"guides\":\"\",\"hint\":\"Populate dbt:skills:manifest — run n8n workflow Compath Push skills to Redis\"}';\n/** Upstream Merge session KVM row + skills blob joins Redis session output with skills blob (no $(\"...\") lookups). */\nvar cur = {};\ntry {\n  cur = plainObject($input.item.json);\n} catch (eCur) {}\nvar j = Object.assign({}, cur);\nvar b = j.skillsManifestBlob;\nif (b === undefined || b === null || String(b).trim() === '') j.skillsManifestBlob = STUB;\n/** n8n Code node: root item.json must be a plain object (not Array, null, Date, nor primitive). */\nvar jFlat = sanitizePlainJson(j);\nif (\n  jFlat === null ||\n  typeof jFlat !== 'object' ||\n  Array.isArray(jFlat) ||\n  (typeof Date !== 'undefined' && jFlat instanceof Date)\n) {\n  jFlat = {};\n}\nif (\n  !jFlat.skillsManifestBlob ||\n  jFlat.skillsManifestBlob === undefined ||\n  jFlat.skillsManifestBlob === null ||\n  String(jFlat.skillsManifestBlob).trim() === ''\n) {\n  jFlat.skillsManifestBlob = STUB;\n}\nfunction mergeSkillsOverlay(manifestStr, overlayRaw) {\n  var mf = { version: 0, discovery: [], guides: '' };\n  try {\n    var mo = JSON.parse(String(manifestStr || STUB));\n    if (mo && typeof mo === 'object' && !Array.isArray(mo)) mf = mo;\n  } catch (_mf) {}\n  var ov = null;\n  try {\n    var or = String(overlayRaw === undefined || overlayRaw === null ? '' : overlayRaw).trim();\n    if (or) ov = JSON.parse(or);\n  } catch (_ov) {}\n  if (ov && ov.entries && typeof ov.entries === 'object' && !Array.isArray(ov.entries)) {\n    var pieces = [];\n    var keys = Object.keys(ov.entries).sort();\n    var ki;\n    for (ki = 0; ki < keys.length; ki++) {\n      var t = String(ov.entries[keys[ki]] || '').trim();\n      if (t) pieces.push('### Agent skill notes (' + keys[ki] + ')\\n' + t);\n    }\n    if (pieces.length) {\n      mf.guides =\n        String(mf.guides || '') +\n        '\\n\\n---\\n\\n### Agent-maintained notes (Redis overlay)\\n\\n' +\n        pieces.join('\\n\\n');\n    }\n  }\n  try {\n    return JSON.stringify(mf);\n  } catch (_js) {\n    return String(manifestStr || STUB);\n  }\n}\ntry {\n  jFlat.skillsManifestBlob = mergeSkillsOverlay(\n    jFlat.skillsManifestBlob,\n    jFlat.skillsAgentOverlayBlob\n  );\n} catch (_mso) {}\nvar bin;\ntry {\n  bin = $input.item.binary;\n} catch (eb) {\n  bin = undefined;\n}\nvar outItem = { json: jFlat };\ntry {\n  if ($input.item && $input.item.pairedItem !== undefined && $input.item.pairedItem !== null) {\n    outItem.pairedItem = $input.item.pairedItem;\n  }\n} catch (eP) {}\nif (bin !== undefined && bin !== null) outItem.binary = bin;\nreturn outItem;"
+      },
+      "id": "5536c57f-bc5f-40e8-922e-123908bc3c29",
+      "name": "Hydrate skills + session fields",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4480,
+        784
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "propertyName": "vecIdxReadyFlag",
+        "key": "={{ 'dbt:vecidx:ready' }}",
+        "keyType": "string",
+        "options": {
+          "dotNotation": true
+        }
+      },
+      "id": "418f4af7-d279-43ed-aa3b-05d81e5f6b82",
+      "name": "Redis Get vec index ready flag",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        4704,
+        640
+      ],
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "redis": {
+          "id": "mp3vHBJmTIr0eWnJ",
+          "name": "Redis localhost account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {
+          "clashHandling": {
+            "values": {
+              "resolveClash": "preferInput1"
+            }
+          }
+        }
+      },
+      "id": "c4a625ea-0238-4f73-aecb-496c3501f07f",
+      "name": "Merge hydrate + vec ready flag",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        4928,
+        784
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "noflag",
+              "leftValue": "={{ ($json.vecIdxReadyFlag === undefined || $json.vecIdxReadyFlag === null || String($json.vecIdxReadyFlag).trim() === \"\") }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              },
+              "rightValue": ""
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "04ca2423-a88e-43e7-a008-b57c95ed9e81",
+      "name": "Vec index needs bootstrap?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        5152,
+        784
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "redisIndex": {
+          "__rl": true,
+          "mode": "id",
+          "value": "dbt_vec_idx"
+        },
+        "embeddingBatchSize": 1,
+        "options": {
+          "keyPrefix": "doc",
+          "overwriteDocuments": false,
+          "metadataKey": "metadata",
+          "contentKey": "content",
+          "vectorKey": "content_vector"
+        }
+      },
+      "id": "4634fef0-c8aa-47e6-a87e-afda8b121b05",
+      "name": "Redis Vector bootstrap (ensure index)",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreRedis",
+      "typeVersion": 1.3,
+      "position": [
+        5376,
+        432
+      ],
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "redis": {
+          "id": "mp3vHBJmTIr0eWnJ",
+          "name": "Redis localhost account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "dimensions": 1536,
+          "timeout": 600
+        }
+      },
+      "id": "07d91ac9-d8c7-479f-85fe-1a603c3ed542",
+      "name": "DBT embeddings (Redis vec)",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        5392,
+        656
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "gZZ3qLGgDCfhsRX9",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonMode": "expressionData",
+        "jsonData": "={{ JSON.stringify({ pageContent: \"__dbt_vec_index_bootstrap_v1__\\n---\\nDBT Accountant sample chunk (Redis vector seed). bookkeeping: reconcile CSV bank lines against Standard Books portal exports before VAT adjustments; use ERPLY HTTPS API under Standard Books WebExcellent portal. System seed only; production recall filters metadata.chatId to the Telegram chat.\", metadata: { chatId: '0', source: 'dbt-vec-bootstrap', kind: 'marker-plus-sample' } }) }}",
+        "options": {}
+      },
+      "id": "3ae96316-c9ad-4a29-9792-9849b897ca4d",
+      "name": "Compath vec bootstrap doc loader",
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        5520,
+        656
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {
+          "clashHandling": {
+            "values": {
+              "resolveClash": "preferLast"
+            }
+          }
+        }
+      },
+      "id": "dfd02822-5958-43a6-9af2-f91263b15146",
+      "name": "Merge bootstrap done + hydrate snapshot",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        5952,
+        688
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "function sanitizePlainJson(raw) {\n  var seen = typeof WeakSet === 'undefined' ? null : new WeakSet();\n  if (raw === null || raw === undefined || typeof raw !== 'object' || Array.isArray(raw)) raw = {};\n  try {\n    return JSON.parse(\n      JSON.stringify(raw, function (k, v) {\n        if (typeof v === 'bigint') return String(v);\n        if (v !== v) return null;\n        if (typeof v === 'object' && v !== null && seen) {\n          if (seen.has(v)) return null;\n          seen.add(v);\n        }\n        return v;\n      })\n    );\n  } catch (eCl) {\n    return {};\n  }\n}\nfunction applyTelegramCarry(flat) {\n  if (!flat || typeof flat !== 'object' || Array.isArray(flat)) return flat || {};\n  try {\n    var col = $('Collapse extract into chatInput').first().json || {};\n    if (typeof col.chatInput === 'string' && String(col.chatInput).trim()) {\n      flat.chatInput = col.chatInput;\n    }\n    if (col.chatId !== undefined && col.chatId !== null && String(col.chatId).trim()) {\n      flat.chatId = String(col.chatId);\n    }\n    if (col.sessionId !== undefined && col.sessionId !== null && String(col.sessionId).trim()) {\n      flat.sessionId = String(col.sessionId);\n    }\n    if (\n      typeof col.dbtTelegramDocFileName === 'string' &&\n      String(col.dbtTelegramDocFileName).trim()\n    ) {\n      flat.dbtTelegramDocFileName = col.dbtTelegramDocFileName;\n    }\n  } catch (_col) {}\n  try {\n    var norm = $('Normalize chat payload').first().json || {};\n    if (!String(flat.chatInput || '').trim() && typeof norm.chatInput === 'string') {\n      flat.chatInput = norm.chatInput;\n    }\n    if (!String(flat.chatId || '').trim() && norm.chatId !== undefined && norm.chatId !== null) {\n      flat.chatId = String(norm.chatId);\n    }\n    if (!String(flat.sessionId || '').trim() && norm.sessionId !== undefined && norm.sessionId !== null) {\n      flat.sessionId = String(norm.sessionId);\n    }\n    if (\n      (!flat.dbtTelegramDocFileName || !String(flat.dbtTelegramDocFileName).trim()) &&\n      typeof norm.dbtTelegramDocFileName === 'string' &&\n      String(norm.dbtTelegramDocFileName).trim()\n    ) {\n      flat.dbtTelegramDocFileName = norm.dbtTelegramDocFileName;\n    }\n  } catch (_norm) {}\n  return flat;\n}\nfunction pickNj(x) {\n  return x !== undefined && x !== null && typeof x === 'object' && !Array.isArray(x) ? x : {};\n}\nvar out = pickNj($input.item && $input.item.json);\nvar bin;\ntry {\n  bin = $input.item && $input.item.binary;\n} catch (eb0) {\n  bin = undefined;\n}\n/** n8n Code node: root item.json must be a plain object (not Array, null, Date, nor primitive). */\nvar flat = sanitizePlainJson(out);\nif (\n  flat === null ||\n  typeof flat !== 'object' ||\n  Array.isArray(flat) ||\n  (typeof Date !== 'undefined' && flat instanceof Date)\n) {\n  flat = {};\n}\nflat = applyTelegramCarry(flat);\nvar row = { json: flat };\ntry {\n  if ($input.item && $input.item.pairedItem !== undefined && $input.item.pairedItem !== null) {\n    row.pairedItem = $input.item.pairedItem;\n  }\n} catch (ep) {}\nif (bin !== undefined && bin !== null) row.binary = bin;\nreturn row;"
+      },
+      "id": "0a032289-ba69-46e1-9045-0ba4e7549faa",
+      "name": "Restore KVM (skip vec bootstrap)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        6176,
+        880
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "set",
+        "key": "={{ 'dbt:vecidx:ready' }}",
+        "value": "={{ '1' }}"
+      },
+      "id": "9b71bb7c-473d-42df-8d17-8674832138c5",
+      "name": "Redis Set vec index ready flag",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        5728,
+        432
+      ],
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "redis": {
+          "id": "mp3vHBJmTIr0eWnJ",
+          "name": "Redis localhost account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "function sanitizePlainJson(raw) {\n  var seen = typeof WeakSet === 'undefined' ? null : new WeakSet();\n  if (raw === null || raw === undefined || typeof raw !== 'object' || Array.isArray(raw)) raw = {};\n  try {\n    return JSON.parse(\n      JSON.stringify(raw, function (k, v) {\n        if (typeof v === 'bigint') return String(v);\n        if (v !== v) return null;\n        if (typeof v === 'object' && v !== null && seen) {\n          if (seen.has(v)) return null;\n          seen.add(v);\n        }\n        return v;\n      })\n    );\n  } catch (eCl) {\n    return {};\n  }\n}\nfunction applyTelegramCarry(flat) {\n  if (!flat || typeof flat !== 'object' || Array.isArray(flat)) return flat || {};\n  try {\n    var col = $('Collapse extract into chatInput').first().json || {};\n    if (typeof col.chatInput === 'string' && String(col.chatInput).trim()) {\n      flat.chatInput = col.chatInput;\n    }\n    if (col.chatId !== undefined && col.chatId !== null && String(col.chatId).trim()) {\n      flat.chatId = String(col.chatId);\n    }\n    if (col.sessionId !== undefined && col.sessionId !== null && String(col.sessionId).trim()) {\n      flat.sessionId = String(col.sessionId);\n    }\n    if (\n      typeof col.dbtTelegramDocFileName === 'string' &&\n      String(col.dbtTelegramDocFileName).trim()\n    ) {\n      flat.dbtTelegramDocFileName = col.dbtTelegramDocFileName;\n    }\n  } catch (_col) {}\n  try {\n    var norm = $('Normalize chat payload').first().json || {};\n    if (!String(flat.chatInput || '').trim() && typeof norm.chatInput === 'string') {\n      flat.chatInput = norm.chatInput;\n    }\n    if (!String(flat.chatId || '').trim() && norm.chatId !== undefined && norm.chatId !== null) {\n      flat.chatId = String(norm.chatId);\n    }\n    if (!String(flat.sessionId || '').trim() && norm.sessionId !== undefined && norm.sessionId !== null) {\n      flat.sessionId = String(norm.sessionId);\n    }\n    if (\n      (!flat.dbtTelegramDocFileName || !String(flat.dbtTelegramDocFileName).trim()) &&\n      typeof norm.dbtTelegramDocFileName === 'string' &&\n      String(norm.dbtTelegramDocFileName).trim()\n    ) {\n      flat.dbtTelegramDocFileName = norm.dbtTelegramDocFileName;\n    }\n  } catch (_norm) {}\n  return flat;\n}\nfunction pickNj(x) {\n  return x !== undefined && x !== null && typeof x === 'object' && !Array.isArray(x) ? x : {};\n}\nvar out = pickNj($input.item && $input.item.json);\nvar bin;\ntry {\n  bin = $input.item && $input.item.binary;\n} catch (eb0) {\n  bin = undefined;\n}\n/** n8n Code node: root item.json must be a plain object (not Array, null, Date, nor primitive). */\nvar flat = sanitizePlainJson(out);\nif (\n  flat === null ||\n  typeof flat !== 'object' ||\n  Array.isArray(flat) ||\n  (typeof Date !== 'undefined' && flat instanceof Date)\n) {\n  flat = {};\n}\nflat = applyTelegramCarry(flat);\nvar row = { json: flat };\ntry {\n  if ($input.item && $input.item.pairedItem !== undefined && $input.item.pairedItem !== null) {\n    row.pairedItem = $input.item.pairedItem;\n  }\n} catch (ep) {}\nif (bin !== undefined && bin !== null) row.binary = bin;\nreturn row;"
+      },
+      "id": "b5c95c77-bbf9-4d3d-801a-109ffe23207d",
+      "name": "Restore KVM (after vec bootstrap)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        6176,
+        688
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "function applyTelegramCarry(flat) {\n  if (!flat || typeof flat !== 'object' || Array.isArray(flat)) return flat || {};\n  try {\n    var col = $('Collapse extract into chatInput').first().json || {};\n    if (typeof col.chatInput === 'string' && String(col.chatInput).trim()) {\n      flat.chatInput = col.chatInput;\n    }\n    if (col.chatId !== undefined && col.chatId !== null && String(col.chatId).trim()) {\n      flat.chatId = String(col.chatId);\n    }\n    if (col.sessionId !== undefined && col.sessionId !== null && String(col.sessionId).trim()) {\n      flat.sessionId = String(col.sessionId);\n    }\n    if (\n      typeof col.dbtTelegramDocFileName === 'string' &&\n      String(col.dbtTelegramDocFileName).trim()\n    ) {\n      flat.dbtTelegramDocFileName = col.dbtTelegramDocFileName;\n    }\n  } catch (_col) {}\n  try {\n    var norm = $('Normalize chat payload').first().json || {};\n    if (!String(flat.chatInput || '').trim() && typeof norm.chatInput === 'string') {\n      flat.chatInput = norm.chatInput;\n    }\n    if (!String(flat.chatId || '').trim() && norm.chatId !== undefined && norm.chatId !== null) {\n      flat.chatId = String(norm.chatId);\n    }\n    if (!String(flat.sessionId || '').trim() && norm.sessionId !== undefined && norm.sessionId !== null) {\n      flat.sessionId = String(norm.sessionId);\n    }\n    if (\n      (!flat.dbtTelegramDocFileName || !String(flat.dbtTelegramDocFileName).trim()) &&\n      typeof norm.dbtTelegramDocFileName === 'string' &&\n      String(norm.dbtTelegramDocFileName).trim()\n    ) {\n      flat.dbtTelegramDocFileName = norm.dbtTelegramDocFileName;\n    }\n  } catch (_norm) {}\n  return flat;\n}\nvar src=$input.item.json;\nif(src===undefined||src===null||typeof src!=='object'||Array.isArray(src)){src={};}\nsrc=applyTelegramCarry(src);\nfunction clip(x,n){var t=String(x===undefined||x===null?'':x);return t.length>n?t.slice(0,n-3)+'...':t;}\nvar turnRaw=String(src.chatInput||'').trim();\nvar turnLimit=turnRaw.indexOf('--- Extracted attachment')>=0?120000:8000;\nvar turn=turnRaw.slice(0,turnLimit);\nvar chatId=String(src.chatId||src.sessionId||'').trim();\nvar sessionId=String(src.sessionId||chatId||'').trim();\nfunction sanitizePlanNextForBrief(p){\n var t=String(p===undefined||p===null?'':p);\n if(!t)return t;\n if(/пришл|отправ|html|файл|отч[её]т|следующ|формиру|позже|pending/i.test(t)){\n  return 'Finish in this turn: Standard Books fetch if needed, then DBT_HTML_FILE block (session recap may be stale).';\n }\n return t;\n}\nvar wantsFile=/файл|\\bfile\\b|отч[её]т|html|csv|не\\s+получил|пришли|присылай|cash|итог|чистой\\s+прибыл/i.test(turn);\nvar wantsProgress=/portal|standard|ftp|сверк|reconcil|csv|pdf|xlsx|касс|cash|отч|файл|invoice|платеж|банк|выписк|статус|прогресс|процесс/i.test(turn)||wantsFile||turn.length>12;\nvar deliveryNudge='';\nif(wantsFile){\n deliveryNudge='\\n=== DELIVERY REQUIRED THIS TURN ===\\n'+\n 'User requested a file/report. Append <<<DBT_HTML_FILE>>> with complete HTML in THIS reply only.\\n'+\n 'Do NOT promise a follow-up message or seconds/minutes delay.\\n'+\n 'If session recap says HTML pending — ignore deferral; send best-effort HTML now; use Standard_Books_Portal_Paste if numbers missing.\\n'+\n '=== END DELIVERY REQUIRED ===\\n';\n}\nvar progressNudge='';\nif(wantsProgress){\n progressNudge='\\n=== PROGRESS TOOL REQUIRED ===\\n'+\n 'Multi-step work detected. Workflow already sent auto ⏳ — call Show_Telegram_Progress with status_line BEFORE Standard_Books_Portal_Paste if needed (max 2 calls).\\n'+\n 'Example status_line: Fetching ERPLY sales for March. Do NOT skip tools and only write the final reply.\\n'+\n '=== END PROGRESS TOOL REQUIRED ===\\n';\n}\nvar o={subject:'',successes:'',failures:'',planNext:''};\ntry{\n var blob=src.kvSessionBlob;\n if(blob!==undefined&&blob!==null){\n  var sv=typeof blob==='string'?blob:'';\n  if(!sv&&typeof blob==='object'){try{sv=JSON.stringify(blob);}catch(_sb){sv='';}}\n  if(sv.length>0&&sv.length<=8000){try{var po=JSON.parse(sv);if(po&&typeof po==='object'&&!Array.isArray(po))o=po;}catch(_kp){}}\n }\n}catch(_kvm){}\nvar skillExtra='';\ntry{\n var mb=src.skillsManifestBlob;\n if(mb!==undefined&&mb!==null){\n  var ms=typeof mb==='string'?mb.trim():'';\n  if(!ms&&typeof mb==='object'){try{ms=JSON.stringify(mb);}catch(_ms){ms='';}}\n  if(ms.length>0){skillExtra=ms.length>6000?ms.slice(0,6000):ms;}\n }\n}catch(_sk){}\nvar brief='\\n=== Session recap (reference) ===\\n'+\n 'Subject: '+clip(o.subject,520)+'\\n'+\n 'Successes prior: '+clip(o.successes,800)+'\\n'+\n 'Failures prior: '+clip(o.failures,800)+'\\n'+\n 'Next steps prior: '+clip(sanitizePlanNextForBrief(o.planNext),600)+'\\n';\nvar userLead='\\n=== CURRENT USER MESSAGE (answer this first - user language) ===\\n'+\n (turn||'[No user text]')+\n '\\n=== END CURRENT USER MESSAGE ===\\n';\nvar skillBlk=skillExtra?'\\n=== Skill context (truncated) ===\\n'+skillExtra+'\\n':'';\nvar sessionKvEcho={\n subject:clip(o.subject,600),\n successes:clip(o.successes,2600),\n failures:clip(o.failures,2600),\n planNext:clip(o.planNext,1400)\n};\nvar outJson={\n chatInput:userLead+progressNudge+deliveryNudge+brief+skillBlk,\n chatId:chatId,\n sessionId:sessionId,\n sessionKvEcho:sessionKvEcho,\n _persistCarryJson:JSON.stringify({sessionKvEcho:sessionKvEcho,telegramUserTurn:turn,chatId:chatId,sessionId:sessionId}),\n dbtTelegramDocFileName:typeof src.dbtTelegramDocFileName==='string'?src.dbtTelegramDocFileName.slice(0,512):'',\n vecIdxReadyFlag:src.vecIdxReadyFlag!==undefined&&src.vecIdxReadyFlag!==null?String(src.vecIdxReadyFlag):''\n};\nvar row={json:outJson};\nif($input.item.binary){row.binary=$input.item.binary;}\nreturn row;"
+      },
+      "id": "cd2c8b4e-cfb7-4234-8305-dca417fae4b6",
+      "name": "Compose briefing for agent",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        6400,
+        880
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "var j = $input.item.json || {};\nif (typeof j !== 'object' || Array.isArray(j) || j === null) j = {};\nvar cid = String(j.chatId || '').trim();\nif (!cid) {\n  try {\n    cid = String($('Normalize chat payload').first().json.chatId || '').trim();\n  } catch (eN) {}\n}\nif (!cid) {\n  try {\n    cid = String($('Telegram Trigger').first().json.message.chat.id || '').trim();\n  } catch (eT) {}\n}\nj.chatId = cid;\nif (!String(j.sessionId || '').trim()) j.sessionId = cid;\nvar row = { json: j };\ntry {\n  if ($input.item.binary) row.binary = $input.item.binary;\n} catch (eBin) {}\nreturn row;"
+      },
+      "id": "9c4e9695-fdfe-4cb8-a2df-624c72570eff",
+      "name": "Ensure chatId before typing",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        6624,
+        880
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "sendChatAction",
+        "chatId": "={{ String($json.chatId || '') }}"
+      },
+      "id": "513e348c-e089-4078-a7d7-c844b4fdb738",
+      "name": "Telegram typing (before agent)",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        6848,
+        880
+      ],
+      "alwaysOutputData": true,
+      "webhookId": "87ec4113-a02c-494f-abd0-986da859323e",
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "telegramApi": {
+          "id": "FeJMdrxnjZderBuQ",
+          "name": "Telegram Bot API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "var src = $('Compose briefing for agent').first().json || {};\nvar tg = $input.item.json || {};\nvar out = Object.assign({}, src);\nif (tg && typeof tg === 'object') {\n  out._telegramTypingOk = tg.ok === true;\n  out._telegramTypingResult = tg.result === true;\n}\nvar row = { json: out };\ntry {\n  var cItem = $('Compose briefing for agent').first();\n  if (cItem && cItem.binary) row.binary = cItem.binary;\n} catch (eBin) {}\nreturn row;"
+      },
+      "id": "ad6f1518-1930-411c-89f4-c4d635531a08",
+      "name": "Passthrough compose after typing",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        7072,
+        880
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "var j = $input.item.json || {};\nif (typeof j !== 'object' || j === null || Array.isArray(j)) j = {};\nvar turn = '';\ntry {\n  var carry = JSON.parse(String(j._persistCarryJson || '{}'));\n  turn = String(carry.telegramUserTurn || '').trim();\n} catch (_c) {}\nif (!turn) {\n  var ci = String(j.chatInput || '');\n  var m = ci.match(/=== CURRENT USER MESSAGE[\\s\\S]*?===\\n([\\s\\S]*?)\\n=== END CURRENT USER MESSAGE/);\n  if (m) turn = String(m[1] || '').trim();\n}\nvar ru = /[а-яёА-ЯЁ]/.test(turn);\nvar line = ru ? 'Обрабатываю запрос…' : 'Working on your request…';\n\nif (/ftp|фтп|dbt\\/fin/i.test(turn)) {\n  line = ru ? 'Работаю с FTP (DBT/fin)…' : 'Working on FTP (DBT/fin)…';\n} else if (\n  /portal|standard\\s*books|excellent|erply|reconcil|сверк|касс|выписк|invoice|бюджет/i.test(\n    turn\n  )\n) {\n  line = ru ? 'Загружаю данные Standard Books…' : 'Starting Standard Books fetch…';\n} else if (/csv|pdf|отч|report|cash/i.test(turn)) {\n  line = ru ? 'Формирую отчёт…' : 'Preparing report…';\n}\n\nvar out = Object.assign({}, j, { _autoProgressLine: line.slice(0, 200) });\nvar row = { json: out };\nif ($input.item.binary) row.binary = $input.item.binary;\nreturn row;"
+      },
+      "id": "61b4ab19-c992-443c-980f-8e7a98c309ab",
+      "name": "Prep auto Telegram progress",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        7296,
+        880
+      ],
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "LXFYk10YkshyxrFM",
+          "cachedResultName": "DBT Telegram status update"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "chatId": "={{ String($json.chatId || \"\") }}",
+            "status_line": "={{ String($json._autoProgressLine || \"Working…\") }}"
+          },
+          "schema": [
+            {
+              "id": "chatId",
+              "displayName": "chatId",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "status_line",
+              "displayName": "status_line",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": true,
+          "convertFieldsToString": true
+        },
+        "mode": "each",
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "id": "47ebcd56-6407-4a00-bcbb-1df916b890d2",
+      "name": "Auto Telegram progress (start)",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        7520,
+        880
+      ],
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "var src = $('Prep auto Telegram progress').first().json || {};\nif (typeof src !== 'object' || src === null || Array.isArray(src)) src = {};\nvar row = { json: src };\ntry {\n  var p = $('Prep auto Telegram progress').first();\n  if (p && p.binary) row.binary = p.binary;\n} catch (_b) {}\nreturn row;"
+      },
+      "id": "90b52ab2-e40c-4e53-9018-eb6f3da82ce2",
+      "name": "Passthrough after auto progress",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        7744,
+        880
+      ],
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "sendChatAction",
+        "chatId": "={{ String($json.chatId || $('Ensure chatId before typing').first().json.chatId || $('Normalize chat payload').first().json.chatId || '') }}"
+      },
+      "id": "37e38e17-feef-4c9a-b5f0-15e3be7990c4",
+      "name": "Telegram typing (refresh)",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        9568,
+        576
+      ],
+      "webhookId": "b5a01d07-6316-4a3d-83ed-6fd927b50e42",
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "telegramApi": {
+          "id": "FeJMdrxnjZderBuQ",
+          "name": "Telegram Bot API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.chatInput }}",
+        "options": {
+          "systemMessage": "You are DBT Accountant Assistant for AS DBT (Standard Books / Excellent accounting, Acron group).\n\nScope: help the finance team with Standard Books (WebExcellent Portal API), FTP budget files under DBT/fin, cash balances, supplier accounts, and Acron-related news. AS DBT has been under sanctions since 2022 and may not distribute profit — factor that into analysis when relevant.\n\nLanguage: Reply in **the same language** as the user's latest plain-text turn (CURRENT USER MESSAGE). Prefer mirroring Estonian/Russian verbatim.\n\nFocus: Answer the user's concrete request **first**. Do not open with full tool inventories unless they asked.\n\nSkills & guides: Workflow prepends Redis dbt:skills:manifest (publish via n8n workflow **DBT Push skills to Redis**) plus dbt:skills:agent_overlay (via Update_DBT_Skills) plus session recap. Follow Standard Books and Telegram skill bundles when present.\n\nConversation memory: Session memory is keyed by Telegram chat id across runs.\n\nOptional deep recall: **DBT_Search_PastVectors** searches archived turns for this chat only — use sparingly when session memory is insufficient.\n\nOperational rules:\n0) **Iteration budget** — at most **24** agent steps per user message. Skip **Update_DBT_Skills**, **read_website**, and **DBT_Search_PastVectors** unless explicitly needed. Prefer **one** Standard Books call with sensible parameters over many repeats. **Show_Telegram_Progress** at most **twice** after auto ⏳. Reserve the last step for the final reply.\n1) **Standard Books** — pick the **narrowest** tool (each exposes only its own parameters):\n   - **REST** register reads: **Standard_Books_REST_API** — `rest_register` + `rest_query_suffix` (+ `rest_company` default 2). TRVc `@url` stubs → detail GET via `rest_query_suffix=145/1` style (≤5 links, same turn).\n   - **Portal pastespecial** (contact/name search): **Standard_Books_Portal_Paste** — `id_search` required; `paste_register` default **AllCUVc**; `paste_fuzzy=true` for numeric code without exact Code filter.\n   - **Portal register list**: **Standard_Books_Portal_Register_List** — `list_register`, `page`, `perpage`.\n   - **Portal reports**: **Standard_Books_Portal_Report_List** then **Standard_Books_Portal_Report**.\n   - **Portal login**: **Standard_Books_Portal_Login** (no args).\n   - **Portal custom** `action=…`: **Standard_Books_Portal_Query** — `portal_query` (+ POST body fields if needed).\n   Company **2**. Do not build full URLs yourself. Writes: **Telegram_Confirm_With_User** first.\n2) For any write/post to accounting that would change books, explain first and use **Telegram_Confirm_With_User** — proceed only after approval.\n3) **Telegram attachments** — PDF, CSV, XLS, XLSX, and TXT/plain-text files are auto-extracted into **CURRENT USER MESSAGE** under the marker line \"--- Extracted attachment ---\". Read that block first. Do **not** ask to paste the file, provide an HTTPS link, or re-upload unless the marker is missing and **Attachment note** says extraction failed.\n4) **FTP (DBT/fin only)** — **Browse:** **Call_ftp_list_files** (recursive; default **DBT/fin**). Tool **agentReturn** lines are `N. DBT/fin/…/file.ext` — copy those paths **verbatim**; never invent or shorten to filename only. Telegram **fp:1…12** / reply **1–12** auto-download only the **first 12** files in that list; for any other row use **Call_ftp_read_file** with the **full path** from agentReturn. **Upload:** **Call_ftp_upload** with full rootpath + base64_document. Do not rebuild the file tree from memory — use tool output only.\n5) **News** — EUROPA feed, Postimees, Pressa24 (RSS); **Read_Acron_news** for Acron Telegram RSS; **ERR_news** for ERR. For Acron news use one tool at a time, max ~1 month back; mention @acron_official when relevant.\n6) **Live progress (Show_Telegram_Progress)** — workflow already posts auto ⏳ at start. Call before long Standard Books / FTP / report work (max 2 agent calls per turn). Not for the final answer.\n7) **Report / file delivery (same turn)** — If the user asks for a file/report/HTML: deliver **this turn**. **FORBIDDEN**: \"I'll send later\", \"next message\", \"forming now ~30s\".\n**FTP list HTML:** After **Call_ftp_list_files**, tables in **DBT_HTML_FILE** must include a **Path** column with exact tool strings (`DBT/fin/Subfolder/file.xlsx`). Filename-only tables break download.\nSteps: fetch data → build report → short caption → mandatory block (workflow attaches **dbt-cash-report.html**):\n<<<DBT_HTML_FILE>>>\n...complete HTML...\n<<<END_DBT_HTML_FILE>>>\n8) **Session KVM** — after visible prose (and DBT_HTML_FILE if used):\n<<<DBT_KV_JSON>>>\n{\"subject\":\"\",\"successes\":\"\",\"failures\":\"\",\"planNext\":\"\"}\n<<<END_DBT_KV_JSON>>>\n9) **Update_DBT_Skills** — skill_id: org | dbt-standard-books | dbt-telegram; note_text required; mode append|replace. Does not replace push-dbt-skills manifest.\n\nTools: Standard_Books_REST_API, Standard_Books_Portal_Paste, Standard_Books_Portal_Register_List, Standard_Books_Portal_Report_List, Standard_Books_Portal_Report, Standard_Books_Portal_Login, Standard_Books_Portal_Query, Call_ftp_list_files, Call_ftp_read_file, Call_ftp_upload, Document_from_JSON, EUROPA_feed, Postimees, Pressa24, Read_Acron_news, ERR_news, Telegram_Notify_User, Telegram_Confirm_With_User, Show_Telegram_Progress, Update_DBT_Skills, read_website, Currency exchange rates, Calculator (numeric expressions — totals, percentages, FX math on fetched figures), DBT_Search_PastVectors.\n\nTool policy: one attempt per user-visible answer for the same parameters; on empty/error explain once — do not immediately retry.",
+          "maxIterations": 24,
+          "returnIntermediateSteps": false,
+          "passthroughBinaryImages": true,
+          "enableStreaming": false,
+          "maxTokensFromMemory": 0
+        }
+      },
+      "id": "56e2dd35-284f-48b0-8f4a-edb8458a58a1",
+      "name": "DBT Accountant Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        9504,
+        880
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {
+          "timeout": 120000
+        }
+      },
+      "id": "84479cf0-c346-4dcf-b041-c78d5127061d",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        7968,
+        1104
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "gZZ3qLGgDCfhsRX9",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ String($('Telegram Trigger').first().json.message.chat.id || $('Normalize chat payload').first().json.chatId || '') }}",
+        "contextWindowLength": 16
+      },
+      "id": "b5d3108a-85dc-4e66-9f09-b89aac6962cb",
+      "name": "Session memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        8096,
+        1104
+      ]
+    },
+    {
+      "parameters": {
+        "description": "REQUIRED on multi-step work: update the live ⏳ progress bubble in Telegram (edits one message). Input status_line = short plain text, max 200 chars, user language. Call BEFORE Standard_Books_Portal_Paste if needed; at most 2 calls per turn (auto ⏳ already sent at start). Not for the final answer.",
+        "workflowId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "LXFYk10YkshyxrFM",
+          "cachedResultName": "DBT Telegram status update"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "chatId": "={{ String($json.chatId || $('Compose briefing for agent').first().json.chatId || $('Normalize chat payload').first().json.chatId || '') }}",
+            "status_line": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('status_line', 'REQUIRED. One short progress line for Telegram (max 200 chars). Plain text only, same language as the user. Example: Fetching Standard Books data for March.') }}"
+          },
+          "matchingColumns": [
+            "status_line"
+          ],
+          "schema": [
+            {
+              "id": "chatId",
+              "displayName": "chatId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "status_line",
+              "displayName": "status_line (progress text)",
+              "required": true,
+              "defaultMatch": true,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": true,
+          "convertFieldsToString": true
+        }
+      },
+      "id": "59b82ac6-e35d-4d03-b717-b99bb9744631",
+      "name": "Show_Telegram_Progress",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        8224,
+        1104
+      ]
+    },
+    {
+      "parameters": {
+        "description": "Save durable bookkeeping notes to Redis (dbt:skills:agent_overlay) for future turns. REQUIRED: note_text. skill_id: org (default) | dbt-standard-books | dbt-telegram. mode: append (default) or replace. Does NOT update official SKILL.md — operators still run push-dbt-skills for that. Use only when the user asks to remember a convention.",
+        "workflowId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "WxjzAF5tF83cwvyv",
+          "cachedResultName": "DBT Update agent skills"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "skill_id": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('skill_id', 'Target bucket: org (general), dbt-standard-books, or dbt-telegram. Default org if unsure.') }}",
+            "note_text": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('note_text', 'REQUIRED. Short durable note to store (max 4000 chars). Plain text.') }}",
+            "mode": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('mode', 'append (default) adds to existing notes for skill_id; replace overwrites that section.') }}"
+          },
+          "matchingColumns": [
+            "note_text"
+          ],
+          "schema": [
+            {
+              "id": "skill_id",
+              "displayName": "skill_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "note_text",
+              "displayName": "note_text",
+              "required": true,
+              "defaultMatch": true,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "mode",
+              "displayName": "mode",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": true,
+          "convertFieldsToString": true
+        }
+      },
+      "id": "34beb0cb-9510-417f-a90f-24477f088174",
+      "name": "Update_DBT_Skills",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        8352,
+        1104
+      ]
+    },
+    {
+      "parameters": {
+        "description": "Hansa REST reads for AS DBT (company 2). REQUIRED: rest_register (lowercase, e.g. accvc vivc trvc cuvc), rest_query_suffix (fields=...&filter.*&limit=&offset= — no leading ?). Optional rest_company (default 2). Rules in dbt-standard-books REST API reference. Do NOT use for Portal HAL — use Standard_Books_Portal_* tools instead.",
+        "workflowId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "yW6RvQG3Bl87M8pK",
+          "cachedResultName": "Standard Books — API (Portal + REST)"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "operation": "",
+            "portal_query": "",
+            "http_method": "",
+            "request_body_json": "",
+            "request_body_xml": "",
+            "content_type": "",
+            "id_search": "",
+            "paste_register": "",
+            "use_narrow_CUVc": "",
+            "paste_fuzzy": "",
+            "list_register": "",
+            "page": "",
+            "perpage": "",
+            "report_usercode": "",
+            "reportwindow": "",
+            "repname": "",
+            "report_lang": "",
+            "report_spec_json": "",
+            "api_mode": "rest",
+            "rest_register": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('rest_register', 'REQUIRED. Register code lowercase e.g. accvc vivc trvc cuvc ivvc') }}",
+            "rest_query_suffix": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('rest_query_suffix', 'REQUIRED. Query suffix only: fields=Id,Date&filter.Code=12&limit=10&offset=0') }}",
+            "rest_company": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('rest_company', 'Company segment (default 2). Return 2 or empty string if AS DBT.') }}"
+          },
+          "matchingColumns": [
+            "rest_register",
+            "rest_query_suffix"
+          ],
+          "schema": [
+            {
+              "id": "rest_register",
+              "displayName": "rest_register",
+              "required": true,
+              "defaultMatch": true,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "rest_query_suffix",
+              "displayName": "rest_query_suffix",
+              "required": true,
+              "defaultMatch": true,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "rest_company",
+              "displayName": "rest_company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": true,
+          "convertFieldsToString": true
+        }
+      },
+      "id": "c180f378-1d2d-481d-b0bb-e6e40eaf57ae",
+      "name": "Standard_Books_REST_API",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        8448,
+        1264
+      ]
+    },
+    {
+      "parameters": {
+        "description": "Portal pastespecial contact/register search (company 2). REQUIRED id_search. paste_register default AllCUVc for name search. paste_fuzzy=true skips exact Code filter for numeric id_search. use_narrow_CUVc=true forces strict CUVc.",
+        "workflowId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "yW6RvQG3Bl87M8pK",
+          "cachedResultName": "Standard Books — API (Portal + REST)"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "api_mode": "portal",
+            "rest_register": "",
+            "rest_query_suffix": "",
+            "rest_company": "2",
+            "operation": "pastespecial",
+            "portal_query": "",
+            "http_method": "",
+            "request_body_json": "",
+            "request_body_xml": "",
+            "content_type": "",
+            "id_search": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('id_search', 'REQUIRED search text (name fragment or code)') }}",
+            "paste_register": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('paste_register', 'AllCUVc | CUVc | VEVc | INVc | UserVc | VIVc | IVVc — default AllCUVc for names') }}",
+            "use_narrow_CUVc": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('use_narrow_CUVc', 'true for strict CUVc only') }}",
+            "paste_fuzzy": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('paste_fuzzy', 'true to skip exact Code filter when id_search is digits only') }}",
+            "list_register": "",
+            "page": "",
+            "perpage": "",
+            "report_usercode": "",
+            "reportwindow": "",
+            "repname": "",
+            "report_lang": "",
+            "report_spec_json": ""
+          },
+          "matchingColumns": [
+            "id_search"
+          ],
+          "schema": [
+            {
+              "id": "id_search",
+              "displayName": "id_search",
+              "required": true,
+              "defaultMatch": true,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "paste_register",
+              "displayName": "paste_register",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "use_narrow_CUVc",
+              "displayName": "use_narrow_CUVc",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "paste_fuzzy",
+              "displayName": "paste_fuzzy",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": true,
+          "convertFieldsToString": true
+        }
+      },
+      "id": "654b5903-fb5d-470a-8169-09ece85eb78d",
+      "name": "Standard_Books_Portal_Paste",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        8592,
+        1328
+      ]
+    },
+    {
+      "parameters": {
+        "description": "Portal register_list paged browse. REQUIRED list_register (e.g. CUVc,VIVc,IVVc). page default 1, perpage max 100.",
+        "workflowId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "yW6RvQG3Bl87M8pK",
+          "cachedResultName": "Standard Books — API (Portal + REST)"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "api_mode": "portal",
+            "rest_register": "",
+            "rest_query_suffix": "",
+            "rest_company": "2",
+            "operation": "register_list",
+            "portal_query": "",
+            "http_method": "",
+            "request_body_json": "",
+            "request_body_xml": "",
+            "content_type": "",
+            "id_search": "",
+            "paste_register": "",
+            "use_narrow_CUVc": "",
+            "paste_fuzzy": "",
+            "list_register": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('list_register', 'REQUIRED registers comma-separated') }}",
+            "page": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('page', 'page number default 1') }}",
+            "perpage": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('perpage', 'rows per page max 100') }}",
+            "report_usercode": "",
+            "reportwindow": "",
+            "repname": "",
+            "report_lang": "",
+            "report_spec_json": ""
+          },
+          "matchingColumns": [
+            "list_register"
+          ],
+          "schema": [
+            {
+              "id": "list_register",
+              "displayName": "list_register",
+              "required": true,
+              "defaultMatch": true,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "page",
+              "displayName": "page",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "perpage",
+              "displayName": "perpage",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": true,
+          "convertFieldsToString": true
+        }
+      },
+      "id": "45ed56d4-a7c8-4f74-8537-05f05ffa6b13",
+      "name": "Standard_Books_Portal_Register_List",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        8736,
+        1280
+      ]
+    },
+    {
+      "parameters": {
+        "description": "Portal report_list — list available reports. REQUIRED report_usercode (Excellent user code).",
+        "workflowId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "yW6RvQG3Bl87M8pK",
+          "cachedResultName": "Standard Books — API (Portal + REST)"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "api_mode": "portal",
+            "rest_register": "",
+            "rest_query_suffix": "",
+            "rest_company": "2",
+            "operation": "report_list",
+            "portal_query": "",
+            "http_method": "",
+            "request_body_json": "",
+            "request_body_xml": "",
+            "content_type": "",
+            "id_search": "",
+            "paste_register": "",
+            "use_narrow_CUVc": "",
+            "paste_fuzzy": "",
+            "list_register": "",
+            "page": "",
+            "perpage": "",
+            "report_usercode": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('report_usercode', 'REQUIRED Excellent user code') }}",
+            "reportwindow": "",
+            "repname": "",
+            "report_lang": "",
+            "report_spec_json": ""
+          },
+          "matchingColumns": [
+            "report_usercode"
+          ],
+          "schema": [
+            {
+              "id": "report_usercode",
+              "displayName": "report_usercode",
+              "required": true,
+              "defaultMatch": true,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": true,
+          "convertFieldsToString": true
+        }
+      },
+      "id": "beb37a73-f784-4421-87fd-c62ecf12bfc5",
+      "name": "Standard_Books_Portal_Report_List",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        8848,
+        1424
+      ]
+    },
+    {
+      "parameters": {
+        "description": "Portal POST report HTML. REQUIRED reportwindow, repname, report_lang, report_spec_json from report_list; report_usercode if needed.",
+        "workflowId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "yW6RvQG3Bl87M8pK",
+          "cachedResultName": "Standard Books — API (Portal + REST)"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "api_mode": "portal",
+            "rest_register": "",
+            "rest_query_suffix": "",
+            "rest_company": "2",
+            "operation": "report",
+            "portal_query": "",
+            "http_method": "",
+            "request_body_json": "",
+            "request_body_xml": "",
+            "content_type": "",
+            "id_search": "",
+            "paste_register": "",
+            "use_narrow_CUVc": "",
+            "paste_fuzzy": "",
+            "list_register": "",
+            "page": "",
+            "perpage": "",
+            "report_usercode": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('report_usercode', 'Excellent user code') }}",
+            "reportwindow": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('reportwindow', 'REQUIRED from report_list') }}",
+            "repname": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('repname', 'REQUIRED exact repname from report_list') }}",
+            "report_lang": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('report_lang', 'REQUIRED e.g. EST') }}",
+            "report_spec_json": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('report_spec_json', 'REQUIRED JSON string for filters/dates from getreportfilters') }}"
+          },
+          "matchingColumns": [
+            "reportwindow",
+            "repname"
+          ],
+          "schema": [
+            {
+              "id": "report_usercode",
+              "displayName": "report_usercode",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "reportwindow",
+              "displayName": "reportwindow",
+              "required": true,
+              "defaultMatch": true,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "repname",
+              "displayName": "repname",
+              "required": true,
+              "defaultMatch": true,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "report_lang",
+              "displayName": "report_lang",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "report_spec_json",
+              "displayName": "report_spec_json",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": true,
+          "convertFieldsToString": true
+        }
+      },
+      "id": "553c15ae-5844-4e23-ad83-49bc7c2ddad4",
+      "name": "Standard_Books_Portal_Report",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        8896,
+        1216
+      ]
+    },
+    {
+      "parameters": {
+        "description": "Warm Portal session (action=login, company 2). No parameters.",
+        "workflowId": {
+          "__rl": true,
+          "value": "yW6RvQG3Bl87M8pK",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/yW6RvQG3Bl87M8pK",
+          "cachedResultName": "Standard Books — API (Portal + REST)"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "api_mode": "portal",
+            "rest_company": "2",
+            "operation": "login"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "api_mode",
+              "displayName": "api_mode",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "operation",
+              "displayName": "operation",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "portal_query",
+              "displayName": "portal_query",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "http_method",
+              "displayName": "http_method",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "request_body_json",
+              "displayName": "request_body_json",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "request_body_xml",
+              "displayName": "request_body_xml",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "content_type",
+              "displayName": "content_type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "id_search",
+              "displayName": "id_search",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "paste_register",
+              "displayName": "paste_register",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "use_narrow_CUVc",
+              "displayName": "use_narrow_CUVc",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "paste_fuzzy",
+              "displayName": "paste_fuzzy",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "list_register",
+              "displayName": "list_register",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "page",
+              "displayName": "page",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "perpage",
+              "displayName": "perpage",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "report_usercode",
+              "displayName": "report_usercode",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "reportwindow",
+              "displayName": "reportwindow",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "repname",
+              "displayName": "repname",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "report_lang",
+              "displayName": "report_lang",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "report_spec_json",
+              "displayName": "report_spec_json",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "rest_register",
+              "displayName": "rest_register",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "rest_query_suffix",
+              "displayName": "rest_query_suffix",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "rest_company",
+              "displayName": "rest_company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "portal_max_chars",
+              "displayName": "portal_max_chars",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "portal_max_rows_per_array",
+              "displayName": "portal_max_rows_per_array",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "portal_skip_json_trim",
+              "displayName": "portal_skip_json_trim",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "portal_skip_html_compact",
+              "displayName": "portal_skip_html_compact",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": true,
+          "convertFieldsToString": true
+        }
+      },
+      "id": "aa79ea21-b0d8-40fa-9b2f-b225bc727d38",
+      "name": "Standard_Books_Portal_Login",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        9040,
+        1344
+      ]
+    },
+    {
+      "parameters": {
+        "description": "Custom Portal WebExcellent query string (after ? only, no host). POST: http_method=POST + request_body_json or request_body_xml. For pastespecial use Standard_Books_Portal_Paste; for REST use Standard_Books_REST_API.",
+        "workflowId": {
+          "__rl": true,
+          "value": "yW6RvQG3Bl87M8pK",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/yW6RvQG3Bl87M8pK",
+          "cachedResultName": "Standard Books — API (Portal + REST)"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "api_mode": "portal",
+            "rest_register": "",
+            "rest_query_suffix": "",
+            "rest_company": "2",
+            "operation": "",
+            "portal_query": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('portal_query', 'REQUIRED query after ? e.g. action=action&register=getattachlist') }}",
+            "http_method": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('http_method', 'GET or POST. Defaults to GET.', 'string', 'GET') }}",
+            "request_body_json": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('request_body_json', 'JSON POST body if POST. Empty string if not needed.', 'string', '') }}",
+            "request_body_xml": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('request_body_xml', 'XML POST body if POST. Empty string if not needed.', 'string', '') }}",
+            "content_type": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('content_type', 'Content-Type override if needed. Empty string if not needed.', 'string', '') }}",
+            "id_search": "",
+            "paste_register": "",
+            "use_narrow_CUVc": "",
+            "paste_fuzzy": "",
+            "list_register": "",
+            "page": "",
+            "perpage": "",
+            "report_usercode": "",
+            "reportwindow": "",
+            "repname": "",
+            "report_lang": "",
+            "report_spec_json": ""
+          },
+          "matchingColumns": [
+            "portal_query"
+          ],
+          "schema": [
+            {
+              "id": "portal_query",
+              "displayName": "portal_query",
+              "required": true,
+              "defaultMatch": true,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "http_method",
+              "displayName": "http_method",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "request_body_json",
+              "displayName": "request_body_json",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "request_body_xml",
+              "displayName": "request_body_xml",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "content_type",
+              "displayName": "content_type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": true,
+          "convertFieldsToString": true
+        }
+      },
+      "id": "333ce24a-5c5e-4890-8eb7-d156cec9f0aa",
+      "name": "Standard_Books_Portal_Query",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        9184,
+        1280
+      ]
+    },
+    {
+      "parameters": {
+        "description": "List FTP under DBT/fin recursively. agentReturn: numbered lines \"N. DBT/fin/…/file.ext\" (up to 80) + [dir] full paths. Copy path verbatim into HTML tables and Call_ftp_read_file. fp:1–12 / reply 1–12 = first 12 files only; file #13+ needs read_file with full path from list.",
+        "workflowId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "qgPBJPxF1I4Z1jYz",
+          "cachedResultName": "ftp_list_files"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "rootpath": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('rootpath', 'FTP folder path (default DBT/fin)') }}",
+            "chat_id": "={{ String($('Normalize chat payload').first().json.chatId || $('Prep auth context').first().json.chatId || '') }}"
+          },
+          "matchingColumns": [
+            "rootpath"
+          ],
+          "schema": [
+            {
+              "id": "rootpath",
+              "displayName": "rootpath",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "chat_id",
+              "displayName": "chat_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": true,
+          "convertFieldsToString": true
+        }
+      },
+      "id": "015dde58-beb9-45ed-b6b4-bec8e52c377b",
+      "name": "Call_ftp_list_files",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        9280,
+        1424
+      ]
+    },
+    {
+      "parameters": {
+        "description": "Download and extract ONE FTP file. REQUIRED file_path = full path from list (e.g. DBT/fin/Tooteel LS/budget.xlsx), never basename only. Browse via Call_ftp_list_files + pick; read when user gives exact path. Returns extracted text in agentReturn.",
+        "workflowId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "wFUHj5eer3VMppmN",
+          "cachedResultName": "ftp_read_file"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "file_path": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('file_path', 'REQUIRED full path from list: DBT/fin/.../filename.ext (include subfolders)') }}"
+          },
+          "matchingColumns": [
+            "file_path"
+          ],
+          "schema": [
+            {
+              "id": "file_path",
+              "displayName": "file_path",
+              "required": true,
+              "defaultMatch": true,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": true,
+          "convertFieldsToString": true
+        }
+      },
+      "id": "63abcf0d-881c-418a-b71f-c60e9f16cac0",
+      "name": "Call_ftp_read_file",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        9424,
+        1328
+      ]
+    },
+    {
+      "parameters": {
+        "description": "Save a file to FTP. Pass rootpath (full path including filename), base64_document from Document_from_JSON success, mime_type optional.",
+        "workflowId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "CTw2gK3LzluYx8tq",
+          "cachedResultName": "ftp_upload"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "rootpath": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('rootpath', 'Full FTP path with filename e.g. DBT/fin/report.xlsx') }}",
+            "base64_document": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('base64_document', 'Base64 file content from Document_from_JSON') }}",
+            "mime_type": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('mime_type', 'MIME type optional') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "rootpath",
+              "displayName": "rootpath",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "base64_document",
+              "displayName": "base64_document",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "mime_type",
+              "displayName": "mime_type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": true,
+          "convertFieldsToString": true
+        }
+      },
+      "id": "f7c186b6-ba4c-4b50-85cd-b3540d699462",
+      "name": "Call_ftp_upload",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        9632,
+        1248
+      ]
+    },
+    {
+      "parameters": {
+        "description": "Build documents (HTML/XLSX/raw) for Telegram send or FTP upload. Check documentToolOk; use binary/base64Document on success.",
+        "workflowId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "TNob7IB2xtwcN3tu",
+          "cachedResultName": "Agent Tool — Document from JSON"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "outputFormat": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('outputFormat', 'html | xlsx | raw | pdf') }}",
+            "payloadJson": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('payloadJson', 'JSON payload for template') }}",
+            "documentTitle": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('documentTitle', 'title') }}",
+            "filenameBase": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('filenameBase', 'filename without extension') }}",
+            "base64Document": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('base64Document', 'raw base64 when outputFormat raw') }}",
+            "mimeType": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('mimeType', 'MIME for raw') }}",
+            "extensionOverride": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('extensionOverride', 'optional extension') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "outputFormat",
+              "displayName": "outputFormat",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "payloadJson",
+              "displayName": "payloadJson",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "documentTitle",
+              "displayName": "documentTitle",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "filenameBase",
+              "displayName": "filenameBase",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "base64Document",
+              "displayName": "base64Document",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "mimeType",
+              "displayName": "mimeType",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "extensionOverride",
+              "displayName": "extensionOverride",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": true,
+          "convertFieldsToString": true
+        }
+      },
+      "id": "0b2502d6-d36d-4689-8f2e-9e505c279dd2",
+      "name": "Document_from_JSON",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        9792,
+        1216
+      ]
+    },
+    {
+      "parameters": {
+        "toolDescription": "Reads EU Parliament news RSS feed",
+        "url": "https://www.europarl.europa.eu/rss/doc/newsletters/en.xml",
+        "options": {}
+      },
+      "id": "311f9f2c-ace3-4e94-842e-2fb07485ac32",
+      "name": "EUROPA_feed",
+      "type": "n8n-nodes-base.rssFeedReadTool",
+      "typeVersion": 1.2,
+      "position": [
+        9888,
+        1104
+      ]
+    },
+    {
+      "parameters": {
+        "toolDescription": "Reads Postimees RSS feed",
+        "url": "https://www.postimees.ee/rss",
+        "options": {}
+      },
+      "id": "eb7518c6-a48c-4bff-9b73-968cc97c8ad1",
+      "name": "Postimees",
+      "type": "n8n-nodes-base.rssFeedReadTool",
+      "typeVersion": 1.2,
+      "position": [
+        10016,
+        1104
+      ]
+    },
+    {
+      "parameters": {
+        "toolDescription": "Reads Pressa24 RSS feed",
+        "url": "https://pressa24.ru/feed.rss",
+        "options": {}
+      },
+      "id": "7e868818-1ffd-484e-b65f-36f54fcd7cef",
+      "name": "Pressa24",
+      "type": "n8n-nodes-base.rssFeedReadTool",
+      "typeVersion": 1.2,
+      "position": [
+        10144,
+        1104
+      ]
+    },
+    {
+      "parameters": {
+        "toolDescription": "Read news from Acron official Telegram posts (RSS proxy)",
+        "url": "https://rss.app/r/feed/u1vjiAzSjrc1sgdn",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "DBT-Accountant-Agent/1.0"
+            }
+          ]
+        },
+        "options": {},
+        "optimizeResponse": true,
+        "responseType": "text"
+      },
+      "id": "9bee9563-4d1d-4966-a7ed-675239ad0838",
+      "name": "Read_Acron_news",
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.4,
+      "position": [
+        10272,
+        1104
+      ]
+    },
+    {
+      "parameters": {
+        "toolDescription": "Fetch ERR news homepage HTML",
+        "url": "https://news.err.ee/",
+        "options": {}
+      },
+      "id": "ec9e6f35-e478-4438-a657-22a8d9a8430f",
+      "name": "ERR_news",
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.4,
+      "position": [
+        10400,
+        1104
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.chatId }}",
+        "text": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('message', 'HTML message summarizing reconciliation or clarifying question for the Telegram user.') }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "disable_web_page_preview": true,
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "1c2d751c-baaf-4c78-92be-3021a937c50e",
+      "name": "Telegram_Notify_User",
+      "type": "n8n-nodes-base.telegramTool",
+      "typeVersion": 1.2,
+      "position": [
+        10528,
+        1104
+      ],
+      "webhookId": "1b4e0412-1676-4262-863b-448b2cd3fec7",
+      "credentials": {
+        "telegramApi": {
+          "id": "FeJMdrxnjZderBuQ",
+          "name": "Telegram Bot API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "chatId": "={{ $json.chatId }}",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('approval_prompt', 'Ultra-plain UTF-8 text only, max ~900 chars. Telegram parses Markdown here: NEVER use underscore, asterisk, backtick, square brackets, angle brackets, URLs, JSON, or filenames with underscores (say uploaded PDF from chat instead). Only letters digits spaces hyphen comma period. Summarize POST intent for Standard Books attach PDF to invoice example without codes like DOCUMENT_SELL in this field. End asking confirm or cancel. Long detail belongs in Telegram_Notify_User earlier.') }}",
+        "approvalOptions": {
+          "values": {
+            "approvalType": "double",
+            "approveLabel": "Confirm post to Standard Books",
+            "disapproveLabel": "Cancel"
+          }
+        },
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "0b335d14-832f-4b04-8f26-6ad131f604d7",
+      "name": "Telegram_Confirm_With_User",
+      "type": "n8n-nodes-base.telegramTool",
+      "typeVersion": 1.2,
+      "position": [
+        10656,
+        1104
+      ],
+      "webhookId": "6623d899-5735-4807-ae1a-11d56c72a611",
+      "credentials": {
+        "telegramApi": {
+          "id": "FeJMdrxnjZderBuQ",
+          "name": "Telegram Bot API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "toolDescription": "Read and parse the main text content of a public HTTPS web page (markdown/plain via Jina AI Reader). REQUIRED input url: full page URL starting with https:// (e.g. https://www.excellent.ee/api/transaction_entries/). Do NOT pass r.jina.ai — the tool adds it. Use when the user asks to read/summarize web documentation or articles. NOT for ERPLY JSON API (use Standard_Books_Portal_Paste). NOT for login-only pages.",
+        "url": "={{ 'https://r.jina.ai/' + /*n8n-auto-generated-fromAI-override*/ $fromAI('url', 'Full HTTPS URL of the public webpage to read (must start with https://). Example: https://www.excellent.ee/api/transaction_entries/', 'string') }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "text/plain, text/markdown, */*"
+            },
+            {
+              "name": "X-Return-Format",
+              "value": "markdown"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true,
+              "responseFormat": "text"
+            }
+          },
+          "timeout": 60000
+        },
+        "optimizeResponse": true,
+        "responseType": "text",
+        "truncateResponse": true,
+        "maxLength": 15000
+      },
+      "id": "6b81a430-f5f6-4d9c-842e-144f71858466",
+      "name": "read_website",
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.4,
+      "position": [
+        10784,
+        1104
+      ]
+    },
+    {
+      "parameters": {
+        "toolDescription": "Use to fetch ECB daily euro foreign exchange reference rates vs EUR from eurofxref-daily.xml when the user asks FX or conversion against EUR.",
+        "url": "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml",
+        "options": {}
+      },
+      "id": "139de33e-4197-4946-b493-0a5eb5daff46",
+      "name": "Currency exchange rates",
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.4,
+      "position": [
+        10912,
+        1104
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "d75314e2-528c-46d6-8dff-b3046eba985d",
+      "name": "Calculator",
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        11040,
+        1104
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Semantic search over archived USER plus ASSISTANT conversation chunks stored in Redis for this Telegram chat (metadata chatId matches automatically). Call only when answering needs concrete detail from earlier in the bookkeeping thread beyond what session memory shows (e.g. old confirmation text, ERPLY discrepancies stated days ago). Pass a SHORT search query summarizing what to find. Do not call on trivial or purely present-turn questions.",
+        "redisIndex": {
+          "__rl": true,
+          "mode": "id",
+          "value": "dbt_vec_idx"
+        },
+        "topK": 6,
+        "options": {
+          "metadataFilter": "={{ ($json.chatId || '').toString() }}",
+          "keyPrefix": "doc",
+          "metadataKey": "metadata",
+          "contentKey": "content",
+          "vectorKey": "content_vector"
+        }
+      },
+      "id": "0491c486-511f-43b7-ad92-8c9bff661118",
+      "name": "DBT_Search_PastVectors",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreRedis",
+      "typeVersion": 1.3,
+      "position": [
+        11168,
+        1104
+      ],
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "redis": {
+          "id": "mp3vHBJmTIr0eWnJ",
+          "name": "Redis localhost account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "pp1",
+              "name": "output",
+              "type": "string",
+              "value": "={{ (typeof $json.output === 'string' ? $json.output : '').slice(0, 262144) }}"
+            },
+            {
+              "id": "pp2",
+              "name": "text",
+              "type": "string",
+              "value": "={{ (typeof $json.text === 'string' ? $json.text : '').slice(0, 262144) }}"
+            },
+            {
+              "id": "pp3",
+              "name": "response",
+              "type": "string",
+              "value": "={{ (typeof $json.response === 'string' ? $json.response : '').slice(0, 262144) }}"
+            },
+            {
+              "id": "pp4",
+              "name": "chatId",
+              "type": "string",
+              "value": "={{ (($json.chatId !== undefined && $json.chatId !== null && String($json.chatId).trim() !== '') ? String($json.chatId) : String(($('Compose briefing for agent').first().json || {}).chatId || '')).slice(0, 64) }}"
+            },
+            {
+              "id": "pp5",
+              "name": "sessionId",
+              "type": "string",
+              "value": "={{ (($json.sessionId !== undefined && $json.sessionId !== null && String($json.sessionId).trim() !== '') ? String($json.sessionId) : String(($('Compose briefing for agent').first().json || {}).sessionId || '')).slice(0, 128) }}"
+            },
+            {
+              "id": "pp6",
+              "name": "dbtTelegramDocFileName",
+              "type": "string",
+              "value": "={{ (typeof $json.dbtTelegramDocFileName === 'string' && String($json.dbtTelegramDocFileName).trim() !== '') ? String($json.dbtTelegramDocFileName).slice(0, 512) : (typeof ($('Compose briefing for agent').first().json || {}).dbtTelegramDocFileName === 'string' ? String(($('Compose briefing for agent').first().json || {}).dbtTelegramDocFileName).slice(0, 512) : '') }}"
+            },
+            {
+              "id": "pp7",
+              "name": "vecIdxReadyFlagStr",
+              "type": "string",
+              "value": "={{ (($json.vecIdxReadyFlag !== undefined && $json.vecIdxReadyFlag !== null && String($json.vecIdxReadyFlag).trim() !== \"\") ? String($json.vecIdxReadyFlag) : String(($('Compose briefing for agent').first().json || {}).vecIdxReadyFlag || \"\")) }}"
+            },
+            {
+              "id": "pp8",
+              "name": "_persistCarryJson",
+              "type": "string",
+              "value": "={{ ((typeof $json._persistCarryJson === 'string' && $json._persistCarryJson.length > 0) ? $json._persistCarryJson : (typeof ($('Compose briefing for agent').first().json || {})._persistCarryJson === 'string' ? ($('Compose briefing for agent').first().json || {})._persistCarryJson : '')).slice(0, 50000) }}"
+            },
+            {
+              "id": "pp9",
+              "name": "sessionKvEchoJson",
+              "type": "string",
+              "value": "={{ JSON.stringify((function(){ var j=$json.sessionKvEcho; var c=($('Compose briefing for agent').first().json||{}).sessionKvEcho; var o=(j!==undefined&&j!==null&&typeof j==='object'&&!Array.isArray(j))?j:((c!==undefined&&c!==null&&typeof c==='object'&&!Array.isArray(c))?c:{}); return { subject: String(o.subject||'').slice(0,600), successes: String(o.successes||'').slice(0,2600), failures: String(o.failures||'').slice(0,2600), planNext: String(o.planNext||'').slice(0,1400) }; })()) }}"
+            }
+          ]
+        },
+        "options": {
+          "dotNotation": true
+        }
+      },
+      "id": "2d6f97f9-6409-45ea-bde9-0ff07419256e",
+      "name": "Pick agent fields for persist",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        11376,
+        880
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "propertyName": "dbtTgStatusMsgId",
+        "key": "={{ 'dbt:tg:status:' + String($json.chatId || '') }}",
+        "keyType": "string",
+        "options": {
+          "dotNotation": true
+        }
+      },
+      "id": "a61bebd8-d25f-4a65-a770-7e8cff0ee749",
+      "name": "Redis Get tg status msg (cleanup)",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        11600,
+        880
+      ],
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "redis": {
+          "id": "mp3vHBJmTIr0eWnJ",
+          "name": "Redis localhost account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "has-status-msg",
+              "leftValue": "={{ $json.dbtTgStatusMsgId }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "18e32a03-aaa6-4f4b-8f49-15f0e7cf87fe",
+      "name": "Delete status message?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        11824,
+        880
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "deleteMessage",
+        "chatId": "={{ $json.chatId }}",
+        "messageId": "={{ $json.dbtTgStatusMsgId }}"
+      },
+      "id": "988545f2-c52c-49ca-8079-06c61c20089d",
+      "name": "Telegram delete status msg",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        12048,
+        736
+      ],
+      "alwaysOutputData": true,
+      "webhookId": "c0d711aa-8308-4811-8fad-781b00247888",
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "telegramApi": {
+          "id": "FeJMdrxnjZderBuQ",
+          "name": "Telegram Bot API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "var pick = $('Pick agent fields for persist').first().json || {};\nvar row = { json: Object.assign({}, pick) };\nvar bin = null;\ntry {\n  var pItem = $('Pick agent fields for persist').first();\n  if (pItem && pItem.binary) bin = pItem.binary;\n} catch (eb) {}\nif (bin !== undefined && bin !== null) row.binary = bin;\nreturn row;"
+      },
+      "id": "8dc3f5fd-63f0-4f35-931d-4b7303b53b72",
+      "name": "Restore pick after status cleanup",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        12720,
+        880
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "var pick = $('Pick agent fields for persist').first().json || {};\nvar cleanup = $('Redis Get tg status msg (cleanup)').first().json || {};\nvar tg = $input.item.json || {};\nvar out = Object.assign({}, pick, cleanup);\nif (tg && typeof tg === 'object') {\n  out._telegramDeleteOk = tg.ok === true;\n  out._telegramDeleteResult = tg.result === true;\n}\nvar row = { json: out };\ntry {\n  var pItem = $('Pick agent fields for persist').first();\n  if (pItem && pItem.binary) row.binary = pItem.binary;\n} catch (eBin) {}\nreturn row;"
+      },
+      "id": "59764089-9d7d-4007-9f3e-362429a7cb78",
+      "name": "Passthrough pick after delete",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        12272,
+        736
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "key": "={{ 'dbt:tg:status:' + String($('Redis Get tg status msg (cleanup)').first().json.chatId || $json.chatId || '') }}"
+      },
+      "id": "6cadfc4c-a9a4-4263-8639-e5e3c15b8eea",
+      "name": "Redis Del tg status msg key",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        12496,
+        736
+      ],
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "redis": {
+          "id": "mp3vHBJmTIr0eWnJ",
+          "name": "Redis localhost account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "var all=$input.all();var it=(all&&all.length)?all[0]:null;var aj=(it&&it.json)?it.json:{};\nvar MARKER_MAX=262144;\nvar MAX_CARRY_PARSE=50000;\nvar sessEcho={};\ntry{\n var sj=(typeof aj.sessionKvEchoJson==='string')?aj.sessionKvEchoJson:'{}';\n var eo=JSON.parse(sj||'{}');\n if(eo!==null&&typeof eo==='object'&&!Array.isArray(eo))sessEcho=eo;\n}catch(es){sessEcho={}}\nvar carry={};\ntry{\n var cr=(typeof aj._persistCarryJson==='string')?aj._persistCarryJson:'';\n var cstr=cr;\n if(cstr.length>MAX_CARRY_PARSE)cstr=cstr.slice(0,MAX_CARRY_PARSE);\n if(cstr){\n  var pj=JSON.parse(cstr);\n  if(pj!==null&&typeof pj==='object'&&!Array.isArray(pj))carry=pj;\n }\n}catch(ePc){carry={}}\nvar defaults={subject:'',successes:'',failures:'',planNext:''};\nvar prior=Object.assign({},defaults);\ntry{\n var cEcho=carry.sessionKvEcho;\n var aEcho=sessEcho;\n if(cEcho!==undefined&&cEcho!==null&&typeof cEcho==='object'&&!Array.isArray(cEcho))prior=Object.assign(prior,cEcho);\n else if(aEcho!==undefined&&aEcho!==null&&typeof aEcho==='object'&&!Array.isArray(aEcho))prior=Object.assign(prior,aEcho);\n}catch(ePri){prior=Object.assign({},defaults);}\nvar text='';\nif(typeof aj.output==='string')text=aj.output;\nelse if(typeof aj.text==='string')text=aj.text;\nelse if(typeof aj.response==='string')text=aj.response;\nelse text='';\nif(text.length>MARKER_MAX){text=text.slice(0,MARKER_MAX);}\nfunction capStore(s,n){var t=String(s===undefined||s===null?'':s);return t.length>n?t.slice(0,n):t;}\nfunction sanitizePlanNextPersist(p){\n var t=String(p===undefined||p===null?'':p).trim();\n if(!t)return t;\n if(/пришл|отправ|html|файл|отч[её]т|следующ|формиру|позже|pending|send.*file/i.test(t)){\n  return 'none';\n }\n return t;\n}\nvar K0='<<<DBT_KV_JSON>>>';\nvar K1='<<<END_DBT_KV_JSON>>>';\nvar usedStruct=false;\nvar publishText=text;\nvar kv;\nvar merged;\nvar kA=text.indexOf(K0);\nvar kB=text.indexOf(K1);\nif(kA>=0&&kB>kA){\n var inner=text.slice(kA+K0.length,kB).trim();\n try{\n  var so=JSON.parse(inner);\n  if(so&&typeof so==='object'&&!Array.isArray(so)){\n   usedStruct=true;\n   publishText=(text.slice(0,kA)+text.slice(kB+K1.length)).trim();\n   merged={\n    subject:capStore(so.subject,520),\n    successes:capStore(so.successes,2200),\n    failures:capStore(so.failures,2200),\n    planNext:capStore(sanitizePlanNextPersist(so.planNext),1200),\n    updatedAt:new Date().toISOString()\n   };\n   kv=capStore(JSON.stringify(merged),8000);\n  }\n }catch(_sj){usedStruct=false;}\n}\nif(!usedStruct){\n function grab(head,tag){\n  var ug='['+String(tag).toUpperCase()+']:';\n  var lines=String(head||'').split(/\\r?\\n/);\n  var i;\n  for(i=0;i<lines.length;i++){\n   var trimmed=String(lines[i]||'').trim();\n   if(trimmed.length<ug.length)continue;\n   if(trimmed.slice(0,ug.length).toUpperCase()===ug){\n    return trimmed.slice(ug.length).trim();\n   }\n  }\n  return '';\n }\n function splitPublish(src){\n  var s=String(src||'');\n  var low=s.toLowerCase();\n  var tag='[publish]:';\n  var ix=low.indexOf(tag);\n  if(ix<0)return {head:s,pub:s};\n  var headPart=s.slice(0,ix);\n  var after=s.slice(ix+tag.length);\n  var pubPart=String(after||'').trim();\n  return {head:headPart,pub:pubPart};\n }\n var blk=splitPublish(text);\n var gs=grab(blk.head,'SUBJECT');\n var gok=grab(blk.head,'SUCCESS');\n var gbad=grab(blk.head,'FAIL');\n var gnxt=grab(blk.head,'NEXT');\n var lowHead=blk.head.toLowerCase();\n var hasJ=lowHead.indexOf('[subject]:')>=0;\n var hasS=lowHead.indexOf('[success]:')>=0;\n var hasF=lowHead.indexOf('[fail]:')>=0;\n var hasN=lowHead.indexOf('[next]:')>=0;\n merged={\n  subject:hasJ?capStore(gs,520):capStore(String(prior.subject||''),520),\n  successes:hasS?capStore(gok,2200):capStore(String(prior.successes||''),2200),\n  failures:hasF?capStore(gbad,2200):capStore(String(prior.failures||''),2200),\n  planNext:hasN?capStore(sanitizePlanNextPersist(gnxt),1200):capStore(sanitizePlanNextPersist(String(prior.planNext||'')),1200),\n  updatedAt:new Date().toISOString()\n };\n kv=capStore(JSON.stringify(merged),8000);\n publishText=blk.pub;\n}\nfunction stripHtmlFileBlock(src){\n var H0='<<<DBT_HTML_FILE>>>';\n var H1='<<<END_DBT_HTML_FILE>>>';\n var s=String(src||'');\n var ha=s.indexOf(H0);\n var hb=s.indexOf(H1);\n if(ha<0||hb<=ha)return {text:s,html:''};\n return {\n  text:(s.slice(0,ha)+s.slice(hb+H1.length)).trim(),\n  html:s.slice(ha+H0.length,hb).trim()\n };\n}\nvar hf=stripHtmlFileBlock(publishText);\npublishText=hf.text;\nfunction ps(v,n){\n if(typeof v!=='string')return undefined;\n return v.length>n?v.slice(0,n):v;\n}\nvar mergedOut={\n chatId:(typeof aj.chatId==='string'&&aj.chatId!=='')?aj.chatId:undefined,\n sessionId:(typeof aj.sessionId==='string'&&aj.sessionId!=='')?aj.sessionId:undefined,\n text:ps(aj.text,MARKER_MAX),\n response:ps(aj.response,MARKER_MAX),\n dbtTelegramDocFileName:ps(aj.dbtTelegramDocFileName,512),\n vecIdxReadyFlag:(typeof aj.vecIdxReadyFlagStr==='string'&&aj.vecIdxReadyFlagStr!=='')?aj.vecIdxReadyFlagStr:undefined};\nmergedOut.output=ps(publishText,MARKER_MAX);\nif(hf.html){mergedOut._compathHtmlReport=ps(hf.html,500000);}\nmergedOut._kvPayload=kv;\ntry{\n var cId=(carry.chatId!==undefined&&carry.chatId!==null)?String(carry.chatId):'';\n var csId=(carry.sessionId!==undefined&&carry.sessionId!==null)?String(carry.sessionId):'';\n if(!mergedOut.chatId&&cId)mergedOut.chatId=cId;\n if(!mergedOut.sessionId&&csId)mergedOut.sessionId=csId;\n if(!mergedOut.chatId&&aj.chatId)mergedOut.chatId=aj.chatId;\n if(!mergedOut.sessionId&&aj.sessionId)mergedOut.sessionId=aj.sessionId;\n}catch(eId){}\nmergedOut._kvChatId=String(mergedOut.chatId||(carry.chatId?String(carry.chatId):'')||aj.chatId||'');\nmergedOut._telegramUserTurnForVec=String(\n (carry.telegramUserTurn!==undefined&&carry.telegramUserTurn!==null)?carry.telegramUserTurn:''\n).slice(0,8000);\nreturn[{json:mergedOut}];"
+      },
+      "id": "f7f44b34-dfb2-4655-8723-355017fd3478",
+      "name": "Persist KVM + KV",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        12944,
+        880
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "set",
+        "key": "={{ 'dbt:kvm:' + String($json.chatId || $json._kvChatId || '') }}",
+        "value": "={{ $json._kvPayload }}"
+      },
+      "id": "52a3e389-4cbe-4900-ae8f-6e496954b043",
+      "name": "Redis Set session KV",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        13168,
+        528
+      ],
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "redis": {
+          "id": "mp3vHBJmTIr0eWnJ",
+          "name": "Redis localhost account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "var p=$input.item.json||{};\nvar userLine=String(p._telegramUserTurnForVec||'').slice(0,8000);\nvar asst=String((p.output!==undefined&&p.output!==null)?p.output:(p.text||p.response||'')).slice(0,14000);\nvar blob='USER:\\n'+userLine+'\\n\\nASSISTANT:\\n'+asst;\nvar metaChat=String(p.chatId||p._kvChatId||'');\nreturn{json:{vecInsertBlob:blob,vecMetaChatId:metaChat}};"
+      },
+      "id": "d8ed9283-e73c-4689-8eb2-90f715633bb8",
+      "name": "Prepare Redis vec turn doc",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        13168,
+        720
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "redisIndex": {
+          "__rl": true,
+          "mode": "id",
+          "value": "dbt_vec_idx"
+        },
+        "embeddingBatchSize": 1,
+        "options": {
+          "keyPrefix": "doc",
+          "overwriteDocuments": false,
+          "metadataKey": "metadata",
+          "contentKey": "content",
+          "vectorKey": "content_vector"
+        }
+      },
+      "id": "8ff3baa3-2d07-4b36-92d9-d6386c4da0d3",
+      "name": "Redis Vector insert (turn)",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreRedis",
+      "typeVersion": 1.3,
+      "position": [
+        13392,
+        624
+      ],
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "redis": {
+          "id": "mp3vHBJmTIr0eWnJ",
+          "name": "Redis localhost account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonMode": "expressionData",
+        "jsonData": "={{ JSON.stringify({ pageContent: $json.vecInsertBlob || '', metadata: { chatId: String($json.vecMetaChatId || ''), source: 'compath-turn', ts: new Date().toISOString() } }) }}",
+        "options": {}
+      },
+      "id": "be2754e0-32b0-4bbb-9afa-58f5a0f21181",
+      "name": "Compath vec turn doc loader",
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        13472,
+        848
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const TELEGRAM_TEXT_MAX = 4000;\nfunction escapeHtml(s) {\n  return String(s)\n    .replace(/&/g, '&amp;')\n    .replace(/</g, '&lt;')\n    .replace(/>/g, '&gt;')\n    .replace(/\"/g, '&quot;');\n}\nfunction pickRawText(j) {\n  if (j.output !== undefined && j.output !== null) return String(j.output);\n  var t = j.text;\n  if (t === undefined || t === null) t = j.response;\n  if (t === undefined || t === null) t = j.message;\n  return String(t || '');\n}\nvar j = $input.item.json || {};\nvar origFn = j.dbtTelegramDocFileName;\nvar origName =\n  origFn !== undefined && origFn !== null && String(origFn).trim() !== ''\n    ? String(origFn)\n    : null;\nvar bin = $input.item.binary && $input.item.binary.data;\nvar raw = pickRawText(j);\nfunction stripHtmlFileBlockEgress(src){\n var H0='<<<DBT_HTML_FILE>>>';\n var H1='<<<END_DBT_HTML_FILE>>>';\n var s=String(src||'');\n var ha=s.indexOf(H0);\n var hb=s.indexOf(H1);\n if(ha<0||hb<=ha)return {visible:s,html:''};\n return {\n  visible:(s.slice(0,ha)+s.slice(hb+H1.length)).trim(),\n  html:s.slice(ha+H0.length,hb).trim()\n };\n}\nvar hfEgress=stripHtmlFileBlockEgress(raw);\nvar htmlReport='';\nif(j._compathHtmlReport!==undefined&&j._compathHtmlReport!==null&&String(j._compathHtmlReport).trim()!==''){\n htmlReport=String(j._compathHtmlReport);\n}else if(hfEgress.html){htmlReport=hfEgress.html;}\nraw=hfEgress.visible;\nvar chatId = String(j.chatId || j._kvChatId || '').trim();\nif (!chatId) {\n  try {\n    var cr = $('Compose briefing for agent').first().json;\n    if (cr && cr.chatId !== undefined && cr.chatId !== null)\n      chatId = String(cr.chatId).trim();\n  } catch (_ec) {}\n}\nif (!chatId) {\n  try {\n    var nr = $('Normalize chat payload').first().json;\n    if (nr && nr.chatId !== undefined && nr.chatId !== null)\n      chatId = String(nr.chatId).trim();\n  } catch (_en) {}\n}\nif (!chatId) {\n  try {\n    var tr = $('Telegram Trigger').first().json;\n    if (\n      tr &&\n      tr.message &&\n      tr.message.chat &&\n      tr.message.chat.id !== undefined &&\n      tr.message.chat.id !== null\n    )\n      chatId = String(tr.message.chat.id).trim();\n  } catch (_et) {}\n}\nvar hasBinaryData = !!(bin && bin.data);\nvar sameAsUserUpload = false;\nif (hasBinaryData && origName && bin.fileName) {\n  sameAsUserUpload = String(bin.fileName) === String(origName);\n}\nif (htmlReport.length > 0) {\n  var doc = htmlReport;\n  if (!/^\\s*<!DOCTYPE/i.test(doc) && !/^\\s*<html/i.test(doc)) {\n    doc =\n      '<!DOCTYPE html><html><head><meta charset=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"/><title>Compath cash report</title><style>body{font-family:system-ui,Segoe UI,sans-serif;padding:12px;line-height:1.45}table{border-collapse:collapse;width:100%}th,td{border:1px solid #ccc;padding:6px;text-align:left}</style></head><body>' +\n      doc +\n      '</body></html>';\n  }\n  var cap = raw.length > 900 ? raw.slice(0, 880) + '...' : raw;\n  if (!cap) {\n    cap = 'Cash report — open the attached HTML file.';\n  }\n  var capPlain = String(cap).replace(/</g, '(').replace(/>/g, ')');\n  var b64Report = Buffer.from(doc, 'utf8').toString('base64');\n  return {\n    json: {\n      egressKind: 'html',\n      chatId: chatId,\n      telegramText: capPlain,\n      originalLength: raw.length,\n      htmlReportChars: doc.length\n    },\n    binary: {\n      data: { data: b64Report, mimeType: 'text/html', fileName: 'dbt-cash-report.html' }\n    }\n  };\n}\nif (hasBinaryData && !sameAsUserUpload) {\n  var cap = raw.length > 900 ? raw.slice(0, 880) + '...' : raw;\n  var capPlain = String(cap).replace(/</g, '(').replace(/>/g, ')');\n  return {\n      json: {\n        egressKind: 'binary',\n        chatId: chatId,\n        caption: capPlain,\n        originalLength: raw.length\n      },\n      binary: $input.item.binary\n    };\n}\nif (raw.length > TELEGRAM_TEXT_MAX) {\n  var title = 'Compath reply';\n  var html =\n    '<!DOCTYPE html><html><head><meta charset=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"/><title>' +\n    escapeHtml(title) +\n    '</title><style>body{font-family:system-ui,Segoe UI,sans-serif;padding:12px;line-height:1.45}pre{white-space:pre-wrap;word-break:break-word}</style></head><body>' +\n    '<p><strong>Full response (' + raw.length + ' characters)</strong></p><pre>' +\n    escapeHtml(raw) +\n    '</pre></body></html>';\n  var b64 = Buffer.from(html, 'utf8').toString('base64');\n  return {\n      json: {\n        egressKind: 'html',\n        chatId: chatId,\n        telegramText:\n          'Reply is long (' + raw.length + ' chars). Open the attached HTML file for the full text.',\n        originalLength: raw.length\n      },\n      binary: {\n        data: { data: b64, mimeType: 'text/html', fileName: 'dbt-reply.html' }\n      }\n    };\n}\nreturn {\n    json: {\n      egressKind: 'text',\n      chatId: chatId,\n      telegramText: raw,\n      originalLength: raw.length\n    }\n  };\n"
+      },
+      "id": "6a763d4e-22f5-40cd-a2a7-6a7f86d3a4ab",
+      "name": "Prepare Compath Telegram egress",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        13168,
+        1040
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "expression",
+        "numberOutputs": 3,
+        "output": "={{ ({ text: 0, html: 1, binary: 2 })[$json.egressKind] }}",
+        "looseTypeValidation": true
+      },
+      "id": "03a0c7c4-52de-4a5c-8e31-22c918bff859",
+      "name": "Route Compath egress",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        13456,
+        1024
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.chatId }}",
+        "text": "={{ $json.telegramText }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "disable_web_page_preview": true
+        }
+      },
+      "id": "ad6a968d-22fa-4947-8ca2-787cc218b9d9",
+      "name": "Send Compath reply (text)",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        13744,
+        752
+      ],
+      "webhookId": "64d245f5-0b08-4309-93aa-b0524d35e039",
+      "credentials": {
+        "telegramApi": {
+          "id": "FeJMdrxnjZderBuQ",
+          "name": "Telegram Bot API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendDocument",
+        "chatId": "={{ $json.chatId }}",
+        "binaryData": true,
+        "additionalFields": {
+          "caption": "={{ $json.telegramText }}"
+        }
+      },
+      "id": "1d10d294-b4d3-4086-881f-102a73bf63e2",
+      "name": "Send Compath reply (HTML file)",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        13744,
+        944
+      ],
+      "webhookId": "631811fe-326f-4711-8f39-d38bddc2315f",
+      "credentials": {
+        "telegramApi": {
+          "id": "FeJMdrxnjZderBuQ",
+          "name": "Telegram Bot API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendDocument",
+        "chatId": "={{ $json.chatId }}",
+        "binaryData": true,
+        "additionalFields": {
+          "caption": "={{ $json.caption }}"
+        }
+      },
+      "id": "aa33ad0b-78eb-4b5c-9a67-21eaff8f24de",
+      "name": "Send Compath reply (file)",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        13744,
+        1136
+      ],
+      "webhookId": "016d5a3e-3f73-4a22-94ca-a0c22b86ec54",
+      "credentials": {
+        "telegramApi": {
+          "id": "FeJMdrxnjZderBuQ",
+          "name": "Telegram Bot API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## DBT Accountant Assistant\n**Credentials:** Telegram | OpenAI | Standard Books Portal | **Redis Compath Session**\nRedis **Stack** index **`dbt_vec_idx`**: **`Redis Vector bootstrap`** runs **only if** **`dbt:vecidx:ready`** is empty (first run / flushed Redis). **`vecIdxReadyFlag: null`** in data is normal then. If bootstrap shows **Request timed out**, raise **DBT embeddings (Redis vec)** timeout (workflow) and on the **n8n host** set **`N8N_AI_TIMEOUT_MAX`** (ms) if your version caps AI HTTP waits. After a good bootstrap, **`Redis Set vec index ready flag`** sets the key so later runs skip bootstrap.\n**Skills:** **`dbt:skills:manifest`** missing → **`skillsManifestBlob: null`** (expected); run **`npm run push-dbt-skills`** on the same Redis; Hydrate stubs until then.\n**Session memory:** `sessionKey` resolves from **Telegram Trigger** (`message.chat.id`) with **Normalize chat payload** (`chatId`) fallback — never **`$json.*`** inside AI memory sub-nodes. **Merge** nodes recombine Redis/skills, vec flag, and bootstrap rows so Code nodes avoid cross-node `$()` lookups.\n**Briefing path:** **`Restore KVM`** -> **`Compose briefing for agent`** (slim Code; no Pass-through, no Memory Manager **Load** on this path). **Do not** insert Chat Memory Manager **Load** between Restore and Compose — fields **`messages`** / **`messagesCount`** mean the canvas still has that wire. **Delete** memory on a **separate** branch only. **Session memory** stays on the **Agent**. After the Agent, **Pick agent fields for persist** is a **Set** (native): **includeBinary false** + **stripBinary true** — capped reply strings, `sessionKvEchoJson`, carry — **large Telegram downloads must not reach the Persist Code sandbox** (they can hang `$input`). **Persist KVM + KV** runs **`runOnceForAllItems`**, structured block or legacy marker strip + **`_kvPayload`** only.\n**Tool:** **DBT_Search_PastVectors** optional RAG.\n**KVM persist:** prefer `<<<DBT_KV_JSON>>>` … `<<<END_DBT_KV_JSON>>>` (single-line JSON); legacy `[SUBJECT:]` / `[PUBLISH:]` still supported.\n**KVM store:** dbt:kvm:<chatId>.\n**Manual / pin test:** Pin **`Redis Get vec index ready flag`** as `{\"vecIdxReadyFlag\":\"1\"}` (not `{}`) or the IF always takes the bootstrap branch.",
+        "height": 360,
+        "width": 680,
+        "color": 4
+      },
+      "id": "d17393dd-9dfc-4ce8-96b0-042fe1ce7c80",
+      "name": "Sticky Note 5dbfc6c8",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        6880,
+        1216
+      ]
+    }
+  ],
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Normalize chat payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize chat payload": {
+      "main": [
+        [
+          {
+            "node": "Prep auth context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prep auth context": {
+      "main": [
+        [
+          {
+            "node": "Admin auth callback?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Admin auth callback?": {
+      "main": [
+        [
+          {
+            "node": "Redis Get tg whitelist (admin)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge whitelist auth",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Redis Get tg whitelist",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis Get tg whitelist (admin)": {
+      "main": [
+        [
+          {
+            "node": "Apply admin auth decision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Apply admin auth decision": {
+      "main": [
+        [
+          {
+            "node": "Redis Set tg whitelist (admin)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis Set tg whitelist (admin)": {
+      "main": [
+        [
+          {
+            "node": "Redis Del pending (admin)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis Del pending (admin)": {
+      "main": [
+        [
+          {
+            "node": "Telegram answer auth callback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram answer auth callback": {
+      "main": [
+        [
+          {
+            "node": "Telegram notify user auth result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis Get tg whitelist": {
+      "main": [
+        [
+          {
+            "node": "Merge whitelist auth",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge whitelist auth": {
+      "main": [
+        [
+          {
+            "node": "If authorized user chats",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge ftp pick context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If authorized user chats": {
+      "main": [
+        [
+          {
+            "node": "Telegram typing (on receive)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Redis Get ftp pick",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prep unauthorized access",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prep unauthorized access": {
+      "main": [
+        [
+          {
+            "node": "Redis Get pending flag",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis Get pending flag": {
+      "main": [
+        [
+          {
+            "node": "Already notified admin?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Already notified admin?": {
+      "main": [
+        [
+          {
+            "node": "Telegram user access pending",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Telegram user access pending",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram user access pending": {
+      "main": [
+        [
+          {
+            "node": "Redis Set pending flag",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis Set pending flag": {
+      "main": [
+        [
+          {
+            "node": "Message from unknown user",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge ftp pick context": {
+      "main": [
+        [
+          {
+            "node": "Resolve FTP pick",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis Get ftp pick": {
+      "main": [
+        [
+          {
+            "node": "Merge ftp pick context",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Resolve FTP pick": {
+      "main": [
+        [
+          {
+            "node": "FTP pick callback?",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "FTP auto-fetch?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "FTP pick callback?": {
+      "main": [
+        [
+          {
+            "node": "Telegram answer FTP pick callback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "FTP auto-fetch?": {
+      "main": [
+        [
+          {
+            "node": "FTP download pick",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Classify attachment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "FTP download pick": {
+      "main": [
+        [
+          {
+            "node": "Classify attachment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Classify attachment": {
+      "main": [
+        [
+          {
+            "node": "Extractable attachment?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extractable attachment?": {
+      "main": [
+        [
+          {
+            "node": "Route attachment format",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Annotate skipped attachment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route attachment format": {
+      "main": [
+        [
+          {
+            "node": "Extract PDF attachment",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extract CSV attachment",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extract XLSX attachment",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extract XLS attachment",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extract TXT attachment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract PDF attachment": {
+      "main": [
+        [
+          {
+            "node": "Collapse extract into chatInput",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Collapse extract into chatInput": {
+      "main": [
+        [
+          {
+            "node": "Redis Get session KV",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract CSV attachment": {
+      "main": [
+        [
+          {
+            "node": "Collapse extract into chatInput",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract XLSX attachment": {
+      "main": [
+        [
+          {
+            "node": "Collapse extract into chatInput",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract XLS attachment": {
+      "main": [
+        [
+          {
+            "node": "Collapse extract into chatInput",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract TXT attachment": {
+      "main": [
+        [
+          {
+            "node": "Collapse extract into chatInput",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Annotate skipped attachment": {
+      "main": [
+        [
+          {
+            "node": "Redis Get session KV",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis Get session KV": {
+      "main": [
+        [
+          {
+            "node": "Redis Get skills manifest",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Redis Get skills agent overlay",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge session KVM row + skills blob",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis Get skills manifest": {
+      "main": [
+        [
+          {
+            "node": "Merge session KVM row + skills blob",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Redis Get skills agent overlay": {
+      "main": [
+        [
+          {
+            "node": "Merge session KVM row + skills blob",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Merge session KVM row + skills blob": {
+      "main": [
+        [
+          {
+            "node": "Hydrate skills + session fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hydrate skills + session fields": {
+      "main": [
+        [
+          {
+            "node": "Redis Get vec index ready flag",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge hydrate + vec ready flag",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis Get vec index ready flag": {
+      "main": [
+        [
+          {
+            "node": "Merge hydrate + vec ready flag",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge hydrate + vec ready flag": {
+      "main": [
+        [
+          {
+            "node": "Vec index needs bootstrap?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Vec index needs bootstrap?": {
+      "main": [
+        [
+          {
+            "node": "Redis Vector bootstrap (ensure index)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge bootstrap done + hydrate snapshot",
+            "type": "main",
+            "index": 1
+          }
+        ],
+        [
+          {
+            "node": "Restore KVM (skip vec bootstrap)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis Vector bootstrap (ensure index)": {
+      "main": [
+        [
+          {
+            "node": "Redis Set vec index ready flag",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DBT embeddings (Redis vec)": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Redis Vector bootstrap (ensure index)",
+            "type": "ai_embedding",
+            "index": 0
+          },
+          {
+            "node": "DBT_Search_PastVectors",
+            "type": "ai_embedding",
+            "index": 0
+          },
+          {
+            "node": "Redis Vector insert (turn)",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Compath vec bootstrap doc loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Redis Vector bootstrap (ensure index)",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge bootstrap done + hydrate snapshot": {
+      "main": [
+        [
+          {
+            "node": "Restore KVM (after vec bootstrap)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Restore KVM (skip vec bootstrap)": {
+      "main": [
+        [
+          {
+            "node": "Compose briefing for agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis Set vec index ready flag": {
+      "main": [
+        [
+          {
+            "node": "Merge bootstrap done + hydrate snapshot",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Restore KVM (after vec bootstrap)": {
+      "main": [
+        [
+          {
+            "node": "Compose briefing for agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Compose briefing for agent": {
+      "main": [
+        [
+          {
+            "node": "Ensure chatId before typing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ensure chatId before typing": {
+      "main": [
+        [
+          {
+            "node": "Telegram typing (before agent)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram typing (before agent)": {
+      "main": [
+        [
+          {
+            "node": "Passthrough compose after typing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Passthrough compose after typing": {
+      "main": [
+        [
+          {
+            "node": "Prep auto Telegram progress",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prep auto Telegram progress": {
+      "main": [
+        [
+          {
+            "node": "Auto Telegram progress (start)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Auto Telegram progress (start)": {
+      "main": [
+        [
+          {
+            "node": "Passthrough after auto progress",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Passthrough after auto progress": {
+      "main": [
+        [
+          {
+            "node": "Telegram typing (refresh)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "DBT Accountant Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DBT Accountant Agent": {
+      "main": [
+        [
+          {
+            "node": "Pick agent fields for persist",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "DBT Accountant Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Session memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "DBT Accountant Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Show_Telegram_Progress": {
+      "ai_tool": [
+        [
+          {
+            "node": "DBT Accountant Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update_DBT_Skills": {
+      "ai_tool": [
+        [
+          {
+            "node": "DBT Accountant Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Standard_Books_REST_API": {
+      "ai_tool": [
+        [
+          {
+            "node": "DBT Accountant Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Standard_Books_Portal_Paste": {
+      "ai_tool": [
+        [
+          {
+            "node": "DBT Accountant Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Standard_Books_Portal_Register_List": {
+      "ai_tool": [
+        [
+          {
+            "node": "DBT Accountant Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Standard_Books_Portal_Report_List": {
+      "ai_tool": [
+        [
+          {
+            "node": "DBT Accountant Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Standard_Books_Portal_Report": {
+      "ai_tool": [
+        [
+          {
+            "node": "DBT Accountant Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Standard_Books_Portal_Login": {
+      "ai_tool": [
+        [
+          {
+            "node": "DBT Accountant Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Standard_Books_Portal_Query": {
+      "ai_tool": [
+        [
+          {
+            "node": "DBT Accountant Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call_ftp_list_files": {
+      "ai_tool": [
+        [
+          {
+            "node": "DBT Accountant Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call_ftp_read_file": {
+      "ai_tool": [
+        [
+          {
+            "node": "DBT Accountant Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call_ftp_upload": {
+      "ai_tool": [
+        [
+          {
+            "node": "DBT Accountant Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Document_from_JSON": {
+      "ai_tool": [
+        [
+          {
+            "node": "DBT Accountant Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EUROPA_feed": {
+      "ai_tool": [
+        [
+          {
+            "node": "DBT Accountant Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postimees": {
+      "ai_tool": [
+        [
+          {
+            "node": "DBT Accountant Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pressa24": {
+      "ai_tool": [
+        [
+          {
+            "node": "DBT Accountant Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read_Acron_news": {
+      "ai_tool": [
+        [
+          {
+            "node": "DBT Accountant Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ERR_news": {
+      "ai_tool": [
+        [
+          {
+            "node": "DBT Accountant Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram_Notify_User": {
+      "ai_tool": [
+        [
+          {
+            "node": "DBT Accountant Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram_Confirm_With_User": {
+      "ai_tool": [
+        [
+          {
+            "node": "DBT Accountant Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "read_website": {
+      "ai_tool": [
+        [
+          {
+            "node": "DBT Accountant Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Currency exchange rates": {
+      "ai_tool": [
+        [
+          {
+            "node": "DBT Accountant Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculator": {
+      "ai_tool": [
+        [
+          {
+            "node": "DBT Accountant Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DBT_Search_PastVectors": {
+      "ai_tool": [
+        [
+          {
+            "node": "DBT Accountant Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pick agent fields for persist": {
+      "main": [
+        [
+          {
+            "node": "Redis Get tg status msg (cleanup)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis Get tg status msg (cleanup)": {
+      "main": [
+        [
+          {
+            "node": "Delete status message?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete status message?": {
+      "main": [
+        [
+          {
+            "node": "Telegram delete status msg",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Restore pick after status cleanup",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram delete status msg": {
+      "main": [
+        [
+          {
+            "node": "Passthrough pick after delete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Restore pick after status cleanup": {
+      "main": [
+        [
+          {
+            "node": "Persist KVM + KV",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Passthrough pick after delete": {
+      "main": [
+        [
+          {
+            "node": "Redis Del tg status msg key",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis Del tg status msg key": {
+      "main": [
+        [
+          {
+            "node": "Restore pick after status cleanup",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Persist KVM + KV": {
+      "main": [
+        [
+          {
+            "node": "Redis Set session KV",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Prepare Redis vec turn doc",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Prepare Compath Telegram egress",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Redis vec turn doc": {
+      "main": [
+        [
+          {
+            "node": "Redis Vector insert (turn)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Compath vec turn doc loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Redis Vector insert (turn)",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Compath Telegram egress": {
+      "main": [
+        [
+          {
+            "node": "Route Compath egress",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route Compath egress": {
+      "main": [
+        [
+          {
+            "node": "Send Compath reply (text)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Compath reply (HTML file)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Compath reply (file)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Europe/Tallinn",
+    "executionTimeout": 900
+  }
+}

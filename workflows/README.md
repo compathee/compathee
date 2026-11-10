@@ -14,6 +14,12 @@ deployed with the n8n API or GitHub Actions.
   `={{ Object.keys($binary || {}).join(',') }}`.
 - `water-meter-submission-backup.md` - human-readable investigation notes for
   execution `3008`.
+- `dbt-accountant-assistant.backup.json` - snapshot of **DBT Accountant
+  assistant** (`vQnGxLzinMZR6Vhg`) before Word/DOCX extraction.
+- `dbt-accountant-assistant.json` - published snapshot after Word/DOCX
+  extraction (route 5 → unzip → `word/document.xml` →
+  `--- Extracted attachment ---`).
+- `dbt-accountant-docx.md` - notes for Telegram execution `3554` (`ОС.docx`).
 
 ## Deploying with n8n API
 

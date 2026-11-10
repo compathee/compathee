@@ -1,0 +1,67 @@
+name: Verify DBT Accountant Word extraction
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - cursor/docx-telegram-extract-f8f3
+    paths:
+      - ".github/workflows/verify-dbt-accountant-docx.yml"
+      - "workflows/dbt-accountant-assistant.json"
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  DBT_WORKFLOW_ID: vQnGxLzinMZR6Vhg
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Verify live DBT workflow extracts DOCX
+        env:
+          N8N_BASE_URL: ${{ secrets.N8N_BASE_URL }}
+          N8N_API_KEY: ${{ secrets.N8N_API_KEY }}
+        run: |
+          set -euo pipefail
+          test -n "${N8N_BASE_URL}"
+          test -n "${N8N_API_KEY}"
+
+          curl --fail-with-body "${N8N_BASE_URL%/}/api/v1/workflows/${DBT_WORKFLOW_ID}" \
+            -H "X-N8N-API-KEY: ${N8N_API_KEY}" \
+            -H "Accept: application/json" \
+            -o /tmp/dbt-workflow-live.json
+
+          jq -e '.nodes[] | select(.name == "Rename DOCX to ZIP")' /tmp/dbt-workflow-live.json >/dev/null
+          jq -e '.nodes[] | select(.name == "Decompress DOCX zip")' /tmp/dbt-workflow-live.json >/dev/null
+          jq -e '.nodes[] | select(.name == "Parse Word document.xml")' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
+            (.nodes[] | select(.name == "Classify attachment") | .parameters.jsCode)
+            | contains("ext === '\''docx'\''")
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
+            (.nodes[] | select(.name == "Route attachment format") | .parameters.numberOutputs) == 6
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
+            (.nodes[] | select(.name == "Extractable attachment?")
+              | .parameters.conditions.conditions[0].leftValue)
+            | contains("< 6")
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
+            .connections["Route attachment format"].main[5][]
+            | select(.node == "Rename DOCX to ZIP")
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
+            .connections["Parse Word document.xml"].main[0][]
+            | select(.node == "Collapse extract into chatInput")
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          echo "Live DBT Accountant assistant has Word/DOCX extraction route 5."
