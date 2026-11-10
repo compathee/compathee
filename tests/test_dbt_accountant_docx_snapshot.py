@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import subprocess
 from pathlib import Path
 
 SNAPSHOT = Path(__file__).resolve().parents[1] / "workflows" / "dbt-accountant-assistant.json"
@@ -147,3 +148,77 @@ def test_unknown_telegram_user_notifies_admin_without_agent() -> None:
         "Telegram notify user auth result"
     )
     assert "dbt:tg:pending:v2:" in nodes["Redis Del pending (admin)"]["parameters"]["key"]
+
+
+def test_admin_approve_does_not_run_accountant_agent() -> None:
+    wf = _load()
+    nodes = {n["name"]: n for n in wf["nodes"]}
+    conns = wf["connections"]
+
+    admin_true = [c["node"] for c in conns["Admin auth callback?"]["main"][0]]
+    admin_false = [c["node"] for c in conns["Admin auth callback?"]["main"][1]]
+    assert admin_true == ["Redis Get tg whitelist (admin)"]
+    assert "Merge whitelist auth" not in admin_true
+    assert admin_false == ["Redis Get tg whitelist"]
+
+    session_key = nodes["Session memory"]["parameters"]["sessionKey"]
+    assert "callback_query" in session_key
+    assert "message?.chat?.id" in session_key
+
+    prompt = nodes["DBT Accountant Agent"]["parameters"]["options"]["systemMessage"]
+    assert nodes["DBT Accountant Agent"]["parameters"]["options"]["maxIterations"] == 24
+    assert "HARD LIMITS" in prompt
+    assert "[No user text]" in prompt
+    assert "crash Excellent Books" in prompt
+    assert "`limit` (max 50)" in prompt
+
+    rest = nodes["Standard_Books_REST_API"]["parameters"]
+    assert "crash" in rest["description"]
+    suffix = rest["workflowInputs"]["value"]["rest_query_suffix"]
+    assert "Never empty" in suffix
+    assert "crashes Excellent Books" in suffix
+
+    assert "session expired" in nodes["Standard_Books_Portal_Login"]["parameters"]["description"]
+    assert "NON-EMPTY report_spec_json" in nodes["Standard_Books_Portal_Report"]["parameters"]["description"]
+    assert "unbounded lists crash" in nodes["Standard_Books_Portal_Query"]["parameters"]["description"]
+
+
+def test_standard_books_api_refuses_unbounded_register_dumps() -> None:
+    sb_path = Path(__file__).resolve().parents[1] / "workflows" / "standard-books-api.json"
+    wf = json.loads(sb_path.read_text())
+    nodes = {n["name"]: n for n in wf["nodes"]}
+    js = nodes["Build API request"]["parameters"]["jsCode"]
+
+    assert "function clampRestListQuery" in js
+    assert "function guardPortalListQuery" in js
+    assert "REST list GET refused" in js
+    assert "at least one filter.*" in js
+    assert "MAX_LIMIT = 50" in js
+    assert "DEFAULT_LIMIT = 25" in js
+    assert "perpage=50" in js
+
+    script = (
+        js.split("function attachPostBody")[0]
+        + """
+function assert(cond, msg) { if (!cond) { throw new Error(msg); } }
+try { clampRestListQuery(''); throw new Error('empty suffix should refuse'); }
+catch (e) { assert(/fields=/.test(e.message), e.message); }
+try { clampRestListQuery('fields=SerNr&limit=100'); throw new Error('missing filter should refuse'); }
+catch (e) { assert(/filter/.test(e.message), e.message); }
+var q = clampRestListQuery('fields=SerNr,TransDate&filter.TransDate=2026-01-01:2026-01-31&limit=999');
+assert(q.indexOf('limit=50') >= 0, q);
+assert(isRestDetailPath('145/1') === true, 'detail path');
+assert(isRestDetailPath('fields=SerNr') === false, 'query is not detail');
+var g = guardPortalListQuery('register=CUVc&compno=2');
+assert(/perpage=50/.test(g) && /page=1/.test(g), g);
+console.log('ok');
+"""
+    )
+    completed = subprocess.run(
+        ["node", "-e", script],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    assert completed.returncode == 0, completed.stderr
+    assert "ok" in completed.stdout

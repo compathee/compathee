@@ -1,0 +1,254 @@
+{
+  "id": "yW6RvQG3Bl87M8pK",
+  "name": "Standard Books — API (Portal + REST)",
+  "nodes": [
+    {
+      "id": "ff20628d-6029-46eb-88d2-31ea17a0c3b0",
+      "name": "When called by Agent",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "api_mode"
+            },
+            {
+              "name": "operation"
+            },
+            {
+              "name": "portal_query"
+            },
+            {
+              "name": "http_method"
+            },
+            {
+              "name": "request_body_json"
+            },
+            {
+              "name": "request_body_xml"
+            },
+            {
+              "name": "content_type"
+            },
+            {
+              "name": "id_search"
+            },
+            {
+              "name": "paste_register"
+            },
+            {
+              "name": "use_narrow_CUVc"
+            },
+            {
+              "name": "paste_fuzzy"
+            },
+            {
+              "name": "list_register"
+            },
+            {
+              "name": "page"
+            },
+            {
+              "name": "perpage"
+            },
+            {
+              "name": "report_usercode"
+            },
+            {
+              "name": "reportwindow"
+            },
+            {
+              "name": "repname"
+            },
+            {
+              "name": "report_lang"
+            },
+            {
+              "name": "report_spec_json"
+            },
+            {
+              "name": "rest_register"
+            },
+            {
+              "name": "rest_query_suffix"
+            },
+            {
+              "name": "rest_company"
+            },
+            {
+              "name": "portal_max_chars"
+            },
+            {
+              "name": "portal_max_rows_per_array"
+            },
+            {
+              "name": "portal_skip_json_trim"
+            },
+            {
+              "name": "portal_skip_html_compact"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "322edb92-5489-4522-9c86-38e29a1882d3",
+      "name": "Build API request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        0
+      ],
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "function stripKey(v, re) {\n  if (v === undefined || v === null) return '';\n  return String(v).trim().replace(re, '').trim();\n}\nfunction enc(s) {\n  return encodeURIComponent(String(s ?? '').trim());\n}\nfunction isEmptyish(v) {\n  if (v === undefined || v === null) return true;\n  var s = String(v).trim();\n  return s === '' || s === 'null' || s === 'undefined';\n}\nfunction readVar(name, fallback) {\n  try {\n    if (typeof $vars !== 'undefined' && $vars[name]) {\n      return String($vars[name]).replace(/\\/+$/, '').trim();\n    }\n  } catch (_e) {}\n  return fallback;\n}\nfunction portalBaseUrl() {\n  return readVar('STANDARD_BOOKS_WEBEXCELLENT_BASE', 'https://stbooks.dbtmuuga.ee:1335');\n}\nfunction restBaseUrl() {\n  return readVar('STANDARD_BOOKS_REST_BASE', portalBaseUrl());\n}\nfunction clampRestListQuery(suffix) {\n  var MAX_LIMIT = 50;\n  var DEFAULT_LIMIT = 25;\n  var qs = String(suffix || '').replace(/^\\?+/, '');\n  var parts = qs ? qs.split('&') : [];\n  var hasLimit = false;\n  var hasFields = false;\n  var hasFilter = false;\n  var out = [];\n  for (var i = 0; i < parts.length; i++) {\n    var p = parts[i];\n    if (!p) continue;\n    var eq = p.indexOf('=');\n    var k = (eq >= 0 ? p.slice(0, eq) : p).toLowerCase();\n    if (k === 'limit') {\n      hasLimit = true;\n      var n = parseInt(eq >= 0 ? p.slice(eq + 1) : '', 10);\n      if (!Number.isFinite(n) || n < 1) n = DEFAULT_LIMIT;\n      if (n > MAX_LIMIT) n = MAX_LIMIT;\n      out.push('limit=' + n);\n    } else {\n      if (k === 'fields' && eq >= 0 && String(p.slice(eq + 1)).trim()) hasFields = true;\n      if (k.indexOf('filter.') === 0) hasFilter = true;\n      out.push(p);\n    }\n  }\n  if (!hasLimit) out.push('limit=' + DEFAULT_LIMIT);\n  if (!hasFields) {\n    throw new Error(\n      'REST list GET refused: rest_query_suffix must include fields= (comma-separated columns) plus limit (max 50). Empty or all-column dumps crash Excellent Books. Example: fields=SerNr,TransDate&filter.TransDate=2026-01-01:2026-01-31&limit=25',\n    );\n  }\n  if (!hasFilter) {\n    throw new Error(\n      'REST list GET refused: rest_query_suffix must include at least one filter.* so the register is not scanned in full. Example: fields=SerNr,TransDate&filter.SerNr=145&limit=25',\n    );\n  }\n  return out.join('&');\n}\nfunction isRestDetailPath(suffix) {\n  var s = String(suffix || '').replace(/^\\?+/, '').replace(/^\\/+/, '');\n  if (!s || s.indexOf('=') >= 0 || s.indexOf('&') >= 0) return false;\n  return /^[0-9A-Za-z_.-]+(\\/[0-9A-Za-z_.-]+)*$/.test(s);\n}\nfunction guardPortalListQuery(pq) {\n  var q = String(pq || '');\n  var hasAction = /(?:^|&)action=/i.test(q);\n  var hasRegister = /(?:^|&)register=/i.test(q);\n  if (hasRegister && !hasAction) {\n    if (!/(?:^|&)perpage=/i.test(q)) q += (q ? '&' : '') + 'perpage=50';\n    if (!/(?:^|&)page=/i.test(q)) q += '&page=1';\n  }\n  return q;\n}\nfunction attachPostBody(out, j) {\n  var rbx = String(j.request_body_xml || '').trim();\n  var rbj = String(j.request_body_json || '').trim();\n  if (rbx) {\n    out.send_body = true;\n    out.post_body_raw = rbx;\n    out.content_type = String(j.content_type || '').trim() || 'application/xml';\n    return out;\n  }\n  if (rbj) {\n    var parsed = null;\n    try {\n      parsed = JSON.parse(rbj);\n    } catch (eJson) {\n      throw new Error('request_body_json must be valid JSON when provided.');\n    }\n    out.post_json = parsed;\n    out.send_body = true;\n    out.post_body_raw = JSON.stringify(parsed);\n    out.content_type = String(j.content_type || '').trim() || 'application/json';\n    return out;\n  }\n  if (out.post_json) {\n    out.send_body = true;\n    out.post_body_raw = JSON.stringify(out.post_json);\n    out.content_type = String(j.content_type || '').trim() || 'application/json';\n    return out;\n  }\n  out.send_body = String(out.http_method || 'GET').toUpperCase() === 'POST';\n  if (out.send_body && !out.post_body_raw) out.post_body_raw = '';\n  return out;\n}\nfunction finalizeRequest(out) {\n  out.portal_accept = out.portal_accept || 'application/json, application/xml, text/xml, text/html, */*';\n  if (out.api_mode === 'rest') {\n    out.request_url = out.request_url;\n  } else {\n    out.request_url = portalBaseUrl() + '/WebExcellentAPI.hal?' + out.query;\n  }\n  return attachPostBody(out, $('When called by Agent').first().json || {});\n}\nfunction allWorkflowInputsEmpty(j) {\n  var keys = ['api_mode', 'operation', 'portal_query', 'http_method', 'request_body_json', 'request_body_xml', 'content_type', 'id_search', 'paste_register', 'use_narrow_CUVc', 'paste_fuzzy', 'list_register', 'page', 'perpage', 'report_usercode', 'reportwindow', 'repname', 'report_lang', 'report_spec_json', 'rest_register', 'rest_query_suffix', 'rest_company', 'portal_max_chars', 'portal_max_rows_per_array', 'portal_skip_json_trim', 'portal_skip_html_compact'];\n  for (var i = 0; i < keys.length; i++) {\n    if (!isEmptyish(j[keys[i]])) return false;\n  }\n  return true;\n}\n\nvar j = $input.item.json;\nvar apiMode = stripKey(j.api_mode, /^api_mode:\\s*/i).trim().toLowerCase();\nif (!apiMode || apiMode === 'webexcellent' || apiMode === 'portal' || apiMode === 'hal') apiMode = 'portal';\nif (apiMode === 'hansa' || apiMode === 'rest' || apiMode === 'rest_api') apiMode = 'rest';\n\nif (apiMode === 'rest') {\n  var reg = String(j.rest_register || '').trim().toLowerCase();\n  if (!reg) throw new Error('api_mode=rest requires rest_register (e.g. vivc, trvc, cuvc). See dbt-standard-books skill / api-docs.excellent.ee.');\n  if (!/^[a-z0-9_]+$/.test(reg)) throw new Error('rest_register must be lowercase register code only.');\n  var company = String(j.rest_company || j.compno || '2').trim() || '2';\n  var suffix = stripKey(j.rest_query_suffix, /^rest_query_suffix:\\s*/i) || String(j.rest_query_suffix || '').trim();\n  suffix = suffix.replace(/^\\?+/, '').replace(/^\\/+/, '');\n  if (/^api\\/\\d+\\//i.test(suffix)) {\n    var mPath = suffix.match(/^api\\/([^/]+)\\/([^?]+)/i);\n    if (mPath) {\n      company = mPath[1];\n      var tail = mPath[2];\n      var slash = tail.indexOf('/');\n      if (slash >= 0) {\n        reg = tail.slice(0, slash).toLowerCase();\n        suffix = tail.slice(slash + 1);\n      } else {\n        reg = tail.toLowerCase();\n        suffix = '';\n      }\n    }\n  }\n  var restUrl = restBaseUrl() + '/api/' + company + '/' + reg;\n  if (isRestDetailPath(suffix)) {\n    restUrl += '/' + suffix;\n  } else {\n    restUrl += '?' + clampRestListQuery(suffix);\n  }\n  return {\n    json: finalizeRequest({\n      api_mode: 'rest',\n      request_url: restUrl,\n      http_method: 'GET',\n      query: null,\n    }),\n  };\n}\n\nvar portalQueryRaw =\n  stripKey(j.portal_query, /^portal_query:\\s*/i) || String(j.portal_query || '').trim();\nif (portalQueryRaw) {\n  if (/^https?:\\/\\//i.test(portalQueryRaw)) {\n    throw new Error('portal_query must be the query string only (after ?), not a full URL.');\n  }\n  var pq = portalQueryRaw.replace(/^\\?+/, '');\n  if (pq.indexOf('compno=') < 0) pq += (pq ? '&' : '') + 'compno=2';\n  pq = guardPortalListQuery(pq);\n  var hmCustom = String(j.http_method || 'GET').trim().toUpperCase() || 'GET';\n  return {\n    json: finalizeRequest({\n      api_mode: 'portal',\n      query: pq,\n      http_method: hmCustom,\n    }),\n  };\n}\n\nvar op = stripKey(j.operation, /^operation:\\s*/i).trim().toLowerCase();\nvar balanceSynonyms = {\n  balance: true,\n  balancesheet: true,\n  'balance-sheet': true,\n  trial_balance: true,\n  trialbalance: true,\n  balancereport: true,\n  'balance-report': true,\n};\nif (balanceSynonyms[op]) {\n  op = 'report';\n  if (isEmptyish(j.reportwindow)) j.reportwindow = 'BalRClass';\n  if (isEmptyish(j.repname)) j.repname = 'BalRn';\n}\nif (!op || isEmptyish(op)) {\n  var rw0 =\n    stripKey(j.reportwindow, /^reportwindow:\\s*/i) || String(j.reportwindow || '').trim();\n  var rn0 = stripKey(j.repname, /^repname:\\s*/i) || String(j.repname || '').trim();\n  if (rw0 && rn0) {\n    op = 'report';\n  }\n}\nif (!op && allWorkflowInputsEmpty(j)) {\n  op = 'login';\n}\nif (!op) {\n  throw new Error('Provide api_mode + portal_query/rest fields, or operation (login | pastespecial | register_list | report_list | report | custom).');\n}\nif (op === 'custom') {\n  throw new Error('operation=custom: pass the WebExcellent query string in portal_query instead.');\n}\nif (op.indexOf('fromAI') !== -1 || op.charCodeAt(0) === 36) {\n  throw new Error('operation was sent as literal; use Expression + fromAI on the Tool Workflow node.');\n}\nvar q = '';\nvar http_method = 'GET';\nvar post_json = null;\nvar PASTE_REGS = ['CUVc', 'AllCUVc', 'VEVc', 'INVc', 'UserVc', 'VIVc', 'IVVc'];\nvar LIST_REGS = ['CUVc', 'VIVc', 'IVVc', 'OPVc', 'ActVc', 'INVc'];\nif (op === 'login') {\n  q = 'action=login';\n} else if (op === 'pastespecial') {\n  var praw = stripKey(j.paste_register, /^paste_register:\\s*/i) || 'AllCUVc';\n  if (PASTE_REGS.indexOf(praw) < 0) {\n    throw new Error('paste_register not allowed: ' + praw + '. Use one of: ' + PASTE_REGS.join(', '));\n  }\n  var preg = praw;\n  var narrow = String(j.use_narrow_CUVc || '').trim().toLowerCase();\n  var narrowOn = narrow === 'true' || narrow === '1' || narrow === 'yes';\n  if (preg === 'CUVc' && !narrowOn) {\n    preg = 'AllCUVc';\n  }\n  var idTxt = enc(j.id_search);\n  if (!idTxt) throw new Error('id_search is required for pastespecial (partial code or name).');\n  q = 'action=pastespecial&register=' + preg + '&id=' + idTxt;\n} else if (op === 'register_list') {\n  var lr = String(j.list_register || '').trim();\n  if (LIST_REGS.indexOf(lr) < 0) throw new Error('list_register must be one of: ' + LIST_REGS.join(', '));\n  var p = Number(j.page) > 0 ? Number(j.page) : 1;\n  var pp = Math.min(Math.max(Number(j.perpage) || 50, 1), 100);\n  q = 'register=' + lr + '&page=' + p + '&perpage=' + pp;\n} else if (op === 'report_list') {\n  var ruc = stripKey(j.report_usercode, /^report_usercode:\\s*/i);\n  if (!ruc) throw new Error('report_usercode required for report_list (GET getreportfilters — lists reportwindow/repname/spec fields).');\n  q = 'action=action&register=getreportfilters&usercode=' + enc(ruc);\n} else if (op === 'report') {\n  var ruc2 = stripKey(j.report_usercode, /^report_usercode:\\s*/i) || String(j.report_usercode || '').trim();\n  if (!ruc2) {\n    try {\n      if (typeof $vars !== 'undefined' && $vars.STANDARD_BOOKS_PORTAL_REPORT_USERCODE) {\n        ruc2 = String($vars.STANDARD_BOOKS_PORTAL_REPORT_USERCODE).trim();\n      }\n    } catch (eFallback) {}\n  }\n  if (!ruc2) {\n    throw new Error(\n      'report_usercode required — Excellent expects it on the URL for action=report. Provide workflow input report_usercode, or set n8n variable STANDARD_BOOKS_PORTAL_REPORT_USERCODE (e.g. from report_list/getreportfilters).',\n    );\n  }\n  var rwin = stripKey(j.reportwindow, /^reportwindow:\\s*/i) || String(j.reportwindow || '').trim();\n  var rnm = stripKey(j.repname, /^repname:\\s*/i) || String(j.repname || '').trim();\n  if (!rwin || !rnm) throw new Error('reportwindow and repname required. Call report_list first to discover names.');\n  function saneReportField(s) {\n    var t = String(s || '').trim();\n    if (!t || t.length > 256) return false;\n    if (/[\\r\\n\\x00]/.test(t)) return false;\n    return true;\n  }\n  if (!saneReportField(rwin) || !saneReportField(rnm)) {\n    throw new Error('reportwindow and repname must be non-empty, under 256 chars, no newlines; fix values from report_list.');\n  }\n  var rlang = String(j.report_lang || '').trim() || 'EST';\n  var specStr = String(j.report_spec_json || '{}').trim();\n  var specObj = {};\n  try {\n    specObj = JSON.parse(specStr);\n  } catch (e2) {\n    throw new Error('report_spec_json must be valid JSON, e.g. {\"sStartDate\":\"2025-01-01\",\"sEndDate\":\"2025-01-31\"}');\n  }\n  q = 'action=report&usercode=' + enc(ruc2);\n  http_method = 'POST';\n  post_json = { reportwindow: rwin, repname: rnm, lang: rlang, spec: specObj };\n} else {\n  throw new Error('unknown operation: ' + op + ' (login | pastespecial | register_list | report_list | report — or use portal_query / api_mode=rest)');\n}\nq += '&compno=2';\nvar outBuilt = finalizeRequest({\n  api_mode: 'portal',\n  query: q,\n  http_method: http_method,\n  post_json: post_json,\n});\nif (op === 'pastespecial') {\n  var praw = stripKey(j.paste_register, /^paste_register:\\s*/i) || 'AllCUVc';\n  var preg = praw;\n  var narrow = String(j.use_narrow_CUVc || '').trim().toLowerCase();\n  var narrowOn = narrow === 'true' || narrow === '1' || narrow === 'yes';\n  if (preg === 'CUVc' && !narrowOn) {\n    preg = 'AllCUVc';\n  }\n  var idRaw = String(j.id_search || '').trim();\n  var fuzz = String(j.paste_fuzzy || '').trim().toLowerCase();\n  var fuzzyOn = fuzz === 'true' || fuzz === '1' || fuzz === 'yes';\n  var numericOnly = /^[0-9]+$/.test(idRaw);\n  outBuilt._paste_match = !fuzzyOn && numericOnly ? 'exact_code_xml' : 'fuzzy_api';\n  outBuilt._portal_paste = {\n    register_requested: praw,\n    register_sent: preg,\n    use_narrow_CUVc: narrowOn,\n    paste_match: outBuilt._paste_match,\n  };\n}\nreturn { json: outBuilt };\n"
+      }
+    },
+    {
+      "id": "bde061dc-da2a-4b6a-b2a8-0fedd73f71a2",
+      "name": "Call Standard Books API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        448,
+        0
+      ],
+      "parameters": {
+        "method": "={{ $json.http_method || 'GET' }}",
+        "url": "={{ $json.request_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": "={{ $json.send_body === true }}",
+        "specifyBody": "string",
+        "body": "={{ $json.post_body_raw || \"\" }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "={{ ($json.portal_accept) || 'application/json, application/xml, text/xml, text/html, */*' }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "={{ $json.send_body === true ? ($json.content_type || 'application/json') : '' }}"
+            },
+            {
+              "name": "Accept-Encoding",
+              "value": "identity"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {
+              "followRedirects": true
+            }
+          },
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          },
+          "timeout": 120000
+        }
+      },
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "DKvOVQJXqcl8Qfbu",
+          "name": "Standard Books account"
+        }
+      }
+    },
+    {
+      "id": "51483096-fc72-4a8b-a05a-5c2d35c799e1",
+      "name": "Filter pastespecial exact Code",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        672,
+        0
+      ],
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "var j = $input.item.json;\n\nvar body = j.data;\n\nif (body === undefined || body === null) body = j.body;\n\nif (typeof body !== 'string') body = '';\n\nvar bq = $('Build API request').first().json;\n\nif (!bq || bq._paste_match !== 'exact_code_xml') {\n\n  return { json: j };\n\n}\n\nvar trigger = $('When called by Agent').first().json;\n\nvar code = String(trigger.id_search || '').trim();\n\nvar dq = 'Code=\"' + code + '\"';\n\nvar sq = \"Code='\" + code + \"'\";\n\nvar lc = 'code=\"' + code.toLowerCase() + '\"';\n\nfunction hasExact(snippet) {\n\n  return snippet.indexOf(dq) !== -1 || snippet.indexOf(sq) !== -1 || snippet.indexOf(lc) !== -1;\n\n}\n\nfunction lineKeeps(line) {\n\n  if (!/\\b[Cc]ode=/.test(line)) return true;\n\n  return hasExact(line);\n\n}\n\nif (!hasExact(body)) {\n\n  return {\n\n    json: {\n\n      data: body,\n\n      _paste_filtered: false,\n\n      _paste_filter_note: 'No XML fragment with exact ' + dq + '; paste API substring search often hits unrelated fields.',\n\n    },\n\n  };\n\n}\n\nvar lines = body.split(/\\r?\\n/);\n\nif (lines.length > 1) {\n\n  body = lines.filter(lineKeeps).join('\\n');\n\n} else {\n\n  var parts = body.split(/(?=<)/);\n\n  var acc = [];\n\n  for (var i = 0; i < parts.length; i++) {\n\n    var p = parts[i];\n\n    if (!/\\b[Cc]ode=/.test(p) || hasExact(p)) acc.push(p);\n\n  }\n\n  body = acc.length ? acc.join('') : body;\n\n}\n\nreturn {\n\n  json: {\n\n    data: body,\n\n    _paste_filtered: true,\n\n    _paste_filter_note: 'Kept only fragments where [Cc]ode equals ' + code + ' (numeric id → exact Code match, not substring).',\n\n  },\n\n};"
+      }
+    },
+    {
+      "id": "027b1d31-f0dc-4666-b9a0-c5bd29554afe",
+      "name": "Truncate response for agent",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        896,
+        0
+      ],
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "var j = $input.item.json;\n\nvar body = j.data;\n\nif (body === undefined || body === null) body = j.body;\n\nif (typeof body !== 'string') body = JSON.stringify(j);\n\n\n\nvar trig = $('When called by Agent').first().json || {};\n\nvar bq = $('Build API request').first().json || {};\n\nvar isReportResp = bq.http_method === 'POST' && bq.post_json;\n\nvar apiLabel = bq.api_mode === 'rest' ? 'REST' : 'Portal / WebExcellent';\n\n\n\nfunction numOr(v, fallback) {\n\n  var n = Number(v);\n\n  if (Number.isFinite(n) && n > 0) return n;\n\n  return fallback;\n\n}\n\nvar maxChars = numOr(trig.portal_max_chars, isReportResp ? 12000 : 15000);\n\nvar maxRowsPerArray = Math.floor(numOr(trig.portal_max_rows_per_array, 80));\n\nvar skipJsonTrim =\n\n  trig.portal_skip_json_trim === true ||\n\n  String(trig.portal_skip_json_trim || '').toLowerCase() === 'true' ||\n\n  String(trig.portal_skip_json_trim || '').trim() === '1';\n\n\n\nfunction trimArraysDeep(v, depth) {\n\n  depth = depth || 0;\n\n  if (depth > 14) return v;\n\n  if (Array.isArray(v)) {\n\n    var orig = v.length;\n\n    var sliced = [];\n\n    var cap = Math.min(orig, maxRowsPerArray);\n\n    for (var i = 0; i < cap; i++) sliced.push(trimArraysDeep(v[i], depth + 1));\n\n    if (orig > maxRowsPerArray) {\n\n      sliced.push('[truncated +' + String(orig - maxRowsPerArray) + ' sibling rows — raise portal_max_rows_per_array / portal_max_chars if needed]');\n\n    }\n\n    return sliced;\n\n  }\n\n  if (v !== null && typeof v === 'object') {\n\n    var out = {};\n\n    var keysObj = Object.keys(v);\n\n    for (var ki = 0; ki < keysObj.length; ki++) {\n\n      var k = keysObj[ki];\n\n      out[k] = trimArraysDeep(v[k], depth + 1);\n\n    }\n\n    return out;\n\n  }\n\n  return v;\n\n}\n\n\n\nvar portal_json_array_trimmed = false;\n\nvar jsonParseOk = false;\n\nif (isReportResp && !skipJsonTrim && body.length > 400) {\n\n  var t0 = body.trim();\n\n  if (\n\n    (t0.charCodeAt(0) === 123 && t0.charCodeAt(t0.length - 1) === 125) ||\n\n    (t0.charCodeAt(0) === 91 && t0.charCodeAt(t0.length - 1) === 93)\n\n  ) {\n\n    try {\n\n      body = JSON.stringify(trimArraysDeep(JSON.parse(t0)));\n\n      portal_json_array_trimmed = true;\n\n      jsonParseOk = true;\n\n    } catch (eIgn) {}\n\n  }\n\n}\n\n\n\nfunction compactExcellentReportHtml(html) {\n\n  var nl = String.fromCharCode(10);\n\n  var cr = String.fromCharCode(13);\n\n  var nbsp = String.fromCharCode(160);\n\n  var sep = nl + '---' + nl;\n\n  var raw = String(html || '').split(cr).join('');\n\n  raw = raw.split('</table>').join(nl);\n\n  raw = raw.split('</tr>').join(nl);\n\n  raw = raw.split('<br/>').join(nl);\n\n  raw = raw.split('<br />').join(nl);\n\n  raw = raw.split('<br>').join(nl);\n\n  raw = raw.split('<hr/>').join(sep);\n\n  raw = raw.split('<hr />').join(sep);\n\n  raw = raw.split('<hr>').join(sep);\n\n  raw = raw.split('&nbsp;').join(' ');\n\n  var stripped = '';\n\n  var inTag = false;\n\n  for (var ti = 0; ti < raw.length; ti++) {\n\n    var ch = raw.charAt(ti);\n\n    if (ch === '<') {\n\n      inTag = true;\n\n      continue;\n\n    }\n\n    if (inTag) {\n\n      if (ch === '>') inTag = false;\n\n      continue;\n\n    }\n\n    stripped += ch;\n\n  }\n\n  raw = stripped.split(nl);\n\n  var linesOut = [];\n\n  for (var li = 0; li < raw.length; li++) {\n\n    var one = raw[li].split(nbsp).join(' ');\n\n    one = one.replace(/\\s+/g, ' ').trim();\n\n    if (one.length) linesOut.push(one);\n\n  }\n\n  var joined = linesOut.join(nl);\n\n  return '[Excellent report HTML → condensed lines — layout tags stripped]' + nl + joined;\n\n}\n\n\n\nvar portal_html_compact_applied = false;\n\nvar skipHtmlCompact =\n\n  trig.portal_skip_html_compact === true ||\n\n  String(trig.portal_skip_html_compact || '').toLowerCase() === 'true' ||\n\n  String(trig.portal_skip_html_compact || '').trim() === '1';\n\n\n\nif (isReportResp && !skipHtmlCompact && !jsonParseOk && body.length > 400) {\n\n  var head = body.trim().slice(0, 96).toLowerCase();\n\n  if (head.indexOf('<report') !== -1 || head.indexOf('<html') !== -1) {\n\n    body = compactExcellentReportHtml(body);\n\n    portal_html_compact_applied = true;\n\n  }\n\n}\n\n\n\nvar truncatedChars = false;\n\nvar originalLenBeforeCharCap = body.length;\n\nif (body.length > maxChars) {\n\n  var excess = body.length - maxChars;\n\n  body = body.slice(0, maxChars) + '\\n...[truncated ' + excess + ' chars; increase portal_max_chars on the workflow call if needed]';\n\n  truncatedChars = true;\n\n}\n\n\n\nvar httpStatus =\n\n  j.statusCode !== undefined && j.statusCode !== null ? j.statusCode : j.status !== undefined ? j.status : null;\n\nvar stNum = httpStatus !== null && httpStatus !== undefined ? Number(httpStatus) : NaN;\n\n\n\nvar portal_http_error = Number.isFinite(stNum) && stNum >= 400;\n\nvar portal_stub_empty = false;\n\n\n\nif (portal_http_error) {\n\n  body =\n\n    '[Standard Books ' + apiLabel + ': request error] HTTP ' +\n\n    String(httpStatus) +\n\n    '. Do not repeat the same call with identical parameters — explain access, Basic Auth, server, or query to the user.';\n\n  portal_stub_empty = true;\n\n} else if (\n\n  body === undefined ||\n\n  body === null ||\n\n  typeof body !== 'string' ||\n\n  !String(body).trim()\n\n) {\n\n  body =\n\n    '[Standard Books ' + apiLabel + ': empty response body] HTTP ' +\n\n    String(httpStatus !== null ? httpStatus : '?') +\n\n    '. Do not auto-retry the same call — tell the user.';\n\n  portal_stub_empty = true;\n\n}\n\n\n\nreturn {\n\n  json: {\n\n    body: body,\n\n    truncated: truncatedChars || portal_json_array_trimmed || portal_html_compact_applied || portal_stub_empty,\n\n    api_mode: bq.api_mode || 'portal',\n\n    portal_http_error: portal_http_error,\n\n    portal_stub_empty: portal_stub_empty,\n\n    portal_html_compact_applied: portal_html_compact_applied,\n\n    portal_json_array_trimmed: portal_json_array_trimmed,\n\n    portal_report_response:\n\n      isReportResp && (jsonParseOk || portal_html_compact_applied) && !portal_stub_empty,\n\n    portal_report_post: isReportResp,\n\n    portal_max_chars_used: maxChars,\n\n    portal_max_rows_per_array_used: maxRowsPerArray,\n\n    paste_filter_note: j._paste_filter_note || null,\n\n    paste_filtered: j._paste_filtered,\n\n    portal_http_status: httpStatus,\n\n    portal_body_length: typeof body === 'string' ? body.length : 0,\n\n    portal_original_length: originalLenBeforeCharCap,\n\n    request_url: bq.request_url || null,\n\n  },\n\n};"
+      }
+    }
+  ],
+  "connections": {
+    "When called by Agent": {
+      "main": [
+        [
+          {
+            "node": "Build API request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build API request": {
+      "main": [
+        [
+          {
+            "node": "Call Standard Books API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Standard Books API": {
+      "main": [
+        [
+          {
+            "node": "Filter pastespecial exact Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter pastespecial exact Code": {
+      "main": [
+        [
+          {
+            "node": "Truncate response for agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "timezone": "Europe/Tallinn",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "errorWorkflow": "PvgkRgGl5CABb8tq"
+  },
+  "nodeGroups": [],
+  "description": "Standard Books: api_mode portal (WebExcellentAPI.hal) or rest (/api/2/register). Basic Auth. Vars STANDARD_BOOKS_WEBEXCELLENT_BASE, STANDARD_BOOKS_REST_BASE."
+}

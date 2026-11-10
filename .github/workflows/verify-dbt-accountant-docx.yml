@@ -8,6 +8,8 @@ on:
     paths:
       - ".github/workflows/verify-dbt-accountant-docx.yml"
       - "workflows/dbt-accountant-assistant.json"
+      - "workflows/standard-books-api.json"
+      - "tests/test_dbt_accountant_docx_snapshot.py"
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -119,4 +121,45 @@ jobs:
             | select(.node == "Redis Set pending flag")
           ' /tmp/dbt-workflow-live.json >/dev/null
 
-          echo "Live DBT Accountant assistant has Word/DOCX extract+patch and unknown-user admin notify."
+          jq -e '
+            (.nodes[] | select(.name == "DBT Accountant Agent") | .parameters.options.systemMessage)
+            | contains("HARD LIMITS")
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
+            .connections["Admin auth callback?"].main[0][]
+            | select(.node == "Redis Get tg whitelist (admin)")
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
+            [.connections["Admin auth callback?"].main[0][].node]
+            | index("Merge whitelist auth")
+            | not
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
+            (.nodes[] | select(.name == "Session memory") | .parameters.sessionKey)
+            | contains("callback_query")
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          jq -e '
+            (.nodes[] | select(.name == "Standard_Books_REST_API") | .parameters.description)
+            | contains("crash")
+          ' /tmp/dbt-workflow-live.json >/dev/null
+
+          curl --fail-with-body "${N8N_BASE_URL%/}/api/v1/workflows/yW6RvQG3Bl87M8pK" \
+            -H "X-N8N-API-KEY: ${N8N_API_KEY}" \
+            -H "Accept: application/json" \
+            -o /tmp/sb-workflow-live.json
+
+          jq -e '
+            (.nodes[] | select(.name == "Build API request") | .parameters.jsCode)
+            | contains("clampRestListQuery")
+          ' /tmp/sb-workflow-live.json >/dev/null
+
+          jq -e '
+            (.nodes[] | select(.name == "Build API request") | .parameters.jsCode)
+            | contains("REST list GET refused")
+          ' /tmp/sb-workflow-live.json >/dev/null
+
+          echo "Live DBT Accountant assistant has Word/DOCX extract+patch, unknown-user admin notify, and Standard Books crash guards."

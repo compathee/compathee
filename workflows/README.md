@@ -17,9 +17,15 @@ deployed with the n8n API or GitHub Actions.
 - `dbt-accountant-assistant.backup.json` - snapshot of **DBT Accountant
   assistant** (`vQnGxLzinMZR6Vhg`) before Word/DOCX extraction.
 - `dbt-accountant-assistant.json` - published snapshot after Word/DOCX
-  extraction, in-place cell patch return, and unknown-user access requests
-  sent only to admin Telegram `1075735475`.
-- `dbt-accountant-docx.md` - notes for Telegram execution `3554` (`ОС.docx`).
+  extraction, in-place cell patch return, unknown-user access requests
+  sent only to admin Telegram `1075735475`, and Standard Books crash
+  guards (HARD LIMITS; Approve callbacks do not run the agent).
+- `standard-books-api.json` - published snapshot of **Standard Books —
+  API (Portal + REST)** (`yW6RvQG3Bl87M8pK`). REST list GETs require
+  `fields=` + `filter.*` and inject `limit=25` (cap 50) so empty
+  register dumps cannot crash Excellent Books.
+- `dbt-accountant-docx.md` - notes for Telegram execution `3554` (`ОС.docx`)
+  plus Standard Books API crash guards.
 
 ## Deploying with n8n API
 

@@ -73,8 +73,38 @@ are suppressed via `dbt:tg:pending:v2:<chatId>` after a successful send.
 Approve/Deny callbacks still update the Redis whitelist; after that the
 applicant gets a short granted/denied notice.
 
+Admin **Approve/Deny** no longer enters `Merge whitelist auth` / the accountant
+agent. The true branch of `Admin auth callback?` only updates the Redis
+whitelist. Session memory keys off
+`message?.chat?.id || callback_query?.message?.chat?.id` so an Approve
+callback does not throw “Key parameter is empty”.
+
+### Standard Books / Excellent Books (crash guards)
+
+Unbounded Hansa REST list GETs (`/api/{company}/{register}` with an empty
+suffix, or without `fields=` / `filter.*` / `limit`) dump whole registers
+and can crash Excellent Books. Basic Auth on every call adds load; the
+agent was also able to fire Standard Books tools on an empty `[No user text]`
+Approve callback.
+
+Published together (10 Nov 2026, Europe/Kiev):
+
+- **Standard Books — API (Portal + REST)** `yW6RvQG3Bl87M8pK`
+  (`15f1dda3-75fb-4cee-bb54-82c1259c9769`): `Build API request` injects
+  `limit=25` (cap 50) on REST list GETs and **refuses** a list read that
+  omits `fields=` or `filter.*`. Detail paths like `145/1` are unchanged.
+  Portal `register=` queries without `action=` get `perpage=50&page=1`.
+- **DBT Accountant assistant** `vQnGxLzinMZR6Vhg`
+  (`615f2d7e-16e0-4ad7-846c-c5785d08716a`): system prompt HARD LIMITS
+  (one bounded Standard Books call; never on empty/`[No user text]`);
+  REST tool description requires `fields=` + `filter.*` + `limit≤50`;
+  Portal login only after a session-expired error; reports need a
+  non-empty date spec.
+
 ## Files
 
 - `dbt-accountant-assistant.backup.json` — snapshot before Word extract (105 nodes).
 - `dbt-accountant-assistant.json` — published snapshot after extract, in-place
-  return, and unknown-user admin notify (115 nodes).
+  return, unknown-user admin notify, and Standard Books crash guards (115 nodes).
+- `standard-books-api.json` — published snapshot of the Portal + REST
+  sub-workflow with REST/Portal list clamps.
