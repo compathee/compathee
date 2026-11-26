@@ -69,7 +69,7 @@ final class Choir_Rehearsal_Feedback {
 	public static function endpoint(): string {
 		$url = self::ENDPOINT;
 		if ( function_exists( 'apply_filters' ) ) {
-			$filtered = apply_filters( self::ENDPOINT_FILTER, $url );
+			$filtered = apply_filters( 'choir_rehearsal_feedback_endpoint', $url );
 			if ( is_string( $filtered ) && self::is_https_url( $filtered ) ) {
 				return $filtered;
 			}

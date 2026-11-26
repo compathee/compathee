@@ -41,6 +41,7 @@ delete_option( 'choir_rehearsal_notes_db' );
 
 global $wpdb;
 if ( isset( $wpdb ) && $wpdb instanceof wpdb ) {
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange -- Uninstall drops the plugin table.
 	$wpdb->query( 'DROP TABLE IF EXISTS ' . $wpdb->prefix . 'choir_song_notes' );
 }
 

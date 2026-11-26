@@ -2,7 +2,7 @@
 Contributors: compath
 Tags: choir, rehearsal, voice parts, practice tracks, sheet music
 Requires at least: 6.4
-Tested up to: 7.1
+Tested up to: 7.2
 Requires PHP: 8.0
 Stable tag: 0.4.74
 License: GPLv2 or later

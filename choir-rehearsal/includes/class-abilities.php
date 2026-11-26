@@ -30,7 +30,7 @@ final class Choir_Rehearsal_Abilities {
 					$response = Choir_Rehearsal_REST::list_songs();
 					return $response->get_data();
 				},
-				'permission_callback' => static fn() => Choir_Rehearsal_REST::can_read(),
+				'permission_callback' => static fn() => Choir_Rehearsal_REST::can_list(),
 				'meta'              => array(
 					'mcp' => array(
 						'public' => true,
@@ -65,7 +65,13 @@ final class Choir_Rehearsal_Abilities {
 					}
 					return $result->get_data();
 				},
-				'permission_callback' => static fn() => Choir_Rehearsal_REST::can_read(),
+				'permission_callback' => static function ( $input = null ) {
+					if ( is_array( $input ) && isset( $input['id'] ) ) {
+						return Choir_Rehearsal_Access::can_view_song( absint( $input['id'] ) );
+					}
+					// WordPress < 7.2 may call this without prepared input.
+					return Choir_Rehearsal_REST::can_list();
+				},
 				'meta'              => array(
 					'mcp' => array(
 						'public' => true,

@@ -114,8 +114,8 @@ done | grep -Eiq 'pre_set_site_transient_update_plugins|site_transient_update_pl
   echo "ERROR: plugin updater identifiers still present in wporg zip PHP" >&2
   exit 1
 fi
-if ! unzip -p "$ZIP" "$SLUG/readme.txt" | grep -Eq '^Tested up to:[[:space:]]*7\.1[[:space:]]*$'; then
-  echo "ERROR: readme.txt Tested up to must be 7.1 for Plugin Check" >&2
+if ! unzip -p "$ZIP" "$SLUG/readme.txt" | grep -Eq '^Tested up to:[[:space:]]*7\.2[[:space:]]*$'; then
+  echo "ERROR: readme.txt Tested up to must be 7.2 for Plugin Check" >&2
   unzip -p "$ZIP" "$SLUG/readme.txt" | grep -E '^Tested up to:' || true
   exit 1
 fi

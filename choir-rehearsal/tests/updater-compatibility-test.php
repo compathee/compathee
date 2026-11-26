@@ -39,7 +39,7 @@ require_once $root . '/includes/class-updater.php';
 $readme = new ReflectionMethod(Choir_Rehearsal_Updater::class, 'readme_compatibility');
 $readme->setAccessible(true);
 $compat = $readme->invoke(null);
-check('readme tested is 7.1', ($compat['tested'] ?? '') === '7.1');
+check('readme tested is 7.2', ($compat['tested'] ?? '') === '7.2');
 check('readme requires is 6.4', ($compat['requires'] ?? '') === '6.4');
 check('readme requires php is 8.0', ($compat['requires_php'] ?? '') === '8.0');
 
@@ -50,13 +50,13 @@ $raised = $apply->invoke(null, array(
 	'tested' => '6.9',
 	'requires_php' => '8.0',
 ));
-check('stale tested 6.9 is raised to the readme', ($raised['tested'] ?? '') === '7.1');
+check('stale tested 6.9 is raised to the readme', ($raised['tested'] ?? '') === '7.2');
 $kept = $apply->invoke(null, array(
 	'requires' => '6.4',
-	'tested' => '7.2',
+	'tested' => '7.3',
 	'requires_php' => '8.0',
 ));
-check('a newer remote tested value is kept', ($kept['tested'] ?? '') === '7.2');
+check('a newer remote tested value is kept', ($kept['tested'] ?? '') === '7.3');
 
 $map = new ReflectionMethod(Choir_Rehearsal_Updater::class, 'map_github_release');
 $map->setAccessible(true);
@@ -71,7 +71,7 @@ $mapped = $map->invoke(null, array(
 		),
 	),
 ));
-check('github release mapping uses readme tested', is_array($mapped) && ($mapped['tested'] ?? '') === '7.1');
+check('github release mapping uses readme tested', is_array($mapped) && ($mapped['tested'] ?? '') === '7.2');
 check('github release mapping keeps requires and php', is_array($mapped) && ($mapped['requires'] ?? '') === '6.4' && ($mapped['requires_php'] ?? '') === '8.0');
 
 $normalize = new ReflectionMethod(Choir_Rehearsal_Updater::class, 'normalize_metadata');
@@ -81,6 +81,6 @@ $normalized = $normalize->invoke(null, array(
 	'download_url' => 'https://example.com/plugin.zip',
 	'tested' => '6.9',
 ));
-check('update.json tested 6.9 is raised to the readme', is_array($normalized) && ($normalized['tested'] ?? '') === '7.1');
+check('update.json tested 6.9 is raised to the readme', is_array($normalized) && ($normalized['tested'] ?? '') === '7.2');
 
 exit($fail > 0 ? 1 : 0);
