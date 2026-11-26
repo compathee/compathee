@@ -5,7 +5,7 @@
   "author_profile": "https://compath.ee",
   "version": "0.5.5",
   "requires": "6.4",
-  "tested": "7.1",
+  "tested": "7.2",
   "requires_php": "8.0",
   "sections": {
     "description": "Pro add-on for Compath Choir Rehearsal: unlimited voice tracks, microphone recording, song search, editor Play preview, PDF score badges, song notes, the song-page mixer, and song library backup. Requires Lite (Compath Choir Rehearsal) installed and a valid SureCart license.",
